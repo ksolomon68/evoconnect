@@ -59,9 +59,14 @@ app.use(cors({
             `https://www.${cfg.domain}`,
             'http://localhost:3001',
             'http://127.0.0.1:3001',
+            'http://localhost:3000',
+            'http://127.0.0.1:3000',
         ];
-        if (!origin || allowed.includes(origin)) cb(null, true);
-        else cb(new Error('Not allowed by CORS'));
+        if (!origin || allowed.includes(origin) || origin.endsWith('.hostingersite.com')) {
+            cb(null, true);
+        } else {
+            cb(null, false); // Deny CORS headers but do not crash the request with a 500 Error
+        }
     },
     credentials: true,
 }));
