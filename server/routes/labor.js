@@ -140,40 +140,86 @@ router.get('/register', (req, res) => {
         stateNames: STATE_NAMES,
         step,
         errors: [],
-        values: {}
+        values: req.session.laborReg || {}
     });
 });
 
 // ── POST /labor/register ───────────────────────────────────────────────────────
 router.post('/register', (req, res, next) => {
     uploadResume.single('resume')(req, res, (err) => {
-        if (err instanceof multer.MulterError || err) {
-            req.fileError = err.message || 'File upload error.';
-        }
+        if (err instanceof multer.MulterError || err) req.fileError = err.message || 'File upload error.';
         next();
     });
 }, async (req, res) => {
-    const v = req.body;
+    const v    = req.body;
+    const step = parseInt(v.step) || 1;
     const errors = [];
 
-    const full_name    = (v.full_name || '').trim();
-    const email        = (v.email || '').trim().toLowerCase();
-    const phone        = (v.phone || '').trim();
-    const password     = v.password || '';
-    const confirm_pw   = v.confirm_password || '';
-    const trade_category = (v.trade_category || '').trim();
-    const city         = (v.city || '').trim();
-    const state        = (v.state || '').trim();
-    const zip          = (v.zip || '').trim();
+    // ── Step 1: Personal Info ──────────────────────────────────────────────────
+    if (step === 1) {
+        const full_name  = (v.full_name || '').trim();
+        const email      = (v.email || '').trim().toLowerCase();
+        const phone      = (v.phone || '').trim();
+        const password   = v.password || '';
+        const confirm_pw = v.confirm_password || '';
 
-    if (!full_name)      errors.push('Full name is required.');
-    if (!email)          errors.push('Email address is required.');
-    else if (!validateEmail(email)) errors.push('Please enter a valid email address.');
-    if (!phone)          errors.push('Phone number is required.');
-    if (!password)       errors.push('Password is required.');
-    else if (password.length < 8) errors.push('Password must be at least 8 characters.');
-    if (password !== confirm_pw)  errors.push('Passwords do not match.');
-    if (!trade_category) errors.push('Trade category is required.');
+        if (!full_name)  errors.push('Full name is required.');
+        if (!email)      errors.push('Email address is required.');
+        else if (!validateEmail(email)) errors.push('Please enter a valid email address.');
+        if (!phone)      errors.push('Phone number is required.');
+        if (!password)   errors.push('Password is required.');
+        else if (password.length < 8) errors.push('Password must be at least 8 characters.');
+        if (password !== confirm_pw)   errors.push('Passwords do not match.');
+
+        if (errors.length) {
+            return res.render('labor/register', {
+                title: 'Register | EvoConnect Labor',
+                flash: null, states: US_STATES, stateNames: STATE_NAMES,
+                step: 1, errors, values: v
+            });
+        }
+        req.session.laborReg = { full_name, email, phone, password };
+        return res.redirect('/labor/register?step=2');
+    }
+
+    // ── Step 2: Trade & Skills ─────────────────────────────────────────────────
+    if (step === 2) {
+        const trade_category = (v.trade_category || '').trim();
+        if (!trade_category) errors.push('Trade category is required.');
+
+        if (errors.length) {
+            return res.render('labor/register', {
+                title: 'Register | EvoConnect Labor',
+                flash: null, states: US_STATES, stateNames: STATE_NAMES,
+                step: 2, errors, values: { ...(req.session.laborReg || {}), ...v }
+            });
+        }
+        let skills = [];
+        try { skills = JSON.parse(v.skills_json || '[]'); } catch {}
+        const certifications = Array.isArray(v.certifications) ? v.certifications : (v.certifications ? [v.certifications] : []);
+        req.session.laborReg = {
+            ...(req.session.laborReg || {}),
+            trade_category,
+            skills_json: JSON.stringify(skills),
+            certifications,
+            years_experience: v.years_experience || '0'
+        };
+        return res.redirect('/labor/register?step=3');
+    }
+
+    // ── Step 3: Location & Final Submit ───────────────────────────────────────
+    const saved = req.session.laborReg || {};
+    const full_name      = saved.full_name || '';
+    const email          = saved.email || '';
+    const phone          = saved.phone || '';
+    const password       = saved.password || '';
+    const trade_category = saved.trade_category || '';
+    const city           = (v.city || '').trim();
+    const state          = (v.state || '').trim();
+    const zip            = (v.zip || '').trim();
+
+    if (!full_name || !email || !phone || !password) errors.push('Session expired — please start your registration over.');
+    if (!trade_category) errors.push('Trade category missing — please go back to Step 2.');
     if (!city)           errors.push('City is required.');
     if (!state)          errors.push('State is required.');
     if (!zip)            errors.push('ZIP code is required.');
@@ -182,38 +228,29 @@ router.post('/register', (req, res, next) => {
     if (errors.length) {
         return res.render('labor/register', {
             title: 'Register | EvoConnect Labor',
-            flash: null,
-            states: US_STATES,
-            stateNames: STATE_NAMES,
-            step: parseInt(v.step) || 1,
-            errors,
-            values: v
+            flash: null, states: US_STATES, stateNames: STATE_NAMES,
+            step: 3, errors, values: { ...saved, ...v }
         });
     }
 
     try {
         const db = getDb();
 
-        // Check email uniqueness
         const [existing] = await db.execute('SELECT id FROM workers WHERE email = ?', [email]);
         if (existing.length) {
             return res.render('labor/register', {
                 title: 'Register | EvoConnect Labor',
-                flash: null,
-                states: US_STATES,
-                stateNames: STATE_NAMES,
+                flash: null, states: US_STATES, stateNames: STATE_NAMES,
                 errors: ['An account with that email already exists.'],
-                values: v
+                step: 1, values: saved
             });
         }
 
         const password_hash = await bcrypt.hash(password, 12);
 
-        // Parse skills from JSON hidden field, certifications from checkboxes
         let skills = [];
-        try { skills = JSON.parse(v.skills_json || '[]'); } catch {}
-        const certifications = Array.isArray(v.certifications) ? v.certifications : (v.certifications ? [v.certifications] : []);
-
+        try { skills = JSON.parse(saved.skills_json || '[]'); } catch {}
+        const certifications = Array.isArray(saved.certifications) ? saved.certifications : (saved.certifications ? [saved.certifications] : []);
         const resume_path = req.file ? req.file.filename : null;
 
         const [result] = await db.execute(`
@@ -226,9 +263,9 @@ router.post('/register', (req, res, next) => {
             full_name, email, password_hash, phone, trade_category,
             JSON.stringify(skills),
             JSON.stringify(certifications),
-            parseInt(v.years_experience) || 0,
+            parseInt(saved.years_experience) || 0,
             v.sam_registered || 'no',
-            v.entity_type || v.business_entity || 'none',
+            v.entity_type || 'none',
             city, state, zip,
             v.travel_willingness || 'local',
             v.experience_summary || null,
@@ -275,6 +312,9 @@ router.post('/register', (req, res, next) => {
             text: `Welcome to EvoConnect, ${full_name}!\n\nYour labor profile is live. Log in at: ${process.env.APP_URL || 'https://evoconnect.evobrand.net'}/labor/dashboard\n\nNext steps:\n1. Complete the Vendor Readiness Checklist\n2. Watch for prime contractor connection requests\n3. Add certifications to improve visibility`
         }).catch(e => console.error('EvoConnect [labor/register] email error:', e));
 
+        // Clear registration session
+        delete req.session.laborReg;
+
         // Sign in
         const token = signToken({ id: workerId, email, type: 'worker', name: full_name });
         setAuthCookie(res, token);
@@ -284,13 +324,12 @@ router.post('/register', (req, res, next) => {
 
     } catch (err) {
         console.error('EvoConnect [labor/register]:', err);
+        const saved = req.session.laborReg || {};
         res.render('labor/register', {
             title: 'Register | EvoConnect Labor',
-            flash: null,
-            states: US_STATES,
-            stateNames: STATE_NAMES,
+            flash: null, states: US_STATES, stateNames: STATE_NAMES,
             errors: ['A server error occurred. Please try again.'],
-            values: v
+            step: 3, values: { ...saved, ...v }
         });
     }
 });
