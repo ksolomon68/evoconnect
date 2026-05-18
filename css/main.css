@@ -1395,6 +1395,24 @@ body {
   box-shadow: var(--shadow-card);
 }
 
+.register-login-note {
+  text-align: center;
+  margin-top: 1.75rem;
+  font-size: 0.95rem;
+  color: rgba(255, 255, 255, 0.85);
+}
+.register-login-note a {
+  color: var(--cyan);
+  font-weight: 700;
+  text-decoration: none;
+  transition: all 0.2s ease-in-out;
+}
+.register-login-note a:hover {
+  color: #22d3ee;
+  text-decoration: underline;
+  text-shadow: 0 0 10px rgba(34, 211, 238, 0.4);
+}
+
 .form-section-title {
   font-family: 'Syne', 'Inter', sans-serif;
   font-size: 1.15rem;
