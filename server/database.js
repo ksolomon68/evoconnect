@@ -3,11 +3,8 @@ const dotenv = require('dotenv');
 const path = require('path');
 
 dotenv.config({ path: path.join(__dirname, '../.env') });
-
-const isLive = !!(process.env.PHUSION_PASSENGER || process.env.PASSENGER_NODE_CONTROL_REPO || process.env.NODE_ENV === 'production');
-if (isLive) {
-    dotenv.config({ path: path.join(__dirname, '../.env.production'), override: true });
-}
+// Always load .env.production if present — dotenv silently ignores missing files
+dotenv.config({ path: path.join(__dirname, '../.env.production'), override: true });
 
 console.log('EvoConnect DB: Initializing MySQL Connection Pool...');
 

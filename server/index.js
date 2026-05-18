@@ -11,8 +11,9 @@ const cors        = require('cors');
 const fs          = require('fs');
 
 dotenv.config({ path: path.join(__dirname, '../.env') });
+// Always load .env.production if present — dotenv silently ignores missing files
+dotenv.config({ path: path.join(__dirname, '../.env.production'), override: true });
 const isLive = !!(process.env.PHUSION_PASSENGER || process.env.PASSENGER_NODE_CONTROL_REPO || process.env.NODE_ENV === 'production');
-if (isLive) dotenv.config({ path: path.join(__dirname, '../.env.production'), override: true });
 
 const cfg = require('./agency.config');
 const { initDatabase } = require('./database');
