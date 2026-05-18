@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, nofollow">
+    <title><%= locals.title ? locals.title + ' | EvoConnect' : 'Dashboard - EvoConnect' %></title>
+    
+    <link rel="icon" href="/images/favicon.png" type="image/png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="/css/design-system.css?v=1.1.2">
+    <link rel="stylesheet" href="/css/dashboard-new.css?v=1.1.2">
+    <link rel="stylesheet" href="/css/dashboard-common.css?v=1.1.2">
+    <link rel="stylesheet" href="/css/accessibility-widget.css?v=1.1.2">
+</head>
+<body class="dashboard-v2">
+    <a href="#main-content" class="skip-link">Skip to main content</a>
+    
+    <aside class="sidebar" id="sidebar"></aside>
+
+    <div class="dashboard-container">
+        <header class="header-top" id="header-top"></header>
+        
+        <!-- Main Content -->
+        <main id="main-content" class="main-content">
+            <%- body %>
+        </main>
+    </div>
+
+    <!-- Scripts -->
+    <script>
+        // Provide user context to the client-side navigation component
+        <% if (locals.user) { %>
+            localStorage.setItem('wfc_user', JSON.stringify({
+                id: "<%= user.id %>",
+                email: "<%= user.email %>",
+                type: "<%= user.type %>",
+                name: "<%= user.name ? user.name.replace(/"/g, '\\"') : user.email %>"
+            }));
+        <% } %>
+    </script>
+    <script src="/agency.config.js"></script>
+    <script src="/js/config.js"></script>
+    <script src="/js/components/navigation.js"></script>
+    <script src="/js/accessibility-widget.js"></script>
+    <script src="/js/pwa.js"></script>
+    <script src="/js/evo.js"></script>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            if (typeof Navigation !== 'undefined') {
+                Navigation.init("<%= locals.user ? locals.user.type : 'worker' %>");
+            }
+        });
+    </script>
+</body>
+</html>
