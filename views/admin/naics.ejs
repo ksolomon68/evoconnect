@@ -1,0 +1,97 @@
+<% const title = locals.title || 'NAICS Code Management | EvoConnect Admin' %>
+
+<section class="admin-section">
+  <div class="container">
+
+    <%- include('../partials/flash') %>
+
+    <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem;margin-bottom:2rem">
+      <div>
+        <h1 style="margin:0;color:#0F172A">NAICS Code Management</h1>
+        <p style="color:#64748B;margin:.25rem 0 0"><%= locals.codes?.length || 0 %> codes in database</p>
+      </div>
+      <a href="/admin/dashboard" class="btn btn-ghost">← Dashboard</a>
+    </div>
+
+    <!-- Add NAICS Form -->
+    <div class="card" style="margin-bottom:2rem">
+      <div style="padding:1.25rem 1.5rem;border-bottom:1px solid #E2E8F0">
+        <h2 style="margin:0;font-size:1rem;color:#0F172A">Add NAICS Code</h2>
+      </div>
+      <form method="POST" action="/admin/naics" style="padding:1.5rem;display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1rem">
+        <div class="form-group" style="margin:0">
+          <label class="form-label">NAICS Code <span style="color:#EF4444">*</span></label>
+          <input type="text" name="code" class="form-control" placeholder="e.g. 236220" maxlength="10" required>
+        </div>
+        <div class="form-group" style="margin:0">
+          <label class="form-label">Description <span style="color:#EF4444">*</span></label>
+          <input type="text" name="description" class="form-control" placeholder="Commercial Building Construction" required>
+        </div>
+        <div class="form-group" style="margin:0">
+          <label class="form-label">Trade Category</label>
+          <input type="text" name="trade_category" class="form-control" placeholder="construction">
+        </div>
+        <div class="form-group" style="margin:0">
+          <label class="form-label">Avg Contract Size ($)</label>
+          <input type="number" name="avg_contract_size" class="form-control" placeholder="250000">
+        </div>
+        <div class="form-group" style="margin:0;display:flex;align-items:flex-end;gap:.5rem">
+          <label style="display:flex;align-items:center;gap:.5rem;cursor:pointer">
+            <input type="checkbox" name="set_aside_eligible" value="on">
+            <span class="form-label" style="margin:0">Set-Aside Eligible</span>
+          </label>
+        </div>
+        <div style="display:flex;align-items:flex-end">
+          <button type="submit" class="btn btn-primary" style="width:100%">Add Code</button>
+        </div>
+      </form>
+    </div>
+
+    <!-- NAICS Table -->
+    <div class="card">
+      <% if (locals.codes && codes.length > 0) { %>
+        <div style="overflow-x:auto">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Code</th>
+                <th>Description</th>
+                <th>Trade Category</th>
+                <th>Avg Contract</th>
+                <th>Set-Aside</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% codes.forEach(function(c) { %>
+              <tr>
+                <td style="font-family:monospace;font-weight:600;color:#0F172A"><%= c.code %></td>
+                <td><%= c.description %></td>
+                <td style="text-transform:capitalize;color:#64748B"><%= c.trade_category || '—' %></td>
+                <td style="color:#64748B"><%= c.avg_contract_size ? '$' + Number(c.avg_contract_size).toLocaleString() : '—' %></td>
+                <td>
+                  <% if (c.set_aside_eligible) { %>
+                    <span style="background:#F0FDF4;color:#166534;padding:.2rem .6rem;border-radius:4px;font-size:.8rem">Yes</span>
+                  <% } else { %>
+                    <span style="color:#94A3B8;font-size:.85rem">No</span>
+                  <% } %>
+                </td>
+                <td>
+                  <form method="POST" action="/admin/naics/<%= c.code %>?_method=DELETE" style="display:inline" onsubmit="return confirm('Delete NAICS code <%= c.code %>?')">
+                    <button type="submit" class="btn btn-danger" style="padding:.25rem .6rem;font-size:.8rem">Delete</button>
+                  </form>
+                </td>
+              </tr>
+              <% }) %>
+            </tbody>
+          </table>
+        </div>
+      <% } else { %>
+        <div style="padding:3rem;text-align:center;color:#64748B">
+          <p>No NAICS codes yet. Add one above.</p>
+        </div>
+      <% } %>
+    </div>
+
+  </div>
+</section>

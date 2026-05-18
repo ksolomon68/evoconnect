@@ -11,7 +11,7 @@ let categories = [];
 // Load data on page load
 document.addEventListener('DOMContentLoaded', async function () {
     try {
-        console.log('PrimeReach: Starting opportunities data load');
+        console.log('WorkForce Connect: Starting opportunities data load');
 
         // Use DataService if available, otherwise fallback to native fetch
         const fetcher = (window.DataService && typeof window.DataService.fetch === 'function')
@@ -33,7 +33,7 @@ document.addEventListener('DOMContentLoaded', async function () {
 
         // Load districts and categories in parallel
         // Use native fetch — these are static JSON files, not API routes
-        console.log('PrimeReach: Loading filters...');
+        console.log('WorkForce Connect: Loading filters...');
         const [districtsData, categoriesData] = await Promise.all([
             fetch('/data/districts.json').then(r => r.ok ? r.json() : { districts: [] }).catch(err => {
                 console.error('Failed to load districts.json:', err);
@@ -49,7 +49,7 @@ document.addEventListener('DOMContentLoaded', async function () {
         categories = categoriesData.categories || [];
 
         // Load opportunities from backend API
-        console.log('PrimeReach: Loading opportunities...');
+        console.log('WorkForce Connect: Loading opportunities...');
         const allData = await fetcher('/opportunities');
 
         if (!Array.isArray(allData)) {
@@ -78,10 +78,10 @@ document.addEventListener('DOMContentLoaded', async function () {
         // Set up event listeners
         setupEventListeners();
 
-        console.log(`PrimeReach: Loaded ${allOpportunities.length} opportunities successfully`);
+        console.log(`WorkForce Connect: Loaded ${allOpportunities.length} opportunities successfully`);
 
     } catch (error) {
-        console.error('PrimeReach: Fatal error loading opportunities page data:', error);
+        console.error('WorkForce Connect: Fatal error loading opportunities page data:', error);
         const countElement = document.getElementById('resultsCount');
         if (countElement) {
             countElement.innerHTML = `<span class="text-error">Error loading opportunities. Please refresh the page.</span><br><small class="text-muted">Details: ${error.message}</small>`;
@@ -359,7 +359,7 @@ function setupEventListeners() {
 
 // Global function for saving opportunity
 window.saveOpportunity = async function (opportunityId, btnElement) {
-    const user = typeof getCurrentUser === 'function' ? getCurrentUser() : JSON.parse(localStorage.getItem('caltrans_user'));
+    const user = typeof getCurrentUser === 'function' ? getCurrentUser() : JSON.parse(localStorage.getItem('wfc_user'));
 
     if (!user) {
         alert('Please log in to save opportunities.');
@@ -403,7 +403,7 @@ window.saveOpportunity = async function (opportunityId, btnElement) {
             if (!savedOpps.includes(opportunityId)) {
                 savedOpps.push(opportunityId);
                 user.saved_opportunities = JSON.stringify(savedOpps);
-                localStorage.setItem('caltrans_user', JSON.stringify(user));
+                localStorage.setItem('wfc_user', JSON.stringify(user));
             }
         } else {
             const err = await response.json();
@@ -421,7 +421,7 @@ window.saveOpportunity = async function (opportunityId, btnElement) {
 
 // Helper function to unsave an opportunity
 async function unsaveOpportunity(opportunityId, btnElement) {
-    const user = typeof getCurrentUser === 'function' ? getCurrentUser() : JSON.parse(localStorage.getItem('caltrans_user'));
+    const user = typeof getCurrentUser === 'function' ? getCurrentUser() : JSON.parse(localStorage.getItem('wfc_user'));
 
     if (!user) return;
 
@@ -450,7 +450,7 @@ async function unsaveOpportunity(opportunityId, btnElement) {
                     let savedOpps = JSON.parse(user.saved_opportunities);
                     savedOpps = savedOpps.filter(id => id !== opportunityId);
                     user.saved_opportunities = JSON.stringify(savedOpps);
-                    localStorage.setItem('caltrans_user', JSON.stringify(user));
+                    localStorage.setItem('wfc_user', JSON.stringify(user));
                 } catch (e) {
                     console.error('Error updating saved opportunities:', e);
                 }
@@ -469,5 +469,5 @@ async function unsaveOpportunity(opportunityId, btnElement) {
 
 // Helper to check if logged in
 function isLoggedIn() {
-    return localStorage.getItem('caltrans_user') !== null;
+    return localStorage.getItem('wfc_user') !== null;
 }

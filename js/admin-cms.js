@@ -1,5 +1,5 @@
 /**
- * Admin CMS JavaScript — PrimeReach
+ * Admin CMS JavaScript — WorkForce Connect
  *
  * Provides the full single-page admin interface for:
  *  • Editing page content (sections, fields, images)
@@ -49,7 +49,7 @@ function showLoginScreen() {
     document.getElementById('cms-app').innerHTML = `
     <div class="cms-login-screen" role="main">
       <div class="cms-login-card">
-        <img src="images/logo.png" alt="PrimeReach Logo">
+        <img src="images/caltrans-logo.png" alt="WorkForce Connect Logo">
         <h1>CMS Admin</h1>
         <p>Sign in with your admin account to manage site content.</p>
         <div id="login-error" class="cms-alert cms-alert-error cms-hidden" role="alert"></div>
@@ -112,7 +112,7 @@ async function showShell() {
       <!-- Header -->
       <header class="cms-header" role="banner">
         <a href="index.html" class="cms-header-brand" target="_blank" rel="noopener">
-          <img src="images/logo.png" alt="PrimeReach">
+          <img src="images/caltrans-logo.png" alt="WorkForce Connect">
           <span>CMS Admin</span>
         </a>
         <div class="cms-header-actions">
@@ -123,6 +123,10 @@ async function showShell() {
                   style="background:rgba(255,255,255,.15);color:#fff;border-color:transparent">
             Change Password
           </button>
+          <a href="cms-tutorial.html" target="_blank" rel="noopener" class="cms-btn cms-btn-sm"
+                  style="background:rgba(255,255,255,.15);color:#fff;border-color:transparent;text-decoration:none;display:inline-flex;align-items:center;gap:4px">
+            <span aria-hidden="true">❔</span> Help
+          </a>
           <button class="cms-btn cms-btn-sm" id="logout-btn"
                   style="background:rgba(255,255,255,.15);color:#fff;border-color:transparent">
             Log out
@@ -147,6 +151,16 @@ async function showShell() {
             <li><a href="#" data-tab="global"><span aria-hidden="true">⚙️</span> Global Settings</a></li>
             <li><a href="#" data-tab="media"><span aria-hidden="true">🖼️</span> Media Library</a></li>
             <li><a href="#" data-tab="builder"><span aria-hidden="true">🏗️</span> Page Builder</a></li>
+            <li><a href="#" data-tab="admins"><span aria-hidden="true">👥</span> Admin Accounts</a></li>
+            <li><a href="#" data-tab="tutorials"><span aria-hidden="true">🎓</span> Help & Tutorials</a></li>
+          </ul>
+        </div>
+        <div class="cms-nav-section">
+          <span class="cms-nav-label">Support</span>
+          <ul class="cms-page-list">
+            <li><a href="cms-tutorial.html" target="_blank" rel="noopener">
+              <span aria-hidden="true">📘</span> CMS Admin Guide
+            </a></li>
           </ul>
         </div>
         <div class="cms-nav-section" style="padding:0 1rem;margin-top:1rem">
@@ -275,6 +289,9 @@ async function navigateTab(tab, extra) {
         case 'global':  await renderGlobalSettings(main);     break;
         case 'media':   await renderMediaLibrary(main);       break;
         case 'builder': await renderPageBuilder(main);        break;
+        case 'admins':  await renderAdminsTab(main);          break;
+        case 'tutorials': renderTutorialsTab(main);           break;
+        default:        await renderPagesList(main);          break;
     }
 }
 
@@ -334,6 +351,51 @@ async function renderPagesList(container) {
     }
 }
 
+// ── Tutorials Tab ──────────────────────────────────────────────────────────
+function renderTutorialsTab(container) {
+    container.innerHTML = `
+    <div class="cms-flex-between cms-mb">
+      <h2 style="margin:0;color:var(--cms-primary)">Help & Tutorials</h2>
+    </div>
+    <div class="cms-panel">
+      <div class="cms-panel-body">
+        <p class="cms-text-muted mb-md">Watch these tutorial videos to learn how to manage content, pages, and administration in the WorkForce Connect CMS.</p>
+        
+        <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(320px, 1fr));gap:2rem;">
+          
+          <div style="background:#fff;border-radius:8px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,.08);display:flex;flex-direction:column;">
+            <div style="position:relative;padding-bottom:56.25%;height:0;overflow:hidden;">
+              <iframe src="https://www.youtube.com/embed/-BuKsRoN0PY" title="Tutorial Video 1" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen style="position:absolute;top:0;left:0;width:100%;height:100%;"></iframe>
+            </div>
+            <div style="padding:1rem;">
+              <h3 style="font-size:1.05rem;margin:0;color:var(--color-primary)">Platform Overview</h3>
+            </div>
+          </div>
+
+          <div style="background:#fff;border-radius:8px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,.08);display:flex;flex-direction:column;">
+            <div style="position:relative;padding-bottom:56.25%;height:0;overflow:hidden;">
+              <iframe src="https://www.youtube.com/embed/_pljsBMO0Is" title="Tutorial Video 2" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen style="position:absolute;top:0;left:0;width:100%;height:100%;"></iframe>
+            </div>
+            <div style="padding:1rem;">
+              <h3 style="font-size:1.05rem;margin:0;color:var(--color-primary)">Platform Details</h3>
+            </div>
+          </div>
+
+          <div style="background:#fff;border-radius:8px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,.08);display:flex;flex-direction:column;">
+            <div style="position:relative;padding-bottom:56.25%;height:0;overflow:hidden;">
+              <iframe src="https://www.youtube.com/embed/eXEldHlPpZQ" title="Tutorial Video 3" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen style="position:absolute;top:0;left:0;width:100%;height:100%;"></iframe>
+            </div>
+            <div style="padding:1rem;">
+              <h3 style="font-size:1.05rem;margin:0;color:var(--color-primary)">Scaling WorkForce Connect</h3>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+    `;
+}
+
 // ── Page Editor ────────────────────────────────────────────────────────────
 async function renderPageEditor(container, slug) {
     container.innerHTML = `<div class="cms-loading-state"><div class="cms-spinner"></div> Loading page "${slug}"…</div>`;
@@ -354,7 +416,10 @@ async function renderPageEditor(container, slug) {
               </span>
             </h2>
           </div>
-          <button class="cms-btn cms-btn-secondary" id="save-page-btn">💾 Save All Changes</button>
+          <div class="cms-flex cms-gap">
+            <button class="cms-btn cms-btn-outline" id="preview-page-btn" title="Preview unsaved changes in a new tab">👁️ Preview Page</button>
+            <button class="cms-btn cms-btn-secondary" id="save-page-btn">💾 Save All Changes</button>
+          </div>
         </div>
 
         <!-- Meta & Header -->
@@ -402,6 +467,14 @@ async function renderPageEditor(container, slug) {
         document.getElementById('back-to-pages').addEventListener('click', () => navigateTab('pages'));
         document.getElementById('save-page-btn').addEventListener('click', savePageChanges);
         document.getElementById('add-section-btn').addEventListener('click', () => navigateTab('builder', slug));
+
+        document.getElementById('preview-page-btn').addEventListener('click', () => {
+            // Save current in-memory state to localStorage for preview
+            localStorage.setItem('cms_preview_' + activeSlug, JSON.stringify(activePage));
+            // Open the page in a new tab with the preview query parameter
+            const url = `/${activeSlug === 'index' ? 'index' : activeSlug}.html?preview=true`;
+            window.open(url, '_blank');
+        });
 
         container.querySelectorAll('[data-section-edit]').forEach(btn => {
             btn.addEventListener('click', () => openSectionEditor(btn.getAttribute('data-section-edit')));
@@ -465,6 +538,7 @@ function openSectionEditor(sectionId) {
     if (sItem) { sItem.classList.add('active'); sItem.scrollIntoView({ behavior: 'smooth', block: 'nearest' }); }
 
     bodyEl.innerHTML = buildFieldEditors(section, schema);
+    attachToolbarHandlers(bodyEl);
 
     // Wire media pickers
     bodyEl.querySelectorAll('[data-media-pick]').forEach(btn => {
@@ -498,10 +572,10 @@ function buildFieldEditors(section, schema) {
         const val = getNestedVal(fields, f.key.split('.'));
         switch (f.inputType) {
             case 'text':
-                html += fieldInput(`${section.id}.${f.key}`, f.label, val || '', 'text', f.maxLength, f.required, f.note);
+                html += fieldInput(`${section.id}.${f.key}`, f.label, val || '', 'text', f.maxLength, f.required, f.note, !!f.richText);
                 break;
             case 'textarea':
-                html += fieldInput(`${section.id}.${f.key}`, f.label, val || '', 'textarea', f.maxLength, f.required, f.note);
+                html += fieldInput(`${section.id}.${f.key}`, f.label, val || '', 'textarea', f.maxLength, f.required, f.note, !!f.richText);
                 break;
             case 'url':
                 html += fieldInput(`${section.id}.${f.key}`, f.label, val || '', 'url', null, f.required, f.note);
@@ -524,6 +598,7 @@ function buildFieldEditors(section, schema) {
             case 'accordion-list':
             case 'cta-list':
             case 'string-list':
+            case 'video-list':
                 html += listEditorField(`${section.id}.${f.key}`, f.label, val || [], f.inputType, schema);
                 break;
             case 'pathway-card':
@@ -537,11 +612,14 @@ function buildFieldEditors(section, schema) {
 }
 
 // ── Field HTML builders ────────────────────────────────────────────────────
-function fieldInput(fieldKey, label, value, type = 'text', maxLength = null, required = false, hint = '') {
+function fieldInput(fieldKey, label, value, type = 'text', maxLength = null, required = false, hint = '', richText = false) {
     const id   = `field-${fieldKey.replace(/\./g, '-')}`;
     const req  = required ? 'class="cms-label-required"' : '';
     const max  = maxLength ? `maxlength="${maxLength}"` : '';
     const isTA = type === 'textarea';
+
+    const toolbar = (isTA && richText) ? renderFormattingToolbar(id) : '';
+
     const ctrl = isTA
         ? `<textarea class="cms-input cms-textarea" id="${id}" data-field="${escHtml(fieldKey)}" ${max}
              ${required ? 'required' : ''} rows="3">${escHtml(String(value))}</textarea>`
@@ -551,9 +629,11 @@ function fieldInput(fieldKey, label, value, type = 'text', maxLength = null, req
     return `
     <div class="cms-form-group" style="grid-column: ${isTA ? '1/-1' : 'auto'}">
       <label class="cms-label ${req}" for="${id}">${escHtml(label)}</label>
+      ${toolbar}
       ${ctrl}
       ${hint ? `<p class="cms-input-hint">${escHtml(hint)}</p>` : ''}
       ${maxLength ? `<p class="cms-char-count" data-max="${maxLength}" data-for="${id}">0/${maxLength}</p>` : ''}
+      ${richText ? `<div class="cms-input-hint">Rich text supported: &lt;strong&gt;, &lt;em&gt;, &lt;ul&gt;, &lt;a href=""&gt;</div>` : ''}
     </div>`;
 }
 
@@ -583,8 +663,9 @@ function fieldCheckbox(fieldKey, label, checked) {
 }
 
 function mediaField(fieldKey, label, value, aspectRatio = '', hint = '') {
-    const id      = `field-${fieldKey.replace(/\./g, '-')}`;
-    const preview = value ? `<img src="${escHtml(value)}" alt="Preview"
+    const id        = `field-${fieldKey.replace(/\./g, '-').replace(/[\[\]]/g, '_')}`;
+    const previewId = `preview-${fieldKey.replace(/\./g, '-').replace(/[\[\]]/g, '_')}`;
+    const preview   = value ? `<img src="${escHtml(value)}" alt="Preview"
         style="max-width:200px;max-height:120px;border-radius:4px;border:1px solid var(--cms-border);margin-top:.4rem">` : '';
     return `
     <div class="cms-form-group" style="grid-column:1/-1">
@@ -596,7 +677,7 @@ function mediaField(fieldKey, label, value, aspectRatio = '', hint = '') {
         <button type="button" class="cms-btn cms-btn-outline cms-btn-sm"
                 data-media-pick="${escHtml(fieldKey)}">🖼️ Browse Media</button>
       </div>
-      ${preview}
+      <div id="${previewId}" class="cms-media-preview-container">${preview}</div>
       ${hint ? `<p class="cms-input-hint">${escHtml(hint)}</p>` : ''}
       <p class="cms-input-hint">Alt text for images is managed in the Media Library.</p>
     </div>`;
@@ -665,13 +746,31 @@ function renderListItem(fieldKey, item, index, listType, schema) {
         </div>`;
     }
 
-    const preview = typeof item === 'object' ? (item.title || item.question || item.label || `Item ${index + 1}`) : String(item);
-    const bodyHtml = typeof item === 'object'
-        ? Object.entries(item).filter(([k]) => k !== 'id').map(([k, v]) => {
+    const itemObj  = (typeof item === 'object' && item !== null) ? item : {};
+    const preview  = itemObj.title || itemObj.question || itemObj.label || itemObj.heading || `Item ${index + 1}`;
+    const subFields = getSubFieldSchema(schema, listType);
+
+    let bodyHtml;
+    if (subFields) {
+        bodyHtml = subFields.map(f => {
+            const val  = itemObj[f.key];
+            const fKey = `${fieldKey}[${index}].${f.key}`;
+            switch (f.inputType) {
+                case 'text':     return fieldInput(fKey, f.label, val || '', 'text',     f.maxLength, f.required, f.note || '', !!f.richText);
+                case 'textarea': return fieldInput(fKey, f.label, val || '', 'textarea', f.maxLength, f.required, f.note || '', !!f.richText);
+                case 'url':      return fieldInput(fKey, f.label, val || '', 'url',      null,         f.required, f.note || '');
+                case 'checkbox': return fieldCheckbox(fKey, f.label, !!val);
+                case 'media':    return mediaField(fKey, f.label, val || '', f.aspectRatio || '', f.note || '');
+                default:         return fieldInput(fKey, f.label, String(val || ''), 'text', f.maxLength, f.required, '');
+            }
+        }).join('');
+    } else {
+        // Fallback for unknown list types: generic key-value rendering
+        bodyHtml = Object.entries(itemObj).filter(([k]) => k !== 'id').map(([k, v]) => {
             const isLong = typeof v === 'string' && v.length > 80;
             return fieldInput(`${fieldKey}[${index}].${k}`, k, String(v || ''), isLong ? 'textarea' : 'text', 300);
-          }).join('')
-        : '';
+        }).join('');
+    }
 
     return `
     <div class="cms-list-item" id="${id}">
@@ -701,13 +800,14 @@ function wireListEditors(container, section) {
     container.querySelectorAll('[data-remove-list-item]').forEach(btn => {
         btn.addEventListener('click', e => {
             e.stopPropagation();
-            const fieldKey = btn.getAttribute('data-remove-list-item');
-            const index    = parseInt(btn.getAttribute('data-remove-index'), 10);
-            const parts    = parseFieldKey(fieldKey);
-            let target     = getDeepRef(section.fields, parts);
+            const fieldKey  = btn.getAttribute('data-remove-list-item');
+            const index     = parseInt(btn.getAttribute('data-remove-index'), 10);
+            const fieldPath = stripSectionPrefix(fieldKey, section.id);
+            const parts     = parseFieldKey(fieldPath);
+            const target    = getDeepRef(section.fields, parts);
             if (Array.isArray(target)) {
                 target.splice(index, 1);
-                openSectionEditor(section.id); // re-render
+                openSectionEditor(section.id);
             }
         });
     });
@@ -715,28 +815,30 @@ function wireListEditors(container, section) {
     // Add item
     container.querySelectorAll('[data-add-to]').forEach(btn => {
         btn.addEventListener('click', () => {
-            const fieldKey = btn.getAttribute('data-add-to');
-            const listType = btn.getAttribute('data-list-type');
-            const parts    = parseFieldKey(fieldKey);
-            let arr        = getDeepRef(section.fields, parts);
+            const fieldKey  = btn.getAttribute('data-add-to');
+            const listType  = btn.getAttribute('data-list-type');
+            const fieldPath = stripSectionPrefix(fieldKey, section.id);
+            const parts     = parseFieldKey(fieldPath);
+            let arr         = getDeepRef(section.fields, parts);
             if (!Array.isArray(arr)) {
                 setDeepRef(section.fields, parts, []);
                 arr = getDeepRef(section.fields, parts);
             }
             arr.push(newListItem(listType));
-            openSectionEditor(section.id); // re-render
+            openSectionEditor(section.id);
         });
     });
 }
 
 function newListItem(listType) {
     switch (listType) {
-        case 'card-list':     return { id: `card-${Date.now()}`, title: 'New Card',  body: '' };
+        case 'card-list':     return { id: `card-${Date.now()}`, title: 'New Card', body: '', image: '', imageAlt: '', buttonLabel: '', buttonHref: '', external: false };
         case 'steps-list':    return { label: 'New Step', detail: '' };
         case 'tile-list':     return { id: `tile-${Date.now()}`, title: 'New Tile', description: '', href: '', linkText: 'Learn More' };
         case 'accordion-list':return { question: 'New Question', answer: '' };
         case 'cta-list':      return { heading: '', text: '', buttonLabel: 'Learn More', buttonHref: '' };
         case 'string-list':   return '';
+        case 'video-list':    return { title: 'New Video', src: 'https://www.youtube.com/embed/' };
         default:              return {};
     }
 }
@@ -798,14 +900,21 @@ function collectFieldValues() {
         setFieldValue(rawKey, value);
     });
 
-    // List item inputs: data-list-item-field + data-list-index
+    // String-list item inputs: data-list-item-field + data-list-index
+    // fieldKey format is "sectionId.fieldName" — must resolve through sections, not activePage directly.
     panel.querySelectorAll('[data-list-item-field]').forEach(input => {
-        const fieldKey = input.getAttribute('data-list-item-field');
-        const index    = parseInt(input.getAttribute('data-list-index'), 10);
-        const parts    = parseFieldKey(fieldKey);
-        let arr = getDeepRef(activePage, parts);
+        const fieldKey  = input.getAttribute('data-list-item-field');
+        const index     = parseInt(input.getAttribute('data-list-index'), 10);
+        const dotIdx    = fieldKey.indexOf('.');
+        if (dotIdx === -1) return;
+        const sectionId = fieldKey.slice(0, dotIdx);
+        const fieldPath = fieldKey.slice(dotIdx + 1);
+        const section   = activePage.sections?.find(s => s.id === sectionId);
+        if (!section) return;
+        const parts     = parseFieldKey(fieldPath);
+        const arr       = getDeepRef(section.fields, parts);
         if (!Array.isArray(arr)) return;
-        arr[index] = input.value;
+        arr[index]      = input.value;
     });
 }
 
@@ -863,8 +972,14 @@ async function renderGlobalSettings(container) {
               ${fieldInput('site.name',          'Site Name',        globalData.site?.name          || '', 'text',     80, true)}
               ${fieldInput('site.tagline',        'Tagline',          globalData.site?.tagline       || '', 'text',     120)}
               ${fieldInput('site.contactEmail',   'Contact Email',    globalData.site?.contactEmail  || '', 'text',     100)}
+              ${fieldInput('site.contactPhone',   'Contact Phone',    globalData.site?.contactPhone  || '', 'text',     30)}
+              ${fieldInput('site.contactPhoneHours', 'Phone Hours',   globalData.site?.contactPhoneHours || '', 'text', 100)}
               ${fieldInput('site.copyrightText',  'Copyright Text',   globalData.site?.copyrightText || '', 'text',     200)}
               ${fieldInput('site.programName',    'Program Name (footer)', globalData.site?.programName|| '', 'textarea',300)}
+              ${fieldInput('site.mailingAddress.org',        'Mailing Address — Organization',  globalData.site?.mailingAddress?.org        || '', 'text', 150)}
+              ${fieldInput('site.mailingAddress.dept',       'Mailing Address — Department',    globalData.site?.mailingAddress?.dept       || '', 'text', 150)}
+              ${fieldInput('site.mailingAddress.street',     'Mailing Address — Street',        globalData.site?.mailingAddress?.street     || '', 'text', 100)}
+              ${fieldInput('site.mailingAddress.cityStateZip','Mailing Address — City, State ZIP', globalData.site?.mailingAddress?.cityStateZip || '', 'text', 60)}
             </div>
           </div>
         </div>
@@ -1011,18 +1126,19 @@ async function renderMediaLibrary(container, onSelect) {
             <label class="cms-upload-zone" id="upload-zone" for="media-file-input" tabindex="0"
                    role="button" aria-label="Upload image — click or drag & drop">
               <div class="cms-upload-zone-icon" aria-hidden="true">📁</div>
-              <p><strong>Click to browse</strong> or drag & drop an image here</p>
-              <p class="cms-text-sm cms-text-muted">JPEG, PNG, GIF, WebP, SVG — max 10 MB</p>
+              <p><strong>Click to browse</strong> or drag &amp; drop an image here</p>
+              <p class="cms-text-sm cms-text-muted">JPEG · PNG · GIF · WebP · SVG &nbsp;|&nbsp; Max 10 MB</p>
+              <p id="upload-file-preview" class="cms-upload-file-preview" style="display:none"></p>
               <input type="file" id="media-file-input" accept="image/*" aria-hidden="true">
             </label>
             <div class="cms-settings-grid">
               ${fieldInput('upload-alt-text', 'Alt Text (required)', '', 'text', 200, true,
                 'Describe the image for screen reader users. E.g. "Construction workers reviewing blueprints".')}
             </div>
-            <button class="cms-btn cms-btn-primary" id="do-upload-btn">Upload Image</button>
-            <div id="upload-progress" class="cms-hidden cms-mt">
+            <button class="cms-btn cms-btn-primary" id="do-upload-btn">⬆️ Upload Image</button>
+            <div id="upload-progress" class="cms-mt" style="display:none;align-items:center;gap:.5rem;flex-wrap:wrap">
               <div class="cms-spinner" aria-hidden="true"></div>
-              <span>Uploading…</span>
+              <span>Uploading, please wait…</span>
             </div>
           </div>
         </div>
@@ -1032,28 +1148,53 @@ async function renderMediaLibrary(container, onSelect) {
           <div class="cms-panel-header"><h3 class="cms-panel-title">Uploaded Images</h3></div>
           <div class="cms-panel-body">
             ${media.length === 0
-              ? '<p class="cms-text-muted">No images uploaded yet.</p>'
+              ? `<div class="cms-media-empty">
+                   <div style="font-size:2.5rem;margin-bottom:.5rem" aria-hidden="true">🖼️</div>
+                   <p style="font-weight:700;margin:0 0 .25rem">No images uploaded yet</p>
+                   <p class="cms-text-sm">Use the Upload Image panel above to add your first image.</p>
+                 </div>`
               : `<div class="cms-media-grid" id="media-grid">
-                  ${media.map(f => `
+                  ${media.map(f => {
+                    const date = f.uploadedAt ? new Date(f.uploadedAt).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}) : '';
+                    return `
                     <div class="cms-media-card" data-url="${escHtml(f.url)}" data-alt="${escHtml(f.altText)}"
-                         role="button" tabindex="0" aria-label="Image: ${escHtml(f.altText || f.filename)}">
-                      <img class="cms-media-thumb" src="${escHtml(f.url)}" alt="${escHtml(f.altText)}"
-                           loading="lazy">
-                      <div class="cms-media-info">
-                        <p class="cms-media-filename">${escHtml(f.filename)}</p>
-                        <p class="cms-media-alt">${escHtml(f.altText || 'No alt text')}</p>
-                        <p class="cms-text-muted" style="margin:0">${formatBytes(f.size)}</p>
-                        <button class="cms-btn cms-btn-danger cms-btn-sm cms-w100" style="margin-top:.4rem"
-                                data-delete-media="${escHtml(f.filename)}">Delete</button>
+                         role="${onSelect ? 'button' : 'article'}" tabindex="${onSelect ? '0' : '-1'}"
+                         aria-label="Image: ${escHtml(f.altText || f.filename)}">
+                      <div class="cms-media-thumb-wrap">
+                        <img class="cms-media-thumb" src="${escHtml(f.url)}" alt="${escHtml(f.altText)}"
+                             loading="lazy">
+                        ${onSelect ? '<div class="cms-media-select-overlay">Click to select</div>' : ''}
                       </div>
-                    </div>`).join('')}
+                      <div class="cms-media-info">
+                        <p class="cms-media-filename" title="${escHtml(f.filename)}">${escHtml(f.filename)}</p>
+                        <p class="cms-media-alt" title="${escHtml(f.altText || '')}">${escHtml(f.altText || '⚠ No alt text')}</p>
+                        <p class="cms-media-meta">${formatBytes(f.size)}${date ? ' &middot; ' + date : ''}</p>
+                        <button class="cms-btn cms-btn-danger cms-btn-sm cms-w100"
+                                data-delete-media="${escHtml(f.filename)}" aria-label="Delete ${escHtml(f.filename)}">Delete</button>
+                      </div>
+                    </div>`;}).join('')}
                 </div>`}
           </div>
         </div>
         `;
 
-        // Drag & drop
-        const zone = document.getElementById('upload-zone');
+        // Drag & drop + file selection feedback
+        const zone = container.querySelector('#upload-zone');
+
+        function updateFilePreview(file) {
+            const preview = container.querySelector('#upload-file-preview');
+            if (!preview) return;
+            if (file) {
+                const mb = (file.size / 1048576).toFixed(2);
+                preview.textContent = `✅ ${file.name} (${mb} MB)`;
+                preview.style.display = '';
+                zone.classList.add('has-file');
+            } else {
+                preview.style.display = 'none';
+                zone.classList.remove('has-file');
+            }
+        }
+
         zone.addEventListener('dragover', e => { e.preventDefault(); zone.classList.add('drag-over'); });
         zone.addEventListener('dragleave', () => zone.classList.remove('drag-over'));
         zone.addEventListener('drop', e => {
@@ -1061,11 +1202,15 @@ async function renderMediaLibrary(container, onSelect) {
             zone.classList.remove('drag-over');
             const file = e.dataTransfer.files[0];
             if (file) {
-                document.getElementById('media-file-input').files = e.dataTransfer.files;
+                container.querySelector('#media-file-input').files = e.dataTransfer.files;
+                updateFilePreview(file);
             }
         });
+        container.querySelector('#media-file-input').addEventListener('change', e => {
+            updateFilePreview(e.target.files[0] || null);
+        });
 
-        document.getElementById('do-upload-btn').addEventListener('click', () => doUpload(onSelect));
+        container.querySelector('#do-upload-btn').addEventListener('click', () => doUpload(container, onSelect));
 
         container.querySelectorAll('[data-delete-media]').forEach(btn => {
             btn.addEventListener('click', e => {
@@ -1097,20 +1242,20 @@ async function renderMediaLibrary(container, onSelect) {
     }
 }
 
-async function doUpload(onSelect) {
-    const fileInput = document.getElementById('media-file-input');
-    const altInput  = document.querySelector('[data-field="upload-alt-text"]');
+async function doUpload(container, onSelect) {
+    const fileInput = container.querySelector('#media-file-input');
+    const altInput  = container.querySelector('[data-field="upload-alt-text"]');
     const altText   = altInput ? altInput.value.trim() : '';
-    const progress  = document.getElementById('upload-progress');
+    const progress  = container.querySelector('#upload-progress');
 
-    if (!fileInput.files.length) { showToast('Please select a file.', 'error'); return; }
-    if (!altText) { showToast('Alt text is required.', 'error'); altInput?.focus(); return; }
+    if (!fileInput.files.length) { showToast('Please select a file first.', 'error'); return; }
+    if (!altText) { showToast('Alt text is required before uploading.', 'error'); altInput?.focus(); return; }
 
     const formData = new FormData();
     formData.append('image',   fileInput.files[0]);
     formData.append('altText', altText);
 
-    progress.classList.remove('cms-hidden');
+    if (progress) progress.style.display = 'flex';
 
     try {
         const res = await fetch(`${API}/cms/media`, {
@@ -1120,13 +1265,16 @@ async function doUpload(onSelect) {
         });
         const data = await res.json();
         if (!res.ok) throw new Error(data.error || 'Upload failed');
-        showToast(`"${data.filename}" uploaded.`, 'success');
-        if (onSelect) onSelect(data.url, data.altText);
-        renderMediaLibrary(document.getElementById('cms-main'), onSelect);
+        showToast(`"${data.filename}" uploaded successfully.`, 'success');
+        if (onSelect) {
+            onSelect(data.url, data.altText);
+        } else {
+            renderMediaLibrary(container, null);
+        }
     } catch (err) {
         showToast(`Upload failed: ${err.message}`, 'error');
     } finally {
-        progress.classList.add('cms-hidden');
+        if (progress) progress.style.display = 'none';
     }
 }
 
@@ -1162,20 +1310,33 @@ function openMediaPicker(fieldKey, sectionId) {
     backdrop.addEventListener('click', e => { if (e.target === backdrop) backdrop.remove(); });
 
     renderMediaLibrary(document.getElementById('media-picker-body'), (url) => {
-        // Set the text input for this field
-        const input = document.querySelector(`[data-field="${fieldKey}"]`);
+        // Escape fieldKey for CSS selector (handles brackets like cards[0].image)
+        const escapedKey = fieldKey.replace(/([\[\]\.])/g, '\\$1');
+        const input = document.querySelector(`[data-field="${escapedKey}"]`);
+        
         if (input) {
             input.value = url;
-            // Also update in-memory activePage
-            if (activePage && sectionId) {
-                setFieldValue(`${sectionId}.${fieldKey.includes('.') ? fieldKey.split('.').slice(1).join('.') : fieldKey}`, url);
-            } else if (activePage && fieldKey.startsWith('header.')) {
-                if (!activePage.header) activePage.header = {};
-                activePage.header[fieldKey.slice(7)] = url;
+            
+            // Update preview immediately if container exists
+            const previewId = `preview-${fieldKey.replace(/\./g, '-').replace(/[\[\]]/g, '_')}`;
+            const previewWrap = document.getElementById(previewId);
+            if (previewWrap) {
+                previewWrap.innerHTML = `<img src="${url}" alt="Preview"
+                    style="max-width:200px;max-height:120px;border-radius:4px;border:1px solid var(--cms-border);margin-top:.4rem">`;
             }
         }
+
+        // Always update in-memory activePage to ensure persistence even if DOM find fails
+        if (activePage && sectionId) {
+            const relativeKey = fieldKey.includes('.') ? fieldKey.split('.').slice(1).join('.') : fieldKey;
+            setFieldValue(`${sectionId}.${relativeKey}`, url);
+        } else if (activePage && fieldKey.startsWith('header.')) {
+            if (!activePage.header) activePage.header = {};
+            activePage.header[fieldKey.slice(7)] = url;
+        }
+
         backdrop.remove();
-        showToast('Image selected. Remember to Save.', 'info');
+        showToast('Image selected. Remember to Save All Changes.', 'info');
     });
 }
 
@@ -1546,7 +1707,7 @@ async function saveFAQOrder() {
 /** Open add/edit modal */
 function openFAQModal(faq) {
     const isEdit  = !!faq;
-    const catOpts = [...new Set([...faqCategories, ...faqData.map(f => f.category), 'General', 'Small Businesses', 'Prime Contractors', 'Registration', 'Applications', 'Technical Support'])]
+    const catOpts = [...new Set(faqData.map(f => f.category))]
         .sort()
         .map(c => `<option value="${escHtml(c)}" ${faq && faq.category === c ? 'selected' : ''}>${escHtml(c)}</option>`)
         .join('');
@@ -1585,12 +1746,7 @@ function openFAQModal(faq) {
 
       <div class="cms-form-group">
         <label class="cms-label cms-label-required" for="faq-answer-input">Answer</label>
-        <div class="cms-faq-editor-toolbar">
-          <button type="button" class="cms-btn cms-btn-outline cms-btn-sm" data-fmt="bold"><b>B</b></button>
-          <button type="button" class="cms-btn cms-btn-outline cms-btn-sm" data-fmt="italic"><i>I</i></button>
-          <button type="button" class="cms-btn cms-btn-outline cms-btn-sm" data-fmt="ul">• List</button>
-          <button type="button" class="cms-btn cms-btn-outline cms-btn-sm" data-fmt="link">🔗 Link</button>
-        </div>
+        ${renderFormattingToolbar('faq-answer-input')}
         <textarea id="faq-answer-input" class="cms-textarea" rows="8"
                   placeholder="Enter the FAQ answer (HTML supported)…">${faq ? escHtml(faq.answer) : ''}</textarea>
         <div class="cms-input-hint">Basic HTML supported: &lt;strong&gt;, &lt;em&gt;, &lt;ul&gt;, &lt;li&gt;, &lt;a href=""&gt;, &lt;br&gt;</div>
@@ -1647,28 +1803,7 @@ function openFAQModal(faq) {
     });
 
     // Mini formatting toolbar
-    backdrop.querySelectorAll('[data-fmt]').forEach(btn => {
-        btn.addEventListener('click', () => {
-            const ta = document.getElementById('faq-answer-input');
-            const start = ta.selectionStart;
-            const end   = ta.selectionEnd;
-            const sel   = ta.value.slice(start, end);
-            let insert  = '';
-            switch (btn.dataset.fmt) {
-                case 'bold':   insert = `<strong>${sel || 'bold text'}</strong>`; break;
-                case 'italic': insert = `<em>${sel || 'italic text'}</em>`; break;
-                case 'ul':     insert = `<ul>\n  <li>${sel || 'Item 1'}</li>\n  <li>Item 2</li>\n</ul>`; break;
-                case 'link': {
-                    const href = prompt('Enter URL:', 'https://');
-                    if (!href) return;
-                    insert = `<a href="${escHtml(href)}">${sel || 'link text'}</a>`;
-                    break;
-                }
-            }
-            ta.value = ta.value.slice(0, start) + insert + ta.value.slice(end);
-            ta.focus();
-        });
-    });
+    attachToolbarHandlers(backdrop);
 
     // Save
     document.getElementById('faq-modal-save').addEventListener('click', () => saveFAQ(faq?.id || null));
@@ -1839,6 +1974,55 @@ function getSectionTypeLabel(type) {
     return schemaData?.componentTypes?.find(c => c.type === type)?.label || type;
 }
 
+/**
+ * Returns a small HTML toolbar for textarea formatting.
+ * Used by fieldInput and openFAQModal.
+ */
+function renderFormattingToolbar(targetId) {
+    return `
+    <div class="cms-faq-editor-toolbar" data-target-id="${targetId}">
+      <button type="button" class="cms-btn cms-btn-outline cms-btn-sm" data-fmt="bold" title="Bold"><b>B</b></button>
+      <button type="button" class="cms-btn cms-btn-outline cms-btn-sm" data-fmt="italic" title="Italic"><i>I</i></button>
+      <button type="button" class="cms-btn cms-btn-outline cms-btn-sm" data-fmt="ul" title="Bullet List">• List</button>
+      <button type="button" class="cms-btn cms-btn-outline cms-btn-sm" data-fmt="link" title="Insert Link">🔗 Link</button>
+    </div>`;
+}
+
+/**
+ * Attaches click handlers to a formatting toolbar's buttons.
+ */
+function attachToolbarHandlers(scope) {
+    scope.querySelectorAll('[data-fmt]').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const toolbar = btn.closest('[data-target-id]');
+            const targetId = toolbar.getAttribute('data-target-id');
+            const ta = document.getElementById(targetId);
+            if (!ta) return;
+
+            const start = ta.selectionStart;
+            const end   = ta.selectionEnd;
+            const sel   = ta.value.slice(start, end);
+            let insert  = '';
+
+            switch (btn.dataset.fmt) {
+                case 'bold':   insert = `<strong>${sel || 'bold text'}</strong>`; break;
+                case 'italic': insert = `<em>${sel || 'italic text'}</em>`; break;
+                case 'ul':     insert = `<ul>\n  <li>${sel || 'Item 1'}</li>\n  <li>Item 2</li>\n</ul>`; break;
+                case 'link': {
+                    const href = prompt('Enter URL:', 'https://');
+                    if (!href) return;
+                    insert = `<a href="${escHtml(href)}">${sel || 'link text'}</a>`;
+                    break;
+                }
+            }
+            ta.value = ta.value.slice(0, start) + insert + ta.value.slice(end);
+            ta.focus();
+            // Trigger input event for char counters and auto-save if needed
+            ta.dispatchEvent(new Event('input'));
+        });
+    });
+}
+
 function getNestedVal(obj, keys) {
     let cur = obj;
     for (const k of keys) {
@@ -1892,4 +2076,172 @@ function setDeepRef(obj, parts, value) {
 function setNestedValue(target, rawKey, value) {
     const parts = parseFieldKey(rawKey);
     setDeepRef(target, parts, value);
+}
+
+/**
+ * Map a list inputType to the correct sub-field schema array on the component schema.
+ * e.g. 'tile-list' → schema.tileFields
+ * @param {object|null} schema  Component-level schema object
+ * @param {string}      listType
+ * @returns {Array|null}
+ */
+function getSubFieldSchema(schema, listType) {
+    if (!schema) return null;
+    const map = {
+        'card-list':      schema.cardFields,
+        'tile-list':      schema.tileFields,
+        'steps-list':     schema.stepFields,
+        'cta-list':       schema.columnFields,
+        'accordion-list': schema.itemFields,
+    };
+    return map[listType] || null;
+}
+
+/**
+ * Strip a leading "sectionId." prefix from a fieldKey so it can be used
+ * directly against section.fields.
+ * "value-tiles.tiles" → "tiles"
+ * "how-we-help.cards[0].title" → "cards[0].title"
+ * @param {string} fieldKey
+ * @param {string} sectionId
+ * @returns {string}
+ */
+function stripSectionPrefix(fieldKey, sectionId) {
+    const prefix = sectionId + '.';
+    return fieldKey.startsWith(prefix) ? fieldKey.slice(prefix.length) : fieldKey;
+}
+
+/* ── Admin Management ────────────────────────────────────────────────────────── */
+async function renderAdminsTab(container) {
+    container.innerHTML = `<div class="cms-loading-state"><div class="cms-spinner"></div> Loading admin accounts…</div>`;
+    try {
+        const users = await apiFetch('GET', '/admin/users');
+        // Filter for only admin and wfc_admin types
+        const admins = (users || []).filter(u => u.type === 'admin' || u.type === 'wfc_admin');
+        
+        container.innerHTML = `
+            <div class="cms-tab-header">
+                <div>
+                    <h1 class="cms-page-title">👥 Admin Accounts</h1>
+                    <p class="cms-page-subtitle">Manage users with access to the Caltrans CMS and admin dashboards.</p>
+                </div>
+                <button class="cms-btn cms-btn-primary" onclick="showAdminModal()">+ Add New Admin</button>
+            </div>
+            <div class="cms-content-card">
+                <table class="cms-table">
+                    <thead>
+                        <tr>
+                            <th>Administrator / Contact</th>
+                            <th>Role</th>
+                            <th>Joined</th>
+                            <th style="text-align:right">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="cms-admins-list">
+                        ${admins.map(a => `
+                            <tr>
+                                <td>
+                                    <div style="font-weight:600;color:var(--cms-primary)">${a.organization_name || a.contact_name || 'Administrator'}</div>
+                                    <div style="font-size:0.85rem;color:var(--cms-text-muted)">${a.email}</div>
+                                </td>
+                                <td><span class="cms-badge ${a.type === 'wfc_admin' ? 'cms-badge-primary' : 'cms-badge-secondary'}">${a.type}</span></td>
+                                <td>${new Date(a.created_at).toLocaleDateString()}</td>
+                                <td style="text-align:right">
+                                    <button class="cms-btn cms-btn-sm" onclick="showAdminModal(${JSON.stringify(a).replace(/"/g, '&quot;')})">Edit</button>
+                                </td>
+                            </tr>
+                        `).join('') || '<tr><td colspan="4" style="text-align:center;padding:2rem">No other admin accounts found.</td></tr>'}
+                    </tbody>
+                </table>
+            </div>
+        `;
+    } catch (err) {
+        container.innerHTML = `<div class="cms-alert cms-alert-error">Failed to load admins: ${err.message}</div>`;
+    }
+}
+
+window.showAdminModal = function(adminData = null) {
+    const isEdit = !!adminData;
+    const existing = document.getElementById('cms-admin-modal');
+    if (existing) existing.remove();
+
+    const modal = document.createElement('div');
+    modal.id = 'cms-admin-modal';
+    modal.className = 'cms-modal-overlay';
+    modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:9999;display:flex;align-items:center;justify-content:center;';
+    modal.innerHTML = `
+        <div class="cms-modal-container" style="background:#fff;border-radius:8px;padding:2rem;width:450px;max-width:90vw;box-shadow:0 8px 32px rgba(0,0,0,.2);">
+            <h2 style="margin:0 0 1.5rem;font-size:1.2rem;">${isEdit ? 'Edit Admin Account' : 'Add New Administrator'}</h2>
+            <form id="cms-admin-form">
+                <div class="cms-form-group">
+                    <label class="cms-label cms-label-required">Display Name (Department/Name)</label>
+                    <input type="text" id="adm-name" class="cms-input" style="width:100%" value="${adminData?.organization_name || adminData?.contact_name || ''}" required>
+                </div>
+                <div class="cms-form-group">
+                    <label class="cms-label cms-label-required">Email Address</label>
+                    <input type="email" id="adm-email" class="cms-input" style="width:100%" value="${adminData?.email || ''}" required ${isEdit ? 'disabled' : ''}>
+                </div>
+                <div class="cms-form-group">
+                    <label class="cms-label ${isEdit ? '' : 'cms-label-required'}">Password ${isEdit ? '(Leave blank to keep current)' : ''}</label>
+                    <input type="password" id="adm-password" class="cms-input" style="width:100%" ${isEdit ? '' : 'required'}>
+                </div>
+                <div class="cms-form-group">
+                    <label class="cms-label cms-label-required">Role / Permission Level</label>
+                    <select id="adm-type" class="cms-input" style="width:100%">
+                        <option value="admin" ${adminData?.type === 'admin' ? 'selected' : ''}>System Admin</option>
+                        <option value="wfc_admin" ${adminData?.type === 'wfc_admin' ? 'selected' : ''}>Caltrans CMS Editor</option>
+                    </select>
+                </div>
+                <div id="adm-error" style="display:none;color:var(--cms-error);font-size:.85rem;margin-bottom:1rem;"></div>
+                <div style="display:flex;gap:.75rem;justify-content:space-between;margin-top:1.5rem;">
+                    ${isEdit ? `<button type="button" class="cms-btn" style="color:var(--cms-error);border-color:var(--cms-error)" onclick="deleteAdmin(${adminData.id})">Delete Account</button>` : '<div></div>'}
+                    <div style="display:flex;gap:.75rem;">
+                        <button type="button" class="cms-btn" onclick="document.getElementById('cms-admin-modal').remove()">Cancel</button>
+                        <button type="submit" class="cms-btn cms-btn-primary">${isEdit ? 'Save Changes' : 'Create Admin'}</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    `;
+    document.body.appendChild(modal);
+
+    document.getElementById('cms-admin-form').onsubmit = async (e) => {
+        e.preventDefault();
+        const payload = {
+            email: document.getElementById('adm-email').value.trim(),
+            type: document.getElementById('adm-type').value,
+            organization_name: document.getElementById('adm-name').value.trim(),
+            status: 'active'
+        };
+        const password = document.getElementById('adm-password').value;
+        if (password) payload.password = password;
+
+        const errEl = document.getElementById('adm-error');
+        errEl.style.display = 'none';
+
+        try {
+            if (isEdit) {
+                await apiFetch('PUT', `/admin/users/${adminData.id}`, payload);
+            } else {
+                await apiFetch('POST', '/admin/users', payload);
+            }
+            modal.remove();
+            showToast(isEdit ? 'Admin updated.' : 'Admin created.', 'success');
+            navigateTab('admins');
+        } catch (err) {
+            errEl.textContent = err.message; errEl.style.display = 'block';
+        }
+    };
+}
+
+window.deleteAdmin = async function(id) {
+    if (!confirm('Permanently delete this admin account? They will lose all access immediately.')) return;
+    try {
+        await apiFetch('DELETE', `/admin/users/${id}`);
+        document.getElementById('cms-admin-modal').remove();
+        showToast('Admin account deleted.', 'success');
+        navigateTab('admins');
+    } catch (err) {
+        alert('Delete failed: ' + err.message);
+    }
 }

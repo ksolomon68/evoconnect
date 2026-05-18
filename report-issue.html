@@ -4,26 +4,26 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Report technical issues or bugs with the PrimeReach platform. Our team reviews all reports and will follow up as soon as possible.">
+  <meta name="description" content="Report technical issues or bugs with the WorkForce Connect platform. Our team reviews all reports and will follow up as soon as possible.">
   <meta name="robots" content="index, follow">
-  <link rel="canonical" href="https://primereachgov.com/report-issue.html">
+  <link rel="canonical" href="https://workforceconnect.io/report-issue.html">
   <meta property="og:type" content="website">
-  <meta property="og:url" content="https://primereachgov.com/report-issue.html">
-  <meta property="og:title" content="Report a Site Issue | PrimeReach">
-  <meta property="og:description" content="Report technical issues or bugs with the PrimeReach platform. Our team reviews all reports and will follow up as soon as possible.">
-  <meta property="og:image" content="https://primereachgov.com/assets/og-image.jpg">
+  <meta property="og:url" content="https://workforceconnect.io/report-issue.html">
+  <meta property="og:title" content="Report a Site Issue | WorkForce Connect">
+  <meta property="og:description" content="Report technical issues or bugs with the WorkForce Connect platform. Our team reviews all reports and will follow up as soon as possible.">
+  <meta property="og:image" content="https://workforceconnect.io/assets/og-image.jpg">
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:url" content="https://primereachgov.com/report-issue.html">
-  <meta name="twitter:title" content="Report a Site Issue | PrimeReach">
-  <meta name="twitter:description" content="Report technical issues or bugs with the PrimeReach platform. Our team reviews all reports and will follow up as soon as possible.">
-  <meta name="twitter:image" content="https://primereachgov.com/assets/og-image.jpg">
-  <title>Report a Site Issue | PrimeReach</title>
+  <meta name="twitter:url" content="https://workforceconnect.io/report-issue.html">
+  <meta name="twitter:title" content="Report a Site Issue | WorkForce Connect">
+  <meta name="twitter:description" content="Report technical issues or bugs with the WorkForce Connect platform. Our team reviews all reports and will follow up as soon as possible.">
+  <meta name="twitter:image" content="https://workforceconnect.io/assets/og-image.jpg">
+  <title>Report a Site Issue | WorkForce Connect</title>
   <link rel="icon" href="assets/favicon.ico" type="image/x-icon">
   <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#0A1628">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
-  <meta name="apple-mobile-web-app-title" content="PrimeReach">
+  <meta name="apple-mobile-web-app-title" content="WorkForce Connect">
   <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
   <link rel="stylesheet" href="css/design-system.css?v=1774555160000">
   <link rel="stylesheet" href="css/main.css?v=1774555160000">
@@ -36,7 +36,7 @@
   <header class="site-header" role="banner">
     <div class="container">
       <a href="index.html" class="site-logo">
-        <img src="images/logo-light.png" alt="PrimeReach Logo">
+        <img src="images/logo-light.png" alt="WorkForce Connect Logo">
       </a>
       <button class="nav-toggle" aria-label="Toggle navigation" aria-expanded="false"><span></span></button>
       <nav class="main-nav" role="navigation" aria-label="Main navigation">
@@ -58,7 +58,7 @@
   <main id="main-content">
     <section class="container" style="padding: var(--space-2xl) var(--container-padding) var(--space-4xl);">
       <h1 class="mb-md">Report a Site Issue</h1>
-      <p class="mb-xl text-muted">Help us improve PrimeReach by reporting broken links, display problems,
+      <p class="mb-xl text-muted">Help us improve WorkForce Connect by reporting broken links, display problems,
         or other technical issues.</p>
 
       <div class="card">
@@ -160,13 +160,13 @@
           <ul>
             <li><a href="contact.html">Contact Us</a></li>
             <li><a href="report-issue.html">Report Site Issue</a></li>
-            <li><a href="mailto:info@primereachgov.com">info@primereachgov.com</a></li>
+            <li><a href="mailto:info@workforceconnect.io">info@workforceconnect.io</a></li>
           </ul>
         </div></div>
 
       <div class="footer-bottom">
-        <p>&copy; 2026 PrimeReach. All rights reserved.</p>
-        <p>PrimeReach - Small Business Enterprise Supportive Services Program</p>
+        <p>&copy; 2026 WorkForce Connect. All rights reserved.</p>
+        <p>WorkForce Connect - Small Business Enterprise Supportive Services Program</p>
                 <p><a href="terms-of-service.html">Terms of Service</a> &bull; <a href="privacy-policy.html">Privacy Policy</a> &bull; <a href="accessibility-statement.html">Accessibility</a></p>
       </div>
     </div>
@@ -224,7 +224,7 @@
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             name: 'Site Issue Report',
-            email: contactEmail || 'noreply@primereachgov.com',
+            email: contactEmail || 'noreply@workforceconnect.io',
             subject: 'Site Issue Report: ' + issueType,
             message: messageBody
           })
@@ -234,7 +234,7 @@
           var refNum = 'BC-' + Date.now().toString(36).toUpperCase();
           var isSevere = ['login-issue', 'upload-issue'].includes(issueType);
           var severeNote = isSevere
-            ? '<p style="margin-top:var(--space-md);padding:var(--space-md);background:#fff3cd;border:1px solid #ffc107;border-radius:4px;color:#6d4c00;"><strong>For urgent login or account access issues:</strong> Call <a href="tel:9163241700" style="color:#6d4c00;">(916) 324-1700</a> or email <a href="mailto:info@primereachgov.com" style="color:#6d4c00;">info@primereachgov.com</a> directly during business hours (M–F, 8:00 AM – 5:00 PM PST).</p>'
+            ? '<p style="margin-top:var(--space-md);padding:var(--space-md);background:#fff3cd;border:1px solid #ffc107;border-radius:4px;color:#6d4c00;"><strong>For urgent login or account access issues:</strong> Call <a href="tel:9163241700" style="color:#6d4c00;">+1 (214) 531-4427</a> or email <a href="mailto:info@workforceconnect.io" style="color:#6d4c00;">info@workforceconnect.io</a> directly during business hours (M–F, 8:00 AM – 5:00 PM CST).</p>'
             : '';
           issueForm.innerHTML = '<div style="padding:var(--space-lg);background:#e8f5e9;border:1px solid #4caf50;border-radius:var(--border-radius-md);color:#1b5e20;" role="alert">'
             + '<strong>Issue submitted successfully.</strong>'
@@ -250,7 +250,7 @@
       } catch {
         submitBtn.disabled = false;
         submitBtn.textContent = 'Submit Issue Report';
-        document.getElementById('description').nextElementSibling.textContent = 'Unable to submit. Please email us directly at info@primereachgov.com';
+        document.getElementById('description').nextElementSibling.textContent = 'Unable to submit. Please email us directly at info@workforceconnect.io';
       }
     });
   </script>

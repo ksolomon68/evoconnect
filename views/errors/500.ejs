@@ -1,0 +1,16 @@
+<% const title = locals.title || 'Server Error' %>
+
+<section class="error-section">
+  <div class="container text-center">
+    <div class="error-code">500</div>
+    <h1 class="error-title">Something Went Wrong</h1>
+    <p class="error-message">We encountered an unexpected error. Our team has been notified. Please try again in a few moments.</p>
+    <div class="error-actions">
+      <a href="/" class="btn-primary">Go to Home</a>
+      <button onclick="window.history.back()" class="btn-secondary">Go Back</button>
+    </div>
+    <div class="error-help">
+      <p>If this problem persists, please <a href="/contact">contact support</a> and we'll resolve it as quickly as possible.</p>
+    </div>
+  </div>
+</section>

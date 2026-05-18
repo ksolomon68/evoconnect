@@ -1,0 +1,152 @@
+<% const title = locals.title || 'Search Business Directory' %>
+
+<section class="search-section">
+  <div class="container">
+
+    <%- include('../partials/flash') %>
+
+    <div class="search-header">
+      <h1>Business Directory</h1>
+      <p class="section-sub">Find certified, qualified small businesses for your government project team.</p>
+    </div>
+
+    <div class="search-layout">
+
+      <!-- Filter Panel -->
+      <aside class="filter-panel" aria-label="Search filters">
+        <h2 class="filter-title">Filters</h2>
+        <form method="GET" action="/prime/search/businesses" class="filter-form">
+
+          <div class="filter-group">
+            <label for="f-naics" class="filter-label">NAICS Code</label>
+            <input type="text" id="f-naics" name="naics" class="form-control"
+              value="<%= locals.filters?.naics || '' %>" placeholder="e.g. 237130">
+          </div>
+
+          <div class="filter-group">
+            <label for="f-state" class="filter-label">State</label>
+            <input type="text" id="f-state" name="state" class="form-control"
+              value="<%= locals.filters?.state || '' %>" maxlength="2" placeholder="TX">
+          </div>
+
+          <div class="filter-group">
+            <label for="f-sam" class="filter-label">SAM.gov Status</label>
+            <select id="f-sam" name="sam" class="form-control">
+              <option value="">Any</option>
+              <option value="yes" <%= locals.filters?.sam === 'yes' ? 'selected' : '' %>>Registered &amp; Active</option>
+              <option value="pending" <%= locals.filters?.sam === 'pending' ? 'selected' : '' %>>In Progress</option>
+            </select>
+          </div>
+
+          <div class="filter-group">
+            <label class="filter-label">Certifications</label>
+            <label class="checkbox-item"><input type="checkbox" name="cert" value="dbe" <%= (locals.filters?.cert || []).includes('dbe') ? 'checked' : '' %>><span>DBE</span></label>
+            <label class="checkbox-item"><input type="checkbox" name="cert" value="mbe" <%= (locals.filters?.cert || []).includes('mbe') ? 'checked' : '' %>><span>MBE</span></label>
+            <label class="checkbox-item"><input type="checkbox" name="cert" value="wbe" <%= (locals.filters?.cert || []).includes('wbe') ? 'checked' : '' %>><span>WBE</span></label>
+            <label class="checkbox-item"><input type="checkbox" name="cert" value="hub" <%= (locals.filters?.cert || []).includes('hub') ? 'checked' : '' %>><span>HUB (Texas)</span></label>
+            <label class="checkbox-item"><input type="checkbox" name="cert" value="sdvosb" <%= (locals.filters?.cert || []).includes('sdvosb') ? 'checked' : '' %>><span>SDVOSB</span></label>
+            <label class="checkbox-item"><input type="checkbox" name="cert" value="8a" <%= (locals.filters?.cert || []).includes('8a') ? 'checked' : '' %>><span>SBA 8(a)</span></label>
+            <label class="checkbox-item"><input type="checkbox" name="cert" value="sbe" <%= (locals.filters?.cert || []).includes('sbe') ? 'checked' : '' %>><span>SBE</span></label>
+            <label class="checkbox-item"><input type="checkbox" name="cert" value="aabe" <%= (locals.filters?.cert || []).includes('aabe') ? 'checked' : '' %>><span>AABE</span></label>
+          </div>
+
+          <% if (prime.tier === 'basic') { %>
+            <div class="filter-lock-note">
+              <span class="badge badge-amber">Pro+ Required</span>
+              <p>Certification filtering requires a Pro or Enterprise plan.</p>
+              <a href="/prime/billing" class="btn-sm btn-amber">Upgrade</a>
+            </div>
+          <% } %>
+
+          <button type="submit" class="btn-primary btn-full">Apply Filters</button>
+          <a href="/prime/search/businesses" class="btn-secondary btn-full" style="margin-top:.5rem">Clear Filters</a>
+        </form>
+      </aside>
+
+      <!-- Results -->
+      <div class="search-results">
+        <div class="results-meta">
+          <span><%= locals.total || 0 %> businesses found</span>
+          <% if (prime.tier === 'basic') { %>
+            <span class="badge badge-amber"><%= locals.connectionsUsed || 0 %> / 10 connections used this month</span>
+          <% } %>
+        </div>
+
+        <% if (locals.businesses && businesses.length > 0) { %>
+          <div class="results-grid">
+            <% businesses.forEach(function(biz) { %>
+            <%
+              const isLocked = prime.tier === 'basic' && locals.connectionsUsed >= 10;
+              let bizCerts = [];
+              try { bizCerts = JSON.parse(biz.certifications || '[]'); } catch(e) {}
+              let naicsList = [];
+              try { naicsList = JSON.parse(biz.naics_codes || '[]'); } catch(e) {}
+            %>
+            <div class="result-card <%= isLocked ? 'result-card-locked' : '' %>">
+              <% if (isLocked) { %>
+                <div class="locked-overlay">
+                  <div class="locked-message">
+                    <span>&#128274;</span>
+                    <p>Monthly connection limit reached.</p>
+                    <a href="/prime/billing" class="btn-amber btn-sm">Upgrade to Pro</a>
+                  </div>
+                </div>
+              <% } %>
+              <div class="result-card-header">
+                <div class="result-avatar biz-avatar"><%= biz.company_name ? biz.company_name[0] : 'B' %></div>
+                <div>
+                  <div class="result-name"><%= biz.company_name || 'Business' %></div>
+                  <div class="result-location"><%= biz.city && biz.state ? biz.city + ', ' + biz.state : 'Location not set' %></div>
+                </div>
+              </div>
+              <% if (biz.service_description) { %>
+                <p class="result-desc"><%= biz.service_description.substring(0, 120) %><%= biz.service_description.length > 120 ? '...' : '' %></p>
+              <% } %>
+              <% if (naicsList.length > 0) { %>
+                <div class="result-naics">
+                  <strong>NAICS:</strong>
+                  <% naicsList.slice(0,3).forEach(function(code) { %><span class="tag"><%= code %></span><% }) %>
+                  <% if (naicsList.length > 3) { %><span class="tag tag-more">+<%= naicsList.length - 3 %></span><% } %>
+                </div>
+              <% } %>
+              <div class="result-badges">
+                <% if (biz.sam_registered === 'yes') { %><span class="badge badge-success">SAM Active</span><% } %>
+                <% bizCerts.slice(0,4).forEach(function(c) { %><span class="badge badge-cyan"><%= c.toUpperCase() %></span><% }) %>
+              </div>
+              <% if (!isLocked) { %>
+                <div class="result-actions">
+                  <form method="POST" action="/prime/connect/business/<%= biz.id %>">
+                    <button type="submit" class="btn-primary btn-sm">Request Contact</button>
+                  </form>
+                </div>
+              <% } %>
+            </div>
+            <% }) %>
+          </div>
+
+          <!-- Pagination -->
+          <% if (locals.totalPages > 1) { %>
+          <nav class="pagination" aria-label="Search results pagination">
+            <% if (locals.page > 1) { %>
+              <a href="?page=<%= page - 1 %><%= locals.queryString || '' %>" class="page-btn">&laquo; Prev</a>
+            <% } %>
+            <% for (let p = 1; p <= totalPages; p++) { %>
+              <a href="?page=<%= p %><%= locals.queryString || '' %>" class="page-btn <%= p === page ? 'active' : '' %>"><%= p %></a>
+            <% } %>
+            <% if (locals.page < locals.totalPages) { %>
+              <a href="?page=<%= page + 1 %><%= locals.queryString || '' %>" class="page-btn">Next &raquo;</a>
+            <% } %>
+          </nav>
+          <% } %>
+
+        <% } else { %>
+          <div class="empty-state large">
+            <p>No businesses match your filters. Try broadening your search.</p>
+            <a href="/prime/search/businesses" class="btn-secondary">Clear Filters</a>
+          </div>
+        <% } %>
+      </div>
+
+    </div>
+  </div>
+</section>

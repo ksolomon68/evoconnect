@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="WorkForce Connect supports 13 eligible trade categories. Find your trade, see your federal NAICS codes, and register free to get matched to government contracts.">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://workforceconnect.io/trades.html">
+  <title>Eligible Trades &amp; NAICS Codes | WorkForce Connect</title>
+  <link rel="icon" href="images/favicon.png" type="image/png">
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#0B1220">
+  <meta name="apple-mobile-web-app-title" content="WFC">
+  <link rel="apple-touch-icon" href="images/favicon.png">
+  <link rel="stylesheet" href="css/design-system.css?v=2025051601">
+  <link rel="stylesheet" href="css/main.css?v=2025051601">
+  <link rel="stylesheet" href="css/accessibility-widget.css?v=2025051601">
+  <style>
+    body { background: #0B1220; color: #fff; }
+    .trades-hero {
+      background: linear-gradient(150deg, #0B1220 0%, #0e1d36 100%);
+      padding: 4rem 1.5rem 3.5rem;
+      text-align: center;
+      border-bottom: 1px solid rgba(255,255,255,0.07);
+    }
+    .trades-hero-inner { max-width: 700px; margin: 0 auto; }
+    .eyebrow {
+      display: inline-block;
+      background: rgba(232,98,26,0.15); color: #E8621A;
+      font-size: 0.7rem; font-weight: 700;
+      letter-spacing: 0.12em; text-transform: uppercase;
+      padding: 0.3rem 0.85rem; border-radius: 999px;
+      border: 1px solid rgba(232,98,26,0.3);
+      margin-bottom: 1.25rem;
+    }
+    .trades-hero h1 { font-size: clamp(1.8rem, 4vw, 2.75rem); font-weight: 800; margin: 0 0 1rem; line-height: 1.2; }
+    .trades-hero p { font-size: 1.05rem; color: rgba(255,255,255,0.7); line-height: 1.75; max-width: 560px; margin: 0 auto; }
+    .trades-section { padding: 4rem 1.5rem; max-width: 1100px; margin: 0 auto; }
+    .trades-group { margin-bottom: 3.5rem; }
+    .trades-group-title {
+      font-size: 0.7rem; font-weight: 700;
+      letter-spacing: 0.12em; text-transform: uppercase;
+      color: #F5A623; margin-bottom: 1.5rem;
+      padding-bottom: 0.75rem;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+    }
+    .trades-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.25rem; }
+    .trade-card {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 12px;
+      padding: 1.5rem;
+      display: flex; align-items: flex-start; gap: 1rem;
+      transition: border-color 0.2s, transform 0.15s;
+    }
+    .trade-card:hover { border-color: rgba(232,98,26,0.35); transform: translateY(-2px); }
+    .trade-card.demand { border-color: rgba(232,98,26,0.2); }
+    .trade-icon { font-size: 2rem; line-height: 1; flex-shrink: 0; margin-top: 0.1rem; }
+    .trade-info h3 { font-size: 1rem; font-weight: 700; color: #fff; margin: 0 0 0.4rem; }
+    .trade-info p { font-size: 0.85rem; color: rgba(255,255,255,0.6); margin: 0 0 0.75rem; line-height: 1.6; }
+    .naics-tags { display: flex; flex-wrap: wrap; gap: 0.35rem; }
+    .naics-tag {
+      font-size: 0.7rem; font-weight: 700;
+      color: rgba(255,255,255,0.5);
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.1);
+      padding: 0.2rem 0.55rem; border-radius: 4px;
+      font-family: monospace;
+    }
+    .demand-badge {
+      display: inline-block;
+      background: #E8621A; color: #fff;
+      font-size: 0.62rem; font-weight: 800;
+      letter-spacing: 0.08em; text-transform: uppercase;
+      padding: 0.15rem 0.55rem; border-radius: 4px;
+      margin-bottom: 0.5rem;
+    }
+    .trades-cta { background: #080f1c; border-top: 1px solid rgba(255,255,255,0.07); padding: 4rem 1.5rem; text-align: center; }
+    .trades-cta-inner { max-width: 580px; margin: 0 auto; }
+    .trades-cta h2 { font-size: 1.75rem; font-weight: 800; margin: 0 0 1rem; }
+    .trades-cta p { color: rgba(255,255,255,0.7); font-size: 1rem; line-height: 1.7; margin: 0 0 2rem; }
+    .btn-orange { background: #E8621A; color: #fff; font-weight: 700; font-size: 1rem; padding: 0.9rem 2.25rem; border-radius: 8px; text-decoration: none; display: inline-block; transition: background 0.15s, transform 0.1s; box-shadow: 0 4px 20px rgba(232,98,26,0.3); }
+    .btn-orange:hover { background: #d4561a; transform: translateY(-2px); }
+  </style>
+</head>
+<body>
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+
+  <header class="site-header" role="banner">
+    <div class="container">
+      <a href="index.html" class="site-logo">
+        <img src="images/logo-light.png" alt="WorkForce Connect Logo">
+      </a>
+      <button class="nav-toggle" aria-label="Toggle navigation" aria-expanded="false"><span></span></button>
+      <nav class="main-nav" role="navigation" aria-label="Main navigation">
+        <ul>
+          <li><a href="index.html">Home</a></li>
+          <li><a href="how-it-works.html">How It Works</a></li>
+          <li><a href="trades.html" aria-current="page">Our Trades</a></li>
+          <li><a href="checklist.html">Vendor Checklist</a></li>
+          <li><a href="faq.html">FAQ</a></li>
+          <li><a href="login.html" class="btn btn-secondary btn-small">Log In</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main-content">
+
+    <div class="trades-hero">
+      <div class="trades-hero-inner">
+        <span class="eyebrow">13 Eligible Trade Categories</span>
+        <h1>Find Your Trade &amp; NAICS Codes</h1>
+        <p>All 13 trades below are eligible for federal government contracts. Register free and we automatically match you to the correct NAICS codes for your trade.</p>
+      </div>
+    </div>
+
+    <div class="trades-section">
+
+      <!-- Telecom & Broadband -->
+      <div class="trades-group">
+        <p class="trades-group-title">Telecom &amp; Broadband &mdash; High Demand</p>
+        <div class="trades-grid">
+
+          <div class="trade-card demand">
+            <span class="trade-icon" aria-hidden="true">📡</span>
+            <div class="trade-info">
+              <span class="demand-badge">High Demand</span>
+              <h3>Fiber &amp; Broadband Installer</h3>
+              <p>Underground and aerial fiber optic cable installation, splicing, and testing for federal broadband infrastructure programs.</p>
+              <div class="naics-tags" aria-label="NAICS codes">
+                <span class="naics-tag">237130</span>
+                <span class="naics-tag">517311</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="trade-card demand">
+            <span class="trade-icon" aria-hidden="true">🗼</span>
+            <div class="trade-info">
+              <span class="demand-badge">High Demand</span>
+              <h3>Cell Site Technician</h3>
+              <p>Tower climbing, antenna installation, RF equipment maintenance, and 5G infrastructure deployment for federal and carrier projects.</p>
+              <div class="naics-tags" aria-label="NAICS codes">
+                <span class="naics-tag">517311</span>
+                <span class="naics-tag">238210</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="trade-card">
+            <span class="trade-icon" aria-hidden="true">🔌</span>
+            <div class="trade-info">
+              <h3>Structured Cabling / Digital Infrastructure</h3>
+              <p>Data center cabling, low-voltage wiring, network closet installation, and smart building infrastructure.</p>
+              <div class="naics-tags" aria-label="NAICS codes">
+                <span class="naics-tag">238210</span>
+                <span class="naics-tag">517410</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="trade-card">
+            <span class="trade-icon" aria-hidden="true">☁️</span>
+            <div class="trade-info">
+              <h3>Cloud / Network Infrastructure</h3>
+              <p>IT infrastructure deployment, cloud migration support, network administration, and server room buildout for government agencies.</p>
+              <div class="naics-tags" aria-label="NAICS codes">
+                <span class="naics-tag">541512</span>
+                <span class="naics-tag">518210</span>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- CDL & Logistics -->
+      <div class="trades-group">
+        <p class="trades-group-title">CDL &amp; Logistics &mdash; High Demand</p>
+        <div class="trades-grid">
+
+          <div class="trade-card demand">
+            <span class="trade-icon" aria-hidden="true">🚛</span>
+            <div class="trade-info">
+              <span class="demand-badge">High Demand</span>
+              <h3>CDL Trucking &amp; Logistics</h3>
+              <p>Long-haul, regional, and local commercial driving for federal supply chains, construction material delivery, and government logistics contracts.</p>
+              <div class="naics-tags" aria-label="NAICS codes">
+                <span class="naics-tag">484110</span>
+                <span class="naics-tag">484121</span>
+                <span class="naics-tag">484122</span>
+                <span class="naics-tag">488490</span>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Construction & Trades -->
+      <div class="trades-group">
+        <p class="trades-group-title">Construction &amp; Skilled Trades</p>
+        <div class="trades-grid">
+
+          <div class="trade-card">
+            <span class="trade-icon" aria-hidden="true">⚡</span>
+            <div class="trade-info">
+              <h3>Electrical</h3>
+              <p>Commercial and industrial electrical installation, service upgrades, and maintenance for federal facilities and infrastructure projects.</p>
+              <div class="naics-tags" aria-label="NAICS codes">
+                <span class="naics-tag">238210</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="trade-card">
+            <span class="trade-icon" aria-hidden="true">🔧</span>
+            <div class="trade-info">
+              <h3>Plumbing &amp; HVAC</h3>
+              <p>Commercial plumbing systems, HVAC installation and service, mechanical systems maintenance for government buildings and federal facilities.</p>
+              <div class="naics-tags" aria-label="NAICS codes">
+                <span class="naics-tag">238220</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="trade-card">
+            <span class="trade-icon" aria-hidden="true">🔩</span>
+            <div class="trade-info">
+              <h3>Welding &amp; Fabrication</h3>
+              <p>Structural steel fabrication, pipe welding, custom metal fabrication, and repair for government infrastructure and defense projects.</p>
+              <div class="naics-tags" aria-label="NAICS codes">
+                <span class="naics-tag">332312</span>
+                <span class="naics-tag">238290</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="trade-card">
+            <span class="trade-icon" aria-hidden="true">🪚</span>
+            <div class="trade-info">
+              <h3>Carpentry &amp; Framing</h3>
+              <p>Rough and finish carpentry, structural framing, cabinetry, and millwork for federal construction and renovation projects.</p>
+              <div class="naics-tags" aria-label="NAICS codes">
+                <span class="naics-tag">238130</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="trade-card">
+            <span class="trade-icon" aria-hidden="true">🧱</span>
+            <div class="trade-info">
+              <h3>Concrete &amp; Masonry</h3>
+              <p>Concrete forming, placement, and finishing; masonry installation; retaining walls and flatwork for federal infrastructure programs.</p>
+              <div class="naics-tags" aria-label="NAICS codes">
+                <span class="naics-tag">238110</span>
+                <span class="naics-tag">238140</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="trade-card">
+            <span class="trade-icon" aria-hidden="true">🏗️</span>
+            <div class="trade-info">
+              <h3>Heavy Equipment Operation</h3>
+              <p>Excavators, bulldozers, cranes, and graders for site preparation, road construction, and infrastructure projects under federal contracts.</p>
+              <div class="naics-tags" aria-label="NAICS codes">
+                <span class="naics-tag">238910</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="trade-card">
+            <span class="trade-icon" aria-hidden="true">🎨</span>
+            <div class="trade-info">
+              <h3>Painting &amp; Coatings</h3>
+              <p>Interior and exterior painting, protective coatings, surface preparation, and specialty finishes for federal buildings and structures.</p>
+              <div class="naics-tags" aria-label="NAICS codes">
+                <span class="naics-tag">238320</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="trade-card">
+            <span class="trade-icon" aria-hidden="true">🏠</span>
+            <div class="trade-info">
+              <h3>Roofing</h3>
+              <p>Commercial and industrial roof installation, repair, and maintenance including flat, metal, and membrane systems for federal facilities.</p>
+              <div class="naics-tags" aria-label="NAICS codes">
+                <span class="naics-tag">238160</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="trade-card">
+            <span class="trade-icon" aria-hidden="true">🌿</span>
+            <div class="trade-info">
+              <h3>Landscaping &amp; Grounds</h3>
+              <p>Grounds maintenance, landscape installation, turf management, and tree services for federal facilities and parks.</p>
+              <div class="naics-tags" aria-label="NAICS codes">
+                <span class="naics-tag">561730</span>
+                <span class="naics-tag">561710</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="trade-card">
+            <span class="trade-icon" aria-hidden="true">👷</span>
+            <div class="trade-info">
+              <h3>General Labor</h3>
+              <p>General construction labor, site cleanup, demolition support, and material handling for federally funded construction projects.</p>
+              <div class="naics-tags" aria-label="NAICS codes">
+                <span class="naics-tag">238990</span>
+                <span class="naics-tag">561320</span>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+
+    <div class="trades-cta">
+      <div class="trades-cta-inner">
+        <h2>Don't See Your Trade?</h2>
+        <p>Register anyway &mdash; we review new trades regularly and will notify you when your field is added. All registrations are free.</p>
+        <a href="register-worker.html" class="btn-orange">Register Your Skills Free</a>
+      </div>
+    </div>
+
+  </main>
+
+  <footer class="site-footer" role="contentinfo">
+    <div class="container">
+      <div class="footer-content">
+        <div class="footer-section">
+          <h3>WorkForce Connect</h3>
+          <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="register-worker.html">Register Free</a></li>
+            <li><a href="how-it-works.html">How It Works</a></li>
+          </ul>
+        </div>
+        <div class="footer-section">
+          <h3>For Workers</h3>
+          <ul>
+            <li><a href="trades.html">Our Trades</a></li>
+            <li><a href="checklist.html">Vendor Checklist</a></li>
+            <li><a href="login.html">My Dashboard</a></li>
+          </ul>
+        </div>
+        <div class="footer-section">
+          <h3>Resources</h3>
+          <ul>
+            <li><a href="faq.html">FAQ</a></li>
+            <li><a href="contact.html">Contact Us</a></li>
+          </ul>
+        </div>
+        <div class="footer-section">
+          <h3>Legal</h3>
+          <ul>
+            <li><a href="terms-of-service.html">Terms of Service</a></li>
+            <li><a href="privacy-policy.html">Privacy Policy</a></li>
+            <li><a href="accessibility-statement.html">Accessibility</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p data-cms-copyright>&copy; 2026 WorkForce Connect. All rights reserved.</p>
+      </div>
+    </div>
+  </footer>
+
+  <script src="agency.config.js?v=2025051601"></script>
+  <script src="js/config.js?v=2025051601"></script>
+  <script src="js/main.js?v=2025051601"></script>
+  <script src="js/accessibility-widget.js?v=2025051601"></script>
+  <script src="js/pwa.js?v=2025051601"></script>
+</body>
+</html>

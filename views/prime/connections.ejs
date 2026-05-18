@@ -1,0 +1,135 @@
+<% const title = locals.title || 'My Connections' %>
+
+<section class="dashboard-section">
+  <div class="container">
+
+    <%- include('../partials/flash') %>
+
+    <div class="dashboard-header" style="margin-bottom:2rem">
+      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem">
+        <div>
+          <h1>My Connections</h1>
+          <p class="section-sub">Workers and businesses you've reached out to on EvoConnect.</p>
+        </div>
+        <a href="/prime/dashboard" class="btn-sm btn-secondary">&larr; Dashboard</a>
+      </div>
+    </div>
+
+    <%
+      const allConns     = locals.connections || [];
+      const pendingConns = allConns.filter(c => c.status === 'pending');
+      const activeConns  = allConns.filter(c => c.status === 'accepted');
+      const pastConns    = allConns.filter(c => c.status === 'declined');
+    %>
+
+    <!-- Stats row -->
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:1rem;margin-bottom:1.5rem">
+      <div class="stat-card">
+        <div class="stat-number"><%= allConns.length %></div>
+        <div class="stat-label">Total Sent</div>
+      </div>
+      <div class="stat-card" style="border-left:4px solid #F59E0B">
+        <div class="stat-number" style="color:#D97706"><%= pendingConns.length %></div>
+        <div class="stat-label">Awaiting Response</div>
+      </div>
+      <div class="stat-card" style="border-left:4px solid #10B981">
+        <div class="stat-number" style="color:#10B981"><%= activeConns.length %></div>
+        <div class="stat-label">Accepted</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number"><%= pastConns.length %></div>
+        <div class="stat-label">Declined</div>
+      </div>
+    </div>
+
+    <% if (pendingConns.length > 0) { %>
+    <div class="dash-card" style="margin-bottom:1.5rem">
+      <div class="dash-card-header">
+        <h2>Awaiting Response</h2>
+        <span class="badge badge-amber"><%= pendingConns.length %></span>
+      </div>
+      <ul class="connection-list">
+        <% pendingConns.forEach(function(conn) { %>
+        <li class="connection-item">
+          <div class="connection-info">
+            <strong><%= conn.target_name || 'Unknown' %></strong>
+            <span class="badge <%= conn.target_type === 'worker' ? 'badge-cyan' : 'badge-amber' %>" style="margin-left:.5rem;font-size:.7rem"><%= conn.target_type === 'worker' ? 'Worker' : 'Business' %></span>
+            <% if (conn.target_detail) { %><span class="text-muted" style="display:block;font-size:.875rem;margin-top:.25rem"><%= conn.target_detail %></span><% } %>
+            <% if (conn.target_city && conn.target_state) { %><span class="text-muted" style="font-size:.875rem"><%= conn.target_city %>, <%= conn.target_state %></span><% } %>
+            <% if (conn.message) { %><p class="connection-msg"><%= conn.message %></p><% } %>
+            <span class="connection-date">Sent <%= new Date(conn.created_at).toLocaleDateString() %></span>
+          </div>
+          <span class="badge badge-amber">Pending</span>
+        </li>
+        <% }) %>
+      </ul>
+    </div>
+    <% } %>
+
+    <div class="dash-card" style="margin-bottom:1.5rem">
+      <div class="dash-card-header">
+        <h2>Active Connections</h2>
+        <span class="badge badge-cyan"><%= activeConns.length %></span>
+      </div>
+      <% if (activeConns.length > 0) { %>
+      <ul class="connection-list">
+        <% activeConns.forEach(function(conn) { %>
+        <li class="connection-item">
+          <div class="connection-info">
+            <strong><%= conn.target_name || 'Unknown' %></strong>
+            <span class="badge <%= conn.target_type === 'worker' ? 'badge-cyan' : 'badge-amber' %>" style="margin-left:.5rem;font-size:.7rem"><%= conn.target_type === 'worker' ? 'Worker' : 'Business' %></span>
+            <span class="badge badge-success" style="margin-left:.25rem;font-size:.7rem">Connected</span>
+            <% if (conn.target_detail) { %><span class="text-muted" style="display:block;font-size:.875rem;margin-top:.25rem"><%= conn.target_detail %></span><% } %>
+            <% if (conn.target_city && conn.target_state) { %><span class="text-muted" style="font-size:.875rem"><%= conn.target_city %>, <%= conn.target_state %></span><% } %>
+            <span class="connection-date">Accepted <%= new Date(conn.updated_at || conn.created_at).toLocaleDateString() %></span>
+          </div>
+        </li>
+        <% }) %>
+      </ul>
+      <% } else { %>
+      <div class="empty-state">
+        <p>No accepted connections yet. Search for workers and businesses and send connection requests to get started.</p>
+        <div style="display:flex;gap:1rem;margin-top:1rem;flex-wrap:wrap">
+          <a href="/prime/search/workers" class="btn-sm btn-primary">Search Workers</a>
+          <a href="/prime/search/businesses" class="btn-sm btn-secondary">Search Businesses</a>
+        </div>
+      </div>
+      <% } %>
+    </div>
+
+    <% if (pastConns.length > 0) { %>
+    <div class="dash-card">
+      <div class="dash-card-header">
+        <h2>Declined</h2>
+      </div>
+      <ul class="connection-list">
+        <% pastConns.forEach(function(conn) { %>
+        <li class="connection-item" style="opacity:.6">
+          <div class="connection-info">
+            <strong><%= conn.target_name || 'Unknown' %></strong>
+            <span class="badge" style="margin-left:.5rem;font-size:.7rem;background:rgba(239,68,68,.15);color:#fca5a5">Declined</span>
+            <% if (conn.target_city && conn.target_state) { %><span class="text-muted" style="font-size:.875rem"> · <%= conn.target_city %>, <%= conn.target_state %></span><% } %>
+            <span class="connection-date"><%= new Date(conn.created_at).toLocaleDateString() %></span>
+          </div>
+        </li>
+        <% }) %>
+      </ul>
+    </div>
+    <% } %>
+
+    <% if (allConns.length === 0) { %>
+    <div class="dash-card">
+      <div class="empty-state" style="padding:3rem;text-align:center">
+        <div style="font-size:3rem;margin-bottom:1rem">&#128101;</div>
+        <h3>No Connections Yet</h3>
+        <p>Search the worker and business directories to find subcontractors for your projects.</p>
+        <div style="display:flex;gap:1rem;justify-content:center;margin-top:1.5rem;flex-wrap:wrap">
+          <a href="/prime/search/workers" class="btn-primary">Search Workers</a>
+          <a href="/prime/search/businesses" class="btn-secondary-outline">Search Businesses</a>
+        </div>
+      </div>
+    </div>
+    <% } %>
+
+  </div>
+</section>

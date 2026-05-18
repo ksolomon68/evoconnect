@@ -7,7 +7,7 @@ const { db } = require('../database');
 const { sendEmail, getPasswordResetEmail } = require('../config/email');
 
 const router = express.Router();
-const APP_URL = process.env.APP_URL || 'https://primereachgov.com';
+const APP_URL = process.env.APP_URL || 'https://workforceconnect.io';
 
 function hashToken(token) {
     return crypto.createHash('sha256').update(token).digest('hex');

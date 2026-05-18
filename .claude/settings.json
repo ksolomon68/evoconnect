@@ -8,7 +8,15 @@
       "Bash(ls \"c:/Users/Keisha/Documents/caltrans/new caltrans/dashboards/\"*.html)",
       "Bash(ls \"c:/Users/Keisha/Documents/caltrans/new caltrans/\"**/*.html)",
       "Bash(ls \"c:/Users/Keisha/Documents/caltrans/new caltrans/\"*.html)",
-      "Read(//c/Users/Keisha/.claude/projects/c--Users-Keisha-Documents-PrimeReach-PrimeReach/memory/**)"
+      "Read(//c/Users/Keisha/.claude/projects/c--Users-Keisha-Documents-PrimeReach-PrimeReach/memory/**)",
+      "Bash(node --check \"c:/Users/Keisha/Documents/evoconnect/evoconnect/server/routes/labor.js\")",
+      "Bash(node --check \"c:/Users/Keisha/Documents/evoconnect/evoconnect/server/routes/business.js\")",
+      "Bash(node --check \"c:/Users/Keisha/Documents/evoconnect/evoconnect/server/routes/prime.js\")",
+      "Bash(node --check \"c:/Users/Keisha/Documents/evoconnect/evoconnect/server/routes/admin.js\")",
+      "Bash(node --check \"c:/Users/Keisha/Documents/evoconnect/evoconnect/server/index.js\")",
+      "Bash(node seed-demo.js)",
+      "Bash(node -e ' *)",
+      "Bash(git add *)"
     ],
     "additionalDirectories": [
       "c:\\Users\\Keisha\\.claude\\projects\\c--Users-Keisha-Documents-PrimeReach-PrimeReach\\memory"

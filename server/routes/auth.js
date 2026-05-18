@@ -1,231 +1,250 @@
+'use strict';
+
 const express = require('express');
 const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken');
-const { db } = require('../database');
-const { JWT_SECRET } = require('../middleware/auth');
-const { sendEmail, getWelcomeEmail } = require('../config/email');
+const crypto = require('crypto');
+const { getDb } = require('../database');
+const { signToken, setAuthCookie, clearAuthCookie } = require('../middleware/auth');
+const { sendEmail } = require('../config/email');
 const router = express.Router();
 
-// Register user
-router.post('/register', async (req, res) => {
-    let { email, password, type, ...profileData } = req.body;
+// ── Helpers ───────────────────────────────────────────────────────────────────
 
-    // 1. Validation
-    if (!email || !password || !type) {
-        return res.status(400).json({
-            success: false,
-            message: 'Missing required fields (email, password, type)'
-        });
+function flash(req, type, message) {
+    req.session.flash = { type, message };
+}
+
+const APP_URL = process.env.APP_URL || 'https://evoconnect.evobrand.net';
+
+// Look up a user by email across all tables.  Returns { row, userType } or null.
+async function findUserByEmail(db, email, userType) {
+    const tables = userType
+        ? [userType]
+        : ['workers', 'businesses', 'primes', 'admins'];
+
+    for (const table of tables) {
+        const [rows] = await db.execute(`SELECT * FROM ${table} WHERE email = ?`, [email]);
+        if (rows.length) return { row: rows[0], userType: table.replace(/s$/, '') };
     }
+    return null;
+}
 
-    email = email.trim().toLowerCase();
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
-        return res.status(400).json({
-            success: false,
-            message: 'Invalid email format'
-        });
-    }
+// Normalize the singular type label used by findUserByEmail back to a table name
+function tableFor(type) {
+    const map = { worker: 'workers', business: 'businesses', prime: 'primes', admin: 'admins' };
+    return map[type] || type + 's';
+}
 
-    if (password.length < 6) {
-        return res.status(400).json({
-            success: false,
-            message: 'Password must be at least 6 characters'
-        });
-    }
-
-    console.log(`PrimeReach Auth: Registration attempt for ${email} (${type})`);
-
-    try {
-        const password_hash = await bcrypt.hash(password, 10);
-
-        const sql = `
-            INSERT INTO users (email, password_hash, type, business_name, contact_name, phone, ein, certification_number, organization_name, address, city, zip, website, status)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'active')
-        `;
-
-        const [result] = await db.execute(sql, [
-            email,
-            password_hash,
-            type,
-            profileData.businessName || profileData.business_name || null,
-            profileData.contactName || profileData.contact_name || null,
-            profileData.phone || null,
-            profileData.ein || null,
-            profileData.certificationNumber || profileData.certification_number || null,
-            profileData.organizationName || profileData.organization_name || null,
-            profileData.address || profileData.businessAddress || profileData.business_address || null,
-            profileData.city || null,
-            profileData.zip || profileData.zipCode || profileData.zip_code || null,
-            profileData.website || null
-        ]);
-
-        console.log(`PrimeReach Auth: Registration successful for ${email}, ID: ${result.insertId}`);
-
-        // Send welcome email (non-blocking)
-        const userName = profileData.contactName || profileData.contact_name || profileData.businessName || profileData.business_name || 'there';
-        const { html: welcomeHtml, text: welcomeText } = getWelcomeEmail(userName, type);
-        sendEmail({ to: email, subject: 'Welcome to PrimeReach!', html: welcomeHtml, text: welcomeText })
-            .catch(err => console.error('PrimeReach Auth: Welcome email failed:', err.message));
-        const [rows] = await db.execute('SELECT * FROM users WHERE id = ?', [result.insertId]);
-        const newUser = rows[0];
-        const { password_hash: _, ...userWithoutPassword } = newUser;
-
-        const token = jwt.sign(
-            { id: newUser.id, email: newUser.email, type: newUser.type },
-            JWT_SECRET,
-            { expiresIn: '7d' }
-        );
-
-        res.status(201).json({
-            success: true,
-            message: 'User registered successfully',
-            token,
-            user: userWithoutPassword
-        });
-    } catch (error) {
-        console.error(`PrimeReach Auth Error during registration for ${email}:`, error);
-        if (error.code === 'ER_DUP_ENTRY' || (error.message && error.message.includes('UNIQUE constraint failed'))) {
-            return res.status(409).json({
-                success: false,
-                message: 'Email already exists'
-            });
-        }
-        res.status(500).json({
-            success: false,
-            message: 'Server error during registration',
-            error: error.message
-        });
-    }
+// ── GET /login ─────────────────────────────────────────────────────────────────
+router.get('/login', (req, res) => {
+    const flash = req.session.flash || null;
+    delete req.session.flash;
+    res.render('login', {
+        title: 'Log In | EvoConnect',
+        flash,
+        redirect: req.query.redirect || ''
+    });
 });
 
-// Login user
+// ── POST /login ────────────────────────────────────────────────────────────────
 router.post('/login', async (req, res) => {
-    const email = req.body.email ? req.body.email.trim().toLowerCase() : '';
-    const { password } = req.body;
-
-    if (!email || !password) {
-        return res.status(400).json({
-            success: false,
-            message: 'Email and password are required'
-        });
-    }
-
-    console.log(`PrimeReach Auth: Login attempt for ${email}`);
+    const email = (req.body.email || '').trim().toLowerCase();
+    const password = req.body.password || '';
+    const userType = req.body.userType || null; // 'worker'|'business'|'prime'|'admin'
 
     try {
-        const [rows] = await db.execute('SELECT * FROM users WHERE email = ?', [email]);
-        const user = rows[0];
-        const match = user ? await bcrypt.compare(password, user.password_hash) : false;
+        const db = getDb();
+        const found = await findUserByEmail(db, email, userType ? tableFor(userType) : null);
 
-        if (!user || !match) {
-            console.warn(`PrimeReach Auth Fail: [${email}] userFound=${!!user}, passwordMatch=${match}`);
-            return res.status(401).json({
-                success: false,
-                message: 'Invalid email or password'
-            });
+        if (!found) {
+            flash(req, 'error', 'Invalid email or password.');
+            return res.redirect('/login');
         }
 
-        console.log(`PrimeReach Auth: Login successful for ${email}`);
-        const { password_hash, ...userWithoutPassword } = user;
+        const { row, userType: foundType } = found;
+        const match = await bcrypt.compare(password, row.password_hash);
 
-        const token = jwt.sign(
-            { id: user.id, email: user.email, type: user.type },
-            JWT_SECRET,
-            { expiresIn: '7d' }
+        if (!match) {
+            flash(req, 'error', 'Invalid email or password.');
+            return res.redirect('/login');
+        }
+
+        const name = row.full_name || row.contact_name || row.name || row.email;
+        const token = signToken({ id: row.id, email: row.email, type: foundType, name });
+        setAuthCookie(res, token);
+
+        const redirectMap = {
+            worker:   '/labor/dashboard',
+            business: '/business/dashboard',
+            prime:    '/prime/dashboard',
+            admin:    '/admin/dashboard'
+        };
+        res.redirect(redirectMap[foundType] || '/');
+
+    } catch (err) {
+        console.error('EvoConnect [auth/login]:', err);
+        flash(req, 'error', 'A server error occurred. Please try again.');
+        res.redirect('/login');
+    }
+});
+
+// ── GET /logout ────────────────────────────────────────────────────────────────
+router.get('/logout', (req, res) => {
+    clearAuthCookie(res);
+    res.redirect('/');
+});
+
+// ── GET /forgot-password ───────────────────────────────────────────────────────
+router.get('/forgot-password', (req, res) => {
+    const flash = req.session.flash || null;
+    delete req.session.flash;
+    res.render('forgot-password', {
+        title: 'Forgot Password | EvoConnect',
+        flash
+    });
+});
+
+// ── POST /forgot-password ──────────────────────────────────────────────────────
+router.post('/forgot-password', async (req, res) => {
+    const email = (req.body.email || '').trim().toLowerCase();
+    const userType = req.body.userType || null;
+
+    // Always render the same success message regardless of outcome
+    const successMsg = "If that email is registered, you'll receive a reset link shortly.";
+
+    try {
+        const db = getDb();
+        const found = await findUserByEmail(db, email, userType ? tableFor(userType) : null);
+
+        if (found) {
+            const { row, userType: foundType } = found;
+            const resetToken = crypto.randomBytes(32).toString('hex');
+            const expiresAt = new Date(Date.now() + 60 * 60 * 1000); // 1 hour
+
+            await db.execute(
+                `INSERT INTO password_reset_tokens (user_type, user_id, token, expires_at)
+                 VALUES (?, ?, ?, ?)
+                 ON DUPLICATE KEY UPDATE token = VALUES(token), expires_at = VALUES(expires_at), used = 0`,
+                [foundType, row.id, resetToken, expiresAt]
+            );
+
+            const resetLink = `${APP_URL}/reset-password/${resetToken}`;
+            const name = row.full_name || row.contact_name || row.name || 'there';
+
+            const html = `
+                <h2 style="color:#003D5B;">Reset Your Password</h2>
+                <p>Hi ${name},</p>
+                <p>We received a request to reset your EvoConnect password. Click the button below to choose a new password. This link expires in <strong>1 hour</strong>.</p>
+                <p><a href="${resetLink}" style="display:inline-block;background:#1a56db;color:#fff;padding:12px 28px;border-radius:6px;text-decoration:none;font-weight:700;">Reset My Password</a></p>
+                <p style="font-size:12px;color:#888;">If you did not request a password reset, you can safely ignore this email.</p>
+                <p style="font-size:12px;color:#888;">Or copy this link: ${resetLink}</p>
+            `;
+
+            sendEmail({
+                to: email,
+                subject: 'Reset Your EvoConnect Password',
+                html,
+                text: `Reset your EvoConnect password: ${resetLink}\n\nThis link expires in 1 hour. If you did not request this, ignore this email.`
+            }).catch(e => console.error('EvoConnect [auth/forgot-password] email error:', e));
+        }
+
+    } catch (err) {
+        console.error('EvoConnect [auth/forgot-password]:', err);
+    }
+
+    res.render('forgot-password', {
+        title: 'Forgot Password | EvoConnect',
+        flash: { type: 'success', message: successMsg }
+    });
+});
+
+// ── GET /reset-password/:token ─────────────────────────────────────────────────
+router.get('/reset-password/:token', async (req, res) => {
+    const { token } = req.params;
+
+    try {
+        const db = getDb();
+        const [rows] = await db.execute(
+            `SELECT * FROM password_reset_tokens WHERE token = ? AND used = 0 AND expires_at > NOW()`,
+            [token]
         );
 
-        res.json({
-            success: true,
-            message: 'Login successful',
-            token,
-            user: userWithoutPassword
-        });
-    } catch (error) {
-        console.error(`PrimeReach Auth Error during login for ${email}:`, error);
-        res.status(500).json({
-            success: false,
-            message: 'Server error during login',
-            error: error.message
-        });
-    }
-});
-
-// Update user profile
-router.put('/:id', async (req, res) => {
-    const { id } = req.params;
-    const profileData = req.body;
-
-    try {
-        const sql = `
-            UPDATE users SET 
-                business_name = COALESCE(?, business_name),
-                contact_name = COALESCE(?, contact_name),
-                phone = COALESCE(?, phone),
-                ein = COALESCE(?, ein),
-                certification_number = COALESCE(?, certification_number),
-                organization_name = COALESCE(?, organization_name),
-                districts = COALESCE(?, districts),
-                categories = COALESCE(?, categories),
-                saved_opportunities = COALESCE(?, saved_opportunities),
-                capability_statement = COALESCE(?, capability_statement),
-                address = COALESCE(?, address),
-                city = COALESCE(?, city),
-                zip = COALESCE(?, zip),
-                website = COALESCE(?, website),
-                years_in_business = COALESCE(?, years_in_business),
-                business_description = COALESCE(?, business_description),
-                certifications = COALESCE(?, certifications)
-            WHERE id = ?
-        `;
-
-        await db.execute(sql, [
-            profileData.businessName || profileData.business_name || null,
-            profileData.contactName || profileData.contact_name || null,
-            profileData.phone || null,
-            profileData.ein || null,
-            profileData.certificationNumber || profileData.certification_number || null,
-            profileData.organizationName || null,
-            (profileData.preferredDistricts || profileData.districts) ? JSON.stringify(profileData.preferredDistricts || profileData.districts) : null,
-            (profileData.workCategories || profileData.categories) ? JSON.stringify(profileData.workCategories || profileData.categories) : null,
-            profileData.savedOpportunities ? JSON.stringify(profileData.savedOpportunities) : null,
-            profileData.capabilityStatement || profileData.capability_statement ? JSON.stringify(profileData.capabilityStatement || profileData.capability_statement) : null,
-            profileData.address || null,
-            profileData.city || null,
-            profileData.zip || profileData.zipCode || null,
-            profileData.website || null,
-            profileData.yearsInBusiness || profileData.years_in_business || null,
-            profileData.businessDescription || profileData.business_description || null,
-            profileData.certifications || null,
-            id
-        ]);
-
-        const [rows] = await db.execute('SELECT * FROM users WHERE id = ?', [id]);
-        const updatedUser = rows[0];
-
-        if (!updatedUser) {
-            return res.status(404).json({ error: 'User not found' });
+        if (!rows.length) {
+            flash(req, 'error', 'This reset link is invalid or has expired. Please request a new one.');
+            return res.redirect('/forgot-password');
         }
 
-        const { password_hash, ...userWithoutPassword } = updatedUser;
-        res.json(userWithoutPassword);
-    } catch (error) {
-        console.error('Profile update error:', error);
-        res.status(500).json({ error: error.message });
+        res.render('reset-password', {
+            title: 'Reset Password | EvoConnect',
+            token,
+            flash: null
+        });
+
+    } catch (err) {
+        console.error('EvoConnect [auth/reset-password GET]:', err);
+        flash(req, 'error', 'A server error occurred. Please try again.');
+        res.redirect('/forgot-password');
     }
 });
 
-// Logout endpoint
-router.post('/logout', (req, res) => {
-    try {
-        // In a session-based auth system, we would clear server-side sessions here
-        // For now, client-side clears localStorage
-        console.log('PrimeReach Auth: User logged out');
-        res.json({ success: true, message: 'Logged out successfully' });
-    } catch (error) {
-        console.error('Logout error:', error);
-        res.status(500).json({ error: error.message });
+// ── POST /reset-password/:token ────────────────────────────────────────────────
+router.post('/reset-password/:token', async (req, res) => {
+    const { token } = req.params;
+    const { password, confirm_password } = req.body;
+
+    if (!password || password.length < 8) {
+        return res.render('reset-password', {
+            title: 'Reset Password | EvoConnect',
+            token,
+            flash: { type: 'error', message: 'Password must be at least 8 characters.' }
+        });
     }
+
+    if (password !== confirm_password) {
+        return res.render('reset-password', {
+            title: 'Reset Password | EvoConnect',
+            token,
+            flash: { type: 'error', message: 'Passwords do not match.' }
+        });
+    }
+
+    try {
+        const db = getDb();
+        const [rows] = await db.execute(
+            `SELECT * FROM password_reset_tokens WHERE token = ? AND used = 0 AND expires_at > NOW()`,
+            [token]
+        );
+
+        if (!rows.length) {
+            flash(req, 'error', 'This reset link is invalid or has expired.');
+            return res.redirect('/forgot-password');
+        }
+
+        const { user_type, user_id } = rows[0];
+        const table = tableFor(user_type);
+        const hash = await bcrypt.hash(password, 12);
+
+        await db.execute(`UPDATE ${table} SET password_hash = ? WHERE id = ?`, [hash, user_id]);
+        await db.execute(`UPDATE password_reset_tokens SET used = 1 WHERE token = ?`, [token]);
+
+        flash(req, 'success', 'Your password has been reset. Please log in with your new password.');
+        res.redirect('/login');
+
+    } catch (err) {
+        console.error('EvoConnect [auth/reset-password POST]:', err);
+        res.render('reset-password', {
+            title: 'Reset Password | EvoConnect',
+            token,
+            flash: { type: 'error', message: 'A server error occurred. Please try again.' }
+        });
+    }
+});
+
+// ── GET /register ──────────────────────────────────────────────────────────────
+router.get('/register', (req, res) => {
+    res.render('register', {
+        title: 'Choose Your Account Type | EvoConnect'
+    });
 });
 
 module.exports = router;

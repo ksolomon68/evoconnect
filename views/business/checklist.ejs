@@ -1,0 +1,182 @@
+<% const title = locals.title || 'Vendor Readiness Checklist' %>
+
+<%
+const federalChecklist = [
+  {key:'sam-register',          label:'Register on SAM.gov (free — allow 2–3 weeks)'},
+  {key:'uei-number',            label:'Obtain UEI (Unique Entity Identifier) at SAM.gov'},
+  {key:'naics-identify',        label:'Identify and verify your NAICS codes'},
+  {key:'cage-code',             label:'Receive your CAGE Code from SAM.gov'},
+  {key:'representations',       label:'Complete Representations & Certifications in SAM.gov'},
+  {key:'capability-statement',  label:'Create a professional Capability Statement'},
+  {key:'past-performance',      label:'Document your past performance references'},
+  {key:'banking',               label:'Set up EFT/banking for federal payments'}
+];
+const stateChecklist = [
+  {key:'state-vendor',   label:'Register on your state\'s vendor portal'},
+  {key:'hub-lookup',     label:'Look up HUB certification eligibility'},
+  {key:'state-certify',  label:'Apply for state-level certifications'},
+  {key:'local-bid-list', label:'Get on local government bid lists'},
+  {key:'prequalify',     label:'Pre-qualify with state agencies in your sector'},
+  {key:'bonding',        label:'Obtain surety bonding if required'},
+  {key:'insurance',      label:'Get required Certificate of Insurance (COI)'},
+  {key:'references',     label:'Compile state contracting references'}
+];
+const subChecklist = [
+  {key:'llc-setup',       label:'Ensure your business entity (LLC, Corp, etc.) is in good standing'},
+  {key:'ein-number',      label:'Verify EIN is correct and matches SAM.gov'},
+  {key:'insurance-basic', label:'Obtain general liability insurance'},
+  {key:'w9-ready',        label:'Have a current W-9 ready for prime contractors'},
+  {key:'direct-deposit',  label:'Set up direct deposit / ACH for payments'},
+  {key:'lien-waiver',     label:'Understand lien waiver requirements for your state'},
+  {key:'payment-terms',   label:'Define your payment terms and invoice process'},
+  {key:'references-sub',  label:'Gather subcontracting references from prior work'}
+];
+
+const byTrack = locals.checklistByTrack || {};
+const fedChecked   = Array.isArray(byTrack.federal)       ? Object.fromEntries(byTrack.federal.map(k => [k,1]))       : (byTrack.federal || {});
+const stateChecked = Array.isArray(byTrack.state)         ? Object.fromEntries(byTrack.state.map(k => [k,1]))         : (byTrack.state || {});
+const subChecked   = Array.isArray(byTrack.subcontractor) ? Object.fromEntries(byTrack.subcontractor.map(k => [k,1])) : (byTrack.subcontractor || {});
+%>
+
+<section class="dashboard-section">
+  <div class="container">
+
+    <%- include('../partials/flash') %>
+
+    <div class="dashboard-header" style="margin-bottom:2rem">
+      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem">
+        <div>
+          <h1>Vendor Readiness Checklist</h1>
+          <p class="section-sub">Track every step toward winning your first government subcontract.</p>
+        </div>
+        <a href="/business/dashboard" class="btn-sm btn-secondary">&larr; Dashboard</a>
+      </div>
+    </div>
+
+    <div class="dash-card" style="max-width:800px;margin:0 auto">
+      <div class="dash-card-header">
+        <h2>Your Readiness Tracks</h2>
+        <%
+          const totalItems = federalChecklist.length + stateChecklist.length + subChecklist.length;
+          const totalDone  = federalChecklist.filter(i => fedChecked[i.key]).length
+                           + stateChecklist.filter(i => stateChecked[i.key]).length
+                           + subChecklist.filter(i => subChecked[i.key]).length;
+          const overallPct = Math.round(totalDone / totalItems * 100);
+        %>
+        <span class="badge <%= overallPct === 100 ? 'badge-success' : overallPct >= 50 ? 'badge-cyan' : 'badge-amber' %>"><%= overallPct %>% overall</span>
+      </div>
+
+      <div class="checklist-tabs" role="tablist">
+        <button class="tab-btn active" role="tab" aria-selected="true" aria-controls="tab-federal" id="btn-federal">Federal (SAM.gov)</button>
+        <button class="tab-btn" role="tab" aria-selected="false" aria-controls="tab-state" id="btn-state">State</button>
+        <button class="tab-btn" role="tab" aria-selected="false" aria-controls="tab-sub" id="btn-sub">Subcontractor Ready</button>
+      </div>
+
+      <!-- Federal Track -->
+      <div class="tab-panel active" id="tab-federal" role="tabpanel" aria-labelledby="btn-federal">
+        <% const fedDone = federalChecklist.filter(i => fedChecked[i.key]).length %>
+        <div class="progress-bar-wrap">
+          <div class="progress-bar" style="width: <%= Math.round((fedDone/federalChecklist.length)*100) %>%"></div>
+        </div>
+        <p class="progress-label"><%= fedDone %> of <%= federalChecklist.length %> complete</p>
+        <ul class="checklist-list">
+          <% federalChecklist.forEach(function(item) { %>
+          <li class="checklist-item">
+            <label class="checklist-label">
+              <input type="checkbox" class="checklist-check" data-key="<%= item.key %>" data-track="federal"
+                <%= fedChecked[item.key] ? 'checked' : '' %> aria-label="<%= item.label %>">
+              <span><%= item.label %></span>
+            </label>
+          </li>
+          <% }) %>
+        </ul>
+      </div>
+
+      <!-- State Track -->
+      <div class="tab-panel" id="tab-state" role="tabpanel" aria-labelledby="btn-state" hidden>
+        <% const stateDone = stateChecklist.filter(i => stateChecked[i.key]).length %>
+        <div class="progress-bar-wrap">
+          <div class="progress-bar" style="width: <%= Math.round((stateDone/stateChecklist.length)*100) %>%"></div>
+        </div>
+        <p class="progress-label"><%= stateDone %> of <%= stateChecklist.length %> complete</p>
+        <ul class="checklist-list">
+          <% stateChecklist.forEach(function(item) { %>
+          <li class="checklist-item">
+            <label class="checklist-label">
+              <input type="checkbox" class="checklist-check" data-key="<%= item.key %>" data-track="state"
+                <%= stateChecked[item.key] ? 'checked' : '' %> aria-label="<%= item.label %>">
+              <span><%= item.label %></span>
+            </label>
+          </li>
+          <% }) %>
+        </ul>
+      </div>
+
+      <!-- Subcontractor Track -->
+      <div class="tab-panel" id="tab-sub" role="tabpanel" aria-labelledby="btn-sub" hidden>
+        <% const subDone = subChecklist.filter(i => subChecked[i.key]).length %>
+        <div class="progress-bar-wrap">
+          <div class="progress-bar" style="width: <%= Math.round((subDone/subChecklist.length)*100) %>%"></div>
+        </div>
+        <p class="progress-label"><%= subDone %> of <%= subChecklist.length %> complete</p>
+        <ul class="checklist-list">
+          <% subChecklist.forEach(function(item) { %>
+          <li class="checklist-item">
+            <label class="checklist-label">
+              <input type="checkbox" class="checklist-check" data-key="<%= item.key %>" data-track="subcontractor"
+                <%= subChecked[item.key] ? 'checked' : '' %> aria-label="<%= item.label %>">
+              <span><%= item.label %></span>
+            </label>
+          </li>
+          <% }) %>
+        </ul>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<script>
+document.querySelectorAll('.checklist-check').forEach(function(cb) {
+  cb.addEventListener('change', function() {
+    fetch('/business/checklist', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({ track: cb.dataset.track, item_key: cb.dataset.key, completed: cb.checked })
+    })
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      if (data.success) {
+        var panel = cb.closest('.tab-panel');
+        if (panel) {
+          var allChecks    = panel.querySelectorAll('.checklist-check');
+          var checkedCount = panel.querySelectorAll('.checklist-check:checked').length;
+          var pct = Math.round(checkedCount / allChecks.length * 100);
+          var bar = panel.querySelector('.progress-bar');
+          if (bar) bar.style.width = pct + '%';
+          var label = panel.querySelector('.progress-label');
+          if (label) label.textContent = checkedCount + ' of ' + allChecks.length + ' complete';
+        }
+      }
+    })
+    .catch(function(e) { console.warn('Checklist save failed:', e); });
+  });
+});
+
+document.querySelectorAll('.tab-btn').forEach(function(btn) {
+  btn.addEventListener('click', function() {
+    document.querySelectorAll('.tab-btn').forEach(function(b) {
+      b.classList.remove('active');
+      b.setAttribute('aria-selected', 'false');
+    });
+    document.querySelectorAll('.tab-panel').forEach(function(p) {
+      p.classList.remove('active');
+      p.hidden = true;
+    });
+    btn.classList.add('active');
+    btn.setAttribute('aria-selected', 'true');
+    var panel = document.getElementById(btn.getAttribute('aria-controls'));
+    if (panel) { panel.classList.add('active'); panel.hidden = false; }
+  });
+});
+</script>

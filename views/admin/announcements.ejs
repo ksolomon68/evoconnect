@@ -1,0 +1,100 @@
+<% const title = locals.title || 'Announcements | EvoConnect Admin' %>
+
+<section class="admin-section">
+  <div class="container">
+
+    <%- include('../partials/flash') %>
+
+    <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem;margin-bottom:2rem">
+      <div>
+        <h1 style="margin:0;color:#0F172A">Platform Announcements</h1>
+        <p style="color:#64748B;margin:.25rem 0 0">Active announcement is shown on all user dashboards</p>
+      </div>
+      <a href="/admin/dashboard" class="btn btn-ghost">← Dashboard</a>
+    </div>
+
+    <!-- New Announcement Form -->
+    <div class="card" style="margin-bottom:2rem">
+      <div style="padding:1.25rem 1.5rem;border-bottom:1px solid #E2E8F0">
+        <h2 style="margin:0;font-size:1rem;color:#0F172A">Post New Announcement</h2>
+        <p style="margin:.25rem 0 0;color:#64748B;font-size:.85rem">Posting a new announcement will deactivate any existing active announcement.</p>
+      </div>
+      <form method="POST" action="/admin/announcements" style="padding:1.5rem">
+        <div class="form-group">
+          <label class="form-label">Message <span style="color:#EF4444">*</span></label>
+          <textarea name="message" class="form-control" rows="3" placeholder="New feature: Business users can now generate capability statements from their dashboard." required></textarea>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:1rem;margin-top:1rem">
+          <div class="form-group" style="margin:0">
+            <label class="form-label">Type</label>
+            <select name="type" class="form-control">
+              <option value="info">Info (Blue)</option>
+              <option value="success">Success (Green)</option>
+              <option value="warning">Warning (Amber)</option>
+            </select>
+          </div>
+          <div class="form-group" style="margin:0">
+            <label class="form-label">Expires At</label>
+            <input type="datetime-local" name="expires_at" class="form-control">
+          </div>
+          <div class="form-group" style="margin:0;display:flex;align-items:flex-end">
+            <label style="display:flex;align-items:center;gap:.5rem;cursor:pointer;padding-bottom:.5rem">
+              <input type="checkbox" name="active" value="on" checked>
+              <span class="form-label" style="margin:0">Publish immediately</span>
+            </label>
+          </div>
+        </div>
+        <div style="margin-top:1.25rem">
+          <button type="submit" class="btn btn-amber">Post Announcement</button>
+        </div>
+      </form>
+    </div>
+
+    <!-- Announcements History -->
+    <div class="card">
+      <div style="padding:1.25rem 1.5rem;border-bottom:1px solid #E2E8F0">
+        <h2 style="margin:0;font-size:1rem;color:#0F172A">Announcement History</h2>
+      </div>
+      <% if (locals.announcements && announcements.length > 0) { %>
+        <div style="overflow-x:auto">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Message</th>
+                <th>Type</th>
+                <th>Status</th>
+                <th>Expires</th>
+                <th>Posted</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% announcements.forEach(function(a) { %>
+              <tr>
+                <td style="max-width:400px"><%= a.message %></td>
+                <td>
+                  <% const typeMap = { info:'#EFF6FF;color:#1D4ED8', success:'#F0FDF4;color:#166534', warning:'#FEF3C7;color:#92400E' } %>
+                  <span style="background:<%= typeMap[a.type] || typeMap.info %>;padding:.2rem .6rem;border-radius:4px;font-size:.8rem;text-transform:capitalize"><%= a.type || 'info' %></span>
+                </td>
+                <td>
+                  <% if (a.active) { %>
+                    <span style="background:#F0FDF4;color:#166534;padding:.2rem .6rem;border-radius:4px;font-size:.8rem">Active</span>
+                  <% } else { %>
+                    <span style="background:#F8FAFC;color:#94A3B8;padding:.2rem .6rem;border-radius:4px;font-size:.8rem">Inactive</span>
+                  <% } %>
+                </td>
+                <td style="font-size:.85rem;color:#64748B"><%= a.expires_at ? new Date(a.expires_at).toLocaleDateString() : 'Never' %></td>
+                <td style="font-size:.85rem;color:#64748B"><%= new Date(a.created_at).toLocaleDateString() %></td>
+              </tr>
+              <% }) %>
+            </tbody>
+          </table>
+        </div>
+      <% } else { %>
+        <div style="padding:3rem;text-align:center;color:#64748B">
+          <p>No announcements yet.</p>
+        </div>
+      <% } %>
+    </div>
+
+  </div>
+</section>

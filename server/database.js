@@ -2,348 +2,374 @@ const mysql = require('mysql2/promise');
 const dotenv = require('dotenv');
 const path = require('path');
 
-// First try to load the default .env file
 dotenv.config({ path: path.join(__dirname, '../.env') });
 
-// If on a live server, conditionally load .env.production overrides (if it exists)
 const isLive = !!(process.env.PHUSION_PASSENGER || process.env.PASSENGER_NODE_CONTROL_REPO || process.env.NODE_ENV === 'production');
 if (isLive) {
     dotenv.config({ path: path.join(__dirname, '../.env.production'), override: true });
 }
 
-console.log('PrimeReach DB: Initializing MySQL Connection Pool...');
+console.log('EvoConnect DB: Initializing MySQL Connection Pool...');
 
 let pool;
 
 function getDb() {
     if (!pool) {
-        try {
-            const dbHost = process.env.DB_HOST || 'localhost';
-            pool = mysql.createPool({
-                host: dbHost,
-                user: process.env.DB_USER,
-                password: process.env.DB_PASSWORD,
-                database: process.env.DB_NAME,
-                waitForConnections: true,
-                connectionLimit: 10,
-                queueLimit: 0,
-                enableKeepAlive: true,
-                keepAliveInitialDelay: 10000
-            });
-            console.log('PrimeReach DB: MySQL Pool Created.');
-        } catch (err) {
-            console.error('PrimeReach DB Error: Failed to create pool:', err.message);
-            throw err;
-        }
+        pool = mysql.createPool({
+            host:             process.env.DB_HOST || 'localhost',
+            user:             process.env.DB_USER,
+            password:         process.env.DB_PASSWORD,
+            database:         process.env.DB_NAME,
+            waitForConnections: true,
+            connectionLimit:  10,
+            queueLimit:       0,
+            enableKeepAlive:  true,
+            keepAliveInitialDelay: 10000
+        });
+        console.log('EvoConnect DB: MySQL Pool Created.');
     }
     return pool;
 }
 
 async function initDatabase() {
-    console.log('PrimeReach DB: Running initDatabase()...');
+    console.log('EvoConnect DB: Running initDatabase()...');
+
+    try {
+        const setupConn = await mysql.createConnection({
+            host:     process.env.DB_HOST || 'localhost',
+            user:     process.env.DB_USER,
+            password: process.env.DB_PASSWORD || ''
+        });
+        const dbName = process.env.DB_NAME || 'evoconnect';
+        await setupConn.execute(`CREATE DATABASE IF NOT EXISTS \`${dbName}\` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci`);
+        console.log(`EvoConnect DB: Database "${dbName}" ready.`);
+        await setupConn.end();
+    } catch (err) {
+        console.warn('EvoConnect DB: Could not auto-create database:', err.message);
+    }
+
     const db = getDb();
 
     try {
-        console.log('PrimeReach DB: Verifying connection...');
         await db.execute('SELECT 1');
-        console.log('PrimeReach DB: Connection verified.');
+        console.log('EvoConnect DB: Connection verified.');
 
-        // 1. Users Table
-        console.log('PrimeReach DB: Ensuring "users" table exists...');
+        // ── 1. Workers (Labor Portal) ─────────────────────────────
         await db.execute(`
-            CREATE TABLE IF NOT EXISTS users (
+            CREATE TABLE IF NOT EXISTS workers (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                full_name VARCHAR(255) NOT NULL,
+                email VARCHAR(255) UNIQUE NOT NULL,
+                password_hash VARCHAR(255) NOT NULL,
+                phone VARCHAR(50) NOT NULL,
+                trade_category VARCHAR(100) NOT NULL,
+                skills JSON,
+                certifications JSON,
+                years_experience INT DEFAULT 0,
+                sam_registered ENUM('yes','no','needs_help') DEFAULT 'no',
+                business_entity VARCHAR(100) DEFAULT 'none',
+                city VARCHAR(100),
+                state VARCHAR(2),
+                zip VARCHAR(20),
+                travel_willingness VARCHAR(50) DEFAULT 'local',
+                experience_summary TEXT,
+                resume_path VARCHAR(500),
+                profile_pct TINYINT DEFAULT 0,
+                status ENUM('active','inactive','suspended') DEFAULT 'active',
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+                INDEX idx_trade (trade_category),
+                INDEX idx_state (state),
+                INDEX idx_status (status)
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
+        `);
+
+        // ── 2. Businesses (Business Portal) ───────────────────────
+        await db.execute(`
+            CREATE TABLE IF NOT EXISTS businesses (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                company_name VARCHAR(255) NOT NULL,
+                contact_name VARCHAR(255) NOT NULL,
+                email VARCHAR(255) UNIQUE NOT NULL,
+                password_hash VARCHAR(255) NOT NULL,
+                phone VARCHAR(50) NOT NULL,
+                business_type VARCHAR(100),
+                certifications JSON,
+                sam_uei VARCHAR(50),
+                sam_registered ENUM('yes','no','needs_help') DEFAULT 'no',
+                naics_codes JSON,
+                service_description TEXT,
+                city VARCHAR(100),
+                state VARCHAR(2),
+                zip VARCHAR(20),
+                service_radius VARCHAR(50) DEFAULT 'local',
+                capability_statement_generated_at DATETIME,
+                profile_pct TINYINT DEFAULT 0,
+                status ENUM('active','inactive','suspended') DEFAULT 'active',
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+                INDEX idx_state (state),
+                INDEX idx_status (status)
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
+        `);
+
+        // ── 3. Prime Contractors ───────────────────────────────────
+        await db.execute(`
+            CREATE TABLE IF NOT EXISTS primes (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                company_name VARCHAR(255) NOT NULL,
+                contact_name VARCHAR(255) NOT NULL,
+                email VARCHAR(255) UNIQUE NOT NULL,
+                password_hash VARCHAR(255) NOT NULL,
+                phone VARCHAR(50) NOT NULL,
+                sam_uei VARCHAR(50) NOT NULL,
+                contract_vehicles TEXT,
+                naics_codes JSON,
+                sub_types_needed JSON,
+                city VARCHAR(100),
+                state VARCHAR(2),
+                zip VARCHAR(20),
+                subscription_tier ENUM('basic','pro','enterprise') DEFAULT 'basic',
+                monthly_views_used INT DEFAULT 0,
+                monthly_contacts_used INT DEFAULT 0,
+                views_reset_at DATE,
+                active TINYINT DEFAULT 0,
+                approved_at DATETIME,
+                approved_by VARCHAR(255),
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+                INDEX idx_status (active),
+                INDEX idx_tier (subscription_tier)
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
+        `);
+
+        // ── 4. NAICS Codes Reference ───────────────────────────────
+        await db.execute(`
+            CREATE TABLE IF NOT EXISTS naics_codes (
+                code VARCHAR(10) PRIMARY KEY,
+                description VARCHAR(255) NOT NULL,
+                trade_category VARCHAR(100),
+                avg_contract_size VARCHAR(50),
+                set_aside_eligible TINYINT DEFAULT 1,
+                resource_url VARCHAR(500),
+                INDEX idx_trade_cat (trade_category)
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
+        `);
+
+        // ── 5. Worker NAICS Matches ────────────────────────────────
+        await db.execute(`
+            CREATE TABLE IF NOT EXISTS worker_matches (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                worker_id INT NOT NULL,
+                naics_code VARCHAR(10) NOT NULL,
+                matched_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                UNIQUE(worker_id, naics_code),
+                INDEX idx_worker (worker_id),
+                FOREIGN KEY (worker_id) REFERENCES workers(id) ON DELETE CASCADE,
+                FOREIGN KEY (naics_code) REFERENCES naics_codes(code) ON DELETE CASCADE
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
+        `);
+
+        // ── 6. Connections (Prime → Worker/Business) ───────────────
+        await db.execute(`
+            CREATE TABLE IF NOT EXISTS connections (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                prime_id INT NOT NULL,
+                target_type ENUM('worker','business') NOT NULL,
+                target_id INT NOT NULL,
+                status ENUM('pending','accepted','declined') DEFAULT 'pending',
+                message TEXT,
+                prime_company_name VARCHAR(255),
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+                UNIQUE(prime_id, target_type, target_id),
+                INDEX idx_prime (prime_id),
+                INDEX idx_target (target_type, target_id),
+                FOREIGN KEY (prime_id) REFERENCES primes(id) ON DELETE CASCADE
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
+        `);
+
+        // ── 7. Checklist Progress ──────────────────────────────────
+        await db.execute(`
+            CREATE TABLE IF NOT EXISTS checklist_progress (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                user_type ENUM('worker','business') NOT NULL,
+                user_id INT NOT NULL,
+                track ENUM('federal','state','subcontractor') NOT NULL,
+                item_key VARCHAR(100) NOT NULL,
+                completed TINYINT DEFAULT 1,
+                completed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                UNIQUE(user_type, user_id, track, item_key),
+                INDEX idx_user (user_type, user_id)
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
+        `);
+
+        // ── 8. Subcontractor RFQs (Enterprise primes) ─────────────
+        await db.execute(`
+            CREATE TABLE IF NOT EXISTS subcontractor_requests (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                prime_id INT NOT NULL,
+                title VARCHAR(255) NOT NULL,
+                trade_service VARCHAR(100),
+                location VARCHAR(255),
+                timeline VARCHAR(100),
+                contract_vehicle VARCHAR(255),
+                description TEXT,
+                status ENUM('open','closed','draft') DEFAULT 'open',
+                applicant_count INT DEFAULT 0,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+                INDEX idx_prime (prime_id),
+                FOREIGN KEY (prime_id) REFERENCES primes(id) ON DELETE CASCADE
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
+        `);
+
+        // ── 9. Admin Users ─────────────────────────────────────────
+        await db.execute(`
+            CREATE TABLE IF NOT EXISTS admins (
                 id INT AUTO_INCREMENT PRIMARY KEY,
                 email VARCHAR(255) UNIQUE NOT NULL,
                 password_hash VARCHAR(255) NOT NULL,
-                type VARCHAR(50) NOT NULL,
-                business_name VARCHAR(255),
-                contact_name VARCHAR(255),
-                phone VARCHAR(50),
-                ein VARCHAR(50),
-                certification_number VARCHAR(100),
-                business_description TEXT,
-                organization_name VARCHAR(255),
-                districts TEXT,
-                categories TEXT,
-                status VARCHAR(50) NOT NULL DEFAULT 'active',
-                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                saved_opportunities TEXT,
-                capability_statement TEXT,
-                website VARCHAR(255),
-                address VARCHAR(255),
-                city VARCHAR(100),
-                state VARCHAR(50),
-                zip VARCHAR(20),
-                years_in_business VARCHAR(50),
-                certifications TEXT
-            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+                name VARCHAR(255),
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
         `);
 
-        // 2. Opportunities Table
-        console.log('PrimeReach DB: Ensuring "opportunities" table exists...');
-        await db.execute(`
-            CREATE TABLE IF NOT EXISTS opportunities (
-                id VARCHAR(100) PRIMARY KEY,
-                title VARCHAR(255) NOT NULL,
-                scope_summary TEXT NOT NULL,
-                district VARCHAR(50) NOT NULL,
-                district_name VARCHAR(100) NOT NULL,
-                category VARCHAR(100) NOT NULL,
-                category_name VARCHAR(100) NOT NULL,
-                subcategory VARCHAR(100),
-                estimated_value VARCHAR(100),
-                due_date VARCHAR(50),
-                due_time VARCHAR(50),
-                submission_method VARCHAR(255),
-                status VARCHAR(50) NOT NULL DEFAULT 'published',
-                posted_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                posted_by INT,
-                attachments TEXT,
-                duration VARCHAR(100),
-                requirements TEXT,
-                certifications TEXT,
-                experience TEXT,
-                INDEX (posted_by),
-                FOREIGN KEY (posted_by) REFERENCES users(id) ON DELETE SET NULL
-            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-        `);
-
-        // 3. Applications Table
-        console.log('PrimeReach DB: Ensuring "applications" table exists...');
-        await db.execute(`
-            CREATE TABLE IF NOT EXISTS applications (
-                id INT AUTO_INCREMENT PRIMARY KEY,
-                opportunity_id VARCHAR(100) NOT NULL,
-                small_business_id INT NOT NULL,
-                prime_contractor_id INT,
-                status VARCHAR(50) NOT NULL DEFAULT 'pending',
-                applied_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                notes TEXT,
-                UNIQUE(opportunity_id, small_business_id),
-                INDEX (opportunity_id),
-                INDEX (small_business_id),
-                FOREIGN KEY (opportunity_id) REFERENCES opportunities(id) ON DELETE CASCADE,
-                FOREIGN KEY (small_business_id) REFERENCES users(id) ON DELETE CASCADE
-            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-        `);
-
-        // 4. Saved Opportunities Table
-        console.log('PrimeReach DB: Ensuring "saved_opportunities" table exists...');
-        await db.execute(`
-            CREATE TABLE IF NOT EXISTS saved_opportunities (
-                id INT AUTO_INCREMENT PRIMARY KEY,
-                small_business_id INT NOT NULL,
-                opportunity_id VARCHAR(100) NOT NULL,
-                saved_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                UNIQUE(small_business_id, opportunity_id),
-                INDEX (opportunity_id),
-                INDEX (small_business_id),
-                FOREIGN KEY (small_business_id) REFERENCES users(id) ON DELETE CASCADE,
-                FOREIGN KEY (opportunity_id) REFERENCES opportunities(id) ON DELETE CASCADE
-            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-        `);
-
-        // 5. Messages Table
-        console.log('PrimeReach DB: Ensuring "messages" table exists...');
-        await db.execute(`
-            CREATE TABLE IF NOT EXISTS messages (
-                id INT AUTO_INCREMENT PRIMARY KEY,
-                sender_id INT NOT NULL,
-                receiver_id INT NOT NULL,
-                sender_business_name VARCHAR(255),
-                receiver_business_name VARCHAR(255),
-                opportunity_id VARCHAR(100),
-                message_type ENUM('invite', 'application', 'reply') DEFAULT 'reply',
-                subject VARCHAR(255),
-                body TEXT NOT NULL,
-                is_read TINYINT DEFAULT 0,
-                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                INDEX (sender_id),
-                INDEX (receiver_id),
-                FOREIGN KEY (sender_id) REFERENCES users(id) ON DELETE CASCADE,
-                FOREIGN KEY (receiver_id) REFERENCES users(id) ON DELETE CASCADE,
-                FOREIGN KEY (opportunity_id) REFERENCES opportunities(id) ON DELETE SET NULL
-            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-        `);
-
-        // 6. Districts Table
-        console.log('PrimeReach DB: Ensuring "districts" table exists...');
-        await db.execute(`
-            CREATE TABLE IF NOT EXISTS districts (
-                id VARCHAR(50) PRIMARY KEY,
-                name VARCHAR(100) NOT NULL,
-                region VARCHAR(100)
-            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-        `);
-
-        // 7. Work Categories Table
-        console.log('PrimeReach DB: Ensuring "work_categories" table exists...');
-        await db.execute(`
-            CREATE TABLE IF NOT EXISTS work_categories (
-                id VARCHAR(100) PRIMARY KEY,
-                name VARCHAR(100) NOT NULL
-            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-        `);
-
-        // 8. Notifications Table
-        console.log('PrimeReach DB: Ensuring "notifications" table exists...');
-        await db.execute(`
-            CREATE TABLE IF NOT EXISTS notifications (
-                id INT AUTO_INCREMENT PRIMARY KEY,
-                user_id INT NOT NULL,
-                message_id INT,
-                is_read TINYINT DEFAULT 0,
-                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                INDEX (user_id),
-                FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
-                FOREIGN KEY (message_id) REFERENCES messages(id) ON DELETE CASCADE
-            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-        `);
-
-        // 9. CMS FAQs Table
-        console.log('PrimeReach DB: Ensuring "cms_faqs" table exists...');
-        await db.execute(`
-            CREATE TABLE IF NOT EXISTS cms_faqs (
-                id INT AUTO_INCREMENT PRIMARY KEY,
-                category VARCHAR(100) NOT NULL DEFAULT 'General',
-                question TEXT NOT NULL,
-                answer LONGTEXT NOT NULL,
-                sort_order INT DEFAULT 0,
-                status ENUM('active', 'inactive') DEFAULT 'active',
-                created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-                updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-                INDEX idx_faq_category (category),
-                INDEX idx_faq_status (status),
-                INDEX idx_faq_sort (sort_order)
-            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-        `);
-
-        // Seed default FAQs if the table is empty
-        const [[{ faqCount }]] = await db.execute('SELECT COUNT(*) AS faqCount FROM cms_faqs');
-        if (faqCount === 0) {
-            console.log('PrimeReach DB: Seeding default FAQs...');
-            const defaultFaqs = [
-                ['General Questions', 0, 'Do I need to be Small Business certified to use the platform?', '<p>No, you don\'t need Small Business certification to create an account and browse opportunities. However, some opportunities may require Small Business certification. Check the requirements for each opportunity listing.</p><p><strong>How do I get Small Business certified?</strong> Visit our <a href="eligibility.html">Eligibility page</a> to learn about the Small Business certification process, requirements, and how to apply.</p>'],
-                ['General Questions', 1, 'What is a capability statement?', '<p>A capability statement is a one-page document that showcases your business qualifications, past performance, and capabilities. It\'s like a resume for your business.</p><p>You can download our template from the <a href="resources.html">Resources page</a>. Capability statements must be uploaded as PDF files with a maximum size of 10MB.</p>'],
-                ['General Questions', 2, 'How do I apply for an opportunity?', '<p>Each opportunity listing includes contact information for the posting agency. You\'ll need to contact them directly using the information provided and follow their specific application process.</p>'],
-                ['General Questions', 3, 'Can I select multiple work categories?', '<p>Yes, you can select all work categories that apply to your business capabilities. This helps agencies find you when searching for small businesses in those categories.</p>'],
-                ['For Small Businesses', 0, 'How often are new opportunities posted?', '<p>Opportunities are posted regularly as agencies have new projects. We recommend checking the platform frequently or enabling email notifications for new opportunities in your selected categories.</p>'],
-                ['For Small Businesses', 1, 'How long does it take for an opportunity to be posted?', '<p>Opportunities that meet our quality standards are typically posted within 1–2 business days after submission for review.</p>'],
-                ['For Small Businesses', 2, 'Can I edit an opportunity after it\'s posted?', '<p>Yes, you can edit your posted opportunities through your prime contractor dashboard. Updates will be reflected immediately on the platform.</p>'],
-                ['For Small Businesses', 3, 'How do I search for qualified small businesses?', '<p>Use the small business search feature in your dashboard to filter by work category, district, and certification status. You can review small business profiles and capability statements to find qualified partners.</p>'],
-                ['For Prime Contractors', 0, 'Who can post opportunities?', '<p>Caltrans districts, other government agencies, and agencies working on Caltrans projects can post opportunities on the platform.</p>'],
-                ['For Prime Contractors', 1, 'What information is required to post an opportunity?', '<p>You\'ll need to provide project title, description, location (district), work category, timeline, budget range, requirements, and contact information. All fields are required to ensure small businesses receive complete information.</p>'],
-                ['For Prime Contractors', 2, 'How long does it take for an opportunity to be posted?', '<p>Opportunities that meet our quality standards are typically posted within 1–2 business days after submission for review.</p>'],
-                ['For Prime Contractors', 3, 'Can I edit an opportunity after it\'s posted?', '<p>Yes, you can edit your posted opportunities through your prime contractor dashboard. Updates will be reflected immediately on the platform.</p>'],
-                ['For Prime Contractors', 4, 'How do I search for qualified small businesses?', '<p>Use the small business search feature in your dashboard to filter by work category, district, and certification status. You can review small business profiles and capability statements to find qualified partners.</p>'],
-                ['For Prime Contractors', 5, 'What are the quality standards for opportunity postings?', '<p>All postings must include complete project information, clear requirements, realistic timelines, and accurate contact details. This ensures small businesses can make informed decisions about applying.</p>'],
-                ['Technical Questions', 0, 'What browsers are supported?', '<p>PrimeReach works best on the latest versions of Chrome, Firefox, Safari, and Edge. We recommend keeping your browser updated for the best experience.</p>'],
-                ['Technical Questions', 1, 'Is the platform mobile-friendly?', '<p>Yes, PrimeReach is fully responsive and works on smartphones, tablets, and desktop computers.</p>'],
-                ['Technical Questions', 2, 'Is my information secure?', '<p>Yes, we use industry-standard security measures to protect your data. Your personal information is never shared without your consent.</p>'],
-                ['Technical Questions', 3, 'I forgot my password. How do I reset it?', '<p>Click the "Forgot Password" link on the login page and follow the instructions to reset your password via email.</p>'],
-            ];
-            for (const [category, sort_order, question, answer] of defaultFaqs) {
-                await db.execute(
-                    `INSERT INTO cms_faqs (category, sort_order, question, answer, status) VALUES (?, ?, ?, ?, 'active')`,
-                    [category, sort_order, question, answer]
-                );
-            }
-            console.log(`PrimeReach DB: Seeded ${defaultFaqs.length} default FAQs.`);
-        }
-
-        // Terminlogy Migrations for existing live databases
-        console.log('PrimeReach DB: Running terminology data migrations...');
-        try {
-            // Update user types
-            await db.execute("UPDATE users SET type = 'small_business' WHERE type = 'vendor' OR type = 'small business'");
-            await db.execute("UPDATE users SET type = 'agency' WHERE type = 'prime_contractor' OR type = 'prime contractor'");
-            
-            // Rename legacy columns
-            const [appCols] = await db.execute("SHOW COLUMNS FROM applications LIKE 'vendor_id'");
-            if (appCols && appCols.length > 0) {
-                await db.execute("ALTER TABLE applications CHANGE vendor_id small_business_id INT NOT NULL");
-            }
-            const [appColsAgency] = await db.execute("SHOW COLUMNS FROM applications LIKE 'agency_id'");
-            if (appColsAgency && appColsAgency.length > 0) {
-                await db.execute("ALTER TABLE applications CHANGE agency_id prime_contractor_id INT");
-            }
-            
-            const [savedCols] = await db.execute("SHOW COLUMNS FROM saved_opportunities LIKE 'vendor_id'");
-            if (savedCols && savedCols.length > 0) {
-                await db.execute("ALTER TABLE saved_opportunities CHANGE vendor_id small_business_id INT NOT NULL");
-            }
-        } catch (migErr) {
-            console.warn('PrimeReach DB: Terminology migration warning:', migErr.message);
-        }
-
-        // Safe migrations — add columns that may be missing from existing tables
-        console.log('PrimeReach DB: Running safe column migrations...');
-        const migrations = [
-            `ALTER TABLE users ADD COLUMN IF NOT EXISTS capability_statement TEXT`,
-            `ALTER TABLE users ADD COLUMN IF NOT EXISTS website VARCHAR(255)`,
-            `ALTER TABLE users ADD COLUMN IF NOT EXISTS address VARCHAR(255)`,
-            `ALTER TABLE users ADD COLUMN IF NOT EXISTS city VARCHAR(100)`,
-            `ALTER TABLE users ADD COLUMN IF NOT EXISTS state VARCHAR(50)`,
-            `ALTER TABLE users ADD COLUMN IF NOT EXISTS zip VARCHAR(20)`,
-            `ALTER TABLE users ADD COLUMN IF NOT EXISTS years_in_business VARCHAR(50)`,
-            `ALTER TABLE users ADD COLUMN IF NOT EXISTS certifications TEXT`,
-            `ALTER TABLE users ADD COLUMN IF NOT EXISTS saved_opportunities TEXT`,
-            `ALTER TABLE messages ADD COLUMN IF NOT EXISTS sender_business_name VARCHAR(255)`,
-            `ALTER TABLE messages ADD COLUMN IF NOT EXISTS receiver_business_name VARCHAR(255)`,
-            `ALTER TABLE messages ADD COLUMN IF NOT EXISTS message_type ENUM('invite', 'application', 'reply') DEFAULT 'reply'`,
-            `ALTER TABLE opportunities ADD COLUMN IF NOT EXISTS description TEXT`,
-            `ALTER TABLE opportunities ADD COLUMN IF NOT EXISTS tags TEXT`,
-            `ALTER TABLE opportunities ADD COLUMN IF NOT EXISTS posted_by_name VARCHAR(255)`,
-            `ALTER TABLE users ADD COLUMN IF NOT EXISTS naics_codes TEXT`,
-            `ALTER TABLE opportunities ADD COLUMN IF NOT EXISTS naics_codes TEXT`
-        ];
-        for (const sql of migrations) {
-            await db.execute(sql).catch(() => {}); // Ignore if column already exists
-        }
-        console.log('PrimeReach DB: Migrations complete.');
-
-        // Password Reset Tokens Table
+        // ── 10. Password Reset Tokens ──────────────────────────────
         await db.execute(`
             CREATE TABLE IF NOT EXISTS password_reset_tokens (
                 id INT AUTO_INCREMENT PRIMARY KEY,
+                user_type ENUM('worker','business','prime','admin') NOT NULL,
                 user_id INT NOT NULL,
                 token VARCHAR(255) NOT NULL UNIQUE,
                 expires_at DATETIME NOT NULL,
-                used BOOLEAN DEFAULT FALSE,
+                used TINYINT DEFAULT 0,
                 created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
                 INDEX idx_token (token),
-                INDEX idx_user_id (user_id),
-                INDEX idx_expires_at (expires_at),
-                FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
-            )
+                INDEX idx_expires (expires_at)
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
         `);
 
-        console.log('PrimeReach DB: All MySQL tables initialized successfully.');
+        // ── 11. Resource Library ───────────────────────────────────
+        await db.execute(`
+            CREATE TABLE IF NOT EXISTS resources (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                title VARCHAR(255) NOT NULL,
+                description TEXT,
+                url VARCHAR(500),
+                category VARCHAR(100),
+                audience ENUM('all','worker','business','prime') DEFAULT 'all',
+                sort_order INT DEFAULT 0,
+                status ENUM('active','inactive') DEFAULT 'active',
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
+        `);
 
-        // Cleanup expired tokens every hour
+        // ── 12. Announcements ──────────────────────────────────────
+        await db.execute(`
+            CREATE TABLE IF NOT EXISTS announcements (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                message TEXT NOT NULL,
+                type ENUM('info','warning','success') DEFAULT 'info',
+                active TINYINT DEFAULT 1,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                expires_at DATETIME
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
+        `);
+
+        console.log('EvoConnect DB: Core tables initialized.');
+
+        // ── Seed NAICS codes ───────────────────────────────────────
+        const [[{ nc }]] = await db.execute('SELECT COUNT(*) AS nc FROM naics_codes');
+        if (nc === 0) {
+            const naics = [
+                ['237130','Telecommunications Infrastructure Construction','fiber-broadband','$500K–$5M',1],
+                ['517311','Wired Telecom Carriers','fiber-broadband','$250K–$2M',1],
+                ['238210','Electrical Contractors','electrical','$100K–$1M',1],
+                ['517410','Satellite Telecom Carriers','structured-cabling','$250K–$2M',1],
+                ['541512','Computer Systems Design Services','cloud-network-infra','$150K–$1.5M',1],
+                ['517210','Wireless Telecom Carriers (except Satellite)','cloud-network-infra','$250K–$3M',1],
+                ['484110','General Freight Trucking (Local)','cdl-trucking','$50K–$500K',1],
+                ['484121','General Freight Trucking (Long-Distance TL)','cdl-trucking','$100K–$1M',1],
+                ['484122','General Freight Trucking (Long-Distance LTL)','cdl-trucking','$100K–$1M',1],
+                ['488490','Other Support Activities for Road Transport','cdl-trucking','$50K–$250K',1],
+                ['238220','Plumbing, Heating, A/C Contractors','plumbing-hvac','$75K–$750K',1],
+                ['332312','Fabricated Structural Metal Manufacturing','welding-fabrication','$100K–$1M',1],
+                ['332313','Plate Work Manufacturing','welding-fabrication','$100K–$1M',1],
+                ['238130','Framing Contractors','construction-general','$50K–$500K',1],
+                ['238110','Concrete Contractors','concrete-cement','$75K–$750K',1],
+                ['238140','Masonry Contractors','concrete-cement','$75K–$500K',1],
+                ['238910','Site Preparation Contractors','construction-general','$100K–$1M',1],
+                ['238320','Painting & Wall Covering Contractors','construction-general','$50K–$500K',1],
+                ['238160','Roofing Contractors','construction-general','$50K–$500K',1],
+                ['561730','Landscaping Services','landscaping','$25K–$250K',1],
+                ['238990','Other Specialty Trade Contractors','construction-general','$50K–$500K',1],
+                ['561320','Temporary Help Services','admin-clerical','$25K–$250K',1],
+                ['541511','Custom Computer Programming Services','it-support','$100K–$1M',1],
+                ['811212','Computer & Peripheral Equipment Repair','it-support','$25K–$250K',1],
+                ['236220','Commercial & Institutional Building Construction','construction-general','$500K–$10M',1],
+                ['237310','Highway, Street, Bridge Construction','concrete-cement','$1M–$50M',1],
+                ['236115','New Single-Family Housing Construction','construction-general','$250K–$5M',0],
+                ['541330','Engineering Services','cloud-network-infra','$250K–$5M',1],
+                ['561110','Office Administrative Services','admin-clerical','$50K–$500K',1],
+            ];
+            for (const [code, desc, trade, avg, sa] of naics) {
+                await db.execute(
+                    `INSERT IGNORE INTO naics_codes (code, description, trade_category, avg_contract_size, set_aside_eligible) VALUES (?,?,?,?,?)`,
+                    [code, desc, trade, avg, sa]
+                );
+            }
+            console.log(`EvoConnect DB: Seeded ${naics.length} NAICS codes.`);
+        }
+
+        // ── Seed default resources ─────────────────────────────────
+        const [[{ rc }]] = await db.execute('SELECT COUNT(*) AS rc FROM resources');
+        if (rc === 0) {
+            const resources = [
+                ['SAM.gov Registration Guide','Step-by-step guide to registering on the federal vendor database.','https://sam.gov','Federal Basics','all',1],
+                ['Capability Statement Template','Download and customize this one-page capability statement template.', null,'Capability Statement','all',2],
+                ['Set-Aside Contract Explainer','Learn how set-aside programs work and which ones you qualify for.', null,'Federal Basics','worker',3],
+                ['How Prime Contractors Pay Subs','Understand payment terms, milestone billing, and prompt pay requirements.', null,'Subcontracting','worker',4],
+                ['8(a) Business Development Program','SBA\'s flagship small business program — eligibility and application.','https://www.sba.gov/federal-contracting/contracting-assistance-programs/8a-business-development-program','Certifications','business',5],
+                ['HUBZone Program Guide','Historically Underutilized Business Zone certification and benefits.','https://www.sba.gov/federal-contracting/contracting-assistance-programs/hubzone-program','Certifications','business',6],
+                ['Texas HUB Certification','Texas Historically Underutilized Business certification guide.','https://comptroller.texas.gov/purchasing/vendor/hub/','Certifications','business',7],
+                ['BEAD Program Overview','$42B Broadband Equity Access & Deployment — fiber installer opportunities.','https://broadbandusa.ntia.gov/funding-programs/bead','Industry News','worker',8],
+            ];
+            for (const [title, desc, url, cat, audience, sort] of resources) {
+                await db.execute(
+                    `INSERT INTO resources (title, description, url, category, audience, sort_order) VALUES (?,?,?,?,?,?)`,
+                    [title, desc, url, cat, audience, sort]
+                );
+            }
+            console.log('EvoConnect DB: Seeded default resources.');
+        }
+
+        // ── Seed default admin ─────────────────────────────────────
+        const [[{ ac }]] = await db.execute('SELECT COUNT(*) AS ac FROM admins');
+        if (ac === 0) {
+            const bcrypt = require('bcryptjs');
+            const adminPassword = process.env.ADMIN_DEFAULT_PASSWORD || 'EvoConnect2026!';
+            const hash = await bcrypt.hash(adminPassword, 12);
+            await db.execute(
+                `INSERT INTO admins (email, password_hash, name) VALUES (?, ?, ?)`,
+                [process.env.ADMIN_EMAIL || 'admin@evoconnect.evobrand.net', hash, 'EvoConnect Admin']
+            );
+            console.log('EvoConnect DB: Default admin created.');
+        }
+
+        console.log('EvoConnect DB: All tables initialized successfully.');
+
+        // Cleanup expired tokens hourly
         setInterval(async () => {
             try {
-                const db = getDb();
-                const [result] = await db.execute(
-                    'DELETE FROM password_reset_tokens WHERE expires_at < NOW() OR used = TRUE'
-                );
-                if (result.affectedRows > 0) {
-                    console.log(`PrimeReach DB: Cleaned up ${result.affectedRows} expired/used reset tokens.`);
-                }
-            } catch (e) {
-                console.error('PrimeReach DB: Token cleanup error:', e.message);
-            }
+                const d = getDb();
+                await d.execute('DELETE FROM password_reset_tokens WHERE expires_at < NOW() OR used = 1');
+            } catch {}
         }, 60 * 60 * 1000);
+
     } catch (err) {
-        console.error('PrimeReach DB CRITICAL ERROR: Database initialization failed.');
-        console.error(err);
-        // Do not rethrow here to prevent server crash during startup, 
-        // but health check will reflect the error.
+        console.error('EvoConnect DB CRITICAL ERROR:', err.message);
     }
 }
 
-module.exports = {
-    db: getDb(),
-    getDb,
-    initDatabase
-};
+module.exports = { getDb, initDatabase };

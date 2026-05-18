@@ -1,0 +1,174 @@
+<% const title = locals.title || 'Admin Dashboard | EvoConnect' %>
+
+<section class="admin-section">
+  <div class="container">
+
+    <%- include('../partials/flash') %>
+
+    <div class="admin-header" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem;margin-bottom:2rem">
+      <div>
+        <h1 style="margin:0;color:#0F172A">Admin Dashboard</h1>
+        <p style="color:#64748B;margin:.25rem 0 0">EvoConnect platform management</p>
+      </div>
+      <div style="display:flex;gap:.75rem;flex-wrap:wrap">
+        <a href="/admin/users" class="btn btn-secondary">All Users</a>
+        <a href="/admin/export/csv" class="btn btn-secondary">Export CSV</a>
+        <a href="/admin/announcements" class="btn btn-amber">Announcements</a>
+      </div>
+    </div>
+
+    <!-- Stats Row -->
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1rem;margin-bottom:2rem">
+      <div class="stat-card">
+        <div class="stat-number"><%= locals.stats?.workerCount || 0 %></div>
+        <div class="stat-label">Workers</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number"><%= locals.stats?.bizCount || 0 %></div>
+        <div class="stat-label">Businesses</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number"><%= locals.stats?.primeCount || 0 %></div>
+        <div class="stat-label">Prime Contractors</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number"><%= locals.stats?.connectionCount || 0 %></div>
+        <div class="stat-label">Connections</div>
+      </div>
+      <div class="stat-card" style="border-left:4px solid #F59E0B">
+        <div class="stat-number" style="color:#D97706"><%= locals.stats?.pendingPrimes || 0 %></div>
+        <div class="stat-label">Pending Approvals</div>
+      </div>
+    </div>
+
+    <!-- Pending Prime Approvals -->
+    <div class="card" style="margin-bottom:2rem">
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:1.25rem 1.5rem;border-bottom:1px solid #E2E8F0">
+        <h2 style="margin:0;font-size:1.1rem;color:#0F172A">Pending Prime Contractor Approvals</h2>
+        <% if (locals.stats?.pendingPrimes > 0) { %>
+          <span style="background:#FEF3C7;color:#92400E;padding:.25rem .75rem;border-radius:999px;font-size:.8rem;font-weight:600"><%= locals.stats.pendingPrimes %> pending</span>
+        <% } %>
+      </div>
+      <% if (locals.pendingList && pendingList.length > 0) { %>
+        <div style="overflow-x:auto">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Company</th>
+                <th>Contact</th>
+                <th>Email</th>
+                <th>SAM UEI</th>
+                <th>Plan</th>
+                <th>Registered</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% pendingList.forEach(function(prime) { %>
+              <tr>
+                <td><strong><%= prime.company_name || '—' %></strong></td>
+                <td><%= prime.contact_name || '—' %></td>
+                <td><a href="mailto:<%= prime.email %>" style="color:#06B6D4"><%= prime.email %></a></td>
+                <td style="font-family:monospace;font-size:.85rem"><%= prime.sam_uei || '—' %></td>
+                <td><span style="background:#E0F2FE;color:#0369A1;padding:.2rem .6rem;border-radius:4px;font-size:.8rem;text-transform:capitalize"><%= prime.subscription_tier || 'basic' %></span></td>
+                <td><%= new Date(prime.created_at).toLocaleDateString() %></td>
+                <td style="white-space:nowrap">
+                  <form method="POST" action="/admin/primes/<%= prime.id %>/approve" style="display:inline">
+                    <button type="submit" class="btn btn-primary" style="padding:.3rem .8rem;font-size:.8rem">Approve</button>
+                  </form>
+                  <form method="POST" action="/admin/primes/<%= prime.id %>/deny" style="display:inline;margin-left:.5rem">
+                    <input type="hidden" name="reason" value="">
+                    <button type="submit" class="btn btn-danger" style="padding:.3rem .8rem;font-size:.8rem" onclick="return confirm('Deny this application? This will notify the applicant.')">Deny</button>
+                  </form>
+                </td>
+              </tr>
+              <% }) %>
+            </tbody>
+          </table>
+        </div>
+      <% } else { %>
+        <div style="padding:2rem;text-align:center;color:#64748B">
+          <p>No pending approvals. All prime contractor applications are reviewed.</p>
+        </div>
+      <% } %>
+    </div>
+
+    <!-- Checklist Completion -->
+    <% if (locals.checklistStats && checklistStats.length > 0) { %>
+    <div class="card" style="margin-bottom:2rem">
+      <div style="padding:1.25rem 1.5rem;border-bottom:1px solid #E2E8F0">
+        <h2 style="margin:0;font-size:1.1rem;color:#0F172A">Checklist Completion by Track</h2>
+      </div>
+      <div style="overflow-x:auto">
+        <table class="data-table">
+          <thead>
+            <tr><th>User Type</th><th>Track</th><th>Total Completions</th></tr>
+          </thead>
+          <tbody>
+            <% checklistStats.forEach(function(row) { %>
+            <tr>
+              <td style="text-transform:capitalize"><%= row.user_type %></td>
+              <td style="text-transform:capitalize"><%= row.track %></td>
+              <td><%= row.total_completions %></td>
+            </tr>
+            <% }) %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <% } %>
+
+    <!-- Weekly Registrations -->
+    <% if (locals.weeklyRegistrations && weeklyRegistrations.length > 0) { %>
+    <div class="card" style="margin-bottom:2rem">
+      <div style="padding:1.25rem 1.5rem;border-bottom:1px solid #E2E8F0">
+        <h2 style="margin:0;font-size:1.1rem;color:#0F172A">Weekly Registrations (Last 8 Weeks)</h2>
+      </div>
+      <div style="padding:1.5rem;overflow-x:auto">
+        <table class="data-table">
+          <thead><tr><th>Week</th><th>Registrations</th><th>Connections</th></tr></thead>
+          <tbody>
+            <% weeklyRegistrations.forEach(function(row, i) { %>
+            <tr>
+              <td style="font-family:monospace">Wk <%= row.week %></td>
+              <td><%= row.count %></td>
+              <td><%= locals.weeklyConnections?.[i]?.count || 0 %></td>
+            </tr>
+            <% }) %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <% } %>
+
+    <!-- Quick Actions -->
+    <div class="card">
+      <div style="padding:1.25rem 1.5rem;border-bottom:1px solid #E2E8F0">
+        <h2 style="margin:0;font-size:1.1rem;color:#0F172A">Quick Actions</h2>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:1rem;padding:1.5rem">
+        <a href="/admin/users" style="display:flex;flex-direction:column;align-items:center;gap:.5rem;padding:1.25rem;border:1px solid #E2E8F0;border-radius:8px;text-decoration:none;color:#0F172A;transition:border-color .2s" onmouseover="this.style.borderColor='#06B6D4'" onmouseout="this.style.borderColor='#E2E8F0'">
+          <span style="font-size:2rem">👥</span>
+          <span style="font-weight:600;font-size:.9rem">All Users</span>
+        </a>
+        <a href="/admin/naics" style="display:flex;flex-direction:column;align-items:center;gap:.5rem;padding:1.25rem;border:1px solid #E2E8F0;border-radius:8px;text-decoration:none;color:#0F172A;transition:border-color .2s" onmouseover="this.style.borderColor='#06B6D4'" onmouseout="this.style.borderColor='#E2E8F0'">
+          <span style="font-size:2rem">🏷️</span>
+          <span style="font-weight:600;font-size:.9rem">NAICS Codes</span>
+        </a>
+        <a href="/admin/resources" style="display:flex;flex-direction:column;align-items:center;gap:.5rem;padding:1.25rem;border:1px solid #E2E8F0;border-radius:8px;text-decoration:none;color:#0F172A;transition:border-color .2s" onmouseover="this.style.borderColor='#06B6D4'" onmouseout="this.style.borderColor='#E2E8F0'">
+          <span style="font-size:2rem">📚</span>
+          <span style="font-weight:600;font-size:.9rem">Resources</span>
+        </a>
+        <a href="/admin/announcements" style="display:flex;flex-direction:column;align-items:center;gap:.5rem;padding:1.25rem;border:1px solid #E2E8F0;border-radius:8px;text-decoration:none;color:#0F172A;transition:border-color .2s" onmouseover="this.style.borderColor='#F59E0B'" onmouseout="this.style.borderColor='#E2E8F0'">
+          <span style="font-size:2rem">📢</span>
+          <span style="font-weight:600;font-size:.9rem">Announcements</span>
+        </a>
+        <a href="/admin/export/csv" style="display:flex;flex-direction:column;align-items:center;gap:.5rem;padding:1.25rem;border:1px solid #E2E8F0;border-radius:8px;text-decoration:none;color:#0F172A;transition:border-color .2s" onmouseover="this.style.borderColor='#06B6D4'" onmouseout="this.style.borderColor='#E2E8F0'">
+          <span style="font-size:2rem">⬇️</span>
+          <span style="font-weight:600;font-size:.9rem">Export CSV</span>
+        </a>
+      </div>
+    </div>
+
+  </div>
+</section>

@@ -3,7 +3,7 @@
  * Handles administrative data management (simulated for demo)
  */
 
-const ADMIN_DATA_KEY = 'caltrans_admin_data';
+const ADMIN_DATA_KEY = 'wfc_admin_data';
 
 // Initialize admin data from server
 async function initAdminDataFromServer() {

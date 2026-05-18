@@ -1,5 +1,5 @@
 /* ================================================================
-   PrimeReach Accessibility Widget v3.0
+   WorkForce Connect Accessibility Widget v3.0
    Design: EVOBRAND Concepts | evobrand.net
    WCAG 2.1 AA/AAA Compliant
    ================================================================ */
@@ -40,7 +40,7 @@
   padding: 0;
 }
 #a11y-trigger:hover   { transform: scale(1.1); background: var(--a11y-primary-dk); }
-#a11y-trigger:focus-visible { outline: 3px solid #C9A84C; outline-offset: 3px; }
+#a11y-trigger:focus-visible { outline: 3px solid #FFCC00; outline-offset: 3px; }
 #a11y-trigger svg     { width: 28px; height: 28px; pointer-events: none; }
 
 #a11y-badge {
@@ -130,7 +130,7 @@
   font-family: inherit;
 }
 .aw-close:hover { background: rgba(255,255,255,0.32); }
-.aw-close:focus-visible { outline: 2px solid #C9A84C; outline-offset: 2px; }
+.aw-close:focus-visible { outline: 2px solid #FFCC00; outline-offset: 2px; }
 
 /* ── Body ────────────────────────────────────────────────────── */
 .aw-body {

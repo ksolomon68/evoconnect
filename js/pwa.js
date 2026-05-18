@@ -1,5 +1,5 @@
 /**
- * PrimeReach PWA – Service Worker Registration & Install Prompt
+ * WorkForce Connect PWA – Service Worker Registration & Install Prompt
  * Handles: Android Chrome (beforeinstallprompt), iOS Safari (manual guide),
  *          Android fallback (manual guide), and app update notifications.
  */
@@ -96,7 +96,7 @@
       <div class="pwa-inner">
         <img src="${ICON}" alt="" aria-hidden="true" class="pwa-logo">
         <div class="pwa-text">
-          <strong>Install PrimeReach</strong>
+          <strong>Install WorkForce Connect</strong>
           <span>Add to your home screen for quick access</span>
         </div>
         <div class="pwa-actions">
@@ -133,7 +133,7 @@
       <div class="pwa-inner">
         <img src="${ICON}" alt="" aria-hidden="true" class="pwa-logo">
         <div class="pwa-text">
-          <strong>Install PrimeReach</strong>
+          <strong>Install WorkForce Connect</strong>
           <span>Tap <b>⋮ Menu</b> → <b>Add to Home screen</b></span>
         </div>
         <div class="pwa-actions">
@@ -157,7 +157,7 @@
       <div class="pwa-inner pwa-ios">
         <img src="${ICON}" alt="" aria-hidden="true" class="pwa-logo">
         <div class="pwa-text">
-          <strong>Install PrimeReach</strong>
+          <strong>Install WorkForce Connect</strong>
           <span>Tap <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="vertical-align:middle;margin:0 2px"><path d="M4 12v8a2 2 0 002 2h12a2 2 0 002-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg> then <b>"Add to Home Screen"</b></span>
         </div>
         <div class="pwa-actions">

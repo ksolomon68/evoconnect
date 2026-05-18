@@ -1,0 +1,1004 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, nofollow">
+    <title>Platform Admin Guide | WorkForce Connect</title>
+    <link rel="icon" href="assets/favicon.ico" type="image/x-icon">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#005A8C">
+    <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+    <link rel="stylesheet" href="css/design-system.css?v=1774555160000">
+    <link rel="stylesheet" href="css/main.css?v=1774555160000">
+    <link rel="stylesheet" href="css/accessibility-widget.css?v=1774549569000">
+    <style>
+        /* ===== PAGE WRAPPER ===== */
+        .tut-page { background: #f5f5f5; }
+
+        /* ===== INTRO BANNER ===== */
+        .tut-banner {
+            background: linear-gradient(135deg, #003D5C 0%, #005A8C 100%);
+            padding: 56px 32px;
+        }
+        .tut-banner-inner { max-width: 900px; margin: 0 auto; }
+        .tut-badge {
+            display: inline-block;
+            background: #FFCC00;
+            color: #000;
+            border-radius: 100px;
+            padding: 4px 16px;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-bottom: 16px;
+        }
+        .tut-banner h1 {
+            color: #fff !important;
+            font-size: 2.25rem !important;
+            margin: 0 0 12px 0 !important;
+            letter-spacing: -0.02em;
+            line-height: 1.2;
+        }
+        .tut-banner p {
+            color: rgba(255,255,255,0.88);
+            font-size: 1.1rem;
+            margin: 0 0 8px 0;
+            line-height: 1.6;
+        }
+        .tut-banner .tut-meta {
+            color: rgba(255,255,255,0.65);
+            font-size: 0.85rem;
+            margin-top: 16px;
+        }
+        .role-pill {
+            display: inline-block;
+            padding: 2px 10px;
+            border-radius: 100px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            background: rgba(255,255,255,0.25);
+            color: #fff;
+        }
+
+        /* ===== MAIN LAYOUT ===== */
+        .tut-layout {
+            display: grid;
+            grid-template-columns: 240px 1fr;
+            gap: 32px;
+            max-width: 1140px;
+            margin: 0 auto;
+            padding: 40px 24px 80px;
+        }
+        @media (max-width: 860px) {
+            .tut-layout { grid-template-columns: 1fr; }
+            .tut-toc { position: static !important; }
+        }
+
+        /* ===== TABLE OF CONTENTS ===== */
+        .tut-toc {
+            position: sticky;
+            top: 90px;
+            align-self: start;
+            background: #fff;
+            border: 2px solid #005A8C;
+            border-radius: 10px;
+            padding: 20px;
+        }
+        .tut-toc h2 {
+            font-size: 11px !important;
+            font-weight: 700 !important;
+            color: #005A8C !important;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin: 0 0 12px 0 !important;
+            padding-bottom: 8px;
+            border-bottom: 2px solid #FFCC00;
+        }
+        .tut-toc ol {
+            margin: 0 !important;
+            padding: 0 !important;
+            list-style: none;
+        }
+        .tut-toc ol li {
+            margin: 0 0 6px 0 !important;
+            padding: 0 !important;
+            display: flex;
+            align-items: baseline;
+            gap: 4px;
+        }
+        .tut-toc-num {
+            color: #005A8C;
+            font-weight: 700;
+            font-size: 12px;
+            flex-shrink: 0;
+        }
+        .tut-toc a {
+            color: #005A8C;
+            text-decoration: none;
+            font-size: 12px;
+            line-height: 1.4;
+        }
+        .tut-toc a:hover { text-decoration: underline; }
+
+        /* ===== SECTION BLOCK ===== */
+        .tut-section { margin-bottom: 12px; }
+
+        .tut-section-head {
+            background: #005A8C;
+            border-radius: 10px 10px 0 0;
+            padding: 14px 24px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin: 48px 0 0 0;
+        }
+        .tut-section:first-child .tut-section-head { margin-top: 0; }
+
+        .tut-section-num {
+            background: #FFCC00;
+            color: #000;
+            border-radius: 50%;
+            width: 34px;
+            height: 34px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+        .tut-section-head h2 {
+            color: #fff !important;
+            font-size: 1.2rem !important;
+            margin: 0 !important;
+            font-weight: 700;
+            line-height: 1.2;
+        }
+        .tut-section-body {
+            background: #fff;
+            border: 1px solid #ccc;
+            border-top: none;
+            border-radius: 0 0 10px 10px;
+            padding: 28px 28px 20px;
+        }
+
+        /* ===== HEADINGS INSIDE SECTION BODY ===== */
+        .tut-section-body h3 {
+            color: #003D5C !important;
+            font-size: 1.05rem !important;
+            font-weight: 700;
+            margin: 24px 0 8px 0 !important;
+            padding-bottom: 6px;
+            border-bottom: 2px solid #FFCC00;
+        }
+        .tut-section-body h3:first-child { margin-top: 0 !important; }
+        .tut-section-body h4 {
+            color: #005A8C !important;
+            font-size: 0.95rem !important;
+            font-weight: 700;
+            margin: 20px 0 6px 0 !important;
+        }
+        .tut-section-body p {
+            line-height: 1.7;
+            margin: 0 0 12px 0;
+            color: #111;
+        }
+        .tut-section-body ul {
+            margin: 8px 0 12px 0 !important;
+            padding-left: 24px !important;
+        }
+        .tut-section-body ul li {
+            margin-bottom: 6px !important;
+            line-height: 1.6;
+        }
+
+        /* ===== STEP LISTS ===== */
+        .tut-steps { margin: 12px 0 16px 0; }
+        .tut-step {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 14px;
+            align-items: flex-start;
+        }
+        .tut-step-num {
+            background: #005A8C;
+            color: #fff;
+            border-radius: 50%;
+            min-width: 28px;
+            height: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 13px;
+            font-weight: 700;
+            flex-shrink: 0;
+            margin-top: 1px;
+        }
+        .tut-step-body {
+            flex: 1;
+            line-height: 1.65;
+            padding-top: 2px;
+            color: #111;
+        }
+        .tut-step-body ul {
+            margin: 8px 0 0 0 !important;
+            padding-left: 20px !important;
+        }
+        .tut-step-body ul li {
+            margin-bottom: 4px !important;
+            line-height: 1.6;
+        }
+
+        /* ===== CALLOUT BOXES ===== */
+        .tut-callout {
+            display: flex;
+            gap: 12px;
+            align-items: flex-start;
+            border-radius: 8px;
+            padding: 14px 18px;
+            margin: 14px 0;
+        }
+        .tut-callout-icon { font-size: 18px; flex-shrink: 0; margin-top: 1px; line-height: 1; }
+        .tut-callout-body { flex: 1; }
+        .tut-callout-body strong {
+            display: block;
+            margin-bottom: 4px;
+            font-size: 14px;
+            font-weight: 700;
+        }
+        .tut-callout-body p { margin: 0 !important; font-size: 14px; line-height: 1.6; }
+        .tut-callout-body a { color: inherit; font-weight: 600; }
+        .tut-callout.tip { background: #E1F5FE; border-left: 4px solid #0277BD; }
+        .tut-callout.tip .tut-callout-body strong { color: #01579B; }
+        .tut-callout.warning { background: #FFF9C4; border-left: 4px solid #F9A825; }
+        .tut-callout.warning .tut-callout-body strong { color: #6D4C00; }
+        .tut-callout.danger { background: #FFEBEE; border-left: 4px solid #C62828; }
+        .tut-callout.danger .tut-callout-body strong { color: #B71C1C; }
+        .tut-callout.success { background: #E8F5E9; border-left: 4px solid #2E7D32; }
+        .tut-callout.success .tut-callout-body strong { color: #1B5E20; }
+
+        /* ===== DATA TABLES ===== */
+        .tut-table-wrap { overflow-x: auto; margin: 12px 0; }
+        .tut-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13.5px;
+            min-width: 400px;
+        }
+        .tut-table th {
+            background: #005A8C;
+            color: #fff;
+            padding: 10px 14px;
+            text-align: left;
+            font-weight: 700;
+        }
+        .tut-table td {
+            padding: 9px 14px;
+            border-bottom: 1px solid #e0e0e0;
+            vertical-align: top;
+            line-height: 1.5;
+        }
+        .tut-table tr:nth-child(even) td { background: #f5f5f5; }
+        .tut-table td:first-child { font-weight: 600; white-space: nowrap; }
+
+        /* ===== INLINE UI LABELS ===== */
+        .lbl {
+            display: inline-block;
+            background: #005A8C;
+            color: #fff;
+            border-radius: 4px;
+            padding: 1px 8px;
+            font-size: 12px;
+            font-weight: 700;
+            vertical-align: middle;
+            line-height: 1.6;
+        }
+        .lbl-gold { background: #FFCC00; color: #000; }
+        .lbl-green { background: #2E7D32; }
+        .lbl-red { background: #C62828; }
+        .lbl-gray { background: #555; }
+
+        /* ===== MISC ===== */
+        .tut-rule { border: none; border-top: 1px solid #e8e8e8; margin: 24px 0; }
+        .tut-back { display: block; text-align: right; margin-top: 16px; font-size: 12px; color: #005A8C; }
+        .tut-back:hover { color: #003D5C; }
+        code {
+            background: #f0f0f0;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+            padding: 1px 5px;
+            font-family: 'Consolas', 'Courier New', monospace;
+            font-size: 0.85em;
+            color: #003D5C;
+        }
+        .tut-flow {
+            background: #f5f5f5;
+            border-radius: 8px;
+            padding: 14px 18px;
+            font-family: 'Consolas', 'Courier New', monospace;
+            font-size: 0.875rem;
+            color: #003D5C;
+            margin: 8px 0 14px 0;
+            line-height: 1.8;
+        }
+    </style>
+</head>
+
+<body class="tut-page">
+    <a href="#main-content" class="skip-link">Skip to main content</a>
+
+    <header class="site-header" role="banner">
+        <div class="container">
+            <a href="index.html" class="site-logo">
+                <img src="images/caltrans-logo.png" alt="Caltrans">
+            </a>
+            <button class="nav-toggle" aria-label="Toggle navigation" aria-expanded="false"><span></span></button>
+            <nav class="main-nav" role="navigation" aria-label="Main navigation">
+                <ul>
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="how-it-works.html">Small Businesses</a></li>
+                    <li><a href="index.html">Prime Contractors</a></li>
+                    <li><a href="index.html">Opportunities</a></li>
+                    <li><a href="how-it-works.html">How It Works</a></li>
+                    <li><a href="checklist.html">Resources</a></li>
+                    <li><a href="faq.html">FAQ</a></li>
+                    <li><a href="contact.html">Contact</a></li>
+                    <li><a href="login.html" class="btn btn-secondary btn-small">Log In</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main id="main-content">
+
+        <div class="tut-banner">
+            <div class="tut-banner-inner">
+                <span class="tut-badge">Internal Documentation</span>
+                <h1>WorkForce Connect Platform Admin Guide</h1>
+                <p>A complete reference for platform administrators managing users and opportunities on WorkForce Connect.</p>
+                <p class="tut-meta">
+                    Roles: <span class="role-pill">admin</span>&ensp;<span class="role-pill">wfc_admin</span>
+                    &ensp;&bull;&ensp; Last updated: May 2026
+                </p>
+            </div>
+        </div>
+
+        <div class="tut-layout">
+
+            <!-- Sidebar TOC -->
+            <aside class="tut-toc" aria-label="Table of contents">
+                <h2>Contents</h2>
+                <ol>
+                    <li><span class="tut-toc-num">1.</span><a href="#sec-intro">Introduction &amp; Access</a></li>
+                    <li><span class="tut-toc-num">2.</span><a href="#sec-analytics">Analytics Dashboard</a></li>
+                    <li><span class="tut-toc-num">3.</span><a href="#sec-users">User Management</a></li>
+                    <li><span class="tut-toc-num">4.</span><a href="#sec-opportunities">Opportunity Management</a></li>
+                    <li><span class="tut-toc-num">5.</span><a href="#sec-applications">Application Review</a></li>
+                    <li><span class="tut-toc-num">6.</span><a href="#sec-security">Security Best Practices</a></li>
+                    <li><span class="tut-toc-num">7.</span><a href="#sec-troubleshooting">Troubleshooting</a></li>
+                </ol>
+            </aside>
+
+            <!-- Main Content -->
+            <div class="tut-main">
+
+                <!-- SECTION 1 -->
+                <div class="tut-section">
+                    <div class="tut-section-head" id="sec-intro">
+                        <div class="tut-section-num" aria-hidden="true">1</div>
+                        <h2>Introduction &amp; Access</h2>
+                    </div>
+                    <div class="tut-section-body">
+
+                        <h3>About This Guide</h3>
+                        <p>This guide is for Caltrans staff who have been granted <strong>admin</strong> or <strong>wfc_admin</strong> roles on WorkForce Connect. It covers every administrative action available: user account management, opportunity review and approval, application oversight, and platform analytics.</p>
+
+                        <div class="tut-callout tip">
+                            <span class="tut-callout-icon" aria-hidden="true">ℹ️</span>
+                            <div class="tut-callout-body">
+                                <strong>Who this guide is for</strong>
+                                <p>Platform admins manage <em>accounts and operations</em>. If you manage <em>website content</em> (page text, FAQs, images), see the <a href="cms-tutorial.html"><strong>CMS Admin Guide</strong></a>.</p>
+                            </div>
+                        </div>
+
+                        <h3>Your Admin Pages</h3>
+                        <div class="tut-table-wrap">
+                            <table class="tut-table">
+                                <thead><tr><th>Page</th><th>URL</th><th>Purpose</th></tr></thead>
+                                <tbody>
+                                    <tr><td>Analytics</td><td><code>/admin-analytics.html</code></td><td>View real-time platform metrics and user activity</td></tr>
+                                    <tr><td>User Management</td><td><code>/admin-users.html</code></td><td>Create, edit, approve, suspend, and delete user accounts</td></tr>
+                                    <tr><td>CMS (Content)</td><td><code>/admin-cms.html</code></td><td>Edit page content, FAQs, and site settings</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <h3>How to Log In</h3>
+                        <div class="tut-steps">
+                            <div class="tut-step">
+                                <div class="tut-step-num" aria-hidden="true">1</div>
+                                <div class="tut-step-body">Navigate to <code>caltransbizconnect.org/login.html</code> in your browser.</div>
+                            </div>
+                            <div class="tut-step">
+                                <div class="tut-step-num" aria-hidden="true">2</div>
+                                <div class="tut-step-body">Enter your admin email address and password, then click <span class="lbl">Log In</span>.</div>
+                            </div>
+                            <div class="tut-step">
+                                <div class="tut-step-num" aria-hidden="true">3</div>
+                                <div class="tut-step-body">If your credentials are valid and your account has admin privileges, you will be redirected automatically to the admin analytics dashboard.</div>
+                            </div>
+                            <div class="tut-step">
+                                <div class="tut-step-num" aria-hidden="true">4</div>
+                                <div class="tut-step-body">Use the navigation links in your dashboard header to move between analytics, user management, and other admin areas.</div>
+                            </div>
+                        </div>
+
+                        <div class="tut-callout warning">
+                            <span class="tut-callout-icon" aria-hidden="true">⚠️</span>
+                            <div class="tut-callout-body">
+                                <strong>Session expiry</strong>
+                                <p>Admin sessions expire after 7 days of inactivity. If you see a "Please log in" message, your session has expired — return to the login page and sign in again.</p>
+                            </div>
+                        </div>
+
+                        <h3>Role Differences: admin vs. wfc_admin</h3>
+                        <p>Both roles have identical access to the admin UI. The <code>wfc_admin</code> role is reserved for Caltrans Civil Rights staff and is the highest-privilege role on the platform. The <code>admin</code> role is used for delegated administrators. Both can perform all actions in this guide.</p>
+
+                    </div><!-- /.tut-section-body -->
+                </div><!-- /.tut-section -->
+                <a href="#main-content" class="tut-back">Back to top &uarr;</a>
+
+                <!-- SECTION 2 -->
+                <div class="tut-section">
+                    <div class="tut-section-head" id="sec-analytics">
+                        <div class="tut-section-num" aria-hidden="true">2</div>
+                        <h2>Analytics Dashboard</h2>
+                    </div>
+                    <div class="tut-section-body">
+
+                        <p>The Analytics Dashboard (<code>/admin-analytics.html</code>) gives you a real-time view of platform health. It is the first page you see after logging in as an admin.</p>
+
+                        <h3>Top-Line Metrics</h3>
+                        <p>Four key figures are displayed at the top of the dashboard:</p>
+                        <div class="tut-table-wrap">
+                            <table class="tut-table">
+                                <thead><tr><th>Metric</th><th>What It Counts</th><th>When to Act</th></tr></thead>
+                                <tbody>
+                                    <tr><td>Total Registered Users</td><td>All accounts regardless of status</td><td>Rapid drops may indicate accidental deletions</td></tr>
+                                    <tr><td>Total Opportunities</td><td>All opportunities regardless of status</td><td>Monitor against expected agency posting activity</td></tr>
+                                    <tr><td>Active Opportunities</td><td>Opportunities with status <code>open</code></td><td>Low count = few open bids; follow up with agencies</td></tr>
+                                    <tr><td>New Users This Week</td><td>Accounts registered in the past 7 days</td><td>High spikes may indicate automated signups</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <h3>Users by Type Breakdown</h3>
+                        <p>A visual bar chart shows the distribution of account types across the platform — Small Business, Prime Contractor, and Admin — each shown as a percentage of all registered users. A healthy ratio typically shows small businesses as the majority.</p>
+
+                        <h3>Opportunities by Status</h3>
+                        <div class="tut-table-wrap">
+                            <table class="tut-table">
+                                <thead><tr><th>Status</th><th>Meaning</th></tr></thead>
+                                <tbody>
+                                    <tr><td><code>open</code></td><td>Published and accepting applications from small businesses</td></tr>
+                                    <tr><td><code>pending</code></td><td>Posted by an agency but not yet reviewed/approved by admin</td></tr>
+                                    <tr><td><code>closed</code></td><td>Past due date or manually closed; no new applications accepted</td></tr>
+                                    <tr><td><code>awarded</code></td><td>Contract has been awarded to a small business</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div class="tut-callout tip">
+                            <span class="tut-callout-icon" aria-hidden="true">💡</span>
+                            <div class="tut-callout-body">
+                                <strong>Watch the pending count</strong>
+                                <p>A growing "Pending" count means agencies have posted opportunities that haven't been reviewed yet. Approve or reject them in the Opportunity Manager (Section 4).</p>
+                            </div>
+                        </div>
+
+                        <h3>Recent Registrations Table</h3>
+                        <p>The bottom of the analytics page shows the 10 most recently registered users, including their name/business, account type badge, and join date. Each row includes a <span class="lbl">Manage</span> link that opens that user's record in User Management.</p>
+
+                        <h3>Refreshing Data</h3>
+                        <p>Data does <strong>not</strong> auto-refresh. Click the <span class="lbl">Refresh</span> button or reload the page to see current figures.</p>
+
+                    </div>
+                </div>
+                <a href="#main-content" class="tut-back">Back to top &uarr;</a>
+
+                <!-- SECTION 3 -->
+                <div class="tut-section">
+                    <div class="tut-section-head" id="sec-users">
+                        <div class="tut-section-num" aria-hidden="true">3</div>
+                        <h2>User Management</h2>
+                    </div>
+                    <div class="tut-section-body">
+
+                        <p>User Management (<code>/admin-users.html</code>) is your primary tool for managing who has access to the platform. You can view, create, edit, approve, suspend, and delete user accounts from this page.</p>
+
+                        <h3>Reading the User Table</h3>
+                        <div class="tut-table-wrap">
+                            <table class="tut-table">
+                                <thead><tr><th>Column</th><th>Description</th></tr></thead>
+                                <tbody>
+                                    <tr><td>User / Business</td><td>Business or organization name with the contact email below it</td></tr>
+                                    <tr><td>Account Type</td><td>Colored badge: Small Business, Prime Contractor, or Admin</td></tr>
+                                    <tr><td>Status</td><td>Current account state (see reference below)</td></tr>
+                                    <tr><td>Join Date</td><td>When the account was created</td></tr>
+                                    <tr><td>Actions</td><td>Context-dependent action buttons</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <h4>Account Status Reference</h4>
+                        <div class="tut-table-wrap">
+                            <table class="tut-table">
+                                <thead><tr><th>Status</th><th>Meaning</th><th>Can Log In?</th></tr></thead>
+                                <tbody>
+                                    <tr><td><span class="lbl lbl-gold">Pending</span></td><td>Account created but not yet reviewed by admin</td><td>Limited access</td></tr>
+                                    <tr><td><span class="lbl lbl-green">Active</span></td><td>Fully active, normal access</td><td>Yes</td></tr>
+                                    <tr><td><span class="lbl lbl-red">Suspended</span></td><td>Account temporarily disabled by admin</td><td>No</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <h3>Searching and Filtering</h3>
+                        <p>Use the search bar at the top of the user table to filter in real time by business name, contact name, or email address. Clear the field to restore all users.</p>
+
+                        <hr class="tut-rule">
+
+                        <h3>How to Approve a New User</h3>
+                        <p>When a new user registers, their status is <span class="lbl lbl-gold">Pending</span>. They have limited platform access until an admin approves them.</p>
+                        <div class="tut-steps">
+                            <div class="tut-step">
+                                <div class="tut-step-num" aria-hidden="true">1</div>
+                                <div class="tut-step-body">In the user table, locate the pending account. Use the search field to find it quickly.</div>
+                            </div>
+                            <div class="tut-step">
+                                <div class="tut-step-num" aria-hidden="true">2</div>
+                                <div class="tut-step-body">Click the <span class="lbl lbl-green">Approve</span> button in that user's Actions column. This button only appears for accounts with <em>Pending</em> status.</div>
+                            </div>
+                            <div class="tut-step">
+                                <div class="tut-step-num" aria-hidden="true">3</div>
+                                <div class="tut-step-body">The status badge updates immediately to <span class="lbl lbl-green">Active</span>. The user can now log in with full access.</div>
+                            </div>
+                        </div>
+
+                        <hr class="tut-rule">
+
+                        <h3>How to Suspend or Deactivate a User</h3>
+                        <p>Suspension prevents login but preserves the account and all its data. Use it for policy violations, security concerns, or temporary holds.</p>
+                        <div class="tut-steps">
+                            <div class="tut-step">
+                                <div class="tut-step-num" aria-hidden="true">1</div>
+                                <div class="tut-step-body">Locate the user's row in the table.</div>
+                            </div>
+                            <div class="tut-step">
+                                <div class="tut-step-num" aria-hidden="true">2</div>
+                                <div class="tut-step-body">Click <span class="lbl lbl-red">Deactivate</span> in the Actions column. This button only appears for Active accounts.</div>
+                            </div>
+                            <div class="tut-step">
+                                <div class="tut-step-num" aria-hidden="true">3</div>
+                                <div class="tut-step-body">Confirm the action. The status updates to Suspended immediately.</div>
+                            </div>
+                            <div class="tut-step">
+                                <div class="tut-step-num" aria-hidden="true">4</div>
+                                <div class="tut-step-body">To re-activate: click <span class="lbl">Manage</span>, change the Status dropdown back to <em>Active</em> or <em>Verified</em>, and click <span class="lbl">Save Changes</span>.</div>
+                            </div>
+                        </div>
+
+                        <div class="tut-callout danger">
+                            <span class="tut-callout-icon" aria-hidden="true">🚫</span>
+                            <div class="tut-callout-body">
+                                <strong>Suspension vs. Deletion</strong>
+                                <p>Suspension is reversible. Deletion is permanent and removes the user's account, saved opportunities, and all applications they submitted. Only delete accounts when you are certain they will never be needed again.</p>
+                            </div>
+                        </div>
+
+                        <hr class="tut-rule">
+
+                        <h3>How to Create a New User Account</h3>
+                        <div class="tut-steps">
+                            <div class="tut-step">
+                                <div class="tut-step-num" aria-hidden="true">1</div>
+                                <div class="tut-step-body">Click <span class="lbl lbl-green">+ Add New User</span> above the user table.</div>
+                            </div>
+                            <div class="tut-step">
+                                <div class="tut-step-num" aria-hidden="true">2</div>
+                                <div class="tut-step-body">
+                                    Fill in all required fields in the modal:
+                                    <ul>
+                                        <li><strong>User / Organization Name</strong> — business or organization name</li>
+                                        <li><strong>Email Address</strong> — must be unique; this is the login email</li>
+                                        <li><strong>Password</strong> — minimum 8 characters; share securely with the user</li>
+                                        <li><strong>Account Type</strong> — Small Business, Prime Contractor, or Administrator</li>
+                                        <li><strong>Account Status</strong> — Active for immediate access, Pending if review is needed</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="tut-step">
+                                <div class="tut-step-num" aria-hidden="true">3</div>
+                                <div class="tut-step-body">Click <span class="lbl lbl-green">Create User</span>. The new account appears in the table immediately.</div>
+                            </div>
+                            <div class="tut-step">
+                                <div class="tut-step-num" aria-hidden="true">4</div>
+                                <div class="tut-step-body">Communicate the login credentials to the new user through a secure channel — not email in plaintext.</div>
+                            </div>
+                        </div>
+
+                        <hr class="tut-rule">
+
+                        <h3>How to Edit an Existing User</h3>
+                        <div class="tut-steps">
+                            <div class="tut-step">
+                                <div class="tut-step-num" aria-hidden="true">1</div>
+                                <div class="tut-step-body">Click <span class="lbl">Manage</span> on the user's row to open the "Manage User Account" modal.</div>
+                            </div>
+                            <div class="tut-step">
+                                <div class="tut-step-num" aria-hidden="true">2</div>
+                                <div class="tut-step-body">
+                                    Update any fields as needed:
+                                    <ul>
+                                        <li><strong>User / Organization Name</strong> — correct typos or update after a name change</li>
+                                        <li><strong>Email Address</strong> — update if the user's contact email has changed</li>
+                                        <li><strong>Password</strong> — leave blank to keep the current password; enter a new value to reset it</li>
+                                        <li><strong>Account Type</strong> — change role if the user's relationship to the platform changes</li>
+                                        <li><strong>Account Status</strong> — move between Active, Pending, Suspended, and Verified</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="tut-step">
+                                <div class="tut-step-num" aria-hidden="true">3</div>
+                                <div class="tut-step-body">Click <span class="lbl">Save Changes</span>. Changes take effect immediately.</div>
+                            </div>
+                        </div>
+
+                        <div class="tut-callout warning">
+                            <span class="tut-callout-icon" aria-hidden="true">⚠️</span>
+                            <div class="tut-callout-body">
+                                <strong>Changing account type</strong>
+                                <p>Changing a user from Small Business to Administrator changes their dashboard and page access. Confirm with your supervisor before upgrading any account to Admin or wfc_admin.</p>
+                            </div>
+                        </div>
+
+                        <hr class="tut-rule">
+
+                        <h3>How to Delete a User</h3>
+                        <div class="tut-steps">
+                            <div class="tut-step">
+                                <div class="tut-step-num" aria-hidden="true">1</div>
+                                <div class="tut-step-body">Click <span class="lbl">Manage</span> for the user you wish to delete.</div>
+                            </div>
+                            <div class="tut-step">
+                                <div class="tut-step-num" aria-hidden="true">2</div>
+                                <div class="tut-step-body">In the modal, click the <span class="lbl lbl-red">Delete User</span> button at the bottom.</div>
+                            </div>
+                            <div class="tut-step">
+                                <div class="tut-step-num" aria-hidden="true">3</div>
+                                <div class="tut-step-body">Confirm the dialog. The account is permanently removed and the user disappears from the table.</div>
+                            </div>
+                        </div>
+
+                        <div class="tut-callout danger">
+                            <span class="tut-callout-icon" aria-hidden="true">🚫</span>
+                            <div class="tut-callout-body">
+                                <strong>Deletion is irreversible</strong>
+                                <p>Deleted users cannot be recovered. Their capability statements, saved opportunities, messages, and application history are permanently erased. Prefer Suspension over Deletion in all but the clearest cases.</p>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+                <a href="#main-content" class="tut-back">Back to top &uarr;</a>
+
+                <!-- SECTION 4 -->
+                <div class="tut-section">
+                    <div class="tut-section-head" id="sec-opportunities">
+                        <div class="tut-section-num" aria-hidden="true">4</div>
+                        <h2>Opportunity Management</h2>
+                    </div>
+                    <div class="tut-section-body">
+
+                        <p>When an agency posts a subcontracting opportunity, it enters the system as <code>pending</code>. It is invisible to small businesses until an admin approves it. This section covers the full approval workflow and ongoing management.</p>
+
+                        <h3>The Opportunity Workflow</h3>
+                        <div class="tut-flow">
+                            Agency posts &rarr; <strong>pending</strong> &rarr; Admin reviews &rarr; <strong>open</strong> (published) &rarr; Bids close &rarr; <strong>closed</strong> &rarr; Award selected &rarr; <strong>awarded</strong>
+                        </div>
+
+                        <h3>How to Review and Approve a Pending Opportunity</h3>
+                        <div class="tut-steps">
+                            <div class="tut-step">
+                                <div class="tut-step-num" aria-hidden="true">1</div>
+                                <div class="tut-step-body">From your admin dashboard, check the <strong>Pending Reviews</strong> count on the analytics page or navigate to the Opportunity Manager section.</div>
+                            </div>
+                            <div class="tut-step">
+                                <div class="tut-step-num" aria-hidden="true">2</div>
+                                <div class="tut-step-body">
+                                    Locate opportunities with <span class="lbl lbl-gold">Pending</span> status. Review the following before approving:
+                                    <ul>
+                                        <li>Title and scope summary — clearly and professionally described?</li>
+                                        <li>Due date — at least 5 business days in the future?</li>
+                                        <li>Estimated value — a dollar amount provided?</li>
+                                        <li>NAICS codes — at least one code listed?</li>
+                                        <li>District — a Caltrans district number or "Statewide" selected?</li>
+                                        <li>Certifications — SBE/DBE requirements accurately stated?</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="tut-step">
+                                <div class="tut-step-num" aria-hidden="true">3</div>
+                                <div class="tut-step-body">If the opportunity meets standards, click <span class="lbl lbl-green">Approve</span>. The status changes to <code>open</code> and the opportunity is immediately visible to small businesses.</div>
+                            </div>
+                            <div class="tut-step">
+                                <div class="tut-step-num" aria-hidden="true">4</div>
+                                <div class="tut-step-body">If corrections are needed, contact the posting agency and ask them to update the posting before you approve it.</div>
+                            </div>
+                        </div>
+
+                        <hr class="tut-rule">
+
+                        <h3>How to Edit an Opportunity</h3>
+                        <div class="tut-steps">
+                            <div class="tut-step">
+                                <div class="tut-step-num" aria-hidden="true">1</div>
+                                <div class="tut-step-body">Navigate to the opportunity in the admin interface and click <span class="lbl">Edit</span>.</div>
+                            </div>
+                            <div class="tut-step">
+                                <div class="tut-step-num" aria-hidden="true">2</div>
+                                <div class="tut-step-body">The opportunity editor opens with all current values pre-filled. Modify only the fields that need correction.</div>
+                            </div>
+                            <div class="tut-step">
+                                <div class="tut-step-num" aria-hidden="true">3</div>
+                                <div class="tut-step-body">Click <span class="lbl">Save</span>. Changes apply immediately, even for published opportunities.</div>
+                            </div>
+                        </div>
+
+                        <h4>Editable Opportunity Fields</h4>
+                        <div class="tut-table-wrap">
+                            <table class="tut-table">
+                                <thead><tr><th>Field</th><th>Notes</th></tr></thead>
+                                <tbody>
+                                    <tr><td>Title</td><td>Short, clear description of the work being subcontracted</td></tr>
+                                    <tr><td>Scope Summary</td><td>Full description of scope, requirements, and deliverables</td></tr>
+                                    <tr><td>District</td><td>Caltrans district number (1–12) or Statewide</td></tr>
+                                    <tr><td>Category</td><td>Work category (e.g., Construction, Environmental, IT)</td></tr>
+                                    <tr><td>Estimated Value</td><td>Dollar amount; required for small businesses to assess fit</td></tr>
+                                    <tr><td>Due Date &amp; Time</td><td>Submission deadline</td></tr>
+                                    <tr><td>Status</td><td>open, closed, pending, awarded</td></tr>
+                                    <tr><td>NAICS Codes</td><td>Drives the automatic small business matching engine</td></tr>
+                                    <tr><td>Certifications Required</td><td>SBE, DBE, DVBE, etc.</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <hr class="tut-rule">
+
+                        <h3>How to Close an Opportunity</h3>
+                        <div class="tut-steps">
+                            <div class="tut-step">
+                                <div class="tut-step-num" aria-hidden="true">1</div>
+                                <div class="tut-step-body">Open the opportunity editor.</div>
+                            </div>
+                            <div class="tut-step">
+                                <div class="tut-step-num" aria-hidden="true">2</div>
+                                <div class="tut-step-body">Change the <strong>Status</strong> field to <code>closed</code>.</div>
+                            </div>
+                            <div class="tut-step">
+                                <div class="tut-step-num" aria-hidden="true">3</div>
+                                <div class="tut-step-body">Save. The opportunity no longer appears as active on the Opportunities page but remains in its history.</div>
+                            </div>
+                        </div>
+
+                        <h3>How to Mark an Opportunity as Awarded</h3>
+                        <div class="tut-steps">
+                            <div class="tut-step">
+                                <div class="tut-step-num" aria-hidden="true">1</div>
+                                <div class="tut-step-body">Open the opportunity editor for a closed opportunity.</div>
+                            </div>
+                            <div class="tut-step">
+                                <div class="tut-step-num" aria-hidden="true">2</div>
+                                <div class="tut-step-body">Change the <strong>Status</strong> to <code>awarded</code>. Optionally note the winning small business in the tags field.</div>
+                            </div>
+                            <div class="tut-step">
+                                <div class="tut-step-num" aria-hidden="true">3</div>
+                                <div class="tut-step-body">Save. The opportunity displays an "Awarded" badge on the platform.</div>
+                            </div>
+                        </div>
+
+                        <div class="tut-callout danger">
+                            <span class="tut-callout-icon" aria-hidden="true">🚫</span>
+                            <div class="tut-callout-body">
+                                <strong>Prefer closing over deleting</strong>
+                                <p>Deleting an opportunity permanently removes all associated application records, which affects small businesses who applied and agency reporting. Set the status to <code>closed</code> rather than deleting in almost all cases.</p>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+                <a href="#main-content" class="tut-back">Back to top &uarr;</a>
+
+                <!-- SECTION 5 -->
+                <div class="tut-section">
+                    <div class="tut-section-head" id="sec-applications">
+                        <div class="tut-section-num" aria-hidden="true">5</div>
+                        <h2>Application Review</h2>
+                    </div>
+                    <div class="tut-section-body">
+
+                        <p>When a small business applies to an opportunity, an application record is created. The posting agency normally reviews applications, but admins can view all applications across the platform and override statuses when needed.</p>
+
+                        <h3>Application Statuses</h3>
+                        <div class="tut-table-wrap">
+                            <table class="tut-table">
+                                <thead><tr><th>Status</th><th>Meaning</th><th>Who Sets It</th></tr></thead>
+                                <tbody>
+                                    <tr><td><span class="lbl lbl-gold">pending</span></td><td>Application submitted, not yet reviewed</td><td>System (on submission)</td></tr>
+                                    <tr><td><span class="lbl" style="background:#0277BD">under_review</span></td><td>Agency is actively reviewing the application</td><td>Agency / Admin</td></tr>
+                                    <tr><td><span class="lbl lbl-green">approved</span></td><td>Application approved for the opportunity</td><td>Agency / Admin</td></tr>
+                                    <tr><td><span class="lbl lbl-red">declined</span></td><td>Application rejected</td><td>Agency / Admin</td></tr>
+                                    <tr><td><span class="lbl lbl-green" style="background:#1b5e20">awarded</span></td><td>This applicant was awarded the contract</td><td>Agency / Admin</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <h3>Updating Application Status (Admin Override)</h3>
+                        <div class="tut-steps">
+                            <div class="tut-step">
+                                <div class="tut-step-num" aria-hidden="true">1</div>
+                                <div class="tut-step-body">Navigate to the Applications section and open the application record.</div>
+                            </div>
+                            <div class="tut-step">
+                                <div class="tut-step-num" aria-hidden="true">2</div>
+                                <div class="tut-step-body">Use the Status dropdown to change to the appropriate status.</div>
+                            </div>
+                            <div class="tut-step">
+                                <div class="tut-step-num" aria-hidden="true">3</div>
+                                <div class="tut-step-body">Click <span class="lbl">Save</span>. The change is logged and the applicant's dashboard reflects the new status.</div>
+                            </div>
+                        </div>
+
+                        <div class="tut-callout warning">
+                            <span class="tut-callout-icon" aria-hidden="true">⚠️</span>
+                            <div class="tut-callout-body">
+                                <strong>Communicate status changes to applicants</strong>
+                                <p>Status changes do not trigger automatic email notifications to the small business. If you change a status as an admin override, send the small business a direct message or email to inform them.</p>
+                            </div>
+                        </div>
+
+                        <h3>Viewing Applications for a Specific Opportunity</h3>
+                        <div class="tut-steps">
+                            <div class="tut-step">
+                                <div class="tut-step-num" aria-hidden="true">1</div>
+                                <div class="tut-step-body">Open the opportunity in the admin interface.</div>
+                            </div>
+                            <div class="tut-step">
+                                <div class="tut-step-num" aria-hidden="true">2</div>
+                                <div class="tut-step-body">Click the <span class="lbl">View Applications</span> button to see all applications for that opportunity, with status, applicant name, and submission date.</div>
+                            </div>
+                        </div>
+
+                        <h3>Viewing All Applications from a Specific Small Business</h3>
+                        <div class="tut-steps">
+                            <div class="tut-step">
+                                <div class="tut-step-num" aria-hidden="true">1</div>
+                                <div class="tut-step-body">Open the small business's account in User Management (click <span class="lbl">Manage</span>).</div>
+                            </div>
+                            <div class="tut-step">
+                                <div class="tut-step-num" aria-hidden="true">2</div>
+                                <div class="tut-step-body">From the user profile, click <span class="lbl">View Applications</span> to see every opportunity this business has applied to.</div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+                <a href="#main-content" class="tut-back">Back to top &uarr;</a>
+
+                <!-- SECTION 6 -->
+                <div class="tut-section">
+                    <div class="tut-section-head" id="sec-security">
+                        <div class="tut-section-num" aria-hidden="true">6</div>
+                        <h2>Security Best Practices</h2>
+                    </div>
+                    <div class="tut-section-body">
+
+                        <h3>Protecting Your Admin Account</h3>
+                        <ul>
+                            <li><strong>Use a strong, unique password</strong> — minimum 12 characters, mix of letters, numbers, and symbols. Never reuse a password from another account.</li>
+                            <li><strong>Never share your admin credentials</strong> — if another staff member needs admin access, create them a separate account.</li>
+                            <li><strong>Log out when done</strong> — especially on shared computers. Your session lasts up to 7 days if not explicitly logged out.</li>
+                            <li><strong>Access on secured networks only</strong> — avoid logging in on public Wi-Fi. Use your agency VPN when working remotely.</li>
+                        </ul>
+
+                        <h3>Account Lifecycle Hygiene</h3>
+                        <ul>
+                            <li>Conduct a quarterly audit of all admin accounts. Suspend or delete accounts for staff who have left the program.</li>
+                            <li>Review the Recent Activity feed monthly for unexpected registrations or changes.</li>
+                            <li>Verify that no user has an inappropriately elevated account type (e.g., a contractor set to Admin).</li>
+                        </ul>
+
+                        <h3>Credential Rotation Schedule</h3>
+                        <div class="tut-table-wrap">
+                            <table class="tut-table">
+                                <thead><tr><th>Credential</th><th>Recommended Rotation</th></tr></thead>
+                                <tbody>
+                                    <tr><td>Admin account password</td><td>Every 90 days</td></tr>
+                                    <tr><td>CMS admin password</td><td>Every 90 days</td></tr>
+                                    <tr><td>Email service app password</td><td>Every 6 months or upon any personnel change</td></tr>
+                                    <tr><td>JWT secret (server config)</td><td>Upon any suspected compromise; otherwise annually</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div class="tut-callout danger">
+                            <span class="tut-callout-icon" aria-hidden="true">🚨</span>
+                            <div class="tut-callout-body">
+                                <strong>If you suspect a compromise</strong>
+                                <p>Immediately change your admin password and notify the Caltrans Civil Rights IT contact. Do not attempt to investigate on your own — preserve the audit trail for forensic analysis.</p>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+                <a href="#main-content" class="tut-back">Back to top &uarr;</a>
+
+                <!-- SECTION 7 -->
+                <div class="tut-section">
+                    <div class="tut-section-head" id="sec-troubleshooting">
+                        <div class="tut-section-num" aria-hidden="true">7</div>
+                        <h2>Troubleshooting</h2>
+                    </div>
+                    <div class="tut-section-body">
+
+                        <h3>I can't log in to the admin panel</h3>
+                        <ul>
+                            <li>Verify you are using your <em>admin</em> account email, not a regular user account.</li>
+                            <li>Check that your password hasn't been changed by another admin.</li>
+                            <li>Clear your browser cache and cookies, then try again.</li>
+                            <li>If still unable, contact the technical administrator to verify your account status and role.</li>
+                        </ul>
+
+                        <h3>The user table shows no data</h3>
+                        <ul>
+                            <li>Check that the search field is empty — an active filter can hide all users if no matches are found.</li>
+                            <li>Click <span class="lbl">Refresh</span> or reload the page.</li>
+                            <li>If the table consistently shows no data, the database connection may be down — contact the server administrator.</li>
+                        </ul>
+
+                        <h3>An approved opportunity is not showing on the public Opportunities page</h3>
+                        <ul>
+                            <li>Confirm the opportunity status is <code>open</code>, not <code>pending</code> or <code>closed</code>.</li>
+                            <li>Check the due date — if it has already passed, the opportunity may be automatically hidden.</li>
+                            <li>Try viewing the page in a private/incognito browser window to rule out a caching issue.</li>
+                        </ul>
+
+                        <h3>I accidentally deleted a user account</h3>
+                        <p>Account deletions are permanent and cannot be undone from the admin UI. If the deletion was very recent, contact the server administrator to request a database restore from backup. Otherwise, create a new account for the affected user and inform them to re-enter their profile information.</p>
+
+                        <hr class="tut-rule">
+
+                        <h3>Getting Help</h3>
+                        <ul>
+                            <li><strong>Support:</strong> Use the <a href="contact.html">Contact Page</a> for assistance.</li>
+                            <li><strong>Phone:</strong> (916) 324-1700</li>
+                            <li><strong>CMS Guide:</strong> <a href="cms-tutorial.html">CMS Admin Tutorial</a></li>
+                        </ul>
+
+                    </div>
+                </div>
+                <a href="#main-content" class="tut-back">Back to top &uarr;</a>
+
+            </div><!-- /.tut-main -->
+        </div><!-- /.tut-layout -->
+    </main>
+
+    </main>
+
+    <script src="js/config.js?v=1774549569000"></script>
+    <script src="js/main.js?v=1774549569000"></script>
+    <script src="js/accessibility-widget.js?v=1774549569000"></script>
+</body>
+</html>

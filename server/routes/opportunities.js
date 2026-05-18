@@ -1,12 +1,12 @@
 const express = require('express');
 const { db } = require('../database');
-const { requireRole } = require('../middleware/auth');
+const { requireRole, requireAdmin } = require('../middleware/auth');
 const router = express.Router();
 
 // Get all opportunities
 router.get('/', async (req, res) => {
     try {
-        console.log('PrimeReach API: Fetching all opportunities');
+        console.log('WorkForce Connect API: Fetching all opportunities');
         let query = 'SELECT * FROM opportunities WHERE 1=1';
         const params = [];
         
@@ -39,7 +39,7 @@ router.get('/', async (req, res) => {
         query += ' ORDER BY posted_date DESC';
         
         const [rows] = await db.execute(query, params);
-        console.log(`PrimeReach API: Found ${rows.length} opportunities`);
+        console.log(`WorkForce Connect API: Found ${rows.length} opportunities`);
         
         let userNaics = [];
         if (userId) {
@@ -67,7 +67,7 @@ router.get('/', async (req, res) => {
         
         res.json(rows);
     } catch (error) {
-        console.error('PrimeReach API Error fetching opportunities:', error);
+        console.error('WorkForce Connect API Error fetching opportunities:', error);
         res.status(500).json({ error: error.message });
     }
 });
@@ -125,7 +125,7 @@ router.get('/:id', async (req, res) => {
 });
 
 // Post new opportunity
-router.post('/', requireRole('agency'), async (req, res) => {
+router.post('/', requireRole(['agency', 'admin', 'wfc_admin']), async (req, res) => {
     let {
         id, title, scopeSummary, district, districtName,
         category, categoryName, subcategory, estimatedValue,
@@ -138,7 +138,9 @@ router.post('/', requireRole('agency'), async (req, res) => {
     
     // Determine status based on due date if not explicitly published
     let calcStatus = status || 'published';
-    if (dueDate && calcStatus !== 'published') {
+    if (req.user && req.user.type === 'agency') {
+        calcStatus = 'pending';
+    } else if (dueDate && calcStatus !== 'published') {
         const due = new Date(dueDate);
         const now = new Date();
         calcStatus = due < now ? 'closed' : 'open';
@@ -181,6 +183,10 @@ router.post('/', requireRole('agency'), async (req, res) => {
             desc, JSON.stringify(cleanTags), JSON.stringify(cleanNaics), postedByName
         ]);
 
+        if (calcStatus === 'pending') {
+            await notifyAdminsOfPendingOpportunity(oppId, title, postedByName);
+        }
+
         res.status(201).json({ id: oppId, success: true, opportunityId: oppId, title, status: calcStatus });
     } catch (error) {
         console.error('Error creating opportunity:', error);
@@ -189,7 +195,7 @@ router.post('/', requireRole('agency'), async (req, res) => {
 });
 
 // Approve opportunity (Admin only)
-router.post('/:id/approve', async (req, res) => {
+router.post('/:id/approve', requireAdmin, async (req, res) => {
     const { id } = req.params;
 
     try {
@@ -206,6 +212,13 @@ router.post('/:id/approve', async (req, res) => {
             const senderId = existing[0].posted_by || req.user?.id || 1;
             const senderName = existing[0].posted_by_name || 'Caltrans Admin';
             await notifyApplicantsOfStatusChange(id, existing[0].title, 'published', senderId, senderName);
+            
+            // Mark the admin notification message as completed
+            await db.execute(`
+                UPDATE messages 
+                SET is_read = 1, subject = CONCAT('[Completed] ', subject)
+                WHERE opportunity_id = ? AND message_type = 'system' AND subject LIKE 'Pending Approval:%'
+            `, [id]);
         }
 
         res.json({ id, status: 'published' });
@@ -235,7 +248,7 @@ async function notifyApplicantsOfStatusChange(opportunityId, opportunityTitle, n
         };
         const label = statusLabels[newStatus] || newStatus;
         const subject = `Update: ${opportunityTitle}`;
-        const body = `This is an update regarding the opportunity you applied for.\n\nOpportunity: ${opportunityTitle}\nNew Status: ${newStatus.toUpperCase()}\n\nThis opportunity is now ${label}.\n\nPlease log in to PrimeReach to view full details.`;
+        const body = `This is an update regarding the opportunity you applied for.\n\nOpportunity: ${opportunityTitle}\nNew Status: ${newStatus.toUpperCase()}\n\nThis opportunity is now ${label}.\n\nPlease log in to WorkForce Connect to view full details.`;
 
         for (const applicant of applicants) {
             const receiverName = applicant.business_name || `Applicant ${applicant.small_business_id}`;
@@ -249,9 +262,35 @@ async function notifyApplicantsOfStatusChange(opportunityId, opportunityTitle, n
                 [applicant.small_business_id, msgResult.insertId]
             );
         }
-        console.log(`PrimeReach: Notified ${applicants.length} applicants of status change to "${newStatus}" for ${opportunityId}`);
+        console.log(`WorkForce Connect: Notified ${applicants.length} applicants of status change to "${newStatus}" for ${opportunityId}`);
     } catch (err) {
-        console.error('PrimeReach: Failed to notify applicants:', err.message);
+        console.error('WorkForce Connect: Failed to notify applicants:', err.message);
+    }
+}
+
+// Helper: notify admins of a pending opportunity
+async function notifyAdminsOfPendingOpportunity(opportunityId, opportunityTitle, postedByName) {
+    try {
+        const [admins] = await db.execute(`SELECT id FROM users WHERE type IN ('admin', 'wfc_admin')`);
+        if (admins.length === 0) return;
+
+        const subject = `Pending Approval: ${opportunityTitle}`;
+        const body = `A new opportunity "${opportunityTitle}" has been submitted by ${postedByName} and is pending review. Please visit the admin dashboard to review and approve this opportunity.`;
+
+        for (const admin of admins) {
+            const [msgResult] = await db.execute(
+                `INSERT INTO messages (sender_id, receiver_id, sender_business_name, receiver_business_name, opportunity_id, message_type, subject, body)
+                 VALUES (?, ?, ?, ?, ?, 'system', ?, ?)`,
+                [1, admin.id, 'System', 'Admin', opportunityId, subject, body]
+            );
+            await db.execute(
+                `INSERT INTO notifications (user_id, message_id) VALUES (?, ?)`,
+                [admin.id, msgResult.insertId]
+            );
+        }
+        console.log(`WorkForce Connect: Notified admins of pending opportunity ${opportunityId}`);
+    } catch (err) {
+        console.error('WorkForce Connect: Failed to notify admins:', err.message);
     }
 }
 
@@ -327,9 +366,13 @@ router.delete('/:id', requireRole(['agency', 'admin']), async (req, res) => {
 
 // --- Saved Opportunities Endpoints ---
 
-// Get saved opportunities for a small business
-router.get('/saved/:smallBusinessId', async (req, res) => {
+// Get saved opportunities — caller must be the business whose saved list is requested
+router.get('/saved/:smallBusinessId', requireRole(['small_business', 'admin', 'wfc_admin']), async (req, res) => {
     const { smallBusinessId } = req.params;
+    const isAdmin = req.user.type === 'admin' || req.user.type === 'wfc_admin';
+    if (!isAdmin && String(req.user.id) !== String(smallBusinessId)) {
+        return res.status(403).json({ error: 'Forbidden: You may only view your own saved opportunities' });
+    }
     try {
         const [rows] = await db.execute(`
             SELECT o.* FROM opportunities o
@@ -343,44 +386,52 @@ router.get('/saved/:smallBusinessId', async (req, res) => {
     }
 });
 
-// Save an opportunity
+// Save an opportunity — smallBusinessId must match the authenticated user
 router.post('/save', requireRole('small_business'), async (req, res) => {
     const { smallBusinessId, opportunityId } = req.body;
     if (!smallBusinessId || !opportunityId) {
         return res.status(400).json({ error: 'Small Business ID and Opportunity ID are required' });
     }
+    if (String(req.user.id) !== String(smallBusinessId)) {
+        return res.status(403).json({ error: 'Forbidden: You may only save opportunities for your own account' });
+    }
     try {
-        const sql = `
-            INSERT IGNORE INTO saved_opportunities (small_business_id, opportunity_id)
-            VALUES (?, ?)
-        `;
-        await db.execute(sql, [smallBusinessId, opportunityId]);
+        await db.execute(
+            'INSERT IGNORE INTO saved_opportunities (small_business_id, opportunity_id) VALUES (?, ?)',
+            [smallBusinessId, opportunityId]
+        );
         res.status(201).json({ message: 'Opportunity saved successfully' });
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        res.status(500).json({ error: 'Failed to save opportunity' });
     }
 });
 
-// Unsave an opportunity
+// Unsave an opportunity — smallBusinessId must match the authenticated user
 router.post('/unsave', requireRole('small_business'), async (req, res) => {
     const { smallBusinessId, opportunityId } = req.body;
     if (!smallBusinessId || !opportunityId) {
         return res.status(400).json({ error: 'Small Business ID and Opportunity ID are required' });
     }
+    if (String(req.user.id) !== String(smallBusinessId)) {
+        return res.status(403).json({ error: 'Forbidden: You may only unsave opportunities for your own account' });
+    }
     try {
-        const [result] = await db.execute(`
-            DELETE FROM saved_opportunities 
-            WHERE small_business_id = ? AND opportunity_id = ?
-        `, [smallBusinessId, opportunityId]);
+        await db.execute(
+            'DELETE FROM saved_opportunities WHERE small_business_id = ? AND opportunity_id = ?',
+            [smallBusinessId, opportunityId]
+        );
         res.status(200).json({ message: 'Opportunity unsaved successfully' });
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        res.status(500).json({ error: 'Failed to unsave opportunity' });
     }
 });
 
-// Unsave an opportunity (DELETE method)
+// Unsave an opportunity (DELETE method) — path param must match authenticated user
 router.delete('/unsave/:smallBusinessId/:opportunityId', requireRole('small_business'), async (req, res) => {
     const { smallBusinessId, opportunityId } = req.params;
+    if (String(req.user.id) !== String(smallBusinessId)) {
+        return res.status(403).json({ error: 'Forbidden: You may only remove your own saved opportunities' });
+    }
     try {
         const [result] = await db.execute('DELETE FROM saved_opportunities WHERE small_business_id = ? AND opportunity_id = ?', [smallBusinessId, opportunityId]);
         if (result.affectedRows === 0) {
@@ -388,7 +439,7 @@ router.delete('/unsave/:smallBusinessId/:opportunityId', requireRole('small_busi
         }
         res.json({ message: 'Opportunity removed from saved list' });
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        res.status(500).json({ error: 'Failed to remove saved opportunity' });
     }
 });
 

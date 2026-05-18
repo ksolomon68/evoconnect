@@ -1,19 +1,9 @@
 /**
  * Authentication Module
- * Handles login, registration, and session management.
- *
- * Agency-specific values come from window.AGENCY (agency.config.js).
- * Do NOT hard-code brand names, storage prefixes, or emails here.
+ * Handles login, registration, and session management (client-side demo)
  */
 
-// Derive storage key names once from the agency config.
-const _prefix = (window.AGENCY && window.AGENCY.storagePrefix) || 'app';
-const USER_KEY  = _prefix + '_user';
-const TOKEN_KEY = _prefix + '_token';
-const _appName  = (window.AGENCY && window.AGENCY.name) || 'Platform';
-const _supportEmail = (window.AGENCY && window.AGENCY.supportEmail) || 'support@example.gov';
-
-console.log(_appName + ': Auth module initialized.');
+console.log('WorkForce Connect: Auth module initialized.');
 
 // Helper to check if localStorage is available
 function isStorageAvailable() {
@@ -23,7 +13,7 @@ function isStorageAvailable() {
         localStorage.removeItem(test);
         return true;
     } catch (e) {
-        console.error(_appName + ': Local storage is not available. Persistence features will be disabled.', e);
+        console.error('WorkForce Connect: Local storage is not available. Persistence features will be disabled.', e);
         return false;
     }
 }
@@ -38,12 +28,12 @@ const API_URL = window.APP_CONFIG ? window.APP_CONFIG.API_URL : '/api';
 
 // Check if user is logged in
 function isLoggedIn() {
-    return localStorage.getItem(USER_KEY) !== null;
+    return localStorage.getItem('wfc_user') !== null;
 }
 
 // Get current user
 function getCurrentUser() {
-    const userJson = localStorage.getItem(USER_KEY);
+    const userJson = localStorage.getItem('wfc_user');
     return userJson ? JSON.parse(userJson) : null;
 }
 
@@ -83,10 +73,10 @@ async function safeParseJson(response) {
 
 // Login function
 async function login(email, password) {
-    console.log(_appName + ': Attempting login for:', email);
+    console.log('WorkForce Connect: Attempting login for:', email);
     const finalUrl = `${API_URL}/auth/login`;
     try {
-        console.log(_appName + ': Fetching URL:', finalUrl);
+        console.log('WorkForce Connect: Fetching URL:', finalUrl);
 
         const response = await fetch(finalUrl, {
             method: 'POST',
@@ -107,15 +97,15 @@ async function login(email, password) {
         }
 
         const userData = data.user || data; // Handle both nested and flat for safety
-        localStorage.setItem(USER_KEY, JSON.stringify(userData));
+        localStorage.setItem('wfc_user', JSON.stringify(userData));
         // Store JWT token for authenticated API calls
         if (data.token) {
-            localStorage.setItem(TOKEN_KEY, data.token);
+            localStorage.setItem('caltrans_token', data.token);
         }
-        console.log(_appName + ': User logged in:', userData.email);
+        console.log('WorkForce Connect: User logged in:', userData.email);
         return userData;
     } catch (error) {
-        console.error(_appName + ' Login error detail:', error);
+        console.error('WorkForce Connect Login error detail:', error);
 
         // Handle specific network errors
         if (error instanceof TypeError && (error.message.includes('fetch') || error.message.includes('NetworkError'))) {
@@ -140,17 +130,17 @@ window.handleLogout = async function() {
             credentials: 'include' // Include cookies if using session auth
         });
     } catch (error) {
-        console.warn(_appName + ': Logout API call failed (continuing anyway):', error);
+        console.warn('WorkForce Connect: Logout API call failed (continuing anyway):', error);
     }
 
     // Clear all client-side storage
-    localStorage.removeItem(USER_KEY);
-    localStorage.removeItem(TOKEN_KEY);
+    localStorage.removeItem('wfc_user');
+    localStorage.removeItem('caltrans_token');
     localStorage.removeItem('userId');
     localStorage.removeItem('userType');
     sessionStorage.clear();
 
-    console.log(_appName + ': User session cleared');
+    console.log('WorkForce Connect: User session cleared');
     // Redirect to login page
     window.location.href = 'login.html';
 }
@@ -178,14 +168,14 @@ async function registerSmallBusiness(formData) {
         }
 
         const user = data.user || data;
-        localStorage.setItem(USER_KEY, JSON.stringify(user));
-        if (data.token) localStorage.setItem(TOKEN_KEY, data.token);
-        console.log(_appName + ': Small Business registered:', user.businessName || user.email);
+        localStorage.setItem('wfc_user', JSON.stringify(user));
+        if (data.token) localStorage.setItem('caltrans_token', data.token);
+        console.log('WorkForce Connect: Small Business registered:', user.businessName || user.email);
         return user;
     } catch (error) {
         clearTimeout(timeout);
         if (error.name === 'AbortError') {
-            throw new Error('Registration timed out. The server is taking too long to respond. Please try again or contact us at ' + _supportEmail + '.');
+            throw new Error('Registration timed out. The server is taking too long to respond. Please try again or contact us at CaltransBizSupport@dot.ca.gov for assistance.');
         }
         // Mock fallback if API is unreachable
         if (error.message.includes('Failed to fetch') || error.message.includes('Server API is not responding')) {
@@ -196,7 +186,7 @@ async function registerSmallBusiness(formData) {
                 type: 'small_business',
                 password: null
             };
-            localStorage.setItem('caltrans_user', JSON.stringify(mockUser));
+            localStorage.setItem('wfc_user', JSON.stringify(mockUser));
             return mockUser;
         }
         throw error;
@@ -223,14 +213,14 @@ async function registerPrimeContractor(formData) {
         }
 
         const user = data.user || data;
-        localStorage.setItem(USER_KEY, JSON.stringify(user));
-        if (data.token) localStorage.setItem(TOKEN_KEY, data.token);
-        console.log(_appName + ': Prime Contractor registered:', user.organizationName || user.email);
+        localStorage.setItem('wfc_user', JSON.stringify(user));
+        if (data.token) localStorage.setItem('caltrans_token', data.token);
+        console.log('WorkForce Connect: Prime Contractor registered:', user.organizationName || user.email);
         return user;
     } catch (error) {
         clearTimeout(timeout);
         if (error.name === 'AbortError') {
-            throw new Error('Registration timed out. The server is taking too long to respond. Please try again or contact us at ' + _supportEmail + '.');
+            throw new Error('Registration timed out. The server is taking too long to respond. Please try again or contact us at CaltransBizSupport@dot.ca.gov for assistance.');
         }
         // Mock fallback if API is unreachable
         if (error.message.includes('Failed to fetch') || error.message.includes('Server API is not responding')) {
@@ -241,7 +231,7 @@ async function registerPrimeContractor(formData) {
                 type: 'agency',
                 password: null
             };
-            localStorage.setItem('caltrans_user', JSON.stringify(mockUser));
+            localStorage.setItem('wfc_user', JSON.stringify(mockUser));
             return mockUser;
         }
         throw error;
@@ -253,7 +243,7 @@ function redirectToDashboard(user) {
     if (user.type === 'admin') {
         window.location.href = 'dashboard-admin.html';
     } else if (user.type === 'small_business') {
-        window.location.href = 'dashboard-small-business.html';
+        window.location.href = 'dashboard-worker.html';
     } else if (user.type === 'agency') {
         window.location.href = 'dashboard-prime-contractor.html';
     }
@@ -310,7 +300,7 @@ document.addEventListener('DOMContentLoaded', function () {
             const formData = {
                 businessName: document.getElementById('businessName').value,
                 legalStructure: document.getElementById('legalStructure').value,
-                ein: document.getElementById('ein').value,
+                ein: document.getElementById('ein') ? document.getElementById('ein').value : null,
                 businessAddress: document.getElementById('businessAddress').value,
                 city: document.getElementById('city').value,
                 zipCode: document.getElementById('zipCode').value,
@@ -336,7 +326,7 @@ document.addEventListener('DOMContentLoaded', function () {
             registerSmallBusiness(formData)
                 .then(user => {
                     alert('Account created successfully! Redirecting...');
-                    window.location.href = 'dashboard-small-business.html';
+                    window.location.href = 'dashboard-worker.html';
                 })
                 .catch(error => {
                     showErrorMessage(error.message, smallBusinessRegForm.parentElement);
@@ -362,6 +352,7 @@ document.addEventListener('DOMContentLoaded', function () {
             const formData = {
                 organizationType: document.getElementById('organizationType').value,
                 organizationName: document.getElementById('organizationName').value,
+                website: document.getElementById('website').value,
                 district: document.getElementById('district') ? document.getElementById('district').value : null,
                 address: document.getElementById('address').value,
                 city: document.getElementById('city').value,
@@ -422,7 +413,7 @@ function syncNavHeader() {
     const loginBtn = navUl.querySelector('a[href="login.html"]');
     if (user && loginBtn) {
         const li = loginBtn.parentElement;
-        let dashboardUrl = 'dashboard-small-business.html';
+        let dashboardUrl = 'dashboard-worker.html';
         if (user.type === 'agency') dashboardUrl = 'dashboard-prime-contractor.html';
         if (user.type === 'admin') dashboardUrl = 'dashboard-admin.html';
 
@@ -441,7 +432,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // If on login page and already logged in, redirect
     if (window.location.pathname.endsWith('login.html') && isLoggedIn()) {
-        console.log(_appName + ': Already logged in, redirecting to dashboard.');
+        console.log('WorkForce Connect: Already logged in, redirecting to dashboard.');
         redirectToDashboard(getCurrentUser());
     }
 
@@ -457,7 +448,7 @@ document.addEventListener('DOMContentLoaded', function () {
 window.Auth = {
     isLoggedIn,
     getUser: getCurrentUser,
-    getToken: () => localStorage.getItem(TOKEN_KEY),
+    getToken: () => localStorage.getItem('caltrans_token'),
     login,
     logout: window.logout,
     registerSmallBusiness,

@@ -1,0 +1,168 @@
+<% const title = locals.title || 'Prime Dashboard' %>
+
+<section class="dashboard-section">
+  <div class="container">
+
+    <%- include('../partials/flash') %>
+
+    <!-- Account Status Banner -->
+    <% if (prime.status === 'pending') { %>
+      <div class="banner banner-warning">
+        <strong>Account Under Review.</strong> Your registration is being reviewed by our team. You'll receive an email once approved. Typical review time: 1-2 business days.
+      </div>
+    <% } else if (prime.status === 'active') { %>
+      <div class="banner banner-success">
+        Account Active
+        <span class="tier-badge tier-<%= prime.tier %>"><%= prime.tier ? prime.tier.charAt(0).toUpperCase() + prime.tier.slice(1) : 'Basic' %> Plan</span>
+      </div>
+    <% } else if (prime.status === 'suspended') { %>
+      <div class="banner banner-error">
+        <strong>Account Suspended.</strong> Please contact <a href="mailto:support@evoconnect.io">support@evoconnect.io</a> for assistance.
+      </div>
+    <% } %>
+
+    <div class="dashboard-header">
+      <h1>Prime Contractor Dashboard</h1>
+      <p class="section-sub">Welcome, <%= prime.company_name || prime.contact_name || 'there' %>.</p>
+    </div>
+
+    <div class="dashboard-grid">
+
+      <!-- Search Panel: Labor -->
+      <div class="dash-card">
+        <div class="dash-card-header">
+          <h2>Search Labor Directory</h2>
+          <a href="/prime/search/workers" class="btn-sm btn-primary">Open Search</a>
+        </div>
+        <form method="GET" action="/prime/search/workers" class="quick-search-form">
+          <div class="form-group">
+            <label for="qs-trade" class="form-label">Trade</label>
+            <select id="qs-trade" name="trade" class="form-control">
+              <option value="">All trades</option>
+              <option value="telecom_fiber">Telecom &amp; Fiber</option>
+              <option value="electrical">Electrical</option>
+              <option value="civil_construction">Civil Construction</option>
+              <option value="it_network">IT / Network</option>
+              <option value="underground_utilities">Underground Utilities</option>
+              <option value="plumbing">Plumbing</option>
+              <option value="hvac_mechanical">HVAC / Mechanical</option>
+              <option value="general_labor">General Labor</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="qs-state" class="form-label">State</label>
+            <input type="text" id="qs-state" name="state" class="form-control" maxlength="2" placeholder="TX">
+          </div>
+          <button type="submit" class="btn-primary btn-sm">Search Workers</button>
+        </form>
+      </div>
+
+      <!-- Search Panel: Business -->
+      <div class="dash-card">
+        <div class="dash-card-header">
+          <h2>Search Business Directory</h2>
+          <a href="/prime/search/businesses" class="btn-sm btn-primary">Open Search</a>
+        </div>
+        <form method="GET" action="/prime/search/businesses" class="quick-search-form">
+          <div class="form-group">
+            <label for="qs-cert" class="form-label">Certification</label>
+            <select id="qs-cert" name="cert" class="form-control">
+              <option value="">All certifications</option>
+              <option value="dbe">DBE</option>
+              <option value="mbe">MBE</option>
+              <option value="wbe">WBE</option>
+              <option value="hub">HUB</option>
+              <option value="sdvosb">SDVOSB</option>
+              <option value="8a">SBA 8(a)</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="qs-naics" class="form-label">NAICS Code</label>
+            <input type="text" id="qs-naics" name="naics" class="form-control" placeholder="e.g. 237130">
+          </div>
+          <button type="submit" class="btn-primary btn-sm">Search Businesses</button>
+        </form>
+      </div>
+
+      <!-- My RFQs -->
+      <div class="dash-card dash-wide">
+        <div class="dash-card-header">
+          <h2>My RFQs</h2>
+          <% if (prime.tier === 'enterprise') { %>
+            <a href="/prime/rfq" class="btn-sm btn-primary">Post RFQ</a>
+          <% } else { %>
+            <span class="badge badge-amber">Enterprise Only</span>
+          <% } %>
+        </div>
+        <% if (prime.tier !== 'enterprise') { %>
+          <div class="upgrade-prompt">
+            <p>RFQ posting is available on the <strong>Enterprise plan</strong>. Upgrade to push project requirements directly to matched subcontractors.</p>
+            <a href="/prime/billing" class="btn-amber btn-sm">Upgrade to Enterprise</a>
+          </div>
+        <% } else if (locals.rfqs && rfqs.length > 0) { %>
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Project</th>
+                <th>NAICS</th>
+                <th>Deadline</th>
+                <th>Responses</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              <% rfqs.forEach(function(rfq) { %>
+              <tr>
+                <td><%= rfq.title %></td>
+                <td><%= rfq.naics_code %></td>
+                <td><%= rfq.deadline ? new Date(rfq.deadline).toLocaleDateString() : '—' %></td>
+                <td><%= rfq.response_count || 0 %></td>
+                <td><a href="/prime/rfq/<%= rfq.id %>" class="btn-sm">View</a></td>
+              </tr>
+              <% }) %>
+            </tbody>
+          </table>
+        <% } else { %>
+          <div class="empty-state">
+            <p>No RFQs posted yet. <a href="/prime/rfq">Post your first RFQ</a> to reach qualified subcontractors.</p>
+          </div>
+        <% } %>
+      </div>
+
+      <!-- Connection History -->
+      <div class="dash-card dash-wide">
+        <div class="dash-card-header">
+          <h2>Connection History</h2>
+          <span class="badge badge-cyan"><%= locals.connectionCount || 0 %> total</span>
+        </div>
+        <% if (locals.connections && connections.length > 0) { %>
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Name / Company</th>
+                <th>Type</th>
+                <th>Status</th>
+                <th>Date</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% connections.forEach(function(conn) { %>
+              <tr>
+                <td><%= conn.name || conn.company_name || '—' %></td>
+                <td><span class="badge badge-<%= conn.recipient_type === 'worker' ? 'cyan' : 'amber' %>"><%= conn.recipient_type %></span></td>
+                <td><span class="badge badge-<%= conn.status === 'accepted' ? 'success' : (conn.status === 'pending' ? 'warning' : 'muted') %>"><%= conn.status %></span></td>
+                <td><%= new Date(conn.created_at).toLocaleDateString() %></td>
+              </tr>
+              <% }) %>
+            </tbody>
+          </table>
+        <% } else { %>
+          <div class="empty-state">
+            <p>No connections yet. Start searching the <a href="/prime/search/workers">Labor Directory</a> or <a href="/prime/search/businesses">Business Directory</a>.</p>
+          </div>
+        <% } %>
+      </div>
+
+    </div>
+  </div>
+</section>

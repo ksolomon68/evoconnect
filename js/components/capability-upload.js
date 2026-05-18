@@ -91,7 +91,7 @@ const CapabilityUpload = {
             // Optionally update user in localStorage
             if (user) {
                 user.capability_statement = result.path;
-                localStorage.setItem('caltrans_user', JSON.stringify(user));
+                localStorage.setItem('wfc_user', JSON.stringify(user));
             }
         } catch (error) {
             console.error('Upload error:', error);

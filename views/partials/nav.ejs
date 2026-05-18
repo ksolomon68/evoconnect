@@ -1,0 +1,59 @@
+<header class="site-header" role="banner">
+  <div class="container nav-container">
+    <a href="/" class="logo" aria-label="EvoConnect Home">
+      <span>EvoConnect</span>
+    </a>
+    <button class="hamburger" aria-label="Toggle menu" aria-expanded="false" aria-controls="main-nav">
+      <span></span><span></span><span></span>
+    </button>
+    <nav id="main-nav" class="main-nav" role="navigation" aria-label="Main navigation">
+      <% if (!locals.user) { %>
+        <a href="/" class="<%= locals.activePage === 'home' ? 'active' : '' %>">Home</a>
+        <a href="/labor" class="<%= locals.activePage === 'labor' ? 'active' : '' %>">For Labor</a>
+        <a href="/business" class="<%= locals.activePage === 'business' ? 'active' : '' %>">For Business</a>
+        <a href="/prime" class="<%= locals.activePage === 'prime' ? 'active' : '' %>">For Primes</a>
+        <a href="/login" class="btn btn-sm btn-ghost">Log In</a>
+        <a href="/register" class="btn btn-sm btn-primary-nav">Register Free</a>
+      <% } else if (locals.user.type === 'worker') { %>
+        <a href="/labor/dashboard" class="<%= locals.activePage === 'dashboard' ? 'active' : '' %>">Dashboard</a>
+        <a href="/labor/profile" class="<%= locals.activePage === 'profile' ? 'active' : '' %>">My Profile</a>
+        <a href="/labor/faq" class="<%= locals.activePage === 'faq' ? 'active' : '' %>">FAQ</a>
+        <details class="user-menu">
+          <summary><%= locals.user.name || locals.user.email %></summary>
+          <ul>
+            <li><a href="/labor/profile">Edit Profile</a></li>
+            <li><a href="/logout">Log Out</a></li>
+          </ul>
+        </details>
+      <% } else if (locals.user.type === 'business') { %>
+        <a href="/business/dashboard" class="<%= locals.activePage === 'dashboard' ? 'active' : '' %>">Dashboard</a>
+        <a href="/business/profile" class="<%= locals.activePage === 'profile' ? 'active' : '' %>">My Profile</a>
+        <a href="/business/capability-statement" class="<%= locals.activePage === 'capstatement' ? 'active' : '' %>">Capability Statement</a>
+        <a href="/business/faq" class="<%= locals.activePage === 'faq' ? 'active' : '' %>">FAQ</a>
+        <details class="user-menu">
+          <summary><%= locals.user.name || locals.user.email %></summary>
+          <ul>
+            <li><a href="/business/profile">Edit Profile</a></li>
+            <li><a href="/logout">Log Out</a></li>
+          </ul>
+        </details>
+      <% } else if (locals.user.type === 'prime') { %>
+        <a href="/prime/dashboard" class="<%= locals.activePage === 'dashboard' ? 'active' : '' %>">Dashboard</a>
+        <a href="/prime/search/workers" class="<%= locals.activePage === 'search-workers' ? 'active' : '' %>">Labor Directory</a>
+        <a href="/prime/search/businesses" class="<%= locals.activePage === 'search-businesses' ? 'active' : '' %>">Business Directory</a>
+        <a href="/prime/faq" class="<%= locals.activePage === 'faq' ? 'active' : '' %>">FAQ</a>
+        <details class="user-menu">
+          <summary><%= locals.user.name || locals.user.email %></summary>
+          <ul>
+            <li><a href="/logout">Log Out</a></li>
+          </ul>
+        </details>
+      <% } else if (locals.user.type === 'admin') { %>
+        <a href="/admin/dashboard">Admin Dashboard</a>
+        <a href="/admin/users">Users</a>
+        <a href="/admin/announcements">Announcements</a>
+        <a href="/logout">Log Out</a>
+      <% } %>
+    </nav>
+  </div>
+</header>

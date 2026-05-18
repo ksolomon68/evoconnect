@@ -1,38 +1,38 @@
 {
-  "name": "antig2",
-  "version": "1.0.0",
-  "description": "A mission-critical digital platform connecting Small Businesses with contracting opportunities and Prime Contractors with qualified partners.",
-  "main": "index.js",
+  "name": "evoconnect",
+  "version": "3.0.0",
+  "description": "EvoConnect — Government contract workforce ecosystem. Labor, Business, and Prime portals with NAICS matching, vendor readiness tools, and directory search.",
+  "main": "server/index.js",
   "scripts": {
-    "start": "node index.js",
-    "dev": "nodemon index.js",
-    "export-data": "node scripts/export-sqlite-data.js",
-    "import-data": "node scripts/import-to-mysql.js",
-    "migrate": "npm run export-data && npm run import-data",
+    "start": "node server/index.js",
+    "dev": "nodemon server/index.js",
     "init-db": "node -e \"require('./server/database.js').initDatabase()\"",
-    "build": "echo 'No build step required - server handles its own dependencies'",
-    "seed": "node seed_users.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"No tests configured\" && exit 0"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "keywords": ["government-contracting", "workforce", "naics", "small-business", "evobrand"],
+  "author": "EVOBRAND Concepts — Keisha Solomon",
+  "license": "UNLICENSED",
   "type": "commonjs",
   "dependencies": {
-    "@supabase/supabase-js": "^2.95.3",
     "bcryptjs": "^2.4.3",
+    "connect-flash": "^0.1.1",
+    "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
+    "ejs": "^3.1.10",
     "express": "^4.21.0",
+    "express-ejs-layouts": "^2.5.1",
     "express-rate-limit": "^7.4.0",
+    "express-session": "^1.18.1",
     "helmet": "^8.1.0",
     "jsonwebtoken": "^9.0.3",
+    "method-override": "^3.0.0",
     "multer": "^1.4.5-lts.1",
     "mysql2": "^3.11.5",
     "nodemailer": "^8.0.3",
-    "playwright": "^1.58.1"
+    "pdfkit": "^0.15.0"
   },
   "devDependencies": {
-    "sharp": "^0.34.5"
+    "nodemon": "^3.1.0"
   }
 }

@@ -1,0 +1,465 @@
+<% const title = locals.title || 'Register as a Worker' %>
+
+<section class="register-section">
+  <div class="container">
+    <div class="register-header text-center">
+      <h1>Create Your Worker Profile</h1>
+      <p class="section-sub">Join EvoConnect's labor directory and connect with prime contractors on government projects.</p>
+    </div>
+
+    <%- include('../partials/flash') %>
+
+    <!-- Progress Stepper -->
+    <% const currentStep = locals.step || 1 %>
+    <div class="stepper" aria-label="Registration progress">
+      <div class="step-item <%= currentStep >= 1 ? 'active' : '' %> <%= currentStep > 1 ? 'complete' : '' %>">
+        <div class="step-dot">1</div>
+        <span>Personal Info</span>
+      </div>
+      <div class="step-divider"></div>
+      <div class="step-item <%= currentStep >= 2 ? 'active' : '' %> <%= currentStep > 2 ? 'complete' : '' %>">
+        <div class="step-dot">2</div>
+        <span>Trade &amp; Skills</span>
+      </div>
+      <div class="step-divider"></div>
+      <div class="step-item <%= currentStep >= 3 ? 'active' : '' %>">
+        <div class="step-dot">3</div>
+        <span>Location &amp; Status</span>
+      </div>
+    </div>
+
+    <form method="POST" action="/labor/register" enctype="multipart/form-data" class="register-form" novalidate>
+      <input type="hidden" name="step" value="<%= currentStep %>">
+
+      <!-- ===== STEP 1: Personal Info ===== -->
+      <% if (currentStep === 1) { %>
+      <div class="form-section">
+        <h2 class="form-section-title">Step 1 — Personal Information</h2>
+
+        <div class="form-group">
+          <label for="full_name" class="form-label">Full Name <span class="required">*</span></label>
+          <input
+            type="text"
+            id="full_name"
+            name="full_name"
+            class="form-control<%= locals.errors?.full_name ? ' is-invalid' : '' %>"
+            value="<%= locals.values?.full_name || '' %>"
+            required
+            autocomplete="name"
+            aria-describedby="<%= locals.errors?.full_name ? 'full-name-error' : '' %>"
+          >
+          <% if (locals.errors?.full_name) { %><span class="field-error" id="full-name-error" role="alert"><%= errors.full_name %></span><% } %>
+        </div>
+
+        <div class="form-group">
+          <label for="email" class="form-label">Email Address <span class="required">*</span></label>
+          <input
+            type="email"
+            id="email"
+            name="email"
+            class="form-control<%= locals.errors?.email ? ' is-invalid' : '' %>"
+            value="<%= locals.values?.email || '' %>"
+            required
+            autocomplete="email"
+            aria-describedby="<%= locals.errors?.email ? 'email-error' : '' %>"
+          >
+          <% if (locals.errors?.email) { %><span class="field-error" id="email-error" role="alert"><%= errors.email %></span><% } %>
+        </div>
+
+        <div class="form-group">
+          <label for="phone" class="form-label">Phone Number <span class="required">*</span></label>
+          <input
+            type="tel"
+            id="phone"
+            name="phone"
+            class="form-control<%= locals.errors?.phone ? ' is-invalid' : '' %>"
+            value="<%= locals.values?.phone || '' %>"
+            required
+            autocomplete="tel"
+            aria-describedby="<%= locals.errors?.phone ? 'phone-error' : '' %>"
+            placeholder="(555) 555-5555"
+          >
+          <% if (locals.errors?.phone) { %><span class="field-error" id="phone-error" role="alert"><%= errors.phone %></span><% } %>
+        </div>
+
+        <div class="form-group">
+          <label for="password" class="form-label">Password <span class="required">*</span></label>
+          <div class="input-with-toggle">
+            <input
+              type="password"
+              id="password"
+              name="password"
+              class="form-control<%= locals.errors?.password ? ' is-invalid' : '' %>"
+              required
+              minlength="8"
+              autocomplete="new-password"
+              aria-describedby="password-hint<%= locals.errors?.password ? ' password-error' : '' %>"
+            >
+            <button type="button" class="toggle-password" aria-label="Toggle password visibility">&#128065;</button>
+          </div>
+          <span id="password-hint" class="field-hint">Minimum 8 characters</span>
+          <% if (locals.errors?.password) { %><span class="field-error" id="password-error" role="alert"><%= errors.password %></span><% } %>
+        </div>
+
+        <div class="form-group">
+          <label for="confirm_password" class="form-label">Confirm Password <span class="required">*</span></label>
+          <input
+            type="password"
+            id="confirm_password"
+            name="confirm_password"
+            class="form-control<%= locals.errors?.confirm_password ? ' is-invalid' : '' %>"
+            required
+            autocomplete="new-password"
+            aria-describedby="<%= locals.errors?.confirm_password ? 'confirm-password-error' : '' %>"
+          >
+          <% if (locals.errors?.confirm_password) { %><span class="field-error" id="confirm-password-error" role="alert"><%= errors.confirm_password %></span><% } %>
+        </div>
+
+        <div class="form-actions">
+          <button type="submit" class="btn-primary">Continue to Trade &amp; Skills &rarr;</button>
+        </div>
+      </div>
+      <% } %>
+
+      <!-- ===== STEP 2: Trade & Skills ===== -->
+      <% if (currentStep === 2) { %>
+      <div class="form-section">
+        <h2 class="form-section-title">Step 2 — Trade &amp; Skills</h2>
+
+        <div class="form-group">
+          <label for="trade_category" class="form-label">Trade Category <span class="required">*</span></label>
+          <select
+            id="trade_category"
+            name="trade_category"
+            class="form-control<%= locals.errors?.trade_category ? ' is-invalid' : '' %>"
+            required
+            aria-describedby="<%= locals.errors?.trade_category ? 'trade-category-error' : '' %>"
+          >
+            <option value="">-- Select your primary trade --</option>
+            <option value="cdl-trucking" <%= locals.values?.trade_category === 'cdl-trucking' ? 'selected' : '' %>>CDL/Trucking</option>
+            <option value="concrete-cement" <%= locals.values?.trade_category === 'concrete-cement' ? 'selected' : '' %>>Concrete/Cement</option>
+            <option value="construction-general" <%= locals.values?.trade_category === 'construction-general' ? 'selected' : '' %>>Construction General</option>
+            <option value="fiber-broadband" <%= locals.values?.trade_category === 'fiber-broadband' ? 'selected' : '' %>>Fiber/Broadband Installer</option>
+            <option value="cell-site-tech" <%= locals.values?.trade_category === 'cell-site-tech' ? 'selected' : '' %>>Cell Site Technician</option>
+            <option value="structured-cabling" <%= locals.values?.trade_category === 'structured-cabling' ? 'selected' : '' %>>Structured Cabling/Digital Infrastructure</option>
+            <option value="cloud-network-infra" <%= locals.values?.trade_category === 'cloud-network-infra' ? 'selected' : '' %>>Cloud/Network Infrastructure</option>
+            <option value="welding-fabrication" <%= locals.values?.trade_category === 'welding-fabrication' ? 'selected' : '' %>>Welding/Fabrication</option>
+            <option value="electrical" <%= locals.values?.trade_category === 'electrical' ? 'selected' : '' %>>Electrical</option>
+            <option value="plumbing-hvac" <%= locals.values?.trade_category === 'plumbing-hvac' ? 'selected' : '' %>>Plumbing/HVAC</option>
+            <option value="landscaping" <%= locals.values?.trade_category === 'landscaping' ? 'selected' : '' %>>Landscaping</option>
+            <option value="it-support" <%= locals.values?.trade_category === 'it-support' ? 'selected' : '' %>>IT Support</option>
+            <option value="admin-clerical" <%= locals.values?.trade_category === 'admin-clerical' ? 'selected' : '' %>>Admin/Clerical</option>
+            <option value="other" <%= locals.values?.trade_category === 'other' ? 'selected' : '' %>>Other</option>
+          </select>
+          <% if (locals.errors?.trade_category) { %><span class="field-error" id="trade-category-error" role="alert"><%= errors.trade_category %></span><% } %>
+        </div>
+
+        <div class="form-group">
+          <label for="skills-input" class="form-label">Specific Skills</label>
+          <div class="tag-input-container" id="skills-tag-container">
+            <div class="tag-list" id="skills-tag-list"></div>
+            <input
+              type="text"
+              id="skills-input"
+              class="tag-input"
+              placeholder="Type a skill and press Enter"
+              autocomplete="off"
+              aria-label="Add a skill"
+            >
+          </div>
+          <input type="hidden" name="skills_json" id="skills_json" value="<%= locals.values?.skills_json || '[]' %>">
+          <span class="field-hint">Press Enter or comma to add a skill. Examples: fiber splicing, conduit installation, OTDR testing</span>
+        </div>
+
+        <div class="form-group">
+          <fieldset>
+            <legend class="form-label">Active Certifications</legend>
+            <div class="checkbox-grid">
+              <label class="checkbox-item">
+                <input type="checkbox" name="certifications" value="cdl_a" <%= (locals.values?.certifications || []).includes('cdl_a') ? 'checked' : '' %>>
+                <span>CDL Class A</span>
+              </label>
+              <label class="checkbox-item">
+                <input type="checkbox" name="certifications" value="cdl_b" <%= (locals.values?.certifications || []).includes('cdl_b') ? 'checked' : '' %>>
+                <span>CDL Class B</span>
+              </label>
+              <label class="checkbox-item">
+                <input type="checkbox" name="certifications" value="osha_10" <%= (locals.values?.certifications || []).includes('osha_10') ? 'checked' : '' %>>
+                <span>OSHA 10</span>
+              </label>
+              <label class="checkbox-item">
+                <input type="checkbox" name="certifications" value="osha_30" <%= (locals.values?.certifications || []).includes('osha_30') ? 'checked' : '' %>>
+                <span>OSHA 30</span>
+              </label>
+              <label class="checkbox-item">
+                <input type="checkbox" name="certifications" value="twic" <%= (locals.values?.certifications || []).includes('twic') ? 'checked' : '' %>>
+                <span>TWIC Card</span>
+              </label>
+              <label class="checkbox-item">
+                <input type="checkbox" name="certifications" value="comptia_a" <%= (locals.values?.certifications || []).includes('comptia_a') ? 'checked' : '' %>>
+                <span>CompTIA A+</span>
+              </label>
+              <label class="checkbox-item">
+                <input type="checkbox" name="certifications" value="comptia_network" <%= (locals.values?.certifications || []).includes('comptia_network') ? 'checked' : '' %>>
+                <span>CompTIA Network+</span>
+              </label>
+              <label class="checkbox-item">
+                <input type="checkbox" name="certifications" value="cfot" <%= (locals.values?.certifications || []).includes('cfot') ? 'checked' : '' %>>
+                <span>Fiber Optic Installer (CFOT)</span>
+              </label>
+              <label class="checkbox-item">
+                <input type="checkbox" name="certifications" value="tower_climbing" <%= (locals.values?.certifications || []).includes('tower_climbing') ? 'checked' : '' %>>
+                <span>Tower Climbing Safety</span>
+              </label>
+              <label class="checkbox-item">
+                <input type="checkbox" name="certifications" value="other" <%= (locals.values?.certifications || []).includes('other') ? 'checked' : '' %>>
+                <span>Other</span>
+              </label>
+            </div>
+          </fieldset>
+        </div>
+
+        <div class="form-group">
+          <label for="years_experience" class="form-label">Years of Experience</label>
+          <input
+            type="number"
+            id="years_experience"
+            name="years_experience"
+            class="form-control form-control-sm"
+            value="<%= locals.values?.years_experience || '0' %>"
+            min="0"
+            max="50"
+            aria-describedby="<%= locals.errors?.years_experience ? 'years-exp-error' : '' %>"
+          >
+          <% if (locals.errors?.years_experience) { %><span class="field-error" id="years-exp-error" role="alert"><%= errors.years_experience %></span><% } %>
+        </div>
+
+        <div class="form-actions">
+          <a href="/labor/register?step=1" class="btn-secondary">&larr; Back</a>
+          <button type="submit" class="btn-primary">Continue to Location &amp; Status &rarr;</button>
+        </div>
+      </div>
+      <% } %>
+
+      <!-- ===== STEP 3: Location & Status ===== -->
+      <% if (currentStep === 3) { %>
+      <div class="form-section">
+        <h2 class="form-section-title">Step 3 — Location &amp; Status</h2>
+
+        <div class="form-group">
+          <fieldset>
+            <legend class="form-label">SAM.gov Registered? <span class="required">*</span></legend>
+            <div class="radio-group">
+              <label class="radio-item">
+                <input type="radio" name="sam_registered" value="yes" <%= locals.values?.sam_registered === 'yes' ? 'checked' : '' %>>
+                <span>Yes, I'm registered</span>
+              </label>
+              <label class="radio-item">
+                <input type="radio" name="sam_registered" value="no" <%= locals.values?.sam_registered === 'no' ? 'checked' : '' %>>
+                <span>No, not yet</span>
+              </label>
+              <label class="radio-item">
+                <input type="radio" name="sam_registered" value="needs_help" <%= locals.values?.sam_registered === 'needs_help' ? 'checked' : '' %>>
+                <span>I need help with this</span>
+              </label>
+            </div>
+          </fieldset>
+          <% if (locals.errors?.sam_registered) { %><span class="field-error" id="sam-registered-error" role="alert"><%= errors.sam_registered %></span><% } %>
+        </div>
+
+        <div class="form-group">
+          <label for="entity_type" class="form-label">Business Entity Type</label>
+          <select
+            id="entity_type"
+            name="entity_type"
+            class="form-control"
+          >
+            <option value="">-- Select entity type --</option>
+            <option value="none" <%= locals.values?.entity_type === 'none' ? 'selected' : '' %>>None yet</option>
+            <option value="sole_proprietorship" <%= locals.values?.entity_type === 'sole_proprietorship' ? 'selected' : '' %>>Sole Proprietorship</option>
+            <option value="llc" <%= locals.values?.entity_type === 'llc' ? 'selected' : '' %>>LLC</option>
+            <option value="s_corp" <%= locals.values?.entity_type === 's_corp' ? 'selected' : '' %>>S-Corp</option>
+            <option value="c_corp" <%= locals.values?.entity_type === 'c_corp' ? 'selected' : '' %>>C-Corp</option>
+          </select>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group form-col-2">
+            <label for="city" class="form-label">City <span class="required">*</span></label>
+            <input
+              type="text"
+              id="city"
+              name="city"
+              class="form-control<%= locals.errors?.city ? ' is-invalid' : '' %>"
+              value="<%= locals.values?.city || '' %>"
+              required
+              aria-describedby="<%= locals.errors?.city ? 'city-error' : '' %>"
+            >
+            <% if (locals.errors?.city) { %><span class="field-error" id="city-error" role="alert"><%= errors.city %></span><% } %>
+          </div>
+          <div class="form-group form-col-1">
+            <label for="state" class="form-label">State <span class="required">*</span></label>
+            <select id="state" name="state" class="form-control" required>
+              <option value="">--</option>
+              <option value="AL" <%= locals.values?.state === 'AL' ? 'selected' : '' %>>AL</option>
+              <option value="AK" <%= locals.values?.state === 'AK' ? 'selected' : '' %>>AK</option>
+              <option value="AZ" <%= locals.values?.state === 'AZ' ? 'selected' : '' %>>AZ</option>
+              <option value="AR" <%= locals.values?.state === 'AR' ? 'selected' : '' %>>AR</option>
+              <option value="CA" <%= locals.values?.state === 'CA' ? 'selected' : '' %>>CA</option>
+              <option value="CO" <%= locals.values?.state === 'CO' ? 'selected' : '' %>>CO</option>
+              <option value="CT" <%= locals.values?.state === 'CT' ? 'selected' : '' %>>CT</option>
+              <option value="DE" <%= locals.values?.state === 'DE' ? 'selected' : '' %>>DE</option>
+              <option value="FL" <%= locals.values?.state === 'FL' ? 'selected' : '' %>>FL</option>
+              <option value="GA" <%= locals.values?.state === 'GA' ? 'selected' : '' %>>GA</option>
+              <option value="HI" <%= locals.values?.state === 'HI' ? 'selected' : '' %>>HI</option>
+              <option value="ID" <%= locals.values?.state === 'ID' ? 'selected' : '' %>>ID</option>
+              <option value="IL" <%= locals.values?.state === 'IL' ? 'selected' : '' %>>IL</option>
+              <option value="IN" <%= locals.values?.state === 'IN' ? 'selected' : '' %>>IN</option>
+              <option value="IA" <%= locals.values?.state === 'IA' ? 'selected' : '' %>>IA</option>
+              <option value="KS" <%= locals.values?.state === 'KS' ? 'selected' : '' %>>KS</option>
+              <option value="KY" <%= locals.values?.state === 'KY' ? 'selected' : '' %>>KY</option>
+              <option value="LA" <%= locals.values?.state === 'LA' ? 'selected' : '' %>>LA</option>
+              <option value="ME" <%= locals.values?.state === 'ME' ? 'selected' : '' %>>ME</option>
+              <option value="MD" <%= locals.values?.state === 'MD' ? 'selected' : '' %>>MD</option>
+              <option value="MA" <%= locals.values?.state === 'MA' ? 'selected' : '' %>>MA</option>
+              <option value="MI" <%= locals.values?.state === 'MI' ? 'selected' : '' %>>MI</option>
+              <option value="MN" <%= locals.values?.state === 'MN' ? 'selected' : '' %>>MN</option>
+              <option value="MS" <%= locals.values?.state === 'MS' ? 'selected' : '' %>>MS</option>
+              <option value="MO" <%= locals.values?.state === 'MO' ? 'selected' : '' %>>MO</option>
+              <option value="MT" <%= locals.values?.state === 'MT' ? 'selected' : '' %>>MT</option>
+              <option value="NE" <%= locals.values?.state === 'NE' ? 'selected' : '' %>>NE</option>
+              <option value="NV" <%= locals.values?.state === 'NV' ? 'selected' : '' %>>NV</option>
+              <option value="NH" <%= locals.values?.state === 'NH' ? 'selected' : '' %>>NH</option>
+              <option value="NJ" <%= locals.values?.state === 'NJ' ? 'selected' : '' %>>NJ</option>
+              <option value="NM" <%= locals.values?.state === 'NM' ? 'selected' : '' %>>NM</option>
+              <option value="NY" <%= locals.values?.state === 'NY' ? 'selected' : '' %>>NY</option>
+              <option value="NC" <%= locals.values?.state === 'NC' ? 'selected' : '' %>>NC</option>
+              <option value="ND" <%= locals.values?.state === 'ND' ? 'selected' : '' %>>ND</option>
+              <option value="OH" <%= locals.values?.state === 'OH' ? 'selected' : '' %>>OH</option>
+              <option value="OK" <%= locals.values?.state === 'OK' ? 'selected' : '' %>>OK</option>
+              <option value="OR" <%= locals.values?.state === 'OR' ? 'selected' : '' %>>OR</option>
+              <option value="PA" <%= locals.values?.state === 'PA' ? 'selected' : '' %>>PA</option>
+              <option value="RI" <%= locals.values?.state === 'RI' ? 'selected' : '' %>>RI</option>
+              <option value="SC" <%= locals.values?.state === 'SC' ? 'selected' : '' %>>SC</option>
+              <option value="SD" <%= locals.values?.state === 'SD' ? 'selected' : '' %>>SD</option>
+              <option value="TN" <%= locals.values?.state === 'TN' ? 'selected' : '' %>>TN</option>
+              <option value="TX" <%= locals.values?.state === 'TX' ? 'selected' : '' %>>TX</option>
+              <option value="UT" <%= locals.values?.state === 'UT' ? 'selected' : '' %>>UT</option>
+              <option value="VT" <%= locals.values?.state === 'VT' ? 'selected' : '' %>>VT</option>
+              <option value="VA" <%= locals.values?.state === 'VA' ? 'selected' : '' %>>VA</option>
+              <option value="WA" <%= locals.values?.state === 'WA' ? 'selected' : '' %>>WA</option>
+              <option value="WV" <%= locals.values?.state === 'WV' ? 'selected' : '' %>>WV</option>
+              <option value="WI" <%= locals.values?.state === 'WI' ? 'selected' : '' %>>WI</option>
+              <option value="WY" <%= locals.values?.state === 'WY' ? 'selected' : '' %>>WY</option>
+            </select>
+          </div>
+          <div class="form-group form-col-1">
+            <label for="zip" class="form-label">ZIP <span class="required">*</span></label>
+            <input
+              type="text"
+              id="zip"
+              name="zip"
+              class="form-control<%= locals.errors?.zip ? ' is-invalid' : '' %>"
+              value="<%= locals.values?.zip || '' %>"
+              required
+              maxlength="10"
+              pattern="[0-9]{5}(-[0-9]{4})?"
+              aria-describedby="<%= locals.errors?.zip ? 'zip-error' : '' %>"
+            >
+            <% if (locals.errors?.zip) { %><span class="field-error" id="zip-error" role="alert"><%= errors.zip %></span><% } %>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <fieldset>
+            <legend class="form-label">Willing to Travel?</legend>
+            <div class="radio-group">
+              <label class="radio-item">
+                <input type="radio" name="travel_willingness" value="local" <%= locals.values?.travel_willingness === 'local' ? 'checked' : '' %>>
+                <span>Local only (under 50 miles)</span>
+              </label>
+              <label class="radio-item">
+                <input type="radio" name="travel_willingness" value="within_100" <%= locals.values?.travel_willingness === 'within_100' ? 'checked' : '' %>>
+                <span>Within 100 miles</span>
+              </label>
+              <label class="radio-item">
+                <input type="radio" name="travel_willingness" value="regional" <%= locals.values?.travel_willingness === 'regional' ? 'checked' : '' %>>
+                <span>Regional (same state)</span>
+              </label>
+              <label class="radio-item">
+                <input type="radio" name="travel_willingness" value="national" <%= locals.values?.travel_willingness === 'national' ? 'checked' : '' %>>
+                <span>National</span>
+              </label>
+            </div>
+          </fieldset>
+        </div>
+
+        <div class="form-group">
+          <label for="resume" class="form-label">Resume Upload (optional)</label>
+          <input
+            type="file"
+            id="resume"
+            name="resume"
+            class="form-control"
+            accept=".pdf,.doc,.docx"
+            aria-describedby="resume-hint"
+          >
+          <span id="resume-hint" class="field-hint">PDF, DOC, or DOCX. Max 5MB.</span>
+        </div>
+
+        <div class="form-actions">
+          <a href="/labor/register?step=2" class="btn-secondary">&larr; Back</a>
+          <button type="submit" class="btn-primary">Create My Profile &#127942;</button>
+        </div>
+      </div>
+      <% } %>
+
+    </form>
+
+    <p class="register-login-note">Already have an account? <a href="/login">Log in here</a></p>
+  </div>
+</section>
+
+<script>
+// Tag input initialization for skills
+(function() {
+  const container = document.getElementById('skills-tag-container');
+  const tagList = document.getElementById('skills-tag-list');
+  const input = document.getElementById('skills-input');
+  const hidden = document.getElementById('skills_json');
+  if (!container) return;
+
+  let skills = [];
+  try { skills = JSON.parse(hidden.value) || []; } catch(e) { skills = []; }
+
+  function renderTags() {
+    tagList.innerHTML = '';
+    skills.forEach(function(skill, i) {
+      const tag = document.createElement('span');
+      tag.className = 'tag';
+      tag.innerHTML = skill + ' <button type="button" aria-label="Remove ' + skill + '">&times;</button>';
+      tag.querySelector('button').addEventListener('click', function() {
+        skills.splice(i, 1);
+        hidden.value = JSON.stringify(skills);
+        renderTags();
+      });
+      tagList.appendChild(tag);
+    });
+    hidden.value = JSON.stringify(skills);
+  }
+
+  renderTags();
+
+  input.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter' || e.key === ',') {
+      e.preventDefault();
+      const val = input.value.trim().replace(/,$/, '');
+      if (val && !skills.includes(val)) {
+        skills.push(val);
+        renderTags();
+      }
+      input.value = '';
+    }
+  });
+})();
+</script>

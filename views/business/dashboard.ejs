@@ -1,0 +1,302 @@
+<% const title = locals.title || 'Business Dashboard' %>
+
+<%
+const federalChecklist = [
+  {key:'uei', label:'Get your UEI (Unique Entity ID) at SAM.gov'},
+  {key:'sam_register', label:'Complete SAM.gov registration'},
+  {key:'sam_activate', label:'Activate SAM.gov registration (7-10 days)'},
+  {key:'eft', label:'Set up EFT (Electronic Funds Transfer) for payments'},
+  {key:'usa_spending', label:'Verify your listing on USASpending.gov'},
+  {key:'annual_renewal', label:'Set reminder for annual SAM.gov renewal'},
+  {key:'naics_verify', label:'Verify your NAICS codes are correct in SAM.gov'}
+];
+const stateChecklist = [
+  {key:'hub_eligibility', label:'Check HUB certification eligibility'},
+  {key:'hub_apply', label:'Apply for Texas HUB certification'},
+  {key:'hub_approved', label:'HUB certification approved'},
+  {key:'state_vendor', label:'Register on Texas SmartBuy vendor portal'},
+  {key:'comptroller', label:'Check Texas Comptroller vendor list'}
+];
+const subChecklist = [
+  {key:'business_entity', label:'Form a business entity (LLC, Sole Prop, etc.)'},
+  {key:'ein', label:'Obtain EIN from IRS.gov (free)'},
+  {key:'bank_account', label:'Open a dedicated business bank account'},
+  {key:'cap_statement', label:'Create your Capability Statement'},
+  {key:'insurance', label:'Get Certificate of Insurance (COI)'},
+  {key:'trade_license', label:'Obtain required trade licenses for your state'},
+  {key:'evo_profile', label:'Complete your EvoConnect profile 100%'}
+];
+const byTrack = locals.checklistByTrack || {};
+const fedChecked   = byTrack.federal       || {};
+const stateChecked = byTrack.state         || {};
+const subChecked   = byTrack.subcontractor || {};
+%>
+
+<section class="dashboard-section">
+  <div class="container">
+
+    <%- include('../partials/flash') %>
+
+    <!-- Profile Completion Ring -->
+    <%
+      const pct = business.profile_pct || 0;
+      const ringClass = pct >= 100 ? 'ring-green' : pct >= 50 ? 'ring-cyan' : 'ring-amber';
+    %>
+    <div class="profile-ring-wrap <%= ringClass %>">
+      <div class="profile-ring" data-pct="<%= pct %>" aria-label="Profile <%= pct %>% complete">
+        <svg width="100" height="100" viewBox="0 0 100 100" aria-hidden="true">
+          <circle class="profile-ring-bg"   cx="50" cy="50" r="40"/>
+          <circle class="profile-ring-fill" cx="50" cy="50" r="40"/>
+        </svg>
+        <span class="profile-ring-label"><%= pct %>%</span>
+      </div>
+      <div class="profile-ring-info">
+        <h3><% if (pct >= 100) { %>Profile Complete<% } else { %>Profile <%= pct %>% Complete<% } %></h3>
+        <p>
+          <% if (pct >= 100) { %>
+            Your business profile is live and searchable by prime contractors.
+          <% } else if (pct >= 50) { %>
+            Getting there! Finish the remaining sections to boost your visibility.
+          <% } else { %>
+            Complete your profile to appear in the Prime Contractor directory.
+          <% } %>
+        </p>
+        <a href="/business/profile/edit" class="btn-sm <%= pct >= 100 ? 'btn-secondary' : 'btn-primary' %>">
+          <%= pct >= 100 ? 'View Profile' : 'Complete Profile' %>
+        </a>
+      </div>
+    </div>
+    <script>
+    document.querySelectorAll('.profile-ring[data-pct]').forEach(function(ring) {
+      var p = parseInt(ring.dataset.pct) || 0;
+      var circ = Math.round(2 * Math.PI * 40);
+      var fill = ring.querySelector('.profile-ring-fill');
+      if (fill) { fill.style.strokeDasharray = circ; fill.style.strokeDashoffset = Math.round(circ * (1 - p / 100)); }
+    });
+    </script>
+
+    <div class="dashboard-header">
+      <h1>Welcome, <%= business.company_name || 'there' %>!</h1>
+      <p class="section-sub">Your EvoConnect business dashboard.</p>
+    </div>
+
+    <div class="dashboard-grid">
+
+      <!-- 1. My NAICS Matches -->
+      <div class="dash-card dash-wide">
+        <div class="dash-card-header">
+          <h2>My NAICS Matches</h2>
+          <span class="badge badge-cyan">Contract Opportunities</span>
+        </div>
+        <% if (locals.naicsDetails && naicsDetails.length > 0) { %>
+          <div class="match-list">
+            <% naicsDetails.forEach(function(match) { %>
+            <div class="match-item">
+              <div class="match-code"><%= match.code %></div>
+              <div class="match-desc">
+                <strong><%= match.description %></strong>
+                <% if (match.avg_contract_size) { %><span class="match-meta">Avg. contract: $<%= match.avg_contract_size.toLocaleString() %></span><% } %>
+              </div>
+              <% if (match.set_aside_eligible) { %><span class="badge badge-amber">Set-Aside Eligible</span><% } %>
+            </div>
+            <% }) %>
+          </div>
+        <% } else { %>
+          <div class="empty-state">
+            <p>No NAICS matches yet. <a href="/business/profile">Add NAICS codes to your profile</a> to see matched opportunities.</p>
+          </div>
+        <% } %>
+      </div>
+
+      <!-- 2. Certifications Status -->
+      <div class="dash-card">
+        <div class="dash-card-header">
+          <h2>Certifications</h2>
+          <a href="/business/profile" class="btn-sm">Edit</a>
+        </div>
+        <% let bizCerts = []; try { bizCerts = JSON.parse(business.certifications || '[]'); } catch(e){} %>
+        <% if (bizCerts.length > 0) { %>
+          <ul class="cert-status-list">
+            <% bizCerts.forEach(function(cert) { %>
+            <li class="cert-status-item">
+              <span class="cert-badge-sm"><%= cert.toUpperCase() %></span>
+              <span class="cert-status-label"><%= cert.toUpperCase() %></span>
+              <span class="badge badge-success">Active</span>
+            </li>
+            <% }) %>
+          </ul>
+        <% } else { %>
+          <div class="empty-state">
+            <p>No certifications on file. <a href="/business/profile">Add your certifications</a> to qualify for more contracts.</p>
+          </div>
+        <% } %>
+      </div>
+
+      <!-- 3. Vendor Readiness Checklist -->
+      <div class="dash-card dash-wide">
+        <div class="dash-card-header">
+          <h2>Vendor Readiness Checklist</h2>
+        </div>
+        <div class="checklist-tabs" role="tablist">
+          <button class="tab-btn active" role="tab" aria-selected="true" aria-controls="tab-federal" id="btn-federal">Federal Track</button>
+          <button class="tab-btn" role="tab" aria-selected="false" aria-controls="tab-state" id="btn-state">State (Texas)</button>
+          <button class="tab-btn" role="tab" aria-selected="false" aria-controls="tab-sub" id="btn-sub">Subcontractor</button>
+        </div>
+
+        <div class="tab-panel active" id="tab-federal" role="tabpanel" aria-labelledby="btn-federal">
+          <% const fedDone = federalChecklist.filter(i => fedChecked[i.key]).length %>
+          <div class="progress-bar-wrap">
+            <div class="progress-bar" style="width: <%= Math.round((fedDone/federalChecklist.length)*100) %>%"></div>
+          </div>
+          <p class="progress-label"><%= fedDone %> of <%= federalChecklist.length %> complete</p>
+          <ul class="checklist-list">
+            <% federalChecklist.forEach(function(item) { %>
+            <li class="checklist-item"><label class="checklist-label"><input type="checkbox" class="checklist-check" data-key="<%= item.key %>" data-track="federal" <%= fedChecked[item.key] ? 'checked' : '' %>><span><%= item.label %></span></label></li>
+            <% }) %>
+          </ul>
+        </div>
+
+        <div class="tab-panel" id="tab-state" role="tabpanel" aria-labelledby="btn-state" hidden>
+          <% const stateDone = stateChecklist.filter(i => stateChecked[i.key]).length %>
+          <div class="progress-bar-wrap">
+            <div class="progress-bar" style="width: <%= Math.round((stateDone/stateChecklist.length)*100) %>%"></div>
+          </div>
+          <p class="progress-label"><%= stateDone %> of <%= stateChecklist.length %> complete</p>
+          <ul class="checklist-list">
+            <% stateChecklist.forEach(function(item) { %>
+            <li class="checklist-item"><label class="checklist-label"><input type="checkbox" class="checklist-check" data-key="<%= item.key %>" data-track="state" <%= stateChecked[item.key] ? 'checked' : '' %>><span><%= item.label %></span></label></li>
+            <% }) %>
+          </ul>
+        </div>
+
+        <div class="tab-panel" id="tab-sub" role="tabpanel" aria-labelledby="btn-sub" hidden>
+          <% const subDone = subChecklist.filter(i => subChecked[i.key]).length %>
+          <div class="progress-bar-wrap">
+            <div class="progress-bar" style="width: <%= Math.round((subDone/subChecklist.length)*100) %>%"></div>
+          </div>
+          <p class="progress-label"><%= subDone %> of <%= subChecklist.length %> complete</p>
+          <ul class="checklist-list">
+            <% subChecklist.forEach(function(item) { %>
+            <li class="checklist-item"><label class="checklist-label"><input type="checkbox" class="checklist-check" data-key="<%= item.key %>" data-track="subcontractor" <%= subChecked[item.key] ? 'checked' : '' %>><span><%= item.label %></span></label></li>
+            <% }) %>
+          </ul>
+        </div>
+      </div>
+
+      <!-- 4. Capability Statement -->
+      <div class="dash-card">
+        <div class="dash-card-header">
+          <h2>Capability Statement</h2>
+        </div>
+        <div class="cap-statement-preview">
+          <p>Your capability statement is a one-page document that showcases your business to prime contractors. Generate one from your profile data.</p>
+          <a href="/business/capability-statement" class="btn-primary" target="_blank">View / Print Capability Statement</a>
+        </div>
+      </div>
+
+      <!-- 5. Connection Requests -->
+      <div class="dash-card">
+        <div class="dash-card-header">
+          <h2>Connection Requests</h2>
+          <% if (locals.connections && connections.length > 0) { %>
+            <span class="badge badge-amber"><%= connections.filter(c => c.status === 'pending').length %> pending</span>
+          <% } %>
+        </div>
+        <% const pendingBizConns = (locals.connections || []).filter(c => c.status === 'pending'); %>
+        <% if (pendingBizConns.length > 0) { %>
+          <ul class="connection-list">
+            <% pendingBizConns.forEach(function(conn) { %>
+            <li class="connection-item">
+              <div class="connection-info">
+                <strong><%= conn.prime_company_name || conn.prime_contact || 'Prime Contractor' %></strong>
+                <% if (conn.message) { %><p class="connection-msg"><%= conn.message %></p><% } %>
+                <span class="connection-date"><%= new Date(conn.created_at).toLocaleDateString() %></span>
+              </div>
+              <div class="connection-actions">
+                <form method="POST" action="/business/connections/<%= conn.id %>" style="display:inline">
+                  <input type="hidden" name="action" value="accept">
+                  <button type="submit" class="btn-sm btn-primary">Accept</button>
+                </form>
+                <form method="POST" action="/business/connections/<%= conn.id %>" style="display:inline">
+                  <input type="hidden" name="action" value="decline">
+                  <button type="submit" class="btn-sm btn-secondary">Decline</button>
+                </form>
+              </div>
+            </li>
+            <% }) %>
+          </ul>
+        <% } else { %>
+          <div class="empty-state"><p>No pending requests. Complete your profile to attract prime contractors.</p></div>
+        <% } %>
+      </div>
+
+      <!-- 6. Resources -->
+      <div class="dash-card dash-wide">
+        <div class="dash-card-header"><h2>Resources</h2></div>
+        <div class="resource-grid">
+          <a href="https://sam.gov" target="_blank" rel="noopener" class="resource-card">
+            <div class="resource-icon">&#127963;</div>
+            <h4>SAM.gov</h4>
+            <p>Register for federal contracts</p>
+          </a>
+          <a href="https://comptroller.texas.gov/purchasing/vendor/hub/" target="_blank" rel="noopener" class="resource-card">
+            <div class="resource-icon">&#127919;</div>
+            <h4>Texas HUB Program</h4>
+            <p>Apply for HUB certification</p>
+          </a>
+          <a href="https://www.sba.gov/federal-contracting/contracting-assistance-programs/8a-business-development-program" target="_blank" rel="noopener" class="resource-card">
+            <div class="resource-icon">&#128200;</div>
+            <h4>SBA 8(a) Program</h4>
+            <p>Apply for the business development program</p>
+          </a>
+          <a href="/business/faq" class="resource-card">
+            <div class="resource-icon">&#10067;</div>
+            <h4>FAQ</h4>
+            <p>Common questions for businesses</p>
+          </a>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<script>
+document.querySelectorAll('.checklist-check').forEach(function(cb) {
+  cb.addEventListener('change', function() {
+    var track    = cb.dataset.track;
+    var item_key = cb.dataset.key;
+    var completed = cb.checked;
+    fetch('/business/checklist', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({ track: track, item_key: item_key, completed: completed })
+    })
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      if (data.success) {
+        var panel = cb.closest('.tab-panel');
+        if (panel) {
+          var allChecks = panel.querySelectorAll('.checklist-check');
+          var checkedCount = panel.querySelectorAll('.checklist-check:checked').length;
+          var pct = Math.round(checkedCount / allChecks.length * 100);
+          var bar = panel.querySelector('.progress-bar');
+          if (bar) bar.style.width = pct + '%';
+          var label = panel.querySelector('.progress-label');
+          if (label) label.textContent = checkedCount + ' of ' + allChecks.length + ' complete';
+        }
+      }
+    })
+    .catch(function(e) { console.warn('Checklist save failed:', e); });
+  });
+});
+document.querySelectorAll('.tab-btn').forEach(function(btn) {
+  btn.addEventListener('click', function() {
+    document.querySelectorAll('.tab-btn').forEach(function(b) { b.classList.remove('active'); b.setAttribute('aria-selected', 'false'); });
+    document.querySelectorAll('.tab-panel').forEach(function(p) { p.classList.remove('active'); p.hidden = true; });
+    btn.classList.add('active'); btn.setAttribute('aria-selected', 'true');
+    const panel = document.getElementById(btn.getAttribute('aria-controls'));
+    if (panel) { panel.classList.add('active'); panel.hidden = false; }
+  });
+});
+</script>

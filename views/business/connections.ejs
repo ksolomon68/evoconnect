@@ -1,0 +1,117 @@
+<% const title = locals.title || 'My Connections' %>
+
+<section class="dashboard-section">
+  <div class="container">
+
+    <%- include('../partials/flash') %>
+
+    <div class="dashboard-header" style="margin-bottom:2rem">
+      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem">
+        <div>
+          <h1>My Connections</h1>
+          <p class="section-sub">Prime contractors who have reached out to connect with your business.</p>
+        </div>
+        <a href="/business/dashboard" class="btn-sm btn-secondary">&larr; Dashboard</a>
+      </div>
+    </div>
+
+    <%
+      const allConns     = locals.connections || [];
+      const pendingConns = allConns.filter(c => c.status === 'pending');
+      const activeConns  = allConns.filter(c => c.status === 'accepted');
+      const pastConns    = allConns.filter(c => c.status === 'declined');
+    %>
+
+    <% if (pendingConns.length > 0) { %>
+    <div class="dash-card" style="margin-bottom:1.5rem">
+      <div class="dash-card-header">
+        <h2>Pending Requests</h2>
+        <span class="badge badge-amber"><%= pendingConns.length %> pending</span>
+      </div>
+      <ul class="connection-list">
+        <% pendingConns.forEach(function(conn) { %>
+        <li class="connection-item">
+          <div class="connection-info">
+            <strong><%= conn.prime_company_name || 'Prime Contractor' %></strong>
+            <% if (conn.prime_contact) { %><span class="text-muted" style="margin-left:.5rem;font-size:.875rem"><%= conn.prime_contact %></span><% } %>
+            <% if (conn.message) { %><p class="connection-msg"><%= conn.message %></p><% } %>
+            <span class="connection-date">Received <%= new Date(conn.created_at).toLocaleDateString() %></span>
+          </div>
+          <div class="connection-actions">
+            <form method="POST" action="/business/connections/<%= conn.id %>" style="display:inline">
+              <input type="hidden" name="action" value="accept">
+              <button type="submit" class="btn-sm btn-primary">Accept</button>
+            </form>
+            <form method="POST" action="/business/connections/<%= conn.id %>" style="display:inline">
+              <input type="hidden" name="action" value="decline">
+              <button type="submit" class="btn-sm btn-secondary">Decline</button>
+            </form>
+          </div>
+        </li>
+        <% }) %>
+      </ul>
+    </div>
+    <% } %>
+
+    <div class="dash-card" style="margin-bottom:1.5rem">
+      <div class="dash-card-header">
+        <h2>Active Connections</h2>
+        <span class="badge badge-cyan"><%= activeConns.length %></span>
+      </div>
+      <% if (activeConns.length > 0) { %>
+      <ul class="connection-list">
+        <% activeConns.forEach(function(conn) { %>
+        <li class="connection-item">
+          <div class="connection-info">
+            <strong><%= conn.prime_company_name || 'Prime Contractor' %></strong>
+            <span class="badge badge-success" style="margin-left:.5rem;font-size:.7rem">Connected</span>
+            <% if (conn.prime_contact) { %><span class="text-muted" style="display:block;font-size:.875rem;margin-top:.25rem">Contact: <%= conn.prime_contact %></span><% } %>
+            <% if (conn.prime_email) { %><a href="mailto:<%= conn.prime_email %>" style="display:block;font-size:.875rem;color:var(--color-brand)"><%= conn.prime_email %></a><% } %>
+            <span class="connection-date">Connected <%= new Date(conn.updated_at || conn.created_at).toLocaleDateString() %></span>
+          </div>
+        </li>
+        <% }) %>
+      </ul>
+      <% } else { %>
+      <div class="empty-state">
+        <p>No active connections yet. Complete your profile to increase your visibility to prime contractors.</p>
+        <a href="/business/profile" class="btn-sm">Complete Profile</a>
+      </div>
+      <% } %>
+    </div>
+
+    <% if (pastConns.length > 0) { %>
+    <div class="dash-card">
+      <div class="dash-card-header">
+        <h2>Past Requests</h2>
+      </div>
+      <ul class="connection-list">
+        <% pastConns.forEach(function(conn) { %>
+        <li class="connection-item" style="opacity:.6">
+          <div class="connection-info">
+            <strong><%= conn.prime_company_name || 'Prime Contractor' %></strong>
+            <span class="badge" style="margin-left:.5rem;font-size:.7rem;background:rgba(239,68,68,.15);color:#fca5a5">Declined</span>
+            <span class="connection-date"><%= new Date(conn.created_at).toLocaleDateString() %></span>
+          </div>
+        </li>
+        <% }) %>
+      </ul>
+    </div>
+    <% } %>
+
+    <% if (allConns.length === 0) { %>
+    <div class="dash-card">
+      <div class="empty-state" style="padding:3rem;text-align:center">
+        <div style="font-size:3rem;margin-bottom:1rem">&#128276;</div>
+        <h3>No Connection Requests Yet</h3>
+        <p>Prime contractors will reach out when they find your business. Complete your profile and generate your capability statement to maximize visibility.</p>
+        <div style="display:flex;gap:1rem;justify-content:center;margin-top:1.5rem;flex-wrap:wrap">
+          <a href="/business/profile" class="btn-primary">Complete Profile</a>
+          <a href="/business/capability-statement" class="btn-secondary-outline">Generate Capability Statement</a>
+        </div>
+      </div>
+    </div>
+    <% } %>
+
+  </div>
+</section>

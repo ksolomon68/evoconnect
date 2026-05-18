@@ -1,0 +1,57 @@
+<% const title = 'Contact | EvoConnect' %>
+
+<section style="padding:5rem 1rem;min-height:70vh">
+  <div class="container" style="max-width:640px">
+    <div style="text-align:center;margin-bottom:3rem">
+      <h1 style="font-size:2rem;font-weight:800;color:#0F172A;margin:0 0 .75rem">Contact EvoConnect</h1>
+      <p style="color:#64748B;font-size:1.05rem">Questions about the platform? We're here to help.</p>
+    </div>
+
+    <div class="card" style="padding:2.5rem">
+      <form method="POST" action="/contact" id="contactForm">
+        <div class="form-group">
+          <label class="form-label" for="name">Your Name <span style="color:#EF4444">*</span></label>
+          <input type="text" id="name" name="name" class="form-control" placeholder="Jane Smith" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="email">Email Address <span style="color:#EF4444">*</span></label>
+          <input type="email" id="email" name="email" class="form-control" placeholder="jane@company.com" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="subject">Subject <span style="color:#EF4444">*</span></label>
+          <select id="subject" name="subject" class="form-control" required>
+            <option value="">Select a topic…</option>
+            <option value="registration">Registration Help</option>
+            <option value="dashboard">Dashboard Issue</option>
+            <option value="prime-approval">Prime Contractor Approval</option>
+            <option value="billing">Billing / Subscription</option>
+            <option value="technical">Technical Problem</option>
+            <option value="other">Other</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="message">Message <span style="color:#EF4444">*</span></label>
+          <textarea id="message" name="message" class="form-control" rows="5" placeholder="Describe your question or issue in detail…" required></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary" style="width:100%">Send Message</button>
+      </form>
+    </div>
+
+    <div style="margin-top:2.5rem;display:grid;grid-template-columns:1fr 1fr;gap:1.5rem">
+      <div style="text-align:center;padding:1.5rem;background:#F8FAFC;border-radius:12px">
+        <div style="font-size:1.75rem;margin-bottom:.5rem">📧</div>
+        <div style="font-weight:600;color:#0F172A;margin-bottom:.25rem">Email Support</div>
+        <a href="mailto:<%= cfg.email %>" style="color:#06B6D4;font-size:.9rem"><%= cfg.email %></a>
+      </div>
+      <div style="text-align:center;padding:1.5rem;background:#F8FAFC;border-radius:12px">
+        <div style="font-size:1.75rem;margin-bottom:.5rem">📞</div>
+        <div style="font-weight:600;color:#0F172A;margin-bottom:.25rem">Phone</div>
+        <a href="tel:<%= cfg.ownerPhone %>" style="color:#06B6D4;font-size:.9rem"><%= cfg.ownerPhone %></a>
+      </div>
+    </div>
+
+    <p style="text-align:center;color:#94A3B8;font-size:.85rem;margin-top:2rem">
+      A platform by <a href="<%= cfg.ownerUrl %>" target="_blank" rel="noopener" style="color:#06B6D4"><%= cfg.owner %></a>
+    </p>
+  </div>
+</section>

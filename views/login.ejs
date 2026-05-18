@@ -1,0 +1,67 @@
+<% const title = locals.title || 'Log In' %>
+
+<section class="auth-section">
+  <div class="container">
+    <div class="auth-card">
+      <div class="auth-logo">
+        <img src="/images/logo-light.png" alt="EvoConnect" height="40">
+      </div>
+      <h1 class="auth-title">Log In to EvoConnect</h1>
+
+      <%- include('./partials/flash') %>
+
+      <form method="POST" action="/login" class="auth-form" novalidate>
+
+        <!-- Email -->
+        <div class="form-group">
+          <label for="email" class="form-label">Email Address</label>
+          <input
+            type="email"
+            id="email"
+            name="email"
+            class="form-control<%= locals.errors?.email ? ' is-invalid' : '' %>"
+            value="<%= locals.values?.email || '' %>"
+            required
+            autocomplete="email"
+            aria-describedby="<%= locals.errors?.email ? 'email-error' : '' %>"
+          >
+          <% if (locals.errors?.email) { %><span class="field-error" id="email-error" role="alert"><%= errors.email %></span><% } %>
+        </div>
+
+        <!-- Password -->
+        <div class="form-group">
+          <label for="password" class="form-label">Password</label>
+          <div class="input-with-toggle">
+            <input
+              type="password"
+              id="password"
+              name="password"
+              class="form-control<%= locals.errors?.password ? ' is-invalid' : '' %>"
+              required
+              autocomplete="current-password"
+              aria-describedby="<%= locals.errors?.password ? 'password-error' : '' %>"
+            >
+            <button type="button" class="toggle-password" aria-label="Toggle password visibility">&#128065;</button>
+          </div>
+          <% if (locals.errors?.password) { %><span class="field-error" id="password-error" role="alert"><%= errors.password %></span><% } %>
+        </div>
+
+        <button type="submit" class="btn-primary btn-full">Log In</button>
+
+        <div class="auth-links">
+          <a href="/forgot-password">Forgot your password?</a>
+        </div>
+
+      </form>
+
+      <div class="auth-divider"><span>Don't have an account?</span></div>
+
+      <div class="auth-register-links">
+        <a href="/labor/register" class="btn btn-outline btn-sm">Register as Worker</a>
+        <a href="/business/register" class="btn btn-outline btn-sm">Register as Business</a>
+        <a href="/prime/register" class="btn btn-outline btn-sm">Prime Contractor</a>
+      </div>
+
+    </div>
+  </div>
+</section>

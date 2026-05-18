@@ -1,0 +1,28 @@
+<% const title = locals.title || 'Access Denied' %>
+
+<section class="error-section">
+  <div class="container text-center">
+    <div class="error-code">403</div>
+    <h1 class="error-title">Access Denied</h1>
+    <p class="error-message">You don't have permission to view this page. This area may be restricted to a specific account type or subscription plan.</p>
+    <div class="error-actions">
+      <a href="/" class="btn-primary">Go to Home</a>
+      <% if (locals.user) { %>
+        <% if (locals.user.type === 'worker') { %>
+          <a href="/labor/dashboard" class="btn-secondary">My Dashboard</a>
+        <% } else if (locals.user.type === 'business') { %>
+          <a href="/business/dashboard" class="btn-secondary">My Dashboard</a>
+        <% } else if (locals.user.type === 'prime') { %>
+          <a href="/prime/dashboard" class="btn-secondary">My Dashboard</a>
+        <% } else { %>
+          <a href="/login" class="btn-secondary">Log In</a>
+        <% } %>
+      <% } else { %>
+        <a href="/login" class="btn-secondary">Log In</a>
+      <% } %>
+    </div>
+    <div class="error-help">
+      <p>If you believe you should have access, please <a href="/contact">contact support</a>.</p>
+    </div>
+  </div>
+</section>

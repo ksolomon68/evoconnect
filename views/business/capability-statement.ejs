@@ -1,0 +1,263 @@
+<% layout = false %>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Capability Statement — <%= business.company_name || 'EvoConnect' %></title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      font-size: 11pt;
+      color: #0F172A;
+      background: #fff;
+      padding: 0;
+    }
+    .cap-page {
+      max-width: 8.5in;
+      margin: 0 auto;
+      padding: 0.5in 0.75in;
+      min-height: 11in;
+    }
+    /* Header */
+    .cap-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      border-bottom: 3px solid #06B6D4;
+      padding-bottom: 1rem;
+      margin-bottom: 1.5rem;
+    }
+    .cap-company h1 {
+      font-size: 22pt;
+      font-weight: 800;
+      color: #0F172A;
+      line-height: 1.1;
+    }
+    .cap-company p {
+      color: #64748B;
+      font-size: 10pt;
+      margin-top: 0.25rem;
+    }
+    .cap-logo img { height: 48px; }
+    /* Contact block */
+    .cap-contact {
+      background: #F8FAFC;
+      border-left: 4px solid #06B6D4;
+      padding: 0.75rem 1rem;
+      margin-bottom: 1.5rem;
+      font-size: 10pt;
+    }
+    .cap-contact-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0.5rem; }
+    .cap-contact-item strong { display: block; font-size: 8pt; color: #64748B; text-transform: uppercase; }
+    /* Sections */
+    .cap-section { margin-bottom: 1.25rem; }
+    .cap-section h2 {
+      font-size: 11pt;
+      font-weight: 700;
+      color: #06B6D4;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      border-bottom: 1px solid #E2E8F0;
+      padding-bottom: 0.25rem;
+      margin-bottom: 0.75rem;
+    }
+    .cap-section p { font-size: 10.5pt; line-height: 1.6; color: #334155; }
+    /* NAICS table */
+    .naics-table { width: 100%; border-collapse: collapse; font-size: 10pt; }
+    .naics-table th { background: #0F172A; color: #fff; padding: 0.4rem 0.75rem; text-align: left; font-size: 9pt; }
+    .naics-table td { padding: 0.4rem 0.75rem; border-bottom: 1px solid #E2E8F0; }
+    .naics-table tr:nth-child(even) td { background: #F8FAFC; }
+    /* Certs */
+    .cert-pills { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+    .cert-pill {
+      background: #0F172A;
+      color: #06B6D4;
+      font-weight: 700;
+      font-size: 9pt;
+      padding: 0.25rem 0.6rem;
+      border-radius: 0.25rem;
+      letter-spacing: 0.05em;
+    }
+    /* Two column layout */
+    .cap-two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+    /* Footer watermark */
+    .cap-footer {
+      margin-top: 2rem;
+      border-top: 2px solid #06B6D4;
+      padding-top: 0.75rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 8pt;
+      color: #64748B;
+    }
+    .cap-footer strong { color: #0F172A; }
+    /* Print button — hidden when printing */
+    .print-actions {
+      text-align: center;
+      padding: 1rem;
+      background: #F8FAFC;
+      border-bottom: 1px solid #E2E8F0;
+    }
+    .btn-print {
+      background: #06B6D4;
+      color: #fff;
+      border: none;
+      padding: 0.6rem 1.5rem;
+      border-radius: 0.5rem;
+      font-weight: 600;
+      cursor: pointer;
+      font-size: 1rem;
+      margin-right: 0.5rem;
+    }
+    .btn-back {
+      background: transparent;
+      color: #06B6D4;
+      border: 2px solid #06B6D4;
+      padding: 0.6rem 1.5rem;
+      border-radius: 0.5rem;
+      font-weight: 600;
+      cursor: pointer;
+      font-size: 1rem;
+      text-decoration: none;
+    }
+    @media print {
+      .print-actions { display: none; }
+      .cap-page { padding: 0.4in 0.5in; }
+      body { font-size: 10pt; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Print Controls (hidden in print) -->
+  <div class="print-actions">
+    <button class="btn-print" onclick="window.print()">Print / Save as PDF</button>
+    <a href="/business/dashboard" class="btn-back">&larr; Back to Dashboard</a>
+  </div>
+
+  <div class="cap-page">
+
+    <!-- Header -->
+    <div class="cap-header">
+      <div class="cap-company">
+        <h1><%= business.company_name || 'Your Company Name' %></h1>
+        <p><%= business.entity_type ? business.entity_type.replace(/_/g,' ').toUpperCase() : '' %><% if (business.years_in_business) { %> &bull; <%= business.years_in_business %> Years in Business<% } %></p>
+      </div>
+      <div class="cap-logo">
+        <img src="/images/logo-light.png" alt="EvoConnect">
+      </div>
+    </div>
+
+    <!-- Contact -->
+    <div class="cap-contact">
+      <div class="cap-contact-grid">
+        <div class="cap-contact-item">
+          <strong>Primary Contact</strong>
+          <%= business.contact_name || '—' %>
+        </div>
+        <div class="cap-contact-item">
+          <strong>Phone</strong>
+          <%= business.phone || '—' %>
+        </div>
+        <div class="cap-contact-item">
+          <strong>Email</strong>
+          <%= business.email || '—' %>
+        </div>
+        <div class="cap-contact-item">
+          <strong>Location</strong>
+          <% if (business.city && business.state) { %><%= business.city %>, <%= business.state %> <%= business.zip || '' %><% } else { %>—<% } %>
+        </div>
+        <div class="cap-contact-item">
+          <strong>SAM.gov UEI</strong>
+          <%= business.sam_uei || 'Pending Registration' %>
+        </div>
+        <div class="cap-contact-item">
+          <strong>SAM.gov Status</strong>
+          <%= business.sam_registered === 'yes' ? 'Active' : (business.sam_registered === 'pending' ? 'In Progress' : 'Not Registered') %>
+        </div>
+      </div>
+    </div>
+
+    <div class="cap-two-col">
+      <div>
+
+        <!-- Core Capabilities -->
+        <div class="cap-section">
+          <h2>Core Capabilities</h2>
+          <p><%= business.service_description || 'Describe your company\'s core services and capabilities here.' %></p>
+        </div>
+
+        <!-- Service Area -->
+        <% if (business.service_area) { %>
+        <div class="cap-section">
+          <h2>Service Area</h2>
+          <p><%= business.service_area %></p>
+        </div>
+        <% } %>
+
+        <!-- Certifications -->
+        <div class="cap-section">
+          <h2>Certifications &amp; Designations</h2>
+          <% let certList = []; try { certList = JSON.parse(business.certifications || '[]'); } catch(e){} %>
+          <% if (certList.length > 0) { %>
+            <div class="cert-pills">
+              <% certList.forEach(function(cert) { %>
+                <span class="cert-pill"><%= cert.toUpperCase() %></span>
+              <% }) %>
+            </div>
+          <% } else { %>
+            <p>No certifications on file.</p>
+          <% } %>
+        </div>
+
+      </div>
+      <div>
+
+        <!-- NAICS Codes -->
+        <div class="cap-section">
+          <h2>NAICS Codes</h2>
+          <% let naicsList = []; try { naicsList = JSON.parse(business.naics_codes || '[]'); } catch(e){} %>
+          <% if (naicsList.length > 0) { %>
+            <table class="naics-table">
+              <thead>
+                <tr>
+                  <th>NAICS Code</th>
+                  <th>Description</th>
+                </tr>
+              </thead>
+              <tbody>
+                <% naicsList.forEach(function(code) { %>
+                  <tr>
+                    <td><strong><%= code %></strong></td>
+                    <td><%= locals.naicsDescriptions ? (naicsDescriptions[code] || '') : '' %></td>
+                  </tr>
+                <% }) %>
+              </tbody>
+            </table>
+          <% } else { %>
+            <p>No NAICS codes on file.</p>
+          <% } %>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="cap-footer">
+      <div>
+        <strong>EvoConnect</strong> — Connect the Contract. Build the Future.<br>
+        Profile verified on EvoConnect | <a href="https://evoconnect.io">evoconnect.io</a>
+      </div>
+      <div style="text-align:right">
+        Generated: <%= new Date().toLocaleDateString('en-US', {year:'numeric', month:'long', day:'numeric'}) %><br>
+        Powered by EVOBRAND Concepts | 214-531-4427
+      </div>
+    </div>
+
+  </div>
+
+</body>
+</html>

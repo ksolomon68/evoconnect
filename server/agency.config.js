@@ -1,58 +1,25 @@
-/**
- * ============================================================
- *  SERVER-SIDE AGENCY CONFIGURATION — CommonJS Mirror
- * ============================================================
- *  This file mirrors agency.config.js (root) for use by the
- *  Node.js server (CORS origins, log prefix, manifest endpoint).
- *  Keep it in sync with the client-side config.
- * ============================================================
- */
-
 module.exports = {
-  // ── Identity ────────────────────────────────────────────
-  name:        'PrimeReach',
-  shortName:   'PrimeReach',
-  appId:       'com.primereachgov.app',
-  /** Production hostname — no protocol, no trailing slash. */
-  domain:      'primereachgov.com',
-  logoPath:    'images/logo-light.png',
-  description: 'Connecting prime contractors with qualified small and disadvantaged businesses.',
-
-  // ── Brand Colors ────────────────────────────────────────
-  themeColor:      '#0A1628',
-  backgroundColor: '#ffffff',
-
-  // ── Contact & Legal ─────────────────────────────────────
-  supportEmail:     'info@primereachgov.com',
-  supportPhone:     '+1-800-000-0000',
-  organizationName: 'PrimeReach',
-  programName:      'Government Contracting Platform',
-  address: {
-    street: '',
-    city:   '',
-    state:  '',
-    zip:    ''
-  },
-
-  // ── Storage Namespace ────────────────────────────────────
-  storagePrefix: 'primereach',
-
-  // ── Program Type ─────────────────────────────────────────
-  programTypes: ['DBE', 'SBE', 'MBE', 'WBE', 'DVBE'],
-
-  // ── Regional / District Data ─────────────────────────────
-  districts: [
-    { id: '1',  name: 'District 1',  region: 'Region A' },
-    { id: '2',  name: 'District 2',  region: 'Region A' },
-    { id: '3',  name: 'District 3',  region: 'Region A' },
-    { id: '4',  name: 'District 4',  region: 'Region B' },
-    { id: '5',  name: 'District 5',  region: 'Region B' },
-    { id: '6',  name: 'District 6',  region: 'Region B' },
-    { id: '7',  name: 'District 7',  region: 'Region C' },
-    { id: '8',  name: 'District 8',  region: 'Region C' },
-    { id: '9',  name: 'District 9',  region: 'Region C' },
-    { id: '10', name: 'District 10', region: 'Region D' },
-    { id: '11', name: 'District 11', region: 'Region D' },
-    { id: '12', name: 'District 12', region: 'Region D' }
-  ]
+    name:            'EvoConnect',
+    shortName:       'EvoConnect',
+    tagline:         'Connect the Contract. Build the Future.',
+    domain:          process.env.DOMAIN || 'evoconnect.evobrand.net',
+    appId:           'net.evobrand.evoconnect',
+    description:     'Government contract workforce ecosystem for skilled workers, small businesses, and prime contractors.',
+    themeColor:      '#0F172A',
+    backgroundColor: '#0F172A',
+    logoPath:        'images/logo-light.png',
+    brandFamily:     'PrimeReach',
+    owner:           'EVOBRAND Concepts',
+    ownerUrl:        'https://evobrand.net',
+    ownerPhone:      '214-531-4427',
+    email:           process.env.EMAIL_FROM || 'info@evoconnect.evobrand.net',
+    supportEmail:    process.env.SUPPORT_EMAIL || 'support@evoconnect.evobrand.net',
+    storagePrefix:   'evo',
+    address:         { street: '', city: 'Dallas', state: 'TX', zip: '' },
+    colors: {
+        slate: '#0F172A',
+        cyan:  '#06B6D4',
+        amber: '#F59E0B',
+        light: '#F8FAFC',
+    }
 };

@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= locals.title ? locals.title + ' | EvoConnect' : 'EvoConnect' %></title>
+  <meta name="description" content="<%= locals.description || 'EvoConnect — Connect the Contract. Build the Future. The government contract workforce ecosystem for workers, businesses, and prime contractors.' %>">
+  <link rel="icon" href="/images/favicon.png" type="image/png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/design-system.css?v=1.0.3">
+  <link rel="stylesheet" href="/css/main.css?v=1.0.3">
+  <link rel="stylesheet" href="/css/dashboard-common.css?v=1.0.3">
+  <link rel="stylesheet" href="/css/dashboard-new.css?v=1.0.3">
+  <link rel="stylesheet" href="/css/home.css?v=1.0.3">
+  <link rel="stylesheet" href="/css/accessibility-widget.css?v=1.0.3">
+</head>
+<body>
+  <a href="#main" class="skip-link">Skip to main content</a>
+  <%- include('../partials/nav') %>
+  <main id="main"><%- body %></main>
+  <%- include('../partials/footer') %>
+  <script src="/agency.config.js"></script>
+  <script src="/js/config.js"></script>
+  <script src="/js/accessibility-widget.js"></script>
+  <script src="/js/pwa.js"></script>
+  <script src="/js/evo.js"></script>
+</body>
+</html>

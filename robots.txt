@@ -5,7 +5,6 @@ Allow: /
 Disallow: /admin-cms.html
 Disallow: /admin-users.html
 Disallow: /dashboard-admin.html
-Disallow: /dashboard-caltrans.html
 Disallow: /api/
 
 # Allow assets
@@ -14,4 +13,4 @@ Allow: /js/
 Allow: /images/
 Allow: /uploads/
 
-Sitemap: https://caltransbizconnect.org/sitemap.xml
+Sitemap: https://workforceconnect.io/sitemap.xml

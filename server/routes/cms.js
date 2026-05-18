@@ -82,16 +82,18 @@ const upload = multer({
  *
  * Body: { email: string, password: string }
  */
-// Helper: get active CMS password (file override takes precedence over env var)
+// Helper: get active CMS password info from file (bcrypt hash) or env var (plain)
 const CMS_AUTH_FILE = path.join(ROOT_DIR, 'content', 'cms-auth.json');
-function getCmsPassword() {
+function getCmsPasswordInfo() {
     try {
         if (fs.existsSync(CMS_AUTH_FILE)) {
             const data = JSON.parse(fs.readFileSync(CMS_AUTH_FILE, 'utf8'));
-            if (data && data.password) return data.password;
+            if (data && data.passwordHash) return { hash: data.passwordHash, isHashed: true };
+            if (data && data.password) return { hash: data.password, isHashed: false }; // legacy plain
         }
     } catch (e) {}
-    return process.env.CMS_ADMIN_PASSWORD || null;
+    const plain = process.env.CMS_ADMIN_PASSWORD || null;
+    return plain ? { hash: plain, isHashed: false } : null;
 }
 
 router.post('/login', async (req, res) => {
@@ -102,9 +104,9 @@ router.post('/login', async (req, res) => {
     }
 
     try {
-        // First: check DB for an admin/caltrans_admin user with this email
+        // First: check DB for an admin/wfc_admin user with this email
         const [rows] = await db.execute(
-            "SELECT id, email, password_hash, type FROM users WHERE email = ? AND type IN ('admin', 'caltrans_admin')",
+            "SELECT id, email, password_hash, type FROM users WHERE email = ? AND type IN ('admin', 'wfc_admin')",
             [email]
         );
 
@@ -115,7 +117,7 @@ router.post('/login', async (req, res) => {
                 return res.status(401).json({ error: 'Invalid credentials' });
             }
             const token = jwt.sign(
-                { id: user.id, email: user.email, type: 'caltrans_admin' },
+                { id: user.id, email: user.email, type: 'wfc_admin' },
                 CMS_JWT_SECRET,
                 { expiresIn: '24h' }
             );
@@ -123,16 +125,19 @@ router.post('/login', async (req, res) => {
         }
 
         // Fallback: static CMS password (env var or cms-auth.json override)
-        const requiredPassword = getCmsPassword();
-        if (!requiredPassword) {
+        const pwdInfo = getCmsPasswordInfo();
+        if (!pwdInfo) {
             return res.status(500).json({ error: 'CMS_ADMIN_PASSWORD is not configured on the server' });
         }
-        if (password !== requiredPassword) {
+        const passwordMatch = pwdInfo.isHashed
+            ? await bcrypt.compare(password, pwdInfo.hash)
+            : password === pwdInfo.hash;
+        if (!passwordMatch) {
             return res.status(401).json({ error: 'Invalid credentials' });
         }
 
         const token = jwt.sign(
-            { email, type: 'caltrans_admin' },
+            { email, type: 'wfc_admin' },
             CMS_JWT_SECRET,
             { expiresIn: '24h' }
         );
@@ -158,7 +163,7 @@ router.post('/change-password', requireAdmin, async (req, res) => {
         // If the admin is a DB user, update their password_hash in the DB
         const adminEmail = req.user.email;
         const [rows] = await db.execute(
-            "SELECT id, password_hash FROM users WHERE email = ? AND type IN ('admin', 'caltrans_admin')",
+            "SELECT id, password_hash FROM users WHERE email = ? AND type IN ('admin', 'wfc_admin')",
             [adminEmail]
         );
 
@@ -170,18 +175,22 @@ router.post('/change-password', requireAdmin, async (req, res) => {
             return res.json({ success: true, message: 'Password updated successfully' });
         }
 
-        // Fallback: update static CMS password file
-        const activePassword = getCmsPassword();
-        if (currentPassword !== activePassword) {
+        // Fallback: update static CMS password file (store bcrypt hash, never plaintext)
+        const pwdInfo = getCmsPasswordInfo();
+        const currentMatch = pwdInfo
+            ? (pwdInfo.isHashed ? await bcrypt.compare(currentPassword, pwdInfo.hash) : currentPassword === pwdInfo.hash)
+            : false;
+        if (!currentMatch) {
             return res.status(401).json({ error: 'Current password is incorrect' });
         }
+        const newHash = await bcrypt.hash(newPassword, 12);
         const dir = path.dirname(CMS_AUTH_FILE);
         if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
-        fs.writeFileSync(CMS_AUTH_FILE, JSON.stringify({ password: newPassword, updatedAt: new Date().toISOString() }, null, 2), 'utf8');
+        fs.writeFileSync(CMS_AUTH_FILE, JSON.stringify({ passwordHash: newHash, updatedAt: new Date().toISOString() }, null, 2), 'utf8');
         res.json({ success: true, message: 'Password updated successfully' });
     } catch (err) {
         console.error('CMS: Failed to change password:', err.message);
-        res.status(500).json({ error: `Failed to change password: ${err.message}` });
+        res.status(500).json({ error: 'Failed to change password. Please try again.' });
     }
 });
 
@@ -194,7 +203,7 @@ function requireAdmin(req, res, next) {
     }
     try {
         const decoded = jwt.verify(token, CMS_JWT_SECRET);
-        if (decoded.type !== 'caltrans_admin' && decoded.type !== 'admin') {
+        if (decoded.type !== 'wfc_admin' && decoded.type !== 'admin') {
             return res.status(403).json({ error: 'Admin access required' });
         }
         req.user = decoded;
@@ -269,6 +278,12 @@ router.put('/global', requireAdmin, (req, res) => {
 
 // ─── PAGE CONTENT ─────────────────────────────────────────────────────────────
 
+// Nav order — pages appear in this sequence in the CMS page list
+const NAV_ORDER = [
+    'index', 'for-small-businesses', 'for-prime-contractors',
+    'opportunities', 'how-it-works', 'resources', 'faq', 'support-services', 'eligibility', 'contact'
+];
+
 /** GET /api/cms/pages — list all pages (public) */
 router.get('/pages', (_req, res) => {
     const files = fs.existsSync(PAGES_DIR)
@@ -284,6 +299,16 @@ router.get('/pages', (_req, res) => {
             updatedAt: data?.updatedAt          || null,
             isSystem:  data?.isSystem           || false
         };
+    });
+
+    pages.sort((a, b) => {
+        const ai = NAV_ORDER.indexOf(a.slug);
+        const bi = NAV_ORDER.indexOf(b.slug);
+        // Known nav pages first in order; unknown pages alphabetically at end
+        if (ai === -1 && bi === -1) return a.slug.localeCompare(b.slug);
+        if (ai === -1) return 1;
+        if (bi === -1) return -1;
+        return ai - bi;
     });
 
     res.json(pages);
@@ -347,7 +372,7 @@ router.post('/pages', requireAdmin, (req, res) => {
         },
         header: {
             backgroundImage: '',
-            logoImage:       'images/logo.png',
+            logoImage:       'images/caltrans-logo.png',
             logoAlt:         'Caltrans'
         },
         sections:  sections || [],

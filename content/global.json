@@ -1,14 +1,14 @@
 {
   "updatedAt": "2026-04-13T00:00:00.000Z",
   "site": {
-    "name": "PrimeReach",
+    "name": "WorkForce Connect",
     "tagline": "Connecting Primes with Qualified Small Businesses",
     "logoImage": "images/logo.png",
-    "logoAlt": "PrimeReach Logo",
+    "logoAlt": "WorkForce Connect Logo",
     "faviconPath": "assets/favicon.ico",
-    "contactEmail": "info@primereachgov.com",
-    "copyrightText": "© 2026 PrimeReach. All rights reserved.",
-    "programName": "PrimeReach — Government Contracting Platform"
+    "contactEmail": "info@workforceconnect.io",
+    "copyrightText": "© 2026 WorkForce Connect. All rights reserved.",
+    "programName": "WorkForce Connect — Government Contract Pipeline for Skilled Workers"
   },
   "navigation": {
     "items": [
@@ -55,7 +55,7 @@
         "links": [
           { "label": "Contact Us",              "href": "contact.html"                       },
           { "label": "Report Site Issue",       "href": "report-issue.html"                  },
-          { "label": "info@primereachgov.com",  "href": "mailto:info@primereachgov.com"      }
+          { "label": "info@workforceconnect.io",  "href": "mailto:info@workforceconnect.io"      }
         ]
       },
       {
@@ -69,14 +69,14 @@
     ]
   },
   "externalPortals": {
-    "platformHome":  "https://primereachgov.com",
+    "platformHome":  "https://workforceconnect.io",
     "caOsba":        "https://calosba.ca.gov/",
     "federalRegs":   "https://www.ecfr.gov/current/title-49/subtitle-A/part-26"
   },
   "announcement": {
     "enabled": true,
     "version": "v1",
-    "message": "PrimeReach is currently accepting new Small Business registrations. For questions, contact <a href=\"mailto:info@primereachgov.com\">info@primereachgov.com</a>.",
+    "message": "PrimeReach is currently accepting new worker registrations. For questions, contact <a href=\"mailto:info@workforceconnect.io\">info@workforceconnect.io</a>.",
     "linkText": "",
     "linkUrl": ""
   },

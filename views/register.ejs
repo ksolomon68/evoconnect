@@ -1,0 +1,58 @@
+<% const title = locals.title || 'Create Your Account' %>
+
+<section class="reg-selector-section">
+  <div class="container">
+    <div class="section-header text-center">
+      <div class="hero-badge">Registration Portal</div>
+      <h1>Select Your Account Type</h1>
+      <p class="section-sub">Choose the role that fits your goals and join the EvoConnect government contract workforce ecosystem.</p>
+    </div>
+
+    <%- include('./partials/flash') %>
+
+    <div class="reg-selector-grid">
+      <!-- Worker Account -->
+      <div class="reg-selector-card card-worker">
+        <div class="reg-card-icon">👷‍♂️</div>
+        <h2 class="reg-card-title">Worker Account</h2>
+        <span class="reg-card-badge badge-blue">Free Profile</span>
+        <p class="reg-card-desc">
+          Create a professional profile, showcase your trade skills and experience, upload certifications (OSHA, CDL, etc.), and get discovered directly by major prime contractors looking for qualified local labor.
+        </p>
+        <div class="reg-card-action">
+          <a href="/labor/register" class="btn btn-primary btn-full">Register as a Worker</a>
+        </div>
+      </div>
+
+      <!-- Business Account -->
+      <div class="reg-selector-card card-business">
+        <div class="reg-card-icon">🏢</div>
+        <h2 class="reg-card-title">Subcontractor Business</h2>
+        <span class="reg-card-badge badge-green">Free Profile</span>
+        <p class="reg-card-desc">
+          Expand your government contracting pipeline. Highlight DBE, HUB, or diverse certifications, construct capabilities statements, NAICS match automatically, and receive direct bid requests from general contractors.
+        </p>
+        <div class="reg-card-action">
+          <a href="/business/register" class="btn btn-secondary btn-full">Register Your Business</a>
+        </div>
+      </div>
+
+      <!-- Prime Contractor -->
+      <div class="reg-selector-card card-prime">
+        <div class="reg-card-icon">🤝</div>
+        <h2 class="reg-card-title">Prime Contractor</h2>
+        <span class="reg-card-badge badge-amber">Enterprise Portal</span>
+        <p class="reg-card-desc">
+          Streamline diverse workforce compliance and supplier sourcing. Discover qualified certified individuals, verify trade capacities, manage subcontractor directories, and dispatch custom RFQ notifications.
+        </p>
+        <div class="reg-card-action">
+          <a href="/prime/register" class="btn btn-outline btn-full">Register as Prime</a>
+        </div>
+      </div>
+    </div>
+
+    <p class="text-center text-muted" style="margin-top: 3rem;">
+      Already have an account? <a href="/login" style="color: var(--accent-primary, #00d2ff); text-decoration: none;">Log in here</a>.
+    </p>
+  </div>
+</section>

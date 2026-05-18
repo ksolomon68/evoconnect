@@ -3,12 +3,13 @@ const { db } = require('../database');
 const { requireRole } = require('../middleware/auth');
 const router = express.Router();
 
-// Get application by ID
-router.get('/:id', async (req, res) => {
+// Get application by ID — caller must be the applicant, the posting agency, or an admin
+router.get('/:id', requireRole('any'), async (req, res) => {
     const { id } = req.params;
     try {
         const [rows] = await db.execute(`
             SELECT a.*, o.title as opportunity_title, o.category, o.district as district_id, o.category_name as project_type,
+                   o.posted_by as agency_id,
                    u.organization_name as agency_name, v.business_name as business_name, v.email as small_business_email
             FROM applications a
             JOIN opportunities o ON a.opportunity_id = o.id
@@ -18,16 +19,34 @@ router.get('/:id', async (req, res) => {
         `, [id]);
 
         if (rows.length === 0) return res.status(404).json({ error: 'Application not found' });
-        res.json(rows[0]);
+
+        const app = rows[0];
+        const isAdmin = req.user.type === 'admin' || req.user.type === 'wfc_admin';
+        const isApplicant = String(req.user.id) === String(app.small_business_id);
+        const isAgency = String(req.user.id) === String(app.agency_id);
+        if (!isAdmin && !isApplicant && !isAgency) {
+            return res.status(403).json({ error: 'Forbidden' });
+        }
+
+        res.json(app);
     } catch (error) {
         console.error('Error fetching application:', error);
-        res.status(500).json({ error: error.message });
+        res.status(500).json({ error: 'Failed to fetch application' });
     }
 });
 
-// Get applications (filtered by small business or agency)
-router.get('/', async (req, res) => {
+// Get applications (filtered by small business or agency) — caller must own the ID being queried
+router.get('/', requireRole('any'), async (req, res) => {
     const { smallBusinessId, primeContractorId } = req.query;
+    const isAdmin = req.user.type === 'admin' || req.user.type === 'wfc_admin';
+
+    // Non-admins may only query their own records
+    if (!isAdmin) {
+        const requestedId = smallBusinessId || primeContractorId;
+        if (!requestedId || String(req.user.id) !== String(requestedId)) {
+            return res.status(403).json({ error: 'Forbidden: You may only view your own applications' });
+        }
+    }
 
     try {
         let query = `
@@ -56,7 +75,7 @@ router.get('/', async (req, res) => {
         res.json(rows);
     } catch (error) {
         console.error('Error fetching applications:', error);
-        res.status(500).json({ error: error.message });
+        res.status(500).json({ error: 'Failed to fetch applications' });
     }
 });
 
@@ -107,14 +126,22 @@ router.post('/', requireRole('small_business'), async (req, res) => {
         if (error.code === 'ER_DUP_ENTRY' || error.message.includes('UNIQUE')) {
             return res.status(400).json({ error: 'Already applied' });
         }
-        res.status(500).json({ error: error.message });
+        res.status(500).json({ error: 'Failed to submit application' });
     }
 });
 
-// Get applications for a specific opportunity (Prime Contractor view)
-router.get('/opportunity/:opportunityId', async (req, res) => {
+// Get applications for a specific opportunity — agency must own the opportunity, or admin
+router.get('/opportunity/:opportunityId', requireRole(['agency', 'admin', 'wfc_admin']), async (req, res) => {
     const { opportunityId } = req.params;
     try {
+        const isAdmin = req.user.type === 'admin' || req.user.type === 'wfc_admin';
+        if (!isAdmin) {
+            const [oppCheck] = await db.execute('SELECT posted_by FROM opportunities WHERE id = ?', [opportunityId]);
+            if (oppCheck.length === 0) return res.status(404).json({ error: 'Opportunity not found' });
+            if (String(oppCheck[0].posted_by) !== String(req.user.id)) {
+                return res.status(403).json({ error: 'Forbidden: You may only view applicants for your own opportunities' });
+            }
+        }
         const [rows] = await db.execute(`
             SELECT a.id as application_id, a.applied_date, a.status, a.notes,
                    u.id as small_business_id, u.business_name, u.email, u.phone, u.contact_name,
@@ -135,13 +162,17 @@ router.get('/opportunity/:opportunityId', async (req, res) => {
         res.json(processed);
     } catch (error) {
         console.error('Error fetching applications for opportunity:', error);
-        res.status(500).json({ error: error.message });
+        res.status(500).json({ error: 'Failed to fetch applications' });
     }
 });
 
-// Get applications for a specific small business
-router.get('/small-business/:smallBusinessId', async (req, res) => {
+// Get applications for a specific small business — caller must be that business or admin
+router.get('/small-business/:smallBusinessId', requireRole(['small_business', 'admin', 'wfc_admin']), async (req, res) => {
     const { smallBusinessId } = req.params;
+    const isAdmin = req.user.type === 'admin' || req.user.type === 'wfc_admin';
+    if (!isAdmin && String(req.user.id) !== String(smallBusinessId)) {
+        return res.status(403).json({ error: 'Forbidden: You may only view your own applications' });
+    }
     try {
         const [rows] = await db.execute(`
             SELECT a.*, o.title as project_title, o.district_name, u.organization_name as agency_name
@@ -154,12 +185,12 @@ router.get('/small-business/:smallBusinessId', async (req, res) => {
         res.json(rows);
     } catch (error) {
         console.error('Error fetching applications for small business:', error);
-        res.status(500).json({ error: error.message });
+        res.status(500).json({ error: 'Failed to fetch applications' });
     }
 });
 
-// Update application status (Prime Contractor: approve/decline; Admin: any status)
-router.put('/:id', async (req, res) => {
+// Update application status — agency must own the opportunity; admin can update any
+router.put('/:id', requireRole(['agency', 'admin', 'wfc_admin']), async (req, res) => {
     const { id } = req.params;
     const { status } = req.body;
     const allowed = ['pending', 'under_review', 'approved', 'declined', 'awarded'];
@@ -167,6 +198,17 @@ router.put('/:id', async (req, res) => {
         return res.status(400).json({ error: `Invalid status. Must be one of: ${allowed.join(', ')}` });
     }
     try {
+        const isAdmin = req.user.type === 'admin' || req.user.type === 'wfc_admin';
+        if (!isAdmin) {
+            const [appCheck] = await db.execute(
+                'SELECT o.posted_by FROM applications a JOIN opportunities o ON a.opportunity_id = o.id WHERE a.id = ?',
+                [id]
+            );
+            if (appCheck.length === 0) return res.status(404).json({ error: 'Application not found' });
+            if (String(appCheck[0].posted_by) !== String(req.user.id)) {
+                return res.status(403).json({ error: 'Forbidden: You may only update applications for your own opportunities' });
+            }
+        }
         const [result] = await db.execute(
             'UPDATE applications SET status = ? WHERE id = ?',
             [status, id]
@@ -175,14 +217,19 @@ router.put('/:id', async (req, res) => {
         res.json({ success: true, status });
     } catch (error) {
         console.error('Error updating application status:', error);
-        res.status(500).json({ error: error.message });
+        res.status(500).json({ error: 'Failed to update application' });
     }
 });
 
-// Withdraw (delete) an application — only allowed while status is 'pending'
-router.delete('/:id', async (req, res) => {
+// Withdraw (delete) an application — caller must be the applicant
+router.delete('/:id', requireRole('small_business'), async (req, res) => {
     const { id } = req.params;
     try {
+        const [appCheck] = await db.execute('SELECT small_business_id FROM applications WHERE id = ?', [id]);
+        if (appCheck.length === 0) return res.status(404).json({ error: 'Application not found' });
+        if (String(appCheck[0].small_business_id) !== String(req.user.id)) {
+            return res.status(403).json({ error: 'Forbidden: You may only withdraw your own applications' });
+        }
         const [result] = await db.execute(
             "DELETE FROM applications WHERE id = ? AND status = 'pending'",
             [id]
@@ -193,7 +240,7 @@ router.delete('/:id', async (req, res) => {
         res.json({ success: true, message: 'Application withdrawn successfully' });
     } catch (error) {
         console.error('Error withdrawing application:', error);
-        res.status(500).json({ error: error.message });
+        res.status(500).json({ error: 'Failed to withdraw application' });
     }
 });
 

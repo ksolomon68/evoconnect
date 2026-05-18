@@ -1,0 +1,172 @@
+<% const title = locals.title || 'Search Labor Directory' %>
+
+<section class="search-section">
+  <div class="container">
+
+    <%- include('../partials/flash') %>
+
+    <div class="search-header">
+      <h1>Labor Directory</h1>
+      <p class="section-sub">Search skilled workers available for government contract work.</p>
+    </div>
+
+    <div class="search-layout">
+
+      <!-- Filter Panel -->
+      <aside class="filter-panel" aria-label="Search filters">
+        <h2 class="filter-title">Filters</h2>
+        <form method="GET" action="/prime/search/workers" class="filter-form">
+
+          <div class="filter-group">
+            <label for="f-trade" class="filter-label">Trade Category</label>
+            <select id="f-trade" name="trade" class="form-control">
+              <option value="">All trades</option>
+              <option value="telecom_fiber" <%= locals.filters?.trade === 'telecom_fiber' ? 'selected' : '' %>>Telecom &amp; Fiber</option>
+              <option value="electrical" <%= locals.filters?.trade === 'electrical' ? 'selected' : '' %>>Electrical</option>
+              <option value="civil_construction" <%= locals.filters?.trade === 'civil_construction' ? 'selected' : '' %>>Civil Construction</option>
+              <option value="it_network" <%= locals.filters?.trade === 'it_network' ? 'selected' : '' %>>IT / Network</option>
+              <option value="underground_utilities" <%= locals.filters?.trade === 'underground_utilities' ? 'selected' : '' %>>Underground Utilities</option>
+              <option value="plumbing" <%= locals.filters?.trade === 'plumbing' ? 'selected' : '' %>>Plumbing</option>
+              <option value="hvac_mechanical" <%= locals.filters?.trade === 'hvac_mechanical' ? 'selected' : '' %>>HVAC / Mechanical</option>
+              <option value="concrete_masonry" <%= locals.filters?.trade === 'concrete_masonry' ? 'selected' : '' %>>Concrete / Masonry</option>
+              <option value="carpentry_framing" <%= locals.filters?.trade === 'carpentry_framing' ? 'selected' : '' %>>Carpentry / Framing</option>
+              <option value="roofing" <%= locals.filters?.trade === 'roofing' ? 'selected' : '' %>>Roofing</option>
+              <option value="equipment_operation" <%= locals.filters?.trade === 'equipment_operation' ? 'selected' : '' %>>Equipment Operation</option>
+              <option value="general_labor" <%= locals.filters?.trade === 'general_labor' ? 'selected' : '' %>>General Labor</option>
+            </select>
+          </div>
+
+          <div class="filter-group">
+            <label for="f-state" class="filter-label">State</label>
+            <input type="text" id="f-state" name="state" class="form-control"
+              value="<%= locals.filters?.state || '' %>" maxlength="2" placeholder="TX">
+          </div>
+
+          <div class="filter-group">
+            <label for="f-travel" class="filter-label">Travel Willingness</label>
+            <select id="f-travel" name="travel" class="form-control">
+              <option value="">Any</option>
+              <option value="local_only" <%= locals.filters?.travel === 'local_only' ? 'selected' : '' %>>Local only</option>
+              <option value="regional" <%= locals.filters?.travel === 'regional' ? 'selected' : '' %>>Regional</option>
+              <option value="national" <%= locals.filters?.travel === 'national' ? 'selected' : '' %>>National</option>
+            </select>
+          </div>
+
+          <div class="filter-group">
+            <label for="f-sam" class="filter-label">SAM.gov Status</label>
+            <select id="f-sam" name="sam" class="form-control">
+              <option value="">Any</option>
+              <option value="yes" <%= locals.filters?.sam === 'yes' ? 'selected' : '' %>>Registered</option>
+              <option value="no" <%= locals.filters?.sam === 'no' ? 'selected' : '' %>>Not registered</option>
+            </select>
+          </div>
+
+          <div class="filter-group">
+            <label class="filter-label">Certifications</label>
+            <label class="checkbox-item"><input type="checkbox" name="cert" value="osha_10" <%= (locals.filters?.cert || []).includes('osha_10') ? 'checked' : '' %>><span>OSHA 10</span></label>
+            <label class="checkbox-item"><input type="checkbox" name="cert" value="osha_30" <%= (locals.filters?.cert || []).includes('osha_30') ? 'checked' : '' %>><span>OSHA 30</span></label>
+            <label class="checkbox-item"><input type="checkbox" name="cert" value="cdl" <%= (locals.filters?.cert || []).includes('cdl') ? 'checked' : '' %>><span>CDL</span></label>
+            <label class="checkbox-item"><input type="checkbox" name="cert" value="journeyman" <%= (locals.filters?.cert || []).includes('journeyman') ? 'checked' : '' %>><span>Journeyman</span></label>
+            <label class="checkbox-item"><input type="checkbox" name="cert" value="fiber_optic" <%= (locals.filters?.cert || []).includes('fiber_optic') ? 'checked' : '' %>><span>Fiber Optic (FOA)</span></label>
+          </div>
+
+          <button type="submit" class="btn-primary btn-full">Apply Filters</button>
+          <a href="/prime/search/workers" class="btn-secondary btn-full" style="margin-top:.5rem">Clear Filters</a>
+        </form>
+      </aside>
+
+      <!-- Results -->
+      <div class="search-results">
+        <div class="results-meta">
+          <span><%= locals.total || 0 %> workers found</span>
+          <% if (locals.connectionLimit) { %>
+            <span class="connection-limit-note">
+              <% if (prime.tier === 'basic') { %>
+                <span class="badge badge-amber"><%= locals.connectionsUsed || 0 %> / 10 connections used this month</span>
+              <% } %>
+            </span>
+          <% } %>
+        </div>
+
+        <% if (locals.workers && workers.length > 0) { %>
+          <div class="results-grid">
+            <% workers.forEach(function(worker, idx) { %>
+            <%
+              const isLocked = prime.tier === 'basic' && locals.connectionsUsed >= 10;
+              let skills = [];
+              try { skills = JSON.parse(worker.skills_json || '[]'); } catch(e) {}
+              let certs = [];
+              try { certs = JSON.parse(worker.certifications || '[]'); } catch(e) {}
+              const nameDisplay = worker.full_name
+                ? (worker.full_name.split(' ')[0] + ' ' + (worker.full_name.split(' ')[1] ? worker.full_name.split(' ')[1][0] + '.' : ''))
+                : 'Worker';
+            %>
+            <div class="result-card <%= isLocked ? 'result-card-locked' : '' %>">
+              <% if (isLocked) { %>
+                <div class="locked-overlay">
+                  <div class="locked-message">
+                    <span>&#128274;</span>
+                    <p>Monthly connection limit reached.</p>
+                    <a href="/prime/billing" class="btn-amber btn-sm">Upgrade to Pro</a>
+                  </div>
+                </div>
+              <% } %>
+              <div class="result-card-header">
+                <div class="result-avatar"><%= nameDisplay[0] %></div>
+                <div>
+                  <div class="result-name"><%= nameDisplay %></div>
+                  <div class="result-trade badge badge-cyan"><%= worker.trade_category ? worker.trade_category.replace(/_/g,' ') : 'Trade not listed' %></div>
+                </div>
+              </div>
+              <div class="result-meta">
+                <span><%= worker.city && worker.state ? worker.city + ', ' + worker.state : 'Location not set' %></span>
+                <span>&#8226;</span>
+                <span><%= worker.travel_willingness ? worker.travel_willingness.replace(/_/g,' ') : 'Travel: TBD' %></span>
+              </div>
+              <% if (skills.length > 0) { %>
+                <div class="result-skills">
+                  <% skills.slice(0,3).forEach(function(s) { %><span class="tag"><%= s %></span><% }) %>
+                  <% if (skills.length > 3) { %><span class="tag tag-more">+<%= skills.length - 3 %> more</span><% } %>
+                </div>
+              <% } %>
+              <div class="result-badges">
+                <% if (worker.sam_registered === 'yes') { %><span class="badge badge-success">SAM Registered</span><% } %>
+                <% certs.slice(0,3).forEach(function(c) { %><span class="badge badge-muted"><%= c.toUpperCase() %></span><% }) %>
+              </div>
+              <% if (!isLocked) { %>
+                <div class="result-actions">
+                  <form method="POST" action="/prime/connect/worker/<%= worker.id %>">
+                    <button type="submit" class="btn-primary btn-sm">Request Contact</button>
+                  </form>
+                </div>
+              <% } %>
+            </div>
+            <% }) %>
+          </div>
+
+          <!-- Pagination -->
+          <% if (locals.totalPages > 1) { %>
+          <nav class="pagination" aria-label="Search results pagination">
+            <% if (locals.page > 1) { %>
+              <a href="?page=<%= page - 1 %><%= locals.queryString || '' %>" class="page-btn">&laquo; Prev</a>
+            <% } %>
+            <% for (let p = 1; p <= totalPages; p++) { %>
+              <a href="?page=<%= p %><%= locals.queryString || '' %>" class="page-btn <%= p === page ? 'active' : '' %>"><%= p %></a>
+            <% } %>
+            <% if (locals.page < locals.totalPages) { %>
+              <a href="?page=<%= page + 1 %><%= locals.queryString || '' %>" class="page-btn">Next &raquo;</a>
+            <% } %>
+          </nav>
+          <% } %>
+
+        <% } else { %>
+          <div class="empty-state large">
+            <p>No workers match your filters. Try broadening your search.</p>
+            <a href="/prime/search/workers" class="btn-secondary">Clear Filters</a>
+          </div>
+        <% } %>
+      </div>
+
+    </div>
+  </div>
+</section>

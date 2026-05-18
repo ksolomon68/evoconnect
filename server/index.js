@@ -1,271 +1,214 @@
-const path = require('path');
-const dotenv = require('dotenv');
-const agencyConfig = require('./agency.config');
+const path        = require('path');
+const dotenv      = require('dotenv');
+const express     = require('express');
+const layouts     = require('express-ejs-layouts');
+const cookieParser= require('cookie-parser');
+const session     = require('express-session');
+const flash       = require('connect-flash');
+const methodOvr   = require('method-override');
+const helmet      = require('helmet');
+const cors        = require('cors');
+const rateLimit   = require('express-rate-limit');
+const fs          = require('fs');
 
-// First try to load the default .env file
 dotenv.config({ path: path.join(__dirname, '../.env') });
-
-// If on a live server, conditionally load .env.production overrides (if it exists)
 const isLive = !!(process.env.PHUSION_PASSENGER || process.env.PASSENGER_NODE_CONTROL_REPO || process.env.NODE_ENV === 'production');
-if (isLive) {
-    dotenv.config({ path: path.join(__dirname, '../.env.production'), override: true });
-}
-const express = require('express');
-const cors = require('cors');
-const helmet = require('helmet');
-const rateLimit = require('express-rate-limit');
-const fs = require('fs');
-const { initDatabase, getDb } = require('./database');
+if (isLive) dotenv.config({ path: path.join(__dirname, '../.env.production'), override: true });
 
-const VERSION = '2.1.1-mysql-ipv4-fix';
-console.log(`${agencyConfig.name}: Starting server initialization (v${VERSION})...`);
+const cfg = require('./agency.config');
+const { initDatabase } = require('./database');
+const { attachUser }   = require('./middleware/auth');
 
-const app = express();
+const app  = express();
 const PORT = process.env.PORT || 3001;
 
-const startServer = async () => {
-    try {
-        // Security Headers
-        app.use(helmet({
-            contentSecurityPolicy: false, // disabled to allow inline scripts in HTML pages
-            hsts: isLive ? {
-                maxAge: 31536000,          // 1 year
-                includeSubDomains: true,
-                preload: true
-            } : false,
-            referrerPolicy: { policy: 'strict-origin-when-cross-origin' },
-            permissionsPolicy: false       // let helmet default handle this
-        }));
+// ── Security ──────────────────────────────────────────────────────
+app.use(helmet({
+    contentSecurityPolicy: false,
+    hsts: isLive ? { maxAge: 31536000, includeSubDomains: true, preload: true } : false,
+}));
 
-        // Service Worker must be served with no-cache and correct scope header
-        app.get('/sw.js', (req, res, next) => {
-            res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate');
-            res.setHeader('Service-Worker-Allowed', '/');
-            next();
-        });
+// ── View engine: EJS ──────────────────────────────────────────────
+app.set('view engine', 'ejs');
+app.set('views', path.join(__dirname, '../views'));
+app.use(layouts);
+app.set('layout', 'layouts/default');
 
-        // Manifest served with correct MIME type
-        app.get('/manifest.json', (req, res, next) => {
-            res.setHeader('Content-Type', 'application/manifest+json');
-            res.setHeader('Cache-Control', 'no-cache');
-            next();
-        });
+// ── Middleware ────────────────────────────────────────────────────
+app.use(express.json({ limit: '2mb' }));
+app.use(express.urlencoded({ extended: true, limit: '2mb' }));
+app.use(cookieParser());
+app.use(methodOvr('_method'));
+app.use(session({
+    secret:            process.env.SESSION_SECRET || 'evoconnect-session-secret-2026',
+    resave:            false,
+    saveUninitialized: false,
+    cookie: {
+        httpOnly: true,
+        secure:   isLive,
+        maxAge:   24 * 60 * 60 * 1000,
+    },
+}));
+app.use(flash());
 
-        // CORS — restrict to the configured production domain and localhost.
-        const allowedOrigins = [
-            'https://' + agencyConfig.domain,
-            'https://www.' + agencyConfig.domain,
+// ── CORS ──────────────────────────────────────────────────────────
+app.use(cors({
+    origin: (origin, cb) => {
+        const allowed = [
+            `https://${cfg.domain}`,
+            `https://www.${cfg.domain}`,
             'http://localhost:3001',
-            'http://127.0.0.1:3001'
+            'http://127.0.0.1:3001',
         ];
-        app.use(cors({
-            origin: (origin, callback) => {
-                if (!origin || allowedOrigins.includes(origin)) {
-                    callback(null, true);
-                } else {
-                    callback(new Error('Not allowed by CORS'));
-                }
-            },
-            credentials: true
-        }));
+        if (!origin || allowed.includes(origin)) cb(null, true);
+        else cb(new Error('Not allowed by CORS'));
+    },
+    credentials: true,
+}));
 
-        // Rate limiting on auth endpoints
-        const authLimiter = rateLimit({
-            windowMs: 15 * 60 * 1000, // 15 minutes
-            max: 20,                   // 20 attempts per window
-            standardHeaders: true,
-            legacyHeaders: false,
-            message: { error: 'Too many requests, please try again later.' }
-        });
+// ── Rate limits ───────────────────────────────────────────────────
+const isDev = process.env.NODE_ENV !== 'production';
+const authLimiter = rateLimit({ windowMs: 15 * 60 * 1000, max: isDev ? 10000 : 20, standardHeaders: true, legacyHeaders: false });
+const regLimiter  = rateLimit({ windowMs: 60 * 60 * 1000, max: isDev ? 10000 : 10, standardHeaders: true, legacyHeaders: false });
 
-        app.use(express.json({ limit: '1mb' }));
+// ── Globals: attach user + flash to res.locals ────────────────────
+app.use(attachUser);
+app.use((req, res, next) => {
+    // Flash messages
+    const sessionFlash = req.session.flash;
+    if (sessionFlash) {
+        res.locals.flash = sessionFlash;
+        delete req.session.flash;
+    } else {
+        const msgs = req.flash();
+        if (msgs.success?.length) res.locals.flash = { type: 'success', message: msgs.success[0] };
+        else if (msgs.error?.length) res.locals.flash  = { type: 'error',   message: msgs.error[0]   };
+        else res.locals.flash = null;
+    }
+    res.locals.cfg     = cfg;
+    res.locals.year    = new Date().getFullYear();
+    next();
+});
 
-        // Maintenance Mode Middleware
-        app.use((req, res, next) => {
-            // Check bypass mechanisms (localhost only — no query param bypass)
-            const hasBypassCookie = req.headers.cookie && req.headers.cookie.includes('admin_bypass=true');
-            const isAllowedIP = ['127.0.0.1', '::1', '::ffff:127.0.0.1'].includes(req.ip);
-            
-            if (process.env.MAINTENANCE_MODE === 'true' && !hasBypassCookie && !isAllowedIP) {
-                // Always allow static assets needed for the maintenance page
-                if (req.path.startsWith('/css/maintenance.css') ||
-                    req.path.startsWith('/images/') ||
-                    req.path.startsWith('/assets/') ||
-                    req.path.startsWith('/js/maintenance-animations.js')) {
-                    return next();
-                }
+// ── No-cache for HTML ─────────────────────────────────────────────
+app.use((req, res, next) => {
+    if (req.path.endsWith('.html') || req.path === '/' || !req.path.includes('.')) {
+        res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate');
+    }
+    next();
+});
 
-                // Always allow CMS admin routes (they require their own JWT auth)
-                if (req.path.startsWith('/api/cms/')) {
-                    return next();
-                }
+// ── Static files ──────────────────────────────────────────────────
+const publicPath = path.join(__dirname, '../public');
+app.use(express.static(publicPath, { etag: false, lastModified: false }));
 
-                // Return 503 JSON for all other API routes
-                if (req.path.startsWith('/api/')) {
-                    return res.status(503).json({ error: 'Service Unavailable', message: 'Platform upgrade in progress.' });
-                }
-                
-                // Return the maintenance page for all other requests
-                return res.status(503).sendFile(path.join(__dirname, '../maintenance.html'));
-            }
-            next();
-        });
+// Also serve the old /images, /css, /js, /uploads root directories for backwards compat
+app.use('/images',  express.static(path.join(__dirname, '../images')));
+app.use('/css',     express.static(path.join(__dirname, '../css')));
+app.use('/js',      express.static(path.join(__dirname, '../js')));
+app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
 
-        // API Logging
-        app.use('/api', (req, res, next) => {
-            console.log(`[API ${new Date().toISOString()}] ${req.method} ${req.path}`);
-            next();
-        });
+// Serve the client-side agency.config.js file from root
+app.get('/agency.config.js', (req, res) => {
+    res.sendFile(path.join(__dirname, '../agency.config.js'));
+});
 
-        // Initialize Database
-        console.log(`${agencyConfig.name}: Initializing database connection and schema...`);
+// ── Maintenance mode ──────────────────────────────────────────────
+app.use((req, res, next) => {
+    if (process.env.MAINTENANCE_MODE === 'true') {
+        const bypass = req.cookies?.admin_bypass === 'true' || ['127.0.0.1','::1'].includes(req.ip);
+        if (!bypass) {
+            if (req.path.startsWith('/api/') || req.path.startsWith('/admin')) return next();
+            return res.status(503).render('errors/503', { title: 'Maintenance' });
+        }
+    }
+    next();
+});
+
+// ── Routes ────────────────────────────────────────────────────────
+async function startServer() {
+    try {
         await initDatabase();
 
-        // Global development toggle to disable all caching
-        const DISABLE_ALL_CACHE = process.env.DISABLE_ALL_CACHE === 'true';
+        // Auth
+        app.use('/', authLimiter, require('./routes/auth'));
 
-        // 1. Disable caching for all HTML responses
-        app.use((req, res, next) => {
-            if (DISABLE_ALL_CACHE) {
-                res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
-                res.setHeader('Pragma', 'no-cache');
-                res.setHeader('Expires', '0');
-                return next();
+        // Portal routes
+        app.use('/labor',    regLimiter,  require('./routes/labor'));
+        app.use('/business', regLimiter,  require('./routes/business'));
+        app.use('/prime',    regLimiter,  require('./routes/prime'));
+        app.use('/admin',    require('./routes/admin'));
+
+        // Public home
+        app.get('/', (req, res) => {
+            if (req.user) {
+                const dest = { worker: '/labor/dashboard', business: '/business/dashboard', prime: '/prime/dashboard', admin: '/admin/dashboard' };
+                return res.redirect(dest[req.user.type] || '/');
             }
-
-            // Only aggressively prevent caching on HTML or extensionless paths (likely endpoints or SPA routes)
-            if (req.path.endsWith('.html') || req.path === '/' || !req.path.includes('.')) {
-                res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
-                res.setHeader('Pragma', 'no-cache');
-                res.setHeader('Expires', '0');
-            }
-            next();
-        });
-
-        // 2. Fix static asset caching
-        const publicPath = path.join(__dirname, '../');
-        console.log(`${agencyConfig.name}: Serving static files from:`, publicPath);
-        app.use(express.static(publicPath, { 
-            etag: false, 
-            lastModified: false, 
-            setHeaders: (res, filePath) => {
-                if (DISABLE_ALL_CACHE) {
-                    res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate');
-                    res.setHeader('Pragma', 'no-cache');
-                    res.setHeader('Expires', '0');
-                    return;
-                }
-
-                // Only safely cache static assets if they are versioned (CSS/JS/Images)
-                if (filePath.endsWith('.css') || filePath.endsWith('.js') || filePath.match(/\.(png|jpg|jpeg|gif|ico|svg)$/)) {
-                    // For now, let's keep it at "no-cache" which means "revalidate every time"
-                    // but allows the browser to re-use if ETag matches (though we disabled ETag above).
-                    // This is the safest way to ensure "clear cache" works instantly without breaking CDN/caching later.
-                    res.setHeader('Cache-Control', 'no-cache, must-revalidate');
-                }
-            } 
-        }));
-
-        // Dynamic PWA manifest — values come from server/agency.config.js
-        // This allows the manifest (normally static JSON) to reflect the
-        // current agency's name, colors, and domain without editing manifest.json.
-        app.get('/manifest.json', (req, res) => {
-            const manifest = {
-                name:             agencyConfig.name,
-                short_name:       agencyConfig.shortName,
-                id:               agencyConfig.appId,
-                description:      agencyConfig.description,
-                start_url:        '/index.html',
-                scope:            '/',
-                display:          'standalone',
-                display_override: ['window-controls-overlay', 'standalone', 'minimal-ui'],
-                orientation:      'any',
-                background_color: agencyConfig.backgroundColor || '#ffffff',
-                theme_color:      agencyConfig.themeColor,
-                lang:             'en-US',
-                categories:       ['business', 'government', 'productivity'],
-                icons: [
-                    { src: 'assets/icon-192.png',    sizes: '192x192', type: 'image/png', purpose: 'any' },
-                    { src: 'assets/icon-512.png',    sizes: '512x512', type: 'image/png', purpose: 'any' },
-                    { src: 'assets/icon-maskable.png', sizes: '512x512', type: 'image/png', purpose: 'maskable' }
-                ],
-                shortcuts: [
-                    { name: 'Search Opportunities', short_name: 'Opportunities', url: '/search-opportunities.html', description: 'Browse available contracting opportunities', icons: [{ src: 'assets/icon-192.png', sizes: '192x192' }] },
-                    { name: 'My Dashboard',          short_name: 'Dashboard',     url: '/login.html',                description: 'Access your personalized dashboard',    icons: [{ src: 'assets/icon-192.png', sizes: '192x192' }] },
-                    { name: 'Resources',              short_name: 'Resources',     url: '/resources.html',            description: 'Training and certification resources',   icons: [{ src: 'assets/icon-192.png', sizes: '192x192' }] }
-                ],
-                screenshots:                  [],
-                prefer_related_applications: false
-            };
-            res.setHeader('Content-Type', 'application/manifest+json');
-            res.setHeader('Cache-Control', 'no-cache');
-            res.json(manifest);
-        });
-
-        // Routes
-        app.use('/api/auth', authLimiter, require('./routes/auth'));
-        app.use('/api/cms/login', authLimiter);
-        app.use('/api/opportunities', require('./routes/opportunities'));
-        app.use('/api/users', require('./routes/users'));
-        app.use('/api/messages', require('./routes/messages'));
-        app.use('/api/applications', require('./routes/applications'));
-        app.use('/api/notifications', require('./routes/notifications'));
-        app.use('/api/admin', require('./routes/admin'));
-        app.use('/api/upload-cs', require('./routes/upload'));
-        app.use('/api/small-businesses', require('./routes/small-businesses'));
-        app.use('/api/cms', require('./routes/cms'));
-        app.use('/api/filters', require('./routes/filters'));
-        app.use('/api/password-reset', require('./routes/password-reset'));
-        app.use('/api/contact', require('./routes/contact'));
-
-        // Health Check
-        app.get('/api/health', async (req, res) => {
-            let dbStatus = 'ok';
-            try {
-                const db = getDb();
-                await db.execute('SELECT 1');
-            } catch (e) {
-                dbStatus = 'error';
-            }
-            const uploadsDir = path.join(__dirname, '../uploads');
-            let uploadsWritable = false;
-            try {
-                const testFile = path.join(uploadsDir, '.health-test');
-                fs.writeFileSync(testFile, 'ok');
-                fs.unlinkSync(testFile);
-                uploadsWritable = true;
-            } catch (e) {
-                // not writable
-            }
-            res.json({
-                status: dbStatus === 'ok' && uploadsWritable ? 'ok' : 'degraded',
-                database: dbStatus,
-                uploads: uploadsWritable ? 'ok' : 'error'
+            res.render('index', {
+                title:      'Government Contract Workforce Ecosystem',
+                activePage: 'home',
+                layout:     'layouts/default',
             });
         });
 
-        // Explicit Root Route for HTML
-        app.get('*', (req, res, next) => {
-            if (req.path.startsWith('/api')) return next();
-            const indexPath = path.join(publicPath, 'index.html');
-            if (fs.existsSync(indexPath)) {
-                res.sendFile(indexPath);
-            } else {
-                res.status(404).send(`${agencyConfig.name}: index.html not found`);
-            }
+        // Contact page (kept for compatibility)
+        app.get('/contact', (req, res) => res.render('contact', { title: 'Contact' }));
+
+        // Legal information pages (canonical URLs + short aliases)
+        app.get('/accessibility-statement', (req, res) => res.render('accessibility-statement', { title: 'Accessibility Statement', year: new Date().getFullYear() }));
+        app.get('/privacy-policy', (req, res) => res.render('privacy-policy', { title: 'Privacy Policy', year: new Date().getFullYear() }));
+        app.get('/terms-of-service', (req, res) => res.render('terms-of-service', { title: 'Terms of Service', year: new Date().getFullYear() }));
+        app.get('/privacy', (req, res) => res.redirect(301, '/privacy-policy'));
+        app.get('/terms',   (req, res) => res.redirect(301, '/terms-of-service'));
+
+        // Utility redirects that are linked from marketing copy
+        app.get('/checklist',    (req, res) => res.redirect('/labor/checklist'));
+        app.get('/how-it-works', (req, res) => res.redirect('/#how-it-works'));
+        app.get('/faq',          (req, res) => res.redirect('/labor/faq'));
+
+        // Sitemap
+        app.get('/sitemap.xml', (req, res) => {
+            const base = `https://${cfg.domain}`;
+            const urls = [
+                '/', '/labor', '/business', '/prime', 
+                '/labor/register', '/business/register', '/prime/register', 
+                '/login', '/labor/faq', '/business/faq', '/prime/faq',
+                '/accessibility-statement', '/privacy-policy', '/terms-of-service'
+            ];
+            const xml  = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls.map(u => `  <url><loc>${base}${u}</loc></url>`).join('\n')}\n</urlset>`;
+            res.type('application/xml').send(xml);
         });
 
-        // Listen logic for Phusion Passenger or standalone
-        if (process.env.PHUSION_PASSENGER || process.env.PASSENGER_NODE_CONTROL_REPO) {
-            console.log(`${agencyConfig.name}: Listening on Phusion Passenger...`);
-            app.listen('passenger');
-        } else {
-            app.listen(PORT, () => console.log(`${agencyConfig.name}: Running on http://localhost:${PORT}`));
-        }
+        // Health check
+        app.get('/api/health', async (req, res) => {
+            let db = 'ok';
+            try { const d = require('./database').getDb(); await d.execute('SELECT 1'); } catch { db = 'error'; }
+            res.json({ status: db === 'ok' ? 'ok' : 'degraded', database: db, version: '3.0.0-evoconnect' });
+        });
 
+        // 404
+        app.use((req, res) => {
+            res.status(404).render('errors/404', { title: 'Page Not Found' });
+        });
+
+        // 500
+        app.use((err, req, res, next) => {
+            console.error('EvoConnect Server Error:', err);
+            res.status(500).render('errors/500', { title: 'Server Error' });
+        });
+
+        // Start
+        if (process.env.PHUSION_PASSENGER || process.env.PASSENGER_NODE_CONTROL_REPO) {
+            app.listen('passenger');
+            console.log(`${cfg.name}: Listening on Phusion Passenger`);
+        } else {
+            app.listen(PORT, () => console.log(`${cfg.name}: Running on http://localhost:${PORT}`));
+        }
     } catch (err) {
-        console.error(`${agencyConfig.name} CRITICAL STARTUP ERROR:`, err);
+        console.error(`${cfg.name} CRITICAL STARTUP ERROR:`, err);
+        process.exit(1);
     }
-};
+}
 
 startServer();

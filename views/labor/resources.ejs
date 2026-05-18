@@ -1,0 +1,77 @@
+<% const title = locals.title || 'Resources' %>
+
+<section class="dashboard-section">
+  <div class="container">
+
+    <%- include('../partials/flash') %>
+
+    <div class="dashboard-header" style="margin-bottom:2rem">
+      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem">
+        <div>
+          <h1>Resources</h1>
+          <p class="section-sub">Tools and guides to help you land your first government contract.</p>
+        </div>
+        <a href="/labor/dashboard" class="btn-sm btn-secondary">&larr; Dashboard</a>
+      </div>
+    </div>
+
+    <div class="dash-card">
+      <div class="dash-card-header">
+        <h2>Government Contracting Resources</h2>
+      </div>
+      <div class="resource-grid">
+        <% if (locals.resources && resources.length > 0) { %>
+          <% resources.forEach(function(res) { %>
+          <a href="<%= res.url || '#' %>" <%= res.url ? 'target="_blank" rel="noopener"' : '' %> class="resource-card">
+            <div class="resource-icon">&#128218;</div>
+            <h4><%= res.title %></h4>
+            <% if (res.description) { %><p><%= res.description %></p><% } %>
+          </a>
+          <% }) %>
+        <% } else { %>
+          <a href="https://sam.gov" target="_blank" rel="noopener" class="resource-card">
+            <div class="resource-icon">&#127963;</div>
+            <h4>SAM.gov</h4>
+            <p>Register your entity for federal contracts — free and required</p>
+          </a>
+          <a href="https://usaspending.gov" target="_blank" rel="noopener" class="resource-card">
+            <div class="resource-icon">&#128200;</div>
+            <h4>USASpending.gov</h4>
+            <p>Search federal contract awards and spending data</p>
+          </a>
+          <a href="https://comptroller.texas.gov/purchasing/vendor/hub/" target="_blank" rel="noopener" class="resource-card">
+            <div class="resource-icon">&#127919;</div>
+            <h4>Texas HUB Program</h4>
+            <p>Apply for Historically Underutilized Business certification</p>
+          </a>
+          <a href="https://beta.sam.gov/help/entity-registration" target="_blank" rel="noopener" class="resource-card">
+            <div class="resource-icon">&#128221;</div>
+            <h4>SAM.gov Registration Guide</h4>
+            <p>Step-by-step instructions for completing your SAM.gov registration</p>
+          </a>
+          <a href="https://www.sba.gov/federal-contracting/contracting-guide" target="_blank" rel="noopener" class="resource-card">
+            <div class="resource-icon">&#128188;</div>
+            <h4>SBA Contracting Guide</h4>
+            <p>Small Business Administration guide to federal contracting</p>
+          </a>
+          <a href="https://www.sba.gov/federal-contracting/contracting-assistance-programs/hubzone-program" target="_blank" rel="noopener" class="resource-card">
+            <div class="resource-icon">&#127981;</div>
+            <h4>HUBZone Program</h4>
+            <p>SBA program for businesses in historically underutilized zones</p>
+          </a>
+          <a href="/labor/checklist" class="resource-card">
+            <div class="resource-icon">&#9989;</div>
+            <h4>Vendor Readiness Checklist</h4>
+            <p>Track every step from SAM.gov registration to your first subcontract</p>
+          </a>
+          <a href="/labor/faq" class="resource-card">
+            <div class="resource-icon">&#10067;</div>
+            <h4>FAQ</h4>
+            <p>Common questions about government contracting for trade workers</p>
+          </a>
+        <% } %>
+      </div>
+    </div>
+
+  </div>
+</section>

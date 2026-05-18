@@ -54,13 +54,13 @@
    * Do NOT hard-code agency colors here. Use CSS custom properties below
    * and update window.AGENCY.colors in agency.config.js instead.
    */
-  --color-primary: #0A1628;       /* Deep navy — overridden at runtime by agency.config.js */
-  --color-primary-dark: #060e1a;
-  --color-primary-light: #00B4D8; /* Electric cyan accent */
+  --color-primary: #0B1220;       /* WFC navy — overridden at runtime by agency.config.js */
+  --color-primary-dark: #060c14;
+  --color-primary-light: #E8621A; /* WFC orange accent */
 
-  --color-secondary: #C9A84C;     /* Gold — overridden at runtime by agency.config.js */
-  --color-secondary-dark: #a88838;
-  --color-secondary-light: #d4b86a;
+  --color-secondary: #F5A623;     /* WFC amber — overridden at runtime by agency.config.js */
+  --color-secondary-dark: #d4891a;
+  --color-secondary-light: #f7b84b;
 
   --color-success: #2E7D32;
   --color-success-light: #E8F5E9;
@@ -383,8 +383,7 @@ label {
   color: var(--color-text-primary);
 }
 
-.required::after {
-  content: " *";
+.required {
   color: var(--color-error);
 }
 

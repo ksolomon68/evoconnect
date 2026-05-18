@@ -1,0 +1,275 @@
+<% const title = locals.title || 'Register Your Business' %>
+
+<section class="register-section">
+  <div class="container">
+    <div class="register-header text-center">
+      <h1>Register Your Business</h1>
+      <p class="section-sub">Join the EvoConnect Business Directory and connect with prime contractors on government projects.</p>
+    </div>
+
+    <%- include('../partials/flash') %>
+
+    <!-- Progress Stepper -->
+    <% const currentStep = locals.step || 1 %>
+    <div class="stepper" aria-label="Registration progress">
+      <div class="step-item <%= currentStep >= 1 ? 'active' : '' %> <%= currentStep > 1 ? 'complete' : '' %>">
+        <div class="step-dot">1</div>
+        <span>Company Info</span>
+      </div>
+      <div class="step-divider"></div>
+      <div class="step-item <%= currentStep >= 2 ? 'active' : '' %> <%= currentStep > 2 ? 'complete' : '' %>">
+        <div class="step-dot">2</div>
+        <span>Certifications &amp; NAICS</span>
+      </div>
+      <div class="step-divider"></div>
+      <div class="step-item <%= currentStep >= 3 ? 'active' : '' %>">
+        <div class="step-dot">3</div>
+        <span>Services &amp; Account</span>
+      </div>
+    </div>
+
+    <form method="POST" action="/business/register" enctype="multipart/form-data" class="register-form" novalidate>
+      <input type="hidden" name="step" value="<%= currentStep %>">
+
+      <!-- ===== STEP 1: Company Info ===== -->
+      <% if (currentStep === 1) { %>
+      <div class="form-section">
+        <h2 class="form-section-title">Step 1 — Company Information</h2>
+
+        <div class="form-group">
+          <label for="company_name" class="form-label">Company Name <span class="required">*</span></label>
+          <input type="text" id="company_name" name="company_name"
+            class="form-control<%= locals.errors?.company_name ? ' is-invalid' : '' %>"
+            value="<%= locals.values?.company_name || '' %>" required
+            aria-describedby="<%= locals.errors?.company_name ? 'company-name-error' : '' %>">
+          <% if (locals.errors?.company_name) { %><span class="field-error" id="company-name-error" role="alert"><%= errors.company_name %></span><% } %>
+        </div>
+
+        <div class="form-group">
+          <label for="contact_name" class="form-label">Primary Contact Name <span class="required">*</span></label>
+          <input type="text" id="contact_name" name="contact_name"
+            class="form-control<%= locals.errors?.contact_name ? ' is-invalid' : '' %>"
+            value="<%= locals.values?.contact_name || '' %>" required autocomplete="name"
+            aria-describedby="<%= locals.errors?.contact_name ? 'contact-name-error' : '' %>">
+          <% if (locals.errors?.contact_name) { %><span class="field-error" id="contact-name-error" role="alert"><%= errors.contact_name %></span><% } %>
+        </div>
+
+        <div class="form-group">
+          <label for="email" class="form-label">Business Email <span class="required">*</span></label>
+          <input type="email" id="email" name="email"
+            class="form-control<%= locals.errors?.email ? ' is-invalid' : '' %>"
+            value="<%= locals.values?.email || '' %>" required autocomplete="email"
+            aria-describedby="<%= locals.errors?.email ? 'email-error' : '' %>">
+          <% if (locals.errors?.email) { %><span class="field-error" id="email-error" role="alert"><%= errors.email %></span><% } %>
+        </div>
+
+        <div class="form-group">
+          <label for="phone" class="form-label">Business Phone <span class="required">*</span></label>
+          <input type="tel" id="phone" name="phone"
+            class="form-control<%= locals.errors?.phone ? ' is-invalid' : '' %>"
+            value="<%= locals.values?.phone || '' %>" required autocomplete="tel"
+            placeholder="(555) 555-5555"
+            aria-describedby="<%= locals.errors?.phone ? 'phone-error' : '' %>">
+          <% if (locals.errors?.phone) { %><span class="field-error" id="phone-error" role="alert"><%= errors.phone %></span><% } %>
+        </div>
+
+        <div class="form-group">
+          <label for="entity_type" class="form-label">Business Entity Type <span class="required">*</span></label>
+          <select id="entity_type" name="entity_type" class="form-control" required>
+            <option value="">-- Select entity type --</option>
+            <option value="sole_proprietor" <%= locals.values?.entity_type === 'sole_proprietor' ? 'selected' : '' %>>Sole Proprietor</option>
+            <option value="llc" <%= locals.values?.entity_type === 'llc' ? 'selected' : '' %>>LLC</option>
+            <option value="s_corp" <%= locals.values?.entity_type === 's_corp' ? 'selected' : '' %>>S-Corp</option>
+            <option value="c_corp" <%= locals.values?.entity_type === 'c_corp' ? 'selected' : '' %>>C-Corp</option>
+            <option value="partnership" <%= locals.values?.entity_type === 'partnership' ? 'selected' : '' %>>Partnership</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="years_in_business" class="form-label">Years in Business</label>
+          <input type="number" id="years_in_business" name="years_in_business"
+            class="form-control form-control-sm"
+            value="<%= locals.values?.years_in_business || '0' %>" min="0" max="100">
+        </div>
+
+        <div class="form-row">
+          <div class="form-group form-col-2">
+            <label for="city" class="form-label">City <span class="required">*</span></label>
+            <input type="text" id="city" name="city"
+              class="form-control<%= locals.errors?.city ? ' is-invalid' : '' %>"
+              value="<%= locals.values?.city || '' %>" required>
+            <% if (locals.errors?.city) { %><span class="field-error" role="alert"><%= errors.city %></span><% } %>
+          </div>
+          <div class="form-group form-col-1">
+            <label for="state" class="form-label">State <span class="required">*</span></label>
+            <input type="text" id="state" name="state" class="form-control"
+              value="<%= locals.values?.state || '' %>" maxlength="2" placeholder="TX" required>
+          </div>
+          <div class="form-group form-col-1">
+            <label for="zip" class="form-label">ZIP <span class="required">*</span></label>
+            <input type="text" id="zip" name="zip" class="form-control"
+              value="<%= locals.values?.zip || '' %>" maxlength="10" required>
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button type="submit" class="btn-primary">Continue to Certifications &rarr;</button>
+        </div>
+      </div>
+      <% } %>
+
+      <!-- ===== STEP 2: Certifications & NAICS ===== -->
+      <% if (currentStep === 2) { %>
+      <div class="form-section">
+        <h2 class="form-section-title">Step 2 — Certifications &amp; NAICS Codes</h2>
+
+        <div class="form-group">
+          <fieldset>
+            <legend class="form-label">Business Certifications (select all that apply)</legend>
+            <div class="checkbox-grid">
+              <label class="checkbox-item"><input type="checkbox" name="certifications" value="dbe" <%= (locals.values?.certifications || []).includes('dbe') ? 'checked' : '' %>><span>DBE (Disadvantaged Business Enterprise)</span></label>
+              <label class="checkbox-item"><input type="checkbox" name="certifications" value="mbe" <%= (locals.values?.certifications || []).includes('mbe') ? 'checked' : '' %>><span>MBE (Minority Business Enterprise)</span></label>
+              <label class="checkbox-item"><input type="checkbox" name="certifications" value="wbe" <%= (locals.values?.certifications || []).includes('wbe') ? 'checked' : '' %>><span>WBE (Women-Owned Business Enterprise)</span></label>
+              <label class="checkbox-item"><input type="checkbox" name="certifications" value="hub" <%= (locals.values?.certifications || []).includes('hub') ? 'checked' : '' %>><span>HUB (Texas Historically Underutilized Business)</span></label>
+              <label class="checkbox-item"><input type="checkbox" name="certifications" value="sdvosb" <%= (locals.values?.certifications || []).includes('sdvosb') ? 'checked' : '' %>><span>SDVOSB (Service-Disabled Veteran-Owned)</span></label>
+              <label class="checkbox-item"><input type="checkbox" name="certifications" value="8a" <%= (locals.values?.certifications || []).includes('8a') ? 'checked' : '' %>><span>SBA 8(a) Program</span></label>
+              <label class="checkbox-item"><input type="checkbox" name="certifications" value="sbe" <%= (locals.values?.certifications || []).includes('sbe') ? 'checked' : '' %>><span>SBE (Small Business Enterprise)</span></label>
+              <label class="checkbox-item"><input type="checkbox" name="certifications" value="aabe" <%= (locals.values?.certifications || []).includes('aabe') ? 'checked' : '' %>><span>AABE (African American Business Enterprise)</span></label>
+              <label class="checkbox-item"><input type="checkbox" name="certifications" value="vosb" <%= (locals.values?.certifications || []).includes('vosb') ? 'checked' : '' %>><span>VOSB (Veteran-Owned Small Business)</span></label>
+              <label class="checkbox-item"><input type="checkbox" name="certifications" value="none" <%= (locals.values?.certifications || []).includes('none') ? 'checked' : '' %>><span>None yet (I'm working on it)</span></label>
+            </div>
+          </fieldset>
+        </div>
+
+        <div class="form-group">
+          <label for="sam_uei" class="form-label">SAM.gov UEI Number</label>
+          <input type="text" id="sam_uei" name="sam_uei" class="form-control"
+            value="<%= locals.values?.sam_uei || '' %>" placeholder="e.g. ABC123456789"
+            aria-describedby="sam-uei-hint">
+          <span id="sam-uei-hint" class="field-hint">Your Unique Entity Identifier from SAM.gov. Leave blank if not yet registered.</span>
+        </div>
+
+        <div class="form-group">
+          <label for="naics-input" class="form-label">NAICS Codes</label>
+          <div class="tag-input-container" id="naics-tag-container">
+            <div class="tag-list" id="naics-tag-list"></div>
+            <input type="text" id="naics-input" class="tag-input" placeholder="Type NAICS code and press Enter" autocomplete="off" aria-label="Add NAICS code">
+          </div>
+          <input type="hidden" name="naics_codes_json" id="naics_codes_json" value="<%= locals.values?.naics_codes_json || '[]' %>">
+          <span class="field-hint">Enter 6-digit NAICS codes. Examples: 237130, 517311, 541512</span>
+        </div>
+
+        <div class="form-actions">
+          <a href="/business/register?step=1" class="btn-secondary">&larr; Back</a>
+          <button type="submit" class="btn-primary">Continue to Services &amp; Account &rarr;</button>
+        </div>
+      </div>
+      <% } %>
+
+      <!-- ===== STEP 3: Services & Account ===== -->
+      <% if (currentStep === 3) { %>
+      <div class="form-section">
+        <h2 class="form-section-title">Step 3 — Services &amp; Account</h2>
+
+        <div class="form-group">
+          <label for="service_description" class="form-label">Service Description <span class="required">*</span></label>
+          <textarea id="service_description" name="service_description" class="form-control" rows="5"
+            required placeholder="Describe your company's core services, capabilities, and past performance on government or commercial projects..."
+            aria-describedby="<%= locals.errors?.service_description ? 'service-desc-error' : '' %>"><%= locals.values?.service_description || '' %></textarea>
+          <% if (locals.errors?.service_description) { %><span class="field-error" id="service-desc-error" role="alert"><%= errors.service_description %></span><% } %>
+        </div>
+
+        <div class="form-group">
+          <label for="service_radius" class="form-label">Service Radius</label>
+          <select id="service_radius" name="service_radius" class="form-control">
+            <option value="local" <%= locals.values?.service_radius === 'local' ? 'selected' : '' %>>Local only (under 50 miles)</option>
+            <option value="regional" <%= locals.values?.service_radius === 'regional' ? 'selected' : '' %>>Regional (same state)</option>
+            <option value="national" <%= locals.values?.service_radius === 'national' ? 'selected' : '' %>>National</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <fieldset>
+            <legend class="form-label">SAM.gov Status <span class="required">*</span></legend>
+            <div class="radio-group">
+              <label class="radio-item"><input type="radio" name="sam_registered" value="yes" <%= locals.values?.sam_registered === 'yes' ? 'checked' : '' %>><span>Yes, registered and active</span></label>
+              <label class="radio-item"><input type="radio" name="sam_registered" value="pending" <%= locals.values?.sam_registered === 'pending' ? 'checked' : '' %>><span>Registration in progress</span></label>
+              <label class="radio-item"><input type="radio" name="sam_registered" value="no" <%= locals.values?.sam_registered === 'no' ? 'checked' : '' %>><span>Not yet registered</span></label>
+              <label class="radio-item"><input type="radio" name="sam_registered" value="need_help" <%= locals.values?.sam_registered === 'need_help' ? 'checked' : '' %>><span>I need help registering</span></label>
+            </div>
+          </fieldset>
+        </div>
+
+        <hr class="form-divider">
+        <h3 class="form-subsection-title">Create Your Account</h3>
+
+        <div class="form-group">
+          <label for="password" class="form-label">Password <span class="required">*</span></label>
+          <div class="input-with-toggle">
+            <input type="password" id="password" name="password"
+              class="form-control<%= locals.errors?.password ? ' is-invalid' : '' %>"
+              required minlength="8" autocomplete="new-password"
+              aria-describedby="password-hint<%= locals.errors?.password ? ' password-error' : '' %>">
+            <button type="button" class="toggle-password" aria-label="Toggle password visibility">&#128065;</button>
+          </div>
+          <span id="password-hint" class="field-hint">Minimum 8 characters</span>
+          <% if (locals.errors?.password) { %><span class="field-error" id="password-error" role="alert"><%= errors.password %></span><% } %>
+        </div>
+
+        <div class="form-group">
+          <label for="confirm_password" class="form-label">Confirm Password <span class="required">*</span></label>
+          <input type="password" id="confirm_password" name="confirm_password"
+            class="form-control<%= locals.errors?.confirm_password ? ' is-invalid' : '' %>"
+            required autocomplete="new-password"
+            aria-describedby="<%= locals.errors?.confirm_password ? 'confirm-password-error' : '' %>">
+          <% if (locals.errors?.confirm_password) { %><span class="field-error" id="confirm-password-error" role="alert"><%= errors.confirm_password %></span><% } %>
+        </div>
+
+        <div class="form-actions">
+          <a href="/business/register?step=2" class="btn-secondary">&larr; Back</a>
+          <button type="submit" class="btn-primary">Register My Business &#127942;</button>
+        </div>
+      </div>
+      <% } %>
+
+    </form>
+
+    <p class="register-login-note">Already have an account? <a href="/login">Log in here</a></p>
+  </div>
+</section>
+
+<script>
+// Tag input for NAICS codes
+(function() {
+  const tagList = document.getElementById('naics-tag-list');
+  const input = document.getElementById('naics-input');
+  const hidden = document.getElementById('naics_codes_json');
+  if (!tagList) return;
+  let codes = [];
+  try { codes = JSON.parse(hidden.value) || []; } catch(e) { codes = []; }
+  function renderTags() {
+    tagList.innerHTML = '';
+    codes.forEach(function(code, i) {
+      const tag = document.createElement('span');
+      tag.className = 'tag';
+      tag.innerHTML = code + ' <button type="button" aria-label="Remove ' + code + '">&times;</button>';
+      tag.querySelector('button').addEventListener('click', function() {
+        codes.splice(i, 1);
+        hidden.value = JSON.stringify(codes);
+        renderTags();
+      });
+      tagList.appendChild(tag);
+    });
+    hidden.value = JSON.stringify(codes);
+  }
+  renderTags();
+  input.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter' || e.key === ',') {
+      e.preventDefault();
+      const val = input.value.trim().replace(/,$/, '');
+      if (val && !codes.includes(val)) { codes.push(val); renderTags(); }
+      input.value = '';
+    }
+  });
+})();
+</script>

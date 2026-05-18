@@ -1,0 +1,311 @@
+<% const title = locals.title || 'Edit Business Profile' %>
+<% const pct = locals.business?.profile_pct || 0 %>
+<% const pctColor = pct >= 100 ? '#10B981' : pct >= 50 ? '#00D2FF' : '#F59E0B' %>
+<% const bizCerts = Array.isArray(locals.business?.certifications) ? locals.business.certifications : (locals.business?.certifications ? JSON.parse(locals.business.certifications) : []) %>
+<% const naicsCodes = Array.isArray(locals.business?.naics_codes) ? locals.business.naics_codes : (locals.business?.naics_codes ? JSON.parse(locals.business.naics_codes) : []) %>
+
+<section class="profile-section">
+  <div class="container">
+    <div class="profile-header" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem;margin-bottom:1.5rem">
+      <div>
+        <h1>Edit Business Profile</h1>
+        <p class="section-sub">Each section saves independently — complete all sections to maximize visibility.</p>
+      </div>
+      <a href="/business/dashboard" class="btn-sm btn-secondary">&larr; Dashboard</a>
+    </div>
+
+    <%- include('../partials/flash') %>
+
+    <!-- Progress Bar -->
+    <div class="profile-progress-header">
+      <span class="profile-pct-text" id="profile-pct-text"><%= pct %>%</span>
+      <div class="profile-pct-track">
+        <div class="profile-pct-track-bar">
+          <div class="profile-pct-fill" id="profile-pct-fill" style="width:<%= pct %>%"></div>
+        </div>
+        <div class="profile-pct-label" id="profile-pct-label">
+          <% if (pct >= 100) { %>Profile complete — your business is visible to prime contractors<% } else { %>Complete all sections to maximize visibility<% } %>
+        </div>
+      </div>
+    </div>
+    <script>
+    (function() {
+      var pct = <%= pct %>;
+      var color = pct >= 100 ? '#10B981' : pct >= 50 ? '#00D2FF' : '#F59E0B';
+      var fill = document.getElementById('profile-pct-fill');
+      var text = document.getElementById('profile-pct-text');
+      if (fill) fill.style.background = color;
+      if (text) text.style.color = color;
+    })();
+    </script>
+
+    <!-- Section 1: Basic Info -->
+    <form class="form-card section-form-card" data-section="basic" data-post="/business/profile/section">
+      <div class="form-card-header" style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.25rem">
+        <h2 class="form-card-title" style="margin:0">1. Company Info</h2>
+        <span class="section-save-status" id="status-basic">&#10003; Saved</span>
+      </div>
+      <div class="form-group">
+        <label for="company_name" class="form-label">Company Name <span class="required">*</span></label>
+        <input type="text" id="company_name" name="company_name" class="form-control"
+          value="<%= locals.business?.company_name || '' %>" required autocomplete="organization">
+      </div>
+      <div class="form-group">
+        <label for="contact_name" class="form-label">Primary Contact Name <span class="required">*</span></label>
+        <input type="text" id="contact_name" name="contact_name" class="form-control"
+          value="<%= locals.business?.contact_name || '' %>" required autocomplete="name">
+      </div>
+      <div class="form-group">
+        <label for="phone" class="form-label">Business Phone</label>
+        <input type="tel" id="phone" name="phone" class="form-control"
+          value="<%= locals.business?.phone || '' %>" autocomplete="tel">
+      </div>
+      <div class="form-card-actions">
+        <button type="submit" class="btn-sm btn-primary">Save</button>
+      </div>
+    </form>
+
+    <!-- Section 2: Business Type -->
+    <form class="form-card section-form-card" data-section="business" data-post="/business/profile/section">
+      <div class="form-card-header" style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.25rem">
+        <h2 class="form-card-title" style="margin:0">2. Business Type &amp; Services</h2>
+        <span class="section-save-status" id="status-business">&#10003; Saved</span>
+      </div>
+      <div class="form-group">
+        <label for="business_type" class="form-label">Business Type</label>
+        <select id="business_type" name="business_type" class="form-control">
+          <option value="">-- Select --</option>
+          <option value="sole_proprietor" <%= locals.business?.business_type === 'sole_proprietor' ? 'selected' : '' %>>Sole Proprietor</option>
+          <option value="llc"             <%= locals.business?.business_type === 'llc'             ? 'selected' : '' %>>LLC</option>
+          <option value="s_corp"          <%= locals.business?.business_type === 's_corp'          ? 'selected' : '' %>>S-Corp</option>
+          <option value="c_corp"          <%= locals.business?.business_type === 'c_corp'          ? 'selected' : '' %>>C-Corp</option>
+          <option value="partnership"     <%= locals.business?.business_type === 'partnership'     ? 'selected' : '' %>>Partnership</option>
+          <option value="nonprofit"       <%= locals.business?.business_type === 'nonprofit'       ? 'selected' : '' %>>Non-Profit</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="service_description" class="form-label">Service Description</label>
+        <textarea id="service_description" name="service_description" class="form-control" rows="4"
+          placeholder="Describe your company's core services and capabilities..."><%= locals.business?.service_description || '' %></textarea>
+      </div>
+      <div class="form-card-actions">
+        <button type="submit" class="btn-sm btn-primary">Save</button>
+      </div>
+    </form>
+
+    <!-- Section 3: Certifications -->
+    <form class="form-card section-form-card" data-section="certifications" data-post="/business/profile/section">
+      <div class="form-card-header" style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.25rem">
+        <h2 class="form-card-title" style="margin:0">3. Certifications</h2>
+        <span class="section-save-status" id="status-certifications">&#10003; Saved</span>
+      </div>
+      <div class="form-group">
+        <fieldset>
+          <legend class="form-label">Business Certifications (check all that apply)</legend>
+          <div class="checkbox-grid">
+            <label class="checkbox-item"><input type="checkbox" name="certifications" value="dbe"    <%= bizCerts.includes('dbe')    ? 'checked' : '' %>><span>DBE (Disadvantaged Business Enterprise)</span></label>
+            <label class="checkbox-item"><input type="checkbox" name="certifications" value="mbe"    <%= bizCerts.includes('mbe')    ? 'checked' : '' %>><span>MBE (Minority Business Enterprise)</span></label>
+            <label class="checkbox-item"><input type="checkbox" name="certifications" value="wbe"    <%= bizCerts.includes('wbe')    ? 'checked' : '' %>><span>WBE (Women Business Enterprise)</span></label>
+            <label class="checkbox-item"><input type="checkbox" name="certifications" value="hub"    <%= bizCerts.includes('hub')    ? 'checked' : '' %>><span>HUB (Texas)</span></label>
+            <label class="checkbox-item"><input type="checkbox" name="certifications" value="sdvosb" <%= bizCerts.includes('sdvosb') ? 'checked' : '' %>><span>SDVOSB</span></label>
+            <label class="checkbox-item"><input type="checkbox" name="certifications" value="8a"     <%= bizCerts.includes('8a')     ? 'checked' : '' %>><span>SBA 8(a)</span></label>
+            <label class="checkbox-item"><input type="checkbox" name="certifications" value="hubzone" <%= bizCerts.includes('hubzone') ? 'checked' : '' %>><span>HUBZone</span></label>
+            <label class="checkbox-item"><input type="checkbox" name="certifications" value="vosb"   <%= bizCerts.includes('vosb')   ? 'checked' : '' %>><span>VOSB</span></label>
+            <label class="checkbox-item"><input type="checkbox" name="certifications" value="sbe"    <%= bizCerts.includes('sbe')    ? 'checked' : '' %>><span>SBE (Small Business Enterprise)</span></label>
+          </div>
+        </fieldset>
+      </div>
+      <div class="form-card-actions">
+        <button type="submit" class="btn-sm btn-primary">Save</button>
+      </div>
+    </form>
+
+    <!-- Section 4: Vendor Status -->
+    <form class="form-card section-form-card" data-section="vendor" data-post="/business/profile/section">
+      <div class="form-card-header" style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.25rem">
+        <h2 class="form-card-title" style="margin:0">4. Vendor Status</h2>
+        <span class="section-save-status" id="status-vendor">&#10003; Saved</span>
+      </div>
+      <div class="form-group">
+        <fieldset>
+          <legend class="form-label">SAM.gov Status</legend>
+          <div class="radio-group">
+            <label class="radio-item"><input type="radio" name="sam_registered" value="yes"       <%= locals.business?.sam_registered === 'yes'       ? 'checked' : '' %>><span>Registered and active</span></label>
+            <label class="radio-item"><input type="radio" name="sam_registered" value="pending"   <%= locals.business?.sam_registered === 'pending'   ? 'checked' : '' %>><span>Registration in progress</span></label>
+            <label class="radio-item"><input type="radio" name="sam_registered" value="no"        <%= locals.business?.sam_registered === 'no'        ? 'checked' : '' %>><span>Not yet registered</span></label>
+            <label class="radio-item"><input type="radio" name="sam_registered" value="need_help" <%= locals.business?.sam_registered === 'need_help' ? 'checked' : '' %>><span>I need help registering</span></label>
+          </div>
+        </fieldset>
+      </div>
+      <div class="form-group">
+        <label for="sam_uei" class="form-label">SAM.gov UEI</label>
+        <input type="text" id="sam_uei" name="sam_uei" class="form-control" maxlength="12"
+          value="<%= locals.business?.sam_uei || '' %>" placeholder="12-character Unique Entity Identifier">
+      </div>
+      <div class="form-card-actions">
+        <button type="submit" class="btn-sm btn-primary">Save</button>
+      </div>
+    </form>
+
+    <!-- Section 5: NAICS Codes -->
+    <form class="form-card section-form-card" data-section="naics" data-post="/business/profile/section">
+      <div class="form-card-header" style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.25rem">
+        <h2 class="form-card-title" style="margin:0">5. NAICS Codes</h2>
+        <span class="section-save-status" id="status-naics">&#10003; Saved</span>
+      </div>
+      <p class="form-hint" style="margin-bottom:1rem">Add your NAICS codes so prime contractors can find your business when searching by industry.</p>
+      <div class="form-group">
+        <div class="tag-input-container" id="naics-tag-container">
+          <div class="tag-list" id="naics-tag-list"></div>
+          <input type="text" id="naics-input" class="tag-input" placeholder="Type NAICS code and press Enter" autocomplete="off" aria-label="Add NAICS code">
+        </div>
+        <input type="hidden" name="naics_codes_json" id="naics_codes_json" value="<%= JSON.stringify(naicsCodes) %>">
+      </div>
+      <div class="form-card-actions">
+        <button type="submit" class="btn-sm btn-primary">Save</button>
+      </div>
+    </form>
+
+    <!-- Section 6: Location -->
+    <form class="form-card section-form-card" data-section="location" data-post="/business/profile/section">
+      <div class="form-card-header" style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.25rem">
+        <h2 class="form-card-title" style="margin:0">6. Location &amp; Service Radius</h2>
+        <span class="section-save-status" id="status-location">&#10003; Saved</span>
+      </div>
+      <div class="form-row">
+        <div class="form-group form-col-2">
+          <label for="city" class="form-label">City</label>
+          <input type="text" id="city" name="city" class="form-control"
+            value="<%= locals.business?.city || '' %>" autocomplete="address-level2">
+        </div>
+        <div class="form-group form-col-1">
+          <label for="state" class="form-label">State</label>
+          <select id="state" name="state" class="form-control" autocomplete="address-level1">
+            <option value="">--</option>
+            <% (locals.states || []).forEach(function(s) { %>
+            <option value="<%= s %>" <%= locals.business?.state === s ? 'selected' : '' %>><%= s %></option>
+            <% }) %>
+          </select>
+        </div>
+        <div class="form-group form-col-1">
+          <label for="zip" class="form-label">ZIP</label>
+          <input type="text" id="zip" name="zip" class="form-control" maxlength="10"
+            value="<%= locals.business?.zip || '' %>" autocomplete="postal-code">
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="service_radius" class="form-label">Service Radius</label>
+        <select id="service_radius" name="service_radius" class="form-control">
+          <option value="local"     <%= locals.business?.service_radius === 'local'     ? 'selected' : '' %>>Local (within 50 miles)</option>
+          <option value="regional"  <%= locals.business?.service_radius === 'regional'  ? 'selected' : '' %>>Regional (statewide)</option>
+          <option value="national"  <%= locals.business?.service_radius === 'national'  ? 'selected' : '' %>>National</option>
+        </select>
+      </div>
+      <div class="form-card-actions">
+        <button type="submit" class="btn-sm btn-primary">Save</button>
+      </div>
+    </form>
+
+    <!-- Section 7: Capability Statement -->
+    <div class="form-card" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem">
+      <div>
+        <h2 class="form-card-title" style="margin:0 0 .5rem">7. Capability Statement</h2>
+        <p style="margin:0;color:rgba(255,255,255,.6);font-size:.9rem">
+          <% if (locals.business?.capability_statement_generated_at) { %>
+            Generated <%= new Date(locals.business.capability_statement_generated_at).toLocaleDateString() %>
+          <% } else { %>
+            Not yet generated — complete your profile first
+          <% } %>
+        </p>
+      </div>
+      <div style="display:flex;gap:.75rem;flex-wrap:wrap">
+        <% if (locals.business?.capability_statement_generated_at) { %>
+          <a href="/business/capability-statement" class="btn-sm btn-secondary">View Statement</a>
+        <% } %>
+        <form method="POST" action="/business/capability-statement/generate" style="display:inline">
+          <button type="submit" class="btn-sm btn-primary">
+            <%= locals.business?.capability_statement_generated_at ? 'Regenerate' : 'Generate Statement' %>
+          </button>
+        </form>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<script>
+// NAICS tag input
+(function() {
+  var tagList = document.getElementById('naics-tag-list');
+  var input   = document.getElementById('naics-input');
+  var hidden  = document.getElementById('naics_codes_json');
+  if (!tagList) return;
+  var codes = [];
+  try { codes = JSON.parse(hidden.value) || []; } catch(e) { codes = []; }
+  function renderTags() {
+    tagList.innerHTML = '';
+    codes.forEach(function(code, i) {
+      var tag = document.createElement('span');
+      tag.className = 'tag';
+      tag.innerHTML = code + ' <button type="button" aria-label="Remove ' + code + '">&times;</button>';
+      tag.querySelector('button').addEventListener('click', function() {
+        codes.splice(i, 1); hidden.value = JSON.stringify(codes); renderTags();
+      });
+      tagList.appendChild(tag);
+    });
+    hidden.value = JSON.stringify(codes);
+  }
+  renderTags();
+  input.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter' || e.key === ',') {
+      e.preventDefault();
+      var val = input.value.trim().replace(/,$/, '');
+      if (val && !codes.includes(val)) { codes.push(val); renderTags(); }
+      input.value = '';
+    }
+  });
+})();
+
+// Section AJAX saves
+document.querySelectorAll('.section-form-card').forEach(function(form) {
+  form.addEventListener('submit', async function(e) {
+    e.preventDefault();
+    var section = form.dataset.section;
+    var url     = form.dataset.post;
+    var btn     = form.querySelector('button[type="submit"]');
+    var status  = document.getElementById('status-' + section);
+
+    btn.disabled    = true;
+    btn.textContent = 'Saving…';
+    if (status) status.classList.remove('visible');
+
+    var formData = new FormData(form);
+    formData.append('section', section);
+
+    try {
+      var res  = await fetch(url, { method: 'POST', headers: { 'Accept': 'application/json' }, body: formData });
+      var data = await res.json();
+      if (data.success) {
+        updateProgressBar(data.pct);
+        if (status) { status.classList.add('visible'); setTimeout(function() { status.classList.remove('visible'); }, 3000); }
+      } else {
+        alert('Save failed: ' + (data.error || 'Unknown error'));
+      }
+    } catch(err) {
+      alert('Network error — please try again.');
+    }
+    btn.disabled    = false;
+    btn.textContent = 'Save';
+  });
+});
+
+function updateProgressBar(pct) {
+  var color = pct >= 100 ? '#10B981' : pct >= 50 ? '#00D2FF' : '#F59E0B';
+  var fill  = document.getElementById('profile-pct-fill');
+  var text  = document.getElementById('profile-pct-text');
+  var label = document.getElementById('profile-pct-label');
+  if (fill)  { fill.style.width = pct + '%'; fill.style.background = color; }
+  if (text)  { text.textContent = pct + '%'; text.style.color = color; }
+  if (label) { label.textContent = pct >= 100 ? 'Profile complete — your business is visible to prime contractors' : 'Complete all sections to maximize visibility'; }
+}
+</script>

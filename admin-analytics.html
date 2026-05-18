@@ -5,13 +5,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="robots" content="noindex, nofollow">
-    <title>Admin Analytics - PrimeReach</title>
+    <title>Admin Analytics - WorkForce Connect</title>
     <link rel="icon" href="assets/favicon.ico" type="image/x-icon">
   <link rel="manifest" href="manifest.json">
-  <meta name="theme-color" content="#0A1628">
+  <meta name="theme-color" content="#005A8C">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
-  <meta name="apple-mobile-web-app-title" content="PrimeReach">
+  <meta name="apple-mobile-web-app-title" content="BizConnect">
   <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
     <link rel="stylesheet" href="css/design-system.css?v=1774555160000">
     <link rel="stylesheet" href="css/dashboard-new.css?v=1774555160000">
@@ -130,6 +130,65 @@
         @media (max-width: 900px) { .two-col { grid-template-columns: 1fr; } }
 
         .loading-state { text-align: center; padding: 2rem; color: var(--text-muted); }
+
+        .chart-container {
+            background: var(--card-bg);
+            border: var(--border-width, 1px) solid var(--color-border-light);
+            border-radius: var(--border-radius-lg);
+            padding: var(--space-xl);
+            height: 400px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .performance-trends {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: var(--space-xl);
+            margin-bottom: var(--space-xl);
+        }
+
+        .trend-card {
+            background: var(--card-bg);
+            border: var(--border-width, 1px) solid var(--color-border-light);
+            border-radius: var(--border-radius-lg);
+            padding: var(--space-xl);
+            transition: transform var(--transition-base, 0.3s ease);
+        }
+
+        .trend-card:hover {
+            transform: translateY(-4px);
+            border-color: var(--color-primary);
+        }
+
+        .trend-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--space-md);
+        }
+
+        .trend-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--color-primary);
+        }
+
+        .trend-metric {
+            display: flex;
+            align-items: center;
+            gap: var(--space-sm);
+        }
+
+        .trend-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .trend-label {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
     </style>
     <link rel="stylesheet" href="css/accessibility-widget.css?v=1774549569000">
 </head>
@@ -191,6 +250,60 @@
                 </div>
             </div>
 
+            <!-- Charts Section -->
+            <section style="margin-bottom: var(--space-xl);">
+                <div class="enhanced-card">
+                    <div class="card-header">
+                        <div>
+                            <h3 class="card-title">📈 Platform Engagement</h3>
+                            <div class="card-subtitle">Global tracking of opportunities and applications</div>
+                        </div>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="engagementChart" width="400" height="200"></canvas>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Performance Trends -->
+            <section class="performance-trends">
+                <div class="enhanced-card">
+                    <div class="card-header">
+                        <div>
+                            <h3 class="card-title">📊 Regional Performance</h3>
+                            <div class="card-subtitle">Quarterly performance trends across different Caltrans districts</div>
+                        </div>
+                    </div>
+                    <div class="trend-card">
+                        <div class="trend-header">
+                            <h4 class="trend-title">District 4 Growth</h4>
+                            <div class="trend-metric">
+                                <span class="trend-value">+15%</span>
+                                <span class="trend-label">Small Business Participation</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="trend-card">
+                        <div class="trend-header">
+                            <h4 class="trend-title">District 7 Engagement</h4>
+                            <div class="trend-metric">
+                                <span class="trend-value">+8%</span>
+                                <span class="trend-label">Application Rate</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="trend-card">
+                        <div class="trend-header">
+                            <h4 class="trend-title">Statewide Outreach</h4>
+                            <div class="trend-metric">
+                                <span class="trend-value">+22%</span>
+                                <span class="trend-label">Small Business Engagement</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
             <!-- Recent registrations -->
             <div class="enhanced-card">
                 <div class="card-header">
@@ -229,27 +342,39 @@
             const authHeaders = token ? { 'Authorization': `Bearer ${token}` } : {};
 
             try {
-                const [users, opps] = await Promise.all([
+                const [users, opps, apps] = await Promise.all([
                     DataService.fetch('/admin/users', { headers: authHeaders }).catch(() => []),
-                    DataService.fetch('/opportunities').catch(() => [])
+                    DataService.fetch('/opportunities').catch(() => []),
+                    DataService.fetch('/applications', { headers: authHeaders }).catch(() => [])
                 ]);
 
-                renderTopMetrics(users, opps);
+                renderTopMetrics(users, opps, apps);
                 renderUserBreakdown(users);
                 renderOppBreakdown(opps);
                 renderRecentUsers(users);
+
+                setTimeout(() => {
+                    const appsArr = Array.isArray(apps) ? apps : [];
+                    const oppsArr = Array.isArray(opps) ? opps : [];
+                    initEngagementChart(
+                        oppsArr.length, 
+                        appsArr.length, 
+                        appsArr.filter(a => a.status === 'pending').length, 
+                        appsArr.filter(a => a.status === 'awarded' || a.status === 'approved').length
+                    );
+                }, 300);
 
             } catch (err) {
                 console.error('Analytics load error:', err);
             }
         }
 
-        function renderTopMetrics(users, opps) {
-            const totalUsers = users.length;
-            const totalOpps = opps.length;
-            const activeOpps = opps.filter(o => o.status === 'open' || o.status === 'active').length;
-            const oneWeekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
-            const newThisWeek = users.filter(u => new Date(u.created_at) >= oneWeekAgo).length;
+        function renderTopMetrics(users, opps, apps) {
+            const totalUsers = Array.isArray(users) ? users.length : 0;
+            const totalOpps = Array.isArray(opps) ? opps.length : 0;
+            const activeOpps = Array.isArray(opps) ? opps.filter(o => o.status === 'open' || o.status === 'active').length : 0;
+            const totalApps = Array.isArray(apps) ? apps.length : 0;
+            const awardedApps = Array.isArray(apps) ? apps.filter(a => a.status === 'awarded' || a.status === 'approved').length : 0;
 
             document.getElementById('topMetrics').innerHTML = `
                 <div class="metric-box">
@@ -261,12 +386,12 @@
                     <span class="metric-label">Total Opportunities</span>
                 </div>
                 <div class="metric-box">
-                    <span class="metric-value">${activeOpps}</span>
-                    <span class="metric-label">Active Opportunities</span>
+                    <span class="metric-value">${totalApps}</span>
+                    <span class="metric-label">Total Applications</span>
                 </div>
                 <div class="metric-box">
-                    <span class="metric-value">${newThisWeek}</span>
-                    <span class="metric-label">New Users This Week</span>
+                    <span class="metric-value">${awardedApps}</span>
+                    <span class="metric-label">Awarded Contracts</span>
                 </div>
             `;
         }
@@ -276,7 +401,7 @@
             const counts = {
                 'Small Business': users.filter(u => u.type === 'small_business').length,
                 'Prime Contractor': users.filter(u => u.type === 'agency').length,
-                'Admin': users.filter(u => u.type === 'admin' || u.type === 'caltrans_admin').length
+                'Admin': users.filter(u => u.type === 'admin' || u.type === 'wfc_admin').length
             };
             const icons = { 'Small Business': '🏢', 'Prime Contractor': '🏗️', 'Admin': '🛡️' };
 
@@ -330,8 +455,8 @@
                 return;
             }
 
-            const typeLabel = { small_business: 'Small Business', agency: 'Prime Contractor', admin: 'Admin', caltrans_admin: 'Staff Admin' };
-            const typeBadge = { small_business: 'background:#e0f2fe;color:#0369a1;', agency: 'background:#fef3c7;color:#92400e;', admin: 'background:#f3e8ff;color:#7e22ce;', caltrans_admin: 'background:#dcfce7;color:#166534;' };
+            const typeLabel = { small_business: 'Small Business', agency: 'Prime Contractor', admin: 'Admin', wfc_admin: 'Staff Admin' };
+            const typeBadge = { small_business: 'background:#e0f2fe;color:#0369a1;', agency: 'background:#fef3c7;color:#92400e;', admin: 'background:#f3e8ff;color:#7e22ce;', wfc_admin: 'background:#dcfce7;color:#166534;' };
 
             document.getElementById('recentUsers').innerHTML = `
                 <div style="overflow-x:auto;-webkit-overflow-scrolling:touch;">
@@ -365,8 +490,53 @@
                 </div>
             `;
         }
+
+        // Initialize engagement metrics chart
+        function initEngagementChart(posted, totalApps, pending, awarded) {
+            const canvas = document.getElementById('engagementChart');
+            if (!canvas) return;
+
+            const ctx = canvas.getContext('2d');
+            const width = canvas.width;
+            const height = canvas.height;
+
+            const data = [
+                { label: 'Total Opps', value: posted || 0 },
+                { label: 'Applications', value: totalApps || 0 },
+                { label: 'Pending', value: pending || 0 },
+                { label: 'Awarded', value: awarded || 0 }
+            ];
+
+            const maxValue = Math.max(...data.map(d => d.value), 10);
+            const barWidth = width / data.length * 0.6;
+            const barSpacing = width / data.length;
+
+            // Clear canvas
+            ctx.clearRect(0, 0, width, height);
+
+            // Draw bars
+            data.forEach((item, index) => {
+                const barHeight = (item.value / maxValue) * (height - 40);
+                const x = index * barSpacing + barSpacing / 2 - barWidth / 2;
+                const y = height - barHeight - 20;
+
+                // Draw bar
+                ctx.fillStyle = '#005A8C'; // Using fallback if var fails in canvas
+                ctx.fillRect(x, y, barWidth, barHeight);
+
+                // Draw label
+                ctx.fillStyle = '#333';
+                ctx.font = '12px sans-serif';
+                ctx.textAlign = 'center';
+                ctx.fillText(item.label, x + barWidth / 2, height - 5);
+
+                // Draw value
+                ctx.fillText(item.value, x + barWidth / 2, y - 5);
+            });
+        }
     </script>
     <script src="js/accessibility-widget.js?v=1774549569000"></script>
+  <script src="js/cms-renderer.js?v=1774549569000"></script>
   <script src="js/pwa.js?v=1774549569000"></script>
 </body>
 

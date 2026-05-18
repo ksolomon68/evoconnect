@@ -1,0 +1,35 @@
+<% const title = locals.title || 'Business Portal FAQ' %>
+
+<section class="faq-section">
+  <div class="container">
+    <div class="section-header text-center">
+      <div class="hero-badge">Business Portal</div>
+      <h1>Frequently Asked Questions</h1>
+      <p class="section-sub">Answers for small businesses and certified firms on EvoConnect.</p>
+    </div>
+
+    <%- include('../partials/flash') %>
+
+    <div class="faq-list">
+
+      <% if (locals.faqs && faqs.length > 0) { %>
+        <% faqs.forEach(function(faq) { %>
+          <details class="faq-item">
+            <summary class="faq-question"><%= faq.q %></summary>
+            <div class="faq-answer">
+              <p><%= faq.a %></p>
+            </div>
+          </details>
+        <% }) %>
+      <% } else { %>
+        <p>No FAQs available at this time.</p>
+      <% } %>
+
+    </div>
+
+    <div class="faq-cta text-center">
+      <p>Have a question not covered here?</p>
+      <a href="/contact" class="btn-primary">Contact Support</a>
+    </div>
+  </div>
+</section>

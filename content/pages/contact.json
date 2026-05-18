@@ -3,8 +3,8 @@
   "isSystem": true,
   "updatedAt": "2026-03-21T00:00:00.000Z",
   "meta": {
-    "title": "Contact Us - PrimeReach",
-    "description": "Contact PrimeReach for support, questions, or assistance with the platform."
+    "title": "Contact Us - WorkForce Connect",
+    "description": "Contact WorkForce Connect for support, questions, or assistance with the platform."
   },
   "sections": [
     {
@@ -20,7 +20,7 @@
       "type": "text-block",
       "fields": {
         "heading": "Program Contact",
-        "body": "Small Business Supportive Services\n\nPhone: (916) 324-1700\nEmail: info@primereachgov.com\nHours: Monday - Friday, 8:00 AM - 5:00 PM PST\n\nFor general inquiries about the program, certification, or technical assistance."
+        "body": "Small Business Supportive Services\n\nPhone: +1 (214) 531-4427\nEmail: info@workforceconnect.io\nHours: Monday - Friday, 9:00 AM - 5:00 PM CST\n\nFor general inquiries about the program, certification, or technical assistance."
       }
     },
     {
@@ -28,7 +28,7 @@
       "type": "text-block",
       "fields": {
         "heading": "Technical Support",
-        "body": "Platform Technical Support\n\nEmail: info@primereachgov.com\nResponse Time: Within 1 business day\n\nFor issues with logging in, uploading documents, or other technical problems."
+        "body": "Platform Technical Support\n\nEmail: info@workforceconnect.io\nResponse Time: Within 1 business day\n\nFor issues with logging in, uploading documents, or other technical problems."
       }
     },
     {

@@ -6,13 +6,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="robots" content="noindex, nofollow">
     <meta name="description" content="Manage your Capability Statement to showcase your business qualifications.">
-    <title>Capability Statement - PrimeReach</title>
+    <title>Capability Statement - WorkForce Connect</title>
     <link rel="icon" href="assets/favicon.ico" type="image/x-icon">
   <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#0A1628">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
-  <meta name="apple-mobile-web-app-title" content="PrimeReach">
+  <meta name="apple-mobile-web-app-title" content="WorkForce Connect">
   <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
     <link rel="stylesheet" href="css/design-system.css?v=1774555160000">
     <link rel="stylesheet" href="css/main.css?v=1774555160000">
@@ -25,17 +25,17 @@
     <header class="site-header" role="banner">
         <div class="container">
             <a href="index.html" class="site-logo">
-                <img src="images/logo-light.png" alt="PrimeReach Logo">
+                <img src="images/logo-light.png" alt="WorkForce Connect Logo">
             </a>
             <button class="nav-toggle" aria-label="Toggle navigation" aria-expanded="false"><span></span></button>
             <nav class="main-nav" role="navigation" aria-label="Main navigation">
         <ul>
           <li><a href="index.html">Home</a></li>
-          <li><a href="for-small-businesses.html">Small Businesses</a></li>
-          <li><a href="for-prime-contractors.html">Prime Contractors</a></li>
-          <li><a href="opportunities.html">Opportunities</a></li>
+          <li><a href="for-workers.html">Workeres</a></li>
+          <li><a href="index.html">Prime Contractors</a></li>
+          <li><a href="index.html">Opportunities</a></li>
           <li><a href="how-it-works.html">How It Works</a></li>
-          <li><a href="resources.html">Resources</a></li>
+          <li><a href="checklist.html">Resources</a></li>
           <li><a href="faq.html">FAQ</a></li>
           <li><a href="contact.html">Contact</a></li>
           <li><a href="login.html" class="btn btn-secondary btn-small">Log In</a></li>
@@ -48,15 +48,15 @@
         <div class="container">
             <div class="dashboard">
                 <aside class="dashboard-sidebar" role="navigation">
-                    <h2 class="mb-md" style="font-size: var(--font-size-lg);">Small Business Menu</h2>
+                    <h2 class="mb-md" style="font-size: var(--font-size-lg);">Worker Menu</h2>
                     <ul class="dashboard-nav">
-                        <li><a href="dashboard-small-business.html">Dashboard</a></li>
-                        <li><a href="small-business-profile.html">My Profile</a></li>
+                        <li><a href="dashboard-worker.html">Dashboard</a></li>
+                        <li><a href="worker-profile.html">My Profile</a></li>
                         <li><a href="capability-statement.html" class="active" aria-current="page">Capability Statement</a></li>
-                        <li><a href="search-opportunities.html">Search Opportunities</a></li>
-                        <li><a href="saved-opportunities.html">Saved Opportunities</a></li>
+                        <li><a href="dashboard-worker.html">Search Opportunities</a></li>
+                        <li><a href="dashboard-worker.html">Saved Opportunities</a></li>
 
-                        <li><a href="small-business-settings.html">Settings</a></li>
+                        <li><a href="worker-settings.html">Settings</a></li>
                     </ul>
                 </aside>
 
@@ -183,7 +183,7 @@
     <footer class="site-footer" role="contentinfo">
         <div class="container">
             <div class="footer-bottom">
-                <p>&copy; 2026 PrimeReach. All rights reserved.</p>
+                <p>&copy; 2026 WorkForce Connect. All rights reserved.</p>
             </div>
         </div>
     </footer>
@@ -192,7 +192,7 @@
     <script src="js/main.js?v=1774549569000"></script>
     <script src="js/auth.js?v=1774549569000"></script>
     <script>
-        const user = protectPage('small_business');
+        const user = protectPage('worker');
         let currentFile = null;
 
         // Load existing data
@@ -359,7 +359,7 @@
                 if (!response.ok) throw new Error('Failed to save');
 
                 const updatedUser = await response.json();
-                localStorage.setItem('caltrans_user', JSON.stringify(updatedUser));
+                localStorage.setItem('wfc_user', JSON.stringify(updatedUser));
 
                 showSuccessMessage('Capability Statement saved successfully!', this);
             } catch (error) {

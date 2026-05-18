@@ -1,15 +1,15 @@
 {
-  "name": "PrimeReach",
-  "short_name": "PrimeReach",
-  "id": "com.primereachgov.app",
-  "description": "Connecting prime contractors with qualified small and disadvantaged businesses.",
+  "name": "WorkForce Connect",
+  "short_name": "WFC",
+  "id": "io.workforceconnect.app",
+  "description": "Turn your trade skills into a government contract. Free registration for skilled workers.",
   "start_url": "/index.html",
   "scope": "/",
   "display": "standalone",
   "display_override": ["window-controls-overlay", "standalone", "minimal-ui"],
   "orientation": "any",
-  "background_color": "#ffffff",
-  "theme_color": "#0A1628",
+  "background_color": "#0B1220",
+  "theme_color": "#0B1220",
   "lang": "en-US",
   "categories": ["business", "government", "productivity"],
   "icons": [
@@ -34,24 +34,24 @@
   ],
   "shortcuts": [
     {
-      "name": "Search Opportunities",
-      "short_name": "Opportunities",
-      "url": "/search-opportunities.html",
-      "description": "Browse available contracting opportunities",
+      "name": "Register as Worker",
+      "short_name": "Register",
+      "url": "/register-worker.html",
+      "description": "Sign up and get matched to federal contracts",
       "icons": [{ "src": "images/favicon.png", "sizes": "192x192" }]
     },
     {
       "name": "My Dashboard",
       "short_name": "Dashboard",
       "url": "/login.html",
-      "description": "Access your personalized dashboard",
+      "description": "Access your worker dashboard",
       "icons": [{ "src": "images/favicon.png", "sizes": "192x192" }]
     },
     {
-      "name": "Resources",
-      "short_name": "Resources",
-      "url": "/resources.html",
-      "description": "Training and certification resources",
+      "name": "How It Works",
+      "short_name": "How It Works",
+      "url": "/how-it-works.html",
+      "description": "Learn the 4-step path to a government contract",
       "icons": [{ "src": "images/favicon.png", "sizes": "192x192" }]
     }
   ],

@@ -1,0 +1,146 @@
+<% const title = locals.title || 'RFQs' %>
+
+<section class="rfq-section">
+  <div class="container">
+
+    <%- include('../partials/flash') %>
+
+    <div class="rfq-header">
+      <h1>Request for Qualifications (RFQ)</h1>
+      <p class="section-sub">Post your project requirements and reach matched subcontractors directly.</p>
+    </div>
+
+    <% if (prime.tier !== 'enterprise') { %>
+      <div class="upgrade-wall">
+        <div class="upgrade-wall-inner">
+          <div class="upgrade-icon">&#128274;</div>
+          <h2>Enterprise Feature</h2>
+          <p>RFQ posting is available exclusively on the <strong>Enterprise plan</strong> ($399/month). Upgrade to push your project requirements directly to matched subcontractors and workers in your area.</p>
+          <a href="/prime/billing" class="btn-amber">Upgrade to Enterprise</a>
+          <a href="/prime/dashboard" class="btn-secondary" style="margin-left:1rem">Back to Dashboard</a>
+        </div>
+      </div>
+    <% } else { %>
+
+    <div class="rfq-layout">
+
+      <!-- Post RFQ Form -->
+      <div class="rfq-form-panel">
+        <h2>Post a New RFQ</h2>
+        <form method="POST" action="/prime/rfq" class="rfq-form" novalidate>
+
+          <div class="form-group">
+            <label for="title" class="form-label">Project Title <span class="required">*</span></label>
+            <input type="text" id="title" name="title"
+              class="form-control<%= locals.errors?.title ? ' is-invalid' : '' %>"
+              value="<%= locals.values?.title || '' %>" required
+              placeholder="e.g. I-35 Broadband Infrastructure Phase 2"
+              aria-describedby="<%= locals.errors?.title ? 'title-error' : '' %>">
+            <% if (locals.errors?.title) { %><span class="field-error" id="title-error" role="alert"><%= errors.title %></span><% } %>
+          </div>
+
+          <div class="form-group">
+            <label for="description" class="form-label">Project Description <span class="required">*</span></label>
+            <textarea id="description" name="description" class="form-control" rows="5" required
+              placeholder="Describe the scope of work, location, timeline, and what you're looking for in a subcontractor..."
+              aria-describedby="<%= locals.errors?.description ? 'desc-error' : '' %>"><%= locals.values?.description || '' %></textarea>
+            <% if (locals.errors?.description) { %><span class="field-error" id="desc-error" role="alert"><%= errors.description %></span><% } %>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group form-col-2">
+              <label for="naics_code" class="form-label">Primary NAICS Code</label>
+              <input type="text" id="naics_code" name="naics_code" class="form-control"
+                value="<%= locals.values?.naics_code || '' %>" placeholder="e.g. 237130">
+            </div>
+            <div class="form-group form-col-2">
+              <label for="trade_needed" class="form-label">Trade Needed</label>
+              <select id="trade_needed" name="trade_needed" class="form-control">
+                <option value="">Any trade</option>
+                <option value="telecom_fiber" <%= locals.values?.trade_needed === 'telecom_fiber' ? 'selected' : '' %>>Telecom &amp; Fiber</option>
+                <option value="electrical" <%= locals.values?.trade_needed === 'electrical' ? 'selected' : '' %>>Electrical</option>
+                <option value="civil_construction" <%= locals.values?.trade_needed === 'civil_construction' ? 'selected' : '' %>>Civil Construction</option>
+                <option value="it_network" <%= locals.values?.trade_needed === 'it_network' ? 'selected' : '' %>>IT / Network</option>
+                <option value="underground_utilities" <%= locals.values?.trade_needed === 'underground_utilities' ? 'selected' : '' %>>Underground Utilities</option>
+                <option value="plumbing" <%= locals.values?.trade_needed === 'plumbing' ? 'selected' : '' %>>Plumbing</option>
+                <option value="hvac_mechanical" <%= locals.values?.trade_needed === 'hvac_mechanical' ? 'selected' : '' %>>HVAC / Mechanical</option>
+                <option value="general_labor" <%= locals.values?.trade_needed === 'general_labor' ? 'selected' : '' %>>General Labor</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group form-col-2">
+              <label for="project_location" class="form-label">Project Location</label>
+              <input type="text" id="project_location" name="project_location" class="form-control"
+                value="<%= locals.values?.project_location || '' %>" placeholder="City, State">
+            </div>
+            <div class="form-group form-col-2">
+              <label for="deadline" class="form-label">Response Deadline</label>
+              <input type="date" id="deadline" name="deadline" class="form-control"
+                value="<%= locals.values?.deadline || '' %>">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="certifications_required" class="form-label">Required Certifications</label>
+            <input type="text" id="certifications_required" name="certifications_required" class="form-control"
+              value="<%= locals.values?.certifications_required || '' %>"
+              placeholder="e.g. OSHA 30, SAM registered, DBE preferred">
+          </div>
+
+          <div class="form-group">
+            <fieldset>
+              <legend class="form-label">Target Type</legend>
+              <div class="radio-group">
+                <label class="radio-item"><input type="radio" name="target_type" value="both" <%= (!locals.values?.target_type || locals.values?.target_type === 'both') ? 'checked' : '' %>><span>Both Workers &amp; Businesses</span></label>
+                <label class="radio-item"><input type="radio" name="target_type" value="workers" <%= locals.values?.target_type === 'workers' ? 'checked' : '' %>><span>Workers Only</span></label>
+                <label class="radio-item"><input type="radio" name="target_type" value="businesses" <%= locals.values?.target_type === 'businesses' ? 'checked' : '' %>><span>Businesses Only</span></label>
+              </div>
+            </fieldset>
+          </div>
+
+          <button type="submit" class="btn-primary">Post RFQ</button>
+        </form>
+      </div>
+
+      <!-- Existing RFQs -->
+      <div class="rfq-list-panel">
+        <h2>My Posted RFQs</h2>
+        <% if (locals.rfqs && rfqs.length > 0) { %>
+          <div class="rfq-list">
+            <% rfqs.forEach(function(rfq) { %>
+            <div class="rfq-item">
+              <div class="rfq-item-header">
+                <h3><%= rfq.title %></h3>
+                <span class="badge badge-<%= rfq.status === 'active' ? 'success' : 'muted' %>"><%= rfq.status || 'active' %></span>
+              </div>
+              <div class="rfq-meta">
+                <span><%= rfq.naics_code || '' %></span>
+                <% if (rfq.deadline) { %>
+                  <span>Deadline: <%= new Date(rfq.deadline).toLocaleDateString() %></span>
+                <% } %>
+                <span><%= rfq.response_count || 0 %> responses</span>
+              </div>
+              <p class="rfq-desc"><%= rfq.description ? rfq.description.substring(0,100) + '...' : '' %></p>
+              <div class="rfq-actions">
+                <a href="/prime/rfq/<%= rfq.id %>" class="btn-sm btn-secondary">View Responses</a>
+                <form method="POST" action="/prime/rfq/<%= rfq.id %>?_method=DELETE" style="display:inline">
+                  <button type="submit" class="btn-sm btn-danger" onclick="return confirm('Delete this RFQ?')">Delete</button>
+                </form>
+              </div>
+            </div>
+            <% }) %>
+          </div>
+        <% } else { %>
+          <div class="empty-state">
+            <p>No RFQs posted yet. Use the form to post your first project requirement.</p>
+          </div>
+        <% } %>
+      </div>
+
+    </div>
+    <% } %>
+
+  </div>
+</section>

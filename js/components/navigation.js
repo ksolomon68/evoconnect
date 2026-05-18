@@ -1,19 +1,7 @@
 /**
- * Platform Navigation Component
+ * WorkForce Connect Navigation Component (Refactored)
  * Dynamically renders sidebars and headers based on user roles.
- *
- * Agency-specific values come from window.AGENCY (agency.config.js).
- * Do NOT hard-code brand names, logos, or storage keys here.
  */
-
-// Resolve agency config values once at module load.
-const _navAgency    = window.AGENCY || {};
-const _navUserKey   = ((_navAgency.storagePrefix) || 'app') + '_user';
-const _navTokenKey  = ((_navAgency.storagePrefix) || 'app') + '_token';
-const _navLogoPath  = _navAgency.logoPath  || 'assets/logo.png';
-const _navLogoAlt   = _navAgency.logoAlt   || 'Platform Logo';
-const _navAppName   = _navAgency.name      || 'Platform';
-const _navStaffDash = 'dashboard-caltrans.html'; // configurable: update if the staff dashboard page is renamed
 
 const Navigation = {
     // Role configurations — keys must match Navigation.init() call values
@@ -21,55 +9,69 @@ const Navigation = {
         small_business: {
             title: 'Small Business Portal',
             items: [
-                { label: 'Dashboard', href: 'dashboard-small-business.html', icon: '🏠' },
-                { label: 'Search Opportunities', href: 'search-opportunities.html', icon: '🏢' },
-                { label: 'My Applications', href: 'small-business-applications.html', icon: '📋' },
-                { label: 'Saved Items', href: 'saved-opportunities.html', icon: '⭐' },
-                { label: 'Messages', href: 'messages.html', icon: '✉️' },
-                { label: 'My Profile', href: 'small-business-profile.html', icon: '👤' },
-                { label: 'Settings', href: 'small-business-settings.html', icon: '⚙️' }
+                { label: 'Dashboard',             href: 'dashboard-worker.html',  icon: '🏠' },
+                { label: 'Search Opportunities',  href: 'search-opportunities.html',       icon: '🔍' },
+                { label: 'My Applications',       href: 'dashboard-worker.html',icon: '📋' },
+                { label: 'Saved Items',           href: 'saved-opportunities.html',        icon: '⭐' },
+                { label: 'Messages',              href: 'messages.html',                   icon: '✉️' },
+                { label: 'My Profile',            href: 'worker-profile.html',     icon: '👤' },
+                { label: 'Preferences',           href: 'small-business-preferences.html', icon: '🎛️' },
+                { label: 'Settings',              href: 'worker-settings.html',    icon: '⚙️' },
+                { label: 'Resources',             href: 'resources.html',                  icon: '📚' },
+                { label: 'Help & FAQ',            href: 'faq.html',                        icon: '❓' }
             ]
         },
         agency: {
             title: 'Prime Contractor Portal',
             items: [
-                { label: 'Dashboard', href: 'dashboard-prime-contractor.html', icon: '🏠' },
-                { label: 'Post Opportunity', href: 'post-opportunity.html', icon: '➕' },
-                { label: 'Manage Postings', href: 'manage-opportunities.html', icon: '📂' },
-                { label: 'Search Small Businesses', href: 'search-small-businesses.html', icon: '🔍' },
-                { label: 'Messages', href: 'messages.html', icon: '📬' },
-                { label: 'Analytics', href: 'prime-contractor-analytics.html', icon: '📈' },
-                { label: 'Settings', href: 'prime-contractor-settings.html', icon: '⚙️' }
+                { label: 'Dashboard',               href: 'dashboard-prime-contractor.html',  icon: '🏠' },
+                { label: 'Post Opportunity',        href: 'post-opportunity.html',             icon: '➕' },
+                { label: 'Manage Postings',         href: 'manage-opportunities.html',         icon: '📂' },
+                { label: 'View Applications',       href: 'view-applications.html',            icon: '📝' },
+                { label: 'Search Small Businesses', href: 'search-small-businesses.html',      icon: '🔍' },
+                { label: 'Messages',                href: 'messages.html',                     icon: '📬' },
+                { label: 'Analytics',               href: 'prime-contractor-analytics.html',   icon: '📈' },
+                { label: 'My Profile',              href: 'prime-contractor-profile.html',     icon: '👤' },
+                { label: 'Settings',                href: 'prime-contractor-settings.html',    icon: '⚙️' },
+                { label: 'Help & FAQ',              href: 'faq.html',                          icon: '❓' }
             ]
         },
         admin: {
             title: 'Admin Console',
             items: [
-                { label: 'Dashboard', href: 'dashboard-admin.html', icon: '🏠' },
-                { label: 'User Management', href: 'admin-users.html', icon: '👥' },
-                { label: 'Opportunity Approval', href: 'manage-opportunities.html', icon: '✅' },
-                { label: 'Analytics', href: 'admin-analytics.html', icon: '📊' }
+                { label: 'Dashboard',            href: 'dashboard-admin.html',    icon: '🏠' },
+                { label: 'User Management',      href: 'admin-users.html',        icon: '👥' },
+                { label: 'Opportunity Approval', href: 'manage-opportunities.html',icon: '✅' },
+                { label: 'Analytics',            href: 'admin-analytics.html',    icon: '📊' },
+                { label: 'Content Management',   href: 'admin-cms.html',          icon: '🖊️' },
+                { label: 'Report Issue',         href: 'report-issue.html',       icon: '🚨' },
+                { label: 'Admin Guide',          href: 'admin-tutorial.html',     icon: '📖' },
+                { label: 'Help & FAQ',           href: 'faq.html',                icon: '❓' }
             ]
         },
         staff: {
-            title: 'Staff Dashboard',
+            title: 'Caltrans Staff Portal',
             items: [
-                { label: 'Overview', href: _navStaffDash, icon: '\uD83C\uDFE0' },
-                { label: 'Analytics', href: 'prime-contractor-analytics.html', icon: '\uD83D\uDCC8' },
-                { label: 'Support Services', href: 'support-services.html', icon: '\uD83C\uDFA7' },
-                { label: 'Search Small Businesses', href: 'search-small-businesses.html', icon: '\uD83D\uDD0D' }
+                { label: 'Overview',                href: 'dashboard-admin.html',          icon: '🏠' },
+                { label: 'Manage Opportunities',    href: 'manage-opportunities.html',         icon: '📂' },
+                { label: 'Search Small Businesses', href: 'search-small-businesses.html',      icon: '🔍' },
+                { label: 'Analytics',               href: 'prime-contractor-analytics.html',   icon: '📈' },
+                { label: 'Support Services',        href: 'support-services.html',             icon: '🎧' },
+                { label: 'Content Management',      href: 'admin-cms.html',                    icon: '🖊️' },
+                { label: 'Resources',               href: 'resources.html',                    icon: '📚' },
+                { label: 'Report Issue',            href: 'report-issue.html',                 icon: '🚨' },
+                { label: 'CMS Guide',               href: 'cms-tutorial.html',                 icon: '📖' },
+                { label: 'Help & FAQ',              href: 'faq.html',                          icon: '❓' }
             ]
         }
     },
 
-    // Map legacy DB role values to generic config keys.
-    // 'caltrans_admin' is a legacy role name kept for backward compatibility with
-    // existing database records — update both sides if you rename the role in the DB.
+    // Map legacy DB role values to config keys
     _normalizeRole(role) {
         const map = {
-            'vendor':          'small_business',
-            'prime_contractor':'agency',
-            'caltrans_admin':  'staff'  // legacy role name — keep in sync with DB
+            'vendor': 'worker',
+            'prime_contractor': 'agency',
+            'wfc_admin': 'staff'
         };
         return map[role] || role;
     },
@@ -81,8 +83,8 @@ const Navigation = {
     init(role) {
         // Fallback to localStorage if no role provided
         if (!role) {
-            const user = JSON.parse(localStorage.getItem(_navUserKey));
-            role = user ? user.type : 'small_business';
+            const user = JSON.parse(localStorage.getItem('wfc_user'));
+            role = user ? user.type : 'worker';
         }
 
         role = this._normalizeRole(role);
@@ -97,7 +99,7 @@ const Navigation = {
         const sidebar = document.getElementById('sidebar') || document.querySelector('.sidebar');
         if (!sidebar) return;
 
-        const config = this.config[role] || this.config['small_business'];
+        const config = this.config[role] || this.config['worker'];
         const currentPath = window.location.pathname.split('/').pop() || 'index.html';
 
         let html = `
@@ -138,7 +140,7 @@ const Navigation = {
                 <a href="index.html" class="sidebar-footer-link">
                     <span style="font-size: 1.25rem;">🌐</span> Back to Public Site
                 </a>
-                <button onclick="if(typeof logout === 'function') { logout() } else { localStorage.removeItem('${_navUserKey}'); window.location.href='index.html'; }"
+                <button onclick="if(typeof logout === 'function') { logout() } else { localStorage.removeItem('wfc_user'); window.location.href='index.html'; }"
                     class="sidebar-footer-link sidebar-signout-btn">
                     <span style="font-size: 1.25rem;">🚪</span> Sign Out
                 </button>
@@ -162,9 +164,9 @@ const Navigation = {
         const header = document.getElementById('header-top') || document.querySelector('.header-top');
         if (!header) return;
 
-        const user = JSON.parse(localStorage.getItem(_navUserKey)) || { name: 'Portal User' };
+        const user = JSON.parse(localStorage.getItem('wfc_user')) || { name: 'Portal User' };
         const userName = user.business_name || user.organization_name || user.contact_name || user.name || 'User';
-        const config = this.config[role] || this.config['small_business'];
+        const config = this.config[role] || this.config['worker'];
 
         header.innerHTML = `
             <div style="display: flex; align-items: center; gap: 1rem;">
@@ -176,9 +178,9 @@ const Navigation = {
                     </svg>
                 </button>
                 <div class="header-logo" style="display: flex; align-items: center;">
-                    <a href="index.html" style="text-decoration: none; display: flex; align-items: center;" aria-label="${_navAppName} Home">
-                        <img src="${_navLogoPath}" alt="${_navLogoAlt}" style="height: 32px; width: auto; display: block;">
-                        <span style="font-weight: 700; color: var(--color-primary); font-size: 1.1rem; letter-spacing: -0.01em; margin-left: 0.5rem; border-left: 1px solid var(--color-border); padding-left: 0.5rem;">${_navAppName}</span>
+                    <a href="index.html" style="text-decoration: none; display: flex; align-items: center;" aria-label="WorkForce Connect Home">
+                        <img src="assets/caltrans-logo.png" alt="Caltrans logo" style="height: 32px; width: auto; display: block;">
+                        <span style="font-weight: 700; color: var(--color-primary); font-size: 1.1rem; letter-spacing: -0.01em; margin-left: 0.5rem; border-left: 1px solid var(--color-border); padding-left: 0.5rem;">BizConnect</span>
                     </a>
                 </div>
                 <span class="header-portal-title" aria-hidden="true" style="font-size: 0.85rem; color: var(--color-text-secondary); margin-left: 0.5rem;">${config.title}</span>
@@ -204,7 +206,7 @@ const Navigation = {
                 <div class="header-avatar">
                     ${userName.charAt(0).toUpperCase()}
                 </div>
-                <button class="mobile-signout-btn" onclick="if(typeof logout === 'function') { logout() } else { localStorage.removeItem('${_navUserKey}'); window.location.href='index.html'; }" aria-label="Sign Out" title="Sign Out">
+                <button class="mobile-signout-btn" onclick="if(typeof logout === 'function') { logout() } else { localStorage.removeItem('wfc_user'); window.location.href='index.html'; }" aria-label="Sign Out" title="Sign Out">
                     🚪
                 </button>
             </div>
@@ -272,7 +274,7 @@ const Navigation = {
     },
 
     initNotifications() {
-        const user = JSON.parse(localStorage.getItem(_navUserKey));
+        const user = JSON.parse(localStorage.getItem('wfc_user'));
         if (!user) return;
         
         const bell = document.getElementById('notification-bell');
@@ -312,7 +314,7 @@ const Navigation = {
     async fetchNotifications(userId) {
         try {
             const url = window.APP_CONFIG ? window.APP_CONFIG.API_URL : '/api';
-            const token = localStorage.getItem(_navTokenKey);
+            const token = localStorage.getItem('caltrans_token');
             const res = await fetch(`${url}/notifications/user/${userId}`, {
                 headers: { 
                     'x-user-id': userId,
@@ -364,7 +366,7 @@ const Navigation = {
     async markNotificationRead(id, messageId, userId) {
         try {
             const url = window.APP_CONFIG ? window.APP_CONFIG.API_URL : '/api';
-            const token = localStorage.getItem(_navTokenKey);
+            const token = localStorage.getItem('caltrans_token');
             await fetch(`${url}/notifications/${id}/read`, {
                 method: 'POST',
                 headers: { 
@@ -382,7 +384,7 @@ const Navigation = {
 
 // Global init trigger — fires if page doesn't call Navigation.init() explicitly
 document.addEventListener('DOMContentLoaded', () => {
-    const user = JSON.parse(localStorage.getItem(_navUserKey));
+    const user = JSON.parse(localStorage.getItem('wfc_user'));
     if (user && user.type && !window._navInitialized) {
         Navigation.init(user.type);
     }

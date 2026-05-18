@@ -1,0 +1,115 @@
+<% const title = locals.title || 'Resource Library | EvoConnect Admin' %>
+
+<section class="admin-section">
+  <div class="container">
+
+    <%- include('../partials/flash') %>
+
+    <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem;margin-bottom:2rem">
+      <div>
+        <h1 style="margin:0;color:#0F172A">Resource Library</h1>
+        <p style="color:#64748B;margin:.25rem 0 0"><%= locals.resources?.length || 0 %> resources</p>
+      </div>
+      <a href="/admin/dashboard" class="btn btn-ghost">← Dashboard</a>
+    </div>
+
+    <!-- Add Resource Form -->
+    <div class="card" style="margin-bottom:2rem">
+      <div style="padding:1.25rem 1.5rem;border-bottom:1px solid #E2E8F0">
+        <h2 style="margin:0;font-size:1rem;color:#0F172A">Add Resource</h2>
+      </div>
+      <form method="POST" action="/admin/resources" style="padding:1.5rem;display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1rem">
+        <div class="form-group" style="margin:0;grid-column:1/-1">
+          <label class="form-label">Title <span style="color:#EF4444">*</span></label>
+          <input type="text" name="title" class="form-control" placeholder="SAM.gov Registration Guide" required>
+        </div>
+        <div class="form-group" style="margin:0;grid-column:1/-1">
+          <label class="form-label">Description</label>
+          <input type="text" name="description" class="form-control" placeholder="Step-by-step guide to registering on SAM.gov">
+        </div>
+        <div class="form-group" style="margin:0">
+          <label class="form-label">URL</label>
+          <input type="url" name="url" class="form-control" placeholder="https://sam.gov">
+        </div>
+        <div class="form-group" style="margin:0">
+          <label class="form-label">Category</label>
+          <input type="text" name="category" class="form-control" placeholder="registration">
+        </div>
+        <div class="form-group" style="margin:0">
+          <label class="form-label">Audience</label>
+          <select name="audience" class="form-control">
+            <option value="all">All Users</option>
+            <option value="worker">Workers Only</option>
+            <option value="business">Businesses Only</option>
+            <option value="prime">Primes Only</option>
+          </select>
+        </div>
+        <div class="form-group" style="margin:0">
+          <label class="form-label">Sort Order</label>
+          <input type="number" name="sort_order" class="form-control" value="0" min="0">
+        </div>
+        <div class="form-group" style="margin:0">
+          <label class="form-label">Status</label>
+          <select name="status" class="form-control">
+            <option value="active">Active</option>
+            <option value="inactive">Inactive</option>
+          </select>
+        </div>
+        <div style="display:flex;align-items:flex-end">
+          <button type="submit" class="btn btn-primary" style="width:100%">Add Resource</button>
+        </div>
+      </form>
+    </div>
+
+    <!-- Resources Table -->
+    <div class="card">
+      <% if (locals.resources && resources.length > 0) { %>
+        <div style="overflow-x:auto">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Title</th>
+                <th>Category</th>
+                <th>Audience</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% resources.forEach(function(r) { %>
+              <tr>
+                <td style="color:#94A3B8;font-size:.85rem"><%= r.sort_order %></td>
+                <td>
+                  <strong><%= r.title %></strong>
+                  <% if (r.url) { %><br><a href="<%= r.url %>" target="_blank" rel="noopener" style="color:#06B6D4;font-size:.8rem;word-break:break-all"><%= r.url.length > 50 ? r.url.slice(0,50) + '…' : r.url %></a><% } %>
+                  <% if (r.description) { %><br><span style="color:#64748B;font-size:.8rem"><%= r.description %></span><% } %>
+                </td>
+                <td style="text-transform:capitalize;color:#64748B"><%= r.category || '—' %></td>
+                <td style="text-transform:capitalize"><%= r.audience || 'all' %></td>
+                <td>
+                  <% if (r.status === 'active') { %>
+                    <span style="background:#F0FDF4;color:#166534;padding:.2rem .6rem;border-radius:4px;font-size:.8rem">Active</span>
+                  <% } else { %>
+                    <span style="background:#F8FAFC;color:#94A3B8;padding:.2rem .6rem;border-radius:4px;font-size:.8rem">Inactive</span>
+                  <% } %>
+                </td>
+                <td>
+                  <form method="POST" action="/admin/resources/<%= r.id %>?_method=DELETE" style="display:inline" onsubmit="return confirm('Delete this resource?')">
+                    <button type="submit" class="btn btn-danger" style="padding:.25rem .6rem;font-size:.8rem">Delete</button>
+                  </form>
+                </td>
+              </tr>
+              <% }) %>
+            </tbody>
+          </table>
+        </div>
+      <% } else { %>
+        <div style="padding:3rem;text-align:center;color:#64748B">
+          <p>No resources yet. Add one above to populate user dashboards.</p>
+        </div>
+      <% } %>
+    </div>
+
+  </div>
+</section>

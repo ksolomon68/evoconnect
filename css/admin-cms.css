@@ -1,6 +1,6 @@
 /* ============================================================
-   Admin CMS Stylesheet — PrimeReach
-   platform style-guide compliant. Mobile-responsive.
+   Admin CMS Stylesheet — WorkForce Connect
+   Caltrans style-guide compliant. Mobile-responsive.
    ============================================================ */
 
 /* ── Reset / Base ─────────────────────────────────────────── */
@@ -8,9 +8,9 @@
 
 :root {
     /* Brand */
-    --cms-primary:       #0A1628;
+    --cms-primary:       #005A8C;
     --cms-primary-dark:  #003F63;
-    --cms-accent:        #C9A84C;
+    --cms-accent:        #FFCC00;
     --cms-accent-text:   #000000;
 
     /* Neutrals */
@@ -39,7 +39,7 @@
     --cms-shadow:        0 1px 4px rgba(0,0,0,.10);
     --cms-shadow-md:     0 2px 8px rgba(0,0,0,.12);
 
-    /* Typography (platform style guide) */
+    /* Typography (Caltrans style guide) */
     --cms-font:          Arial, Calibri, sans-serif;
     --cms-font-size:     20px;   /* 14pt body per style guide */
     --cms-font-size-sm:  17px;
@@ -473,8 +473,13 @@ html, body {
 /* ── Media Library ─────────────────────────────────────────── */
 .cms-media-grid {
     display:               grid;
-    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-    gap:                   .75rem;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap:                   1rem;
+}
+.cms-media-empty {
+    text-align:  center;
+    padding:     3rem 1rem;
+    color:       var(--cms-text-muted);
 }
 .cms-media-card {
     border:        1px solid var(--cms-border);
@@ -487,13 +492,35 @@ html, body {
 .cms-media-card:hover  { border-color: var(--cms-primary); box-shadow: var(--cms-shadow-md); }
 .cms-media-card.selected { border-color: var(--cms-primary); box-shadow: 0 0 0 3px rgba(0,90,140,.3); }
 
-.cms-media-thumb {
-    width:      100%;
-    aspect-ratio: 4/3;
-    object-fit: cover;
-    display:    block;
-    background: var(--cms-border-light);
+.cms-media-thumb-wrap {
+    position: relative;
+    overflow: hidden;
 }
+.cms-media-thumb {
+    width:        100%;
+    aspect-ratio: 4/3;
+    object-fit:   cover;
+    display:      block;
+    background:   var(--cms-border-light);
+    transition:   opacity .15s;
+}
+.cms-media-select-overlay {
+    position:    absolute;
+    inset:       0;
+    background:  rgba(0,90,140,.65);
+    color:       #fff;
+    font-weight: 700;
+    font-size:   .85rem;
+    display:     flex;
+    align-items: center;
+    justify-content: center;
+    opacity:     0;
+    transition:  opacity .15s;
+    pointer-events: none;
+}
+.cms-media-card:hover .cms-media-select-overlay,
+.cms-media-card:focus .cms-media-select-overlay { opacity: 1; }
+.cms-media-card:hover .cms-media-thumb           { opacity: .75; }
 .cms-media-info {
     padding:   .4rem .55rem;
     font-size: var(--cms-font-size-sm);
@@ -513,9 +540,15 @@ html, body {
     text-overflow: ellipsis;
     font-style:    italic;
 }
+.cms-media-meta {
+    font-size:  calc(var(--cms-font-size-sm) - 2px);
+    margin-top: .2rem;
+    opacity:    .75;
+}
 
 /* Upload dropzone */
 .cms-upload-zone {
+    display:       block;
     border:        2px dashed var(--cms-border);
     border-radius: var(--cms-radius-lg);
     padding:       2rem;
@@ -532,6 +565,17 @@ html, body {
 .cms-upload-zone input[type="file"] { display: none; }
 .cms-upload-zone-icon { font-size: 2rem; margin-bottom: .5rem; color: var(--cms-text-muted); }
 .cms-upload-zone p    { margin: 0; color: var(--cms-text-muted); }
+.cms-upload-zone.has-file {
+    border-color: var(--cms-success);
+    background:   var(--cms-success-bg);
+}
+.cms-upload-file-preview {
+    margin-top:  .75rem;
+    font-weight: 700;
+    font-size:   var(--cms-font-size-sm);
+    color:       var(--cms-success);
+    word-break:  break-all;
+}
 
 /* ── Global settings grid ─────────────────────────────────── */
 .cms-settings-grid {
@@ -778,5 +822,14 @@ html, body {
 
     .cms-header-brand span { display: none; }
     .cms-settings-grid     { grid-template-columns: 1fr; }
-    .cms-media-grid        { grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); }
+    .cms-media-grid        { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); }
 }
+
+/* CMS Media Preview */
+.cms-media-preview-container { margin-top: 0.5rem; }
+.cms-media-preview-container img { max-width: 200px; max-height: 120px; border-radius: 4px; border: 1px solid var(--cms-border); display: block; }
+
+
+.cms-badge-primary { background: var(--cms-primary); color: #fff; }
+.cms-badge-secondary { background: var(--cms-border-light); color: var(--cms-text); }
+

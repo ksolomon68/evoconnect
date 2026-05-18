@@ -1,142 +1,225 @@
-'use strict';
-
 const nodemailer = require('nodemailer');
+const cfg = require('../agency.config');
 
-// ── Transporter ──────────────────────────────────────────────────────────────
-const transporter = nodemailer.createTransport({
-    service: 'gmail',
-    auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASSWORD
+function createTransport() {
+    if (process.env.EMAIL_HOST) {
+        return nodemailer.createTransport({
+            host:   process.env.EMAIL_HOST,
+            port:   parseInt(process.env.EMAIL_PORT || '587', 10),
+            secure: process.env.EMAIL_SECURE === 'true',
+            auth: {
+                user: process.env.EMAIL_USER,
+                pass: process.env.EMAIL_PASS,
+            },
+        });
     }
-});
-
-/**
- * Send an email.
- * @param {{ to: string, subject: string, html: string, text: string }} opts
- */
-async function sendEmail({ to, subject, html, text }) {
-    const mailOptions = {
-        from: `"PrimeReach" <${process.env.EMAIL_USER}>`,
-        to,
-        subject,
-        html,
-        text
+    // Dev fallback: log to console
+    return {
+        sendMail: async (opts) => {
+            console.log('\n═══ EMAIL (dev mode) ═══');
+            console.log('To:', opts.to);
+            console.log('Subject:', opts.subject);
+            console.log('Text:', opts.text || '(html only)');
+            console.log('════════════════════════\n');
+            return { messageId: 'dev-' + Date.now() };
+        }
     };
-    const info = await transporter.sendMail(mailOptions);
-    console.log(`PrimeReach Email: Sent to ${to} — ${info.messageId}`);
-    return info;
 }
 
-// ── Shared email wrapper ─────────────────────────────────────────────────────
-function emailWrapper(bodyContent) {
+const BASE_URL = process.env.APP_URL || 'https://evoconnect.evobrand.net';
+
+function wrap(content) {
     return `<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <style>
+    body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#F8FAFC;margin:0;padding:0}
+    .container{max-width:600px;margin:40px auto;background:#fff;border-radius:8px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,.08)}
+    .header{background:#0F172A;padding:24px 32px;text-align:center}
+    .header h1{color:#06B6D4;margin:0;font-size:1.5rem}
+    .header p{color:#94A3B8;margin:4px 0 0;font-size:.85rem}
+    .body{padding:32px}
+    .body p{color:#334155;line-height:1.6;margin:0 0 16px}
+    .btn{display:inline-block;background:#06B6D4;color:#fff;text-decoration:none;padding:12px 24px;border-radius:6px;font-weight:600;margin:8px 0}
+    .footer{background:#F1F5F9;padding:16px 32px;text-align:center}
+    .footer p{color:#94A3B8;font-size:.8rem;margin:0}
+  </style>
 </head>
-<body style="margin:0;padding:0;background:#f4f6f8;font-family:Arial,Calibri,sans-serif;">
-  <table width="100%" cellpadding="0" cellspacing="0" style="background:#f4f6f8;padding:32px 0;">
-    <tr><td align="center">
-      <table width="600" cellpadding="0" cellspacing="0" style="background:#ffffff;border-radius:8px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,0.08);max-width:600px;width:100%;">
-        <!-- Header -->
-        <tr>
-          <td style="background:#003D5B;padding:28px 32px;">
-            <h1 style="margin:0;color:#FDB714;font-size:22px;font-weight:700;letter-spacing:-0.5px;">PrimeReach</h1>
-            <p style="margin:4px 0 0;color:rgba(255,255,255,0.75);font-size:13px;">Small Business Supportive Services</p>
-          </td>
-        </tr>
-        <!-- Body -->
-        <tr>
-          <td style="padding:32px;">
-            ${bodyContent}
-          </td>
-        </tr>
-        <!-- Footer -->
-        <tr>
-          <td style="background:#f4f6f8;padding:20px 32px;border-top:1px solid #e0e0e0;text-align:center;">
-            <p style="margin:0;color:#666;font-size:12px;">© 2026 California Department of Transportation. All rights reserved.</p>
-            <p style="margin:6px 0 0;color:#888;font-size:11px;">
-              <a href="https://primereachgov.com" style="color:#046B99;text-decoration:none;">primereachgov.com</a>
-            </p>
-          </td>
-        </tr>
-      </table>
-    </td></tr>
-  </table>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>EvoConnect</h1>
+      <p>Connect the Contract. Build the Future.</p>
+    </div>
+    <div class="body">${content}</div>
+    <div class="footer">
+      <p>© 2026 EvoConnect — a PrimeReach Brand by EVOBRAND Concepts<br>
+         <a href="${BASE_URL}" style="color:#06B6D4">${BASE_URL}</a> | 214-531-4427
+      </p>
+    </div>
+  </div>
 </body>
 </html>`;
 }
 
-function btn(href, label) {
-    return `<a href="${href}" style="display:inline-block;background:#FDB714;color:#003D5B;font-weight:700;font-size:15px;padding:12px 28px;border-radius:6px;text-decoration:none;margin:20px 0;">${label}</a>`;
+async function sendEmail({ to, subject, html, text }) {
+    const transporter = createTransport();
+    try {
+        const info = await transporter.sendMail({
+            from: `"EvoConnect" <${process.env.EMAIL_FROM || cfg.email}>`,
+            to,
+            subject,
+            html: html || wrap(`<p>${text}</p>`),
+            text: text || subject,
+        });
+        console.log(`EvoConnect Email sent: ${subject} → ${to}`);
+        return info;
+    } catch (err) {
+        console.error('EvoConnect Email error:', err.message);
+        throw err;
+    }
 }
 
-// ── Email Templates ──────────────────────────────────────────────────────────
-
-/**
- * Password reset email.
- * @param {string} resetLink
- * @param {string} userName
- */
-function getPasswordResetEmail(resetLink, userName) {
-    const html = emailWrapper(`
-        <h2 style="margin:0 0 8px;color:#003D5B;font-size:20px;">Reset Your Password</h2>
-        <p style="color:#444;line-height:1.6;">Hi ${userName},</p>
-        <p style="color:#444;line-height:1.6;">We received a request to reset the password for your PrimeReach account. Click the button below to choose a new password.</p>
-        ${btn(resetLink, 'Reset My Password')}
-        <p style="color:#666;font-size:13px;line-height:1.6;margin-top:8px;">This link will expire in <strong>1 hour</strong>. If you did not request a password reset, you can safely ignore this email — your account remains secure.</p>
-        <p style="color:#888;font-size:12px;margin-top:16px;">If the button above doesn't work, copy and paste this URL into your browser:<br>
-        <a href="${resetLink}" style="color:#046B99;word-break:break-all;">${resetLink}</a></p>
-    `);
-
-    const text = `Reset Your Password\n\nHi ${userName},\n\nWe received a request to reset your PrimeReach password.\n\nReset link (expires in 1 hour):\n${resetLink}\n\nIf you did not request this, please ignore this email.\n\n© 2026 California Department of Transportation`;
-
-    return { html, text };
+async function sendWorkerWelcome({ to, name }) {
+    return sendEmail({
+        to, subject: "Welcome to EvoConnect — here's what happens next",
+        html: wrap(`
+          <p>Hi ${name},</p>
+          <p>You're registered on <strong>EvoConnect</strong>. Here's your roadmap:</p>
+          <ol>
+            <li style="margin-bottom:8px"><strong>Check your NAICS matches</strong> — we matched your trade to federal contract codes.</li>
+            <li style="margin-bottom:8px"><strong>Complete the Vendor Readiness Checklist</strong> — start with the SAM.gov Federal track.</li>
+            <li style="margin-bottom:8px"><strong>Finish your profile to 100%</strong> — complete profiles appear first in searches.</li>
+            <li><strong>Review your Capability Statement</strong> — prime contractors ask for this first.</li>
+          </ol>
+          <p><a href="${BASE_URL}/labor/dashboard" class="btn">Go to My Dashboard</a></p>
+          <p style="font-size:.85rem;color:#64748B">Questions? Email <a href="mailto:${cfg.supportEmail}">${cfg.supportEmail}</a> or call 214-531-4427.</p>
+        `)
+    });
 }
 
-/**
- * Welcome email sent after registration.
- * @param {string} userName
- * @param {'small_business'|'agency'} userType
- */
-function getWelcomeEmail(userName, userType) {
-    const typeLabel = userType === 'agency' ? 'Agency' : 'Small Business';
-    const dashboardHref = `${process.env.APP_URL || 'https://primereachgov.com'}/login.html`;
-
-    const html = emailWrapper(`
-        <h2 style="margin:0 0 8px;color:#003D5B;font-size:20px;">Welcome to PrimeReach!</h2>
-        <p style="color:#444;line-height:1.6;">Hi ${userName},</p>
-        <p style="color:#444;line-height:1.6;">Your <strong>${typeLabel}</strong> account has been created. You can now access the platform to ${userType === 'agency' ? 'post opportunities and find qualified small businesses' : 'browse contracting opportunities, upload your capability statement, and connect with agencies'}.</p>
-        ${btn(dashboardHref, 'Go to Dashboard')}
-        <p style="color:#666;font-size:13px;line-height:1.6;">If you have questions, contact us at <a href="mailto:info@primereachgov.com" style="color:#046B99;">info@primereachgov.com</a> or call (916) 324-1700.</p>
-    `);
-
-    const text = `Welcome to PrimeReach!\n\nHi ${userName},\n\nYour ${typeLabel} account has been created successfully.\n\nLog in at: ${dashboardHref}\n\nQuestions? Email info@primereachgov.com or call (916) 324-1700.\n\n© 2026 California Department of Transportation`;
-
-    return { html, text };
+async function sendBusinessWelcome({ to, companyName }) {
+    return sendEmail({
+        to, subject: 'Your EvoConnect Business profile is live',
+        html: wrap(`
+          <p>Hi ${companyName},</p>
+          <p>Your business profile on <strong>EvoConnect</strong> is now live.</p>
+          <ul>
+            <li>Review your NAICS code matches</li>
+            <li>Generate your Capability Statement</li>
+            <li>Complete the Vendor Readiness Checklist</li>
+          </ul>
+          <p><a href="${BASE_URL}/business/dashboard" class="btn">Go to My Dashboard</a></p>
+        `)
+    });
 }
 
-/**
- * Contact form confirmation email sent to the user.
- * @param {string} userName
- * @param {string} message
- */
-function getContactConfirmationEmail(userName, message) {
-    const html = emailWrapper(`
-        <h2 style="margin:0 0 8px;color:#003D5B;font-size:20px;">We Received Your Message</h2>
-        <p style="color:#444;line-height:1.6;">Hi ${userName},</p>
-        <p style="color:#444;line-height:1.6;">Thank you for contacting PrimeReach. Our team will respond within <strong>1–2 business days</strong>.</p>
-        <div style="background:#f8f9fa;border-left:4px solid #FDB714;padding:16px;border-radius:0 6px 6px 0;margin:20px 0;">
-          <p style="margin:0;color:#555;font-size:13px;font-style:italic;">"${message}"</p>
-        </div>
-        <p style="color:#666;font-size:13px;">For urgent matters, call <strong>(916) 324-1700</strong> Monday–Friday, 8:00 AM–5:00 PM PST.</p>
-    `);
-
-    const text = `We Received Your Message\n\nHi ${userName},\n\nThank you for contacting PrimeReach. We'll respond within 1–2 business days.\n\nYour message:\n"${message}"\n\nFor urgent matters: (916) 324-1700, Mon–Fri 8AM–5PM PST.\n\n© 2026 California Department of Transportation`;
-
-    return { html, text };
+async function sendPrimeWelcomePending({ to, companyName }) {
+    return sendEmail({
+        to, subject: 'Welcome to EvoConnect Prime — your account is pending approval',
+        html: wrap(`
+          <p>Hi ${companyName},</p>
+          <p>Your <strong>EvoConnect Prime</strong> account is under review. Our team will verify your information within <strong>24 business hours</strong>.</p>
+          <p>Once approved, you'll receive a confirmation email with full directory access.</p>
+          <p>Questions? Contact <a href="mailto:${cfg.supportEmail}">${cfg.supportEmail}</a></p>
+        `)
+    });
 }
 
-module.exports = { sendEmail, getPasswordResetEmail, getWelcomeEmail, getContactConfirmationEmail };
+async function sendPrimeApproved({ to, companyName }) {
+    return sendEmail({
+        to, subject: 'Your EvoConnect Prime account is approved',
+        html: wrap(`
+          <p>Hi ${companyName},</p>
+          <p>Your <strong>EvoConnect Prime</strong> account has been approved.</p>
+          <p><a href="${BASE_URL}/prime/dashboard" class="btn">Access Prime Dashboard</a></p>
+        `)
+    });
+}
+
+async function sendPrimeDenied({ to, companyName, reason }) {
+    return sendEmail({
+        to, subject: 'EvoConnect Prime — account application update',
+        html: wrap(`
+          <p>Hi ${companyName},</p>
+          <p>After review, we are unable to approve your EvoConnect Prime account at this time.</p>
+          ${reason ? `<p><strong>Reason:</strong> ${reason}</p>` : ''}
+          <p>Contact <a href="mailto:${cfg.supportEmail}">${cfg.supportEmail}</a> with questions.</p>
+        `)
+    });
+}
+
+async function sendAdminNewPrime({ to, companyName }) {
+    return sendEmail({
+        to, subject: `New Prime Registration: ${companyName}`,
+        html: wrap(`
+          <p>A new prime contractor registered and requires approval: <strong>${companyName}</strong></p>
+          <p><a href="${BASE_URL}/admin/dashboard" class="btn">Review in Admin Dashboard</a></p>
+        `)
+    });
+}
+
+async function sendConnectionRequest({ to, recipientName, primeCompany, message, dashboardUrl }) {
+    return sendEmail({
+        to, subject: `New Connection Request from ${primeCompany}`,
+        html: wrap(`
+          <p>Hi ${recipientName},</p>
+          <p><strong>${primeCompany}</strong> sent you a connection request on EvoConnect.</p>
+          ${message ? `<blockquote style="border-left:3px solid #06B6D4;padding-left:12px;margin:16px 0;color:#334155">${message}</blockquote>` : ''}
+          <p><a href="${dashboardUrl || BASE_URL}" class="btn">View Request</a></p>
+        `)
+    });
+}
+
+async function sendConnectionAccepted({ to, recipientName }) {
+    return sendEmail({
+        to, subject: `${recipientName} accepted your connection request`,
+        html: wrap(`
+          <p><strong>${recipientName}</strong> accepted your connection request.</p>
+          <p><a href="${BASE_URL}/prime/dashboard" class="btn">Go to Prime Dashboard</a></p>
+        `)
+    });
+}
+
+async function sendChecklistMilestone({ to, name, track, pct }) {
+    const label = { federal: 'Federal (SAM.gov)', state: 'Texas State', subcontractor: 'Subcontractor Ready' }[track] || track;
+    return sendEmail({
+        to, subject: `You're ${pct}% complete on your ${label} checklist`,
+        html: wrap(`
+          <p>Hi ${name},</p>
+          <p>You hit <strong>${pct}% complete</strong> on your <strong>${label}</strong> vendor readiness track.</p>
+          ${pct === 100 ? '<p>Your track is <strong>complete</strong>. Prime contractors can now see your full vendor readiness status.</p>' :
+            '<p>Keep going — a complete checklist increases your visibility to prime contractors.</p>'}
+          <p><a href="${BASE_URL}/labor/dashboard" class="btn">Continue Checklist</a></p>
+        `)
+    });
+}
+
+async function sendPasswordReset({ to, resetUrl }) {
+    return sendEmail({
+        to, subject: 'Reset your EvoConnect password',
+        html: wrap(`
+          <p>You requested a password reset for your EvoConnect account.</p>
+          <p>Click below to set a new password. This link expires in <strong>1 hour</strong>.</p>
+          <p><a href="${resetUrl}" class="btn">Reset Password</a></p>
+          <p style="font-size:.85rem;color:#64748B">If you didn't request this, ignore this email.</p>
+          <p style="font-size:.85rem;color:#64748B">Link: ${resetUrl}</p>
+        `)
+    });
+}
+
+module.exports = {
+    sendEmail,
+    sendWorkerWelcome,
+    sendBusinessWelcome,
+    sendPrimeWelcomePending,
+    sendPrimeApproved,
+    sendPrimeDenied,
+    sendAdminNewPrime,
+    sendConnectionRequest,
+    sendConnectionAccepted,
+    sendChecklistMilestone,
+    sendPasswordReset,
+};

@@ -1,0 +1,96 @@
+<% const title = locals.title || 'User Management | EvoConnect Admin' %>
+
+<section class="admin-section">
+  <div class="container">
+
+    <%- include('../partials/flash') %>
+
+    <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem;margin-bottom:2rem">
+      <div>
+        <h1 style="margin:0;color:#0F172A">User Management</h1>
+        <p style="color:#64748B;margin:.25rem 0 0">
+          <%= locals.total || 0 %> total users
+          <% if (locals.search) { %> matching "<strong><%= search %></strong>"<% } %>
+        </p>
+      </div>
+      <div style="display:flex;gap:.75rem">
+        <a href="/admin/dashboard" class="btn btn-ghost">← Dashboard</a>
+        <a href="/admin/export/csv" class="btn btn-secondary">Export CSV</a>
+      </div>
+    </div>
+
+    <!-- Filters -->
+    <form method="GET" action="/admin/users" style="display:flex;gap:.75rem;flex-wrap:wrap;margin-bottom:1.5rem">
+      <input type="text" name="search" value="<%= locals.search || '' %>" placeholder="Search name or email…" class="form-control" style="flex:1;min-width:200px">
+      <select name="type" class="form-control" style="width:auto">
+        <option value="all" <%= locals.typeFilter === 'all' ? 'selected' : '' %>>All Types</option>
+        <option value="worker"   <%= locals.typeFilter === 'worker'   ? 'selected' : '' %>>Workers</option>
+        <option value="business" <%= locals.typeFilter === 'business' ? 'selected' : '' %>>Businesses</option>
+        <option value="prime"    <%= locals.typeFilter === 'prime'    ? 'selected' : '' %>>Prime Contractors</option>
+      </select>
+      <button type="submit" class="btn btn-primary">Search</button>
+      <% if (locals.search || (locals.typeFilter && typeFilter !== 'all')) { %>
+        <a href="/admin/users" class="btn btn-ghost">Clear</a>
+      <% } %>
+    </form>
+
+    <div class="card">
+      <% if (locals.users && users.length > 0) { %>
+        <div style="overflow-x:auto">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Name / Company</th>
+                <th>Email</th>
+                <th>Type</th>
+                <th>Location</th>
+                <th>Status</th>
+                <th>Registered</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% users.forEach(function(u) { %>
+              <tr>
+                <td><strong><%= u.name || '—' %></strong></td>
+                <td><a href="mailto:<%= u.email %>" style="color:#06B6D4"><%= u.email %></a></td>
+                <td>
+                  <% const typeColor = u.type === 'worker' ? '#E0F2FE;color:#0369A1' : (u.type === 'prime' ? '#FEF3C7;color:#92400E' : '#F0FDF4;color:#166534') %>
+                  <span style="background:<%= typeColor %>;padding:.2rem .6rem;border-radius:4px;font-size:.8rem;font-weight:600;text-transform:capitalize"><%= u.type %></span>
+                </td>
+                <td style="color:#64748B;font-size:.9rem"><%= [u.city, u.state].filter(Boolean).join(', ') || '—' %></td>
+                <td>
+                  <% const s = String(u.status); const sLabel = s === '1' ? 'approved' : s === '0' ? 'pending' : s === '-1' ? 'denied' : s %>
+                  <% const sColor = sLabel === 'active' || sLabel === 'approved' ? '#F0FDF4;color:#166534' : sLabel === 'pending' ? '#FEF3C7;color:#92400E' : '#FEF2F2;color:#991B1B' %>
+                  <span style="background:<%= sColor %>;padding:.2rem .6rem;border-radius:4px;font-size:.8rem;text-transform:capitalize"><%= sLabel %></span>
+                </td>
+                <td style="font-size:.85rem;color:#64748B"><%= new Date(u.created_at).toLocaleDateString() %></td>
+              </tr>
+              <% }) %>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Pagination -->
+        <% if (locals.totalPages > 1) { %>
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:1rem 1.5rem;border-top:1px solid #E2E8F0">
+          <span style="color:#64748B;font-size:.9rem">Page <%= locals.page %> of <%= locals.totalPages %></span>
+          <div style="display:flex;gap:.5rem">
+            <% if (locals.page > 1) { %>
+              <a href="/admin/users?page=<%= page - 1 %>&search=<%= encodeURIComponent(search || '') %>&type=<%= typeFilter %>" class="btn btn-ghost" style="padding:.4rem .8rem">← Prev</a>
+            <% } %>
+            <% if (locals.page < locals.totalPages) { %>
+              <a href="/admin/users?page=<%= page + 1 %>&search=<%= encodeURIComponent(search || '') %>&type=<%= typeFilter %>" class="btn btn-ghost" style="padding:.4rem .8rem">Next →</a>
+            <% } %>
+          </div>
+        </div>
+        <% } %>
+      <% } else { %>
+        <div style="padding:3rem;text-align:center;color:#64748B">
+          <p style="font-size:1.1rem">No users found<% if (locals.search) { %> matching "<%= search %>"<% } %>.</p>
+          <% if (locals.search) { %><a href="/admin/users" style="color:#06B6D4">Clear search</a><% } %>
+        </div>
+      <% } %>
+    </div>
+
+  </div>
+</section>

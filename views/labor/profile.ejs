@@ -1,0 +1,324 @@
+<% const title = locals.title || 'Edit My Profile' %>
+<% const pct = locals.worker?.profile_pct || 0 %>
+<% const pctColor = pct >= 100 ? '#10B981' : pct >= 50 ? '#00D2FF' : '#F59E0B' %>
+<% const workerCerts = Array.isArray(locals.worker?.certifications) ? locals.worker.certifications : (locals.worker?.certifications ? JSON.parse(locals.worker.certifications) : []) %>
+<% const workerSkills = Array.isArray(locals.worker?.skills) ? locals.worker.skills : (locals.worker?.skills ? JSON.parse(locals.worker.skills) : []) %>
+
+<section class="profile-section">
+  <div class="container">
+    <div class="profile-header" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem;margin-bottom:1.5rem">
+      <div>
+        <h1>Edit My Profile</h1>
+        <p class="section-sub">Each section saves independently — no need to save everything at once.</p>
+      </div>
+      <a href="/labor/dashboard" class="btn-sm btn-secondary">&larr; Dashboard</a>
+    </div>
+
+    <%- include('../partials/flash') %>
+
+    <!-- Progress Bar -->
+    <div class="profile-progress-header">
+      <span class="profile-pct-text" id="profile-pct-text" style="color: <%= pctColor %>"><%= pct %>%</span>
+      <div class="profile-pct-track">
+        <div class="profile-pct-track-bar">
+          <div class="profile-pct-fill" id="profile-pct-fill" style="width:<%= pct %>%;background:<%= pctColor %>"></div>
+        </div>
+        <div class="profile-pct-label" id="profile-pct-label">
+          <% if (pct >= 100) { %>Profile complete — you're visible to prime contractors<% } else { %>Complete all sections to maximize visibility<% } %>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 1: Basic Info -->
+    <form class="form-card section-form-card" data-section="basic" data-post="/labor/profile/section">
+      <div class="form-card-header" style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.25rem">
+        <h2 class="form-card-title" style="margin:0">1. Basic Info</h2>
+        <span class="section-save-status" id="status-basic">✓ Saved</span>
+      </div>
+
+      <div class="form-group">
+        <label for="full_name" class="form-label">Full Name <span class="required">*</span></label>
+        <input type="text" id="full_name" name="full_name" class="form-control"
+          value="<%= locals.worker?.full_name || '' %>" required autocomplete="name">
+      </div>
+      <div class="form-group">
+        <label for="phone" class="form-label">Phone Number</label>
+        <input type="tel" id="phone" name="phone" class="form-control"
+          value="<%= locals.worker?.phone || '' %>" autocomplete="tel">
+      </div>
+      <div class="form-card-actions">
+        <button type="submit" class="btn-sm btn-primary">Save</button>
+      </div>
+    </form>
+
+    <!-- Section 2: Trade & Skills -->
+    <form class="form-card section-form-card" data-section="trade" data-post="/labor/profile/section">
+      <div class="form-card-header" style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.25rem">
+        <h2 class="form-card-title" style="margin:0">2. Trade &amp; Skills</h2>
+        <span class="section-save-status" id="status-trade">✓ Saved</span>
+      </div>
+
+      <div class="form-group">
+        <label for="trade_category" class="form-label">Trade Category <span class="required">*</span></label>
+        <select id="trade_category" name="trade_category" class="form-control" required>
+          <option value="">-- Select your primary trade --</option>
+          <option value="telecom_fiber"       <%= locals.worker?.trade_category === 'telecom_fiber'       ? 'selected' : '' %>>Telecommunications &amp; Fiber</option>
+          <option value="electrical"          <%= locals.worker?.trade_category === 'electrical'          ? 'selected' : '' %>>Electrical</option>
+          <option value="civil_construction"  <%= locals.worker?.trade_category === 'civil_construction'  ? 'selected' : '' %>>Civil Construction</option>
+          <option value="it_network"          <%= locals.worker?.trade_category === 'it_network'          ? 'selected' : '' %>>IT / Network Infrastructure</option>
+          <option value="underground_utilities" <%= locals.worker?.trade_category === 'underground_utilities' ? 'selected' : '' %>>Underground Utilities</option>
+          <option value="plumbing"            <%= locals.worker?.trade_category === 'plumbing'            ? 'selected' : '' %>>Plumbing</option>
+          <option value="hvac_mechanical"     <%= locals.worker?.trade_category === 'hvac_mechanical'     ? 'selected' : '' %>>HVAC / Mechanical</option>
+          <option value="concrete_masonry"    <%= locals.worker?.trade_category === 'concrete_masonry'    ? 'selected' : '' %>>Concrete / Masonry</option>
+          <option value="carpentry_framing"   <%= locals.worker?.trade_category === 'carpentry_framing'   ? 'selected' : '' %>>Carpentry / Framing</option>
+          <option value="roofing"             <%= locals.worker?.trade_category === 'roofing'             ? 'selected' : '' %>>Roofing</option>
+          <option value="painting_finishing"  <%= locals.worker?.trade_category === 'painting_finishing'  ? 'selected' : '' %>>Painting / Finishing</option>
+          <option value="equipment_operation" <%= locals.worker?.trade_category === 'equipment_operation' ? 'selected' : '' %>>Equipment Operation</option>
+          <option value="general_labor"       <%= locals.worker?.trade_category === 'general_labor'       ? 'selected' : '' %>>General Laborer</option>
+          <option value="other"               <%= locals.worker?.trade_category === 'other'               ? 'selected' : '' %>>Other</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="years_experience" class="form-label">Years of Experience</label>
+        <input type="number" id="years_experience" name="years_experience" class="form-control form-control-sm"
+          value="<%= locals.worker?.years_experience || 0 %>" min="0" max="50">
+      </div>
+
+      <div class="form-group">
+        <label for="skills-input" class="form-label">Specific Skills</label>
+        <div class="tag-input-container" id="skills-tag-container">
+          <div class="tag-list" id="skills-tag-list"></div>
+          <input type="text" id="skills-input" class="tag-input" placeholder="Type a skill and press Enter" autocomplete="off" aria-label="Add a skill">
+        </div>
+        <input type="hidden" name="skills_json" id="skills_json" value="<%= JSON.stringify(workerSkills) %>">
+      </div>
+
+      <div class="form-card-actions">
+        <button type="submit" class="btn-sm btn-primary">Save</button>
+      </div>
+    </form>
+
+    <!-- Section 3: Certifications -->
+    <form class="form-card section-form-card" data-section="certifications" data-post="/labor/profile/section">
+      <div class="form-card-header" style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.25rem">
+        <h2 class="form-card-title" style="margin:0">3. Certifications</h2>
+        <span class="section-save-status" id="status-certifications">✓ Saved</span>
+      </div>
+
+      <div class="form-group">
+        <fieldset>
+          <legend class="form-label">Active Certifications (check all that apply)</legend>
+          <div class="checkbox-grid">
+            <label class="checkbox-item"><input type="checkbox" name="certifications" value="osha_10"      <%= workerCerts.includes('osha_10')      ? 'checked' : '' %>><span>OSHA 10</span></label>
+            <label class="checkbox-item"><input type="checkbox" name="certifications" value="osha_30"      <%= workerCerts.includes('osha_30')      ? 'checked' : '' %>><span>OSHA 30</span></label>
+            <label class="checkbox-item"><input type="checkbox" name="certifications" value="journeyman"   <%= workerCerts.includes('journeyman')   ? 'checked' : '' %>><span>Journeyman License</span></label>
+            <label class="checkbox-item"><input type="checkbox" name="certifications" value="master_license" <%= workerCerts.includes('master_license') ? 'checked' : '' %>><span>Master License</span></label>
+            <label class="checkbox-item"><input type="checkbox" name="certifications" value="cdl"          <%= workerCerts.includes('cdl')          ? 'checked' : '' %>><span>CDL (Commercial Driver)</span></label>
+            <label class="checkbox-item"><input type="checkbox" name="certifications" value="first_aid_cpr" <%= workerCerts.includes('first_aid_cpr') ? 'checked' : '' %>><span>First Aid / CPR</span></label>
+            <label class="checkbox-item"><input type="checkbox" name="certifications" value="aerial_lift"  <%= workerCerts.includes('aerial_lift')  ? 'checked' : '' %>><span>Aerial Lift Certified</span></label>
+            <label class="checkbox-item"><input type="checkbox" name="certifications" value="forklift"     <%= workerCerts.includes('forklift')     ? 'checked' : '' %>><span>Forklift Certified</span></label>
+            <label class="checkbox-item"><input type="checkbox" name="certifications" value="confined_space" <%= workerCerts.includes('confined_space') ? 'checked' : '' %>><span>Confined Space Entry</span></label>
+            <label class="checkbox-item"><input type="checkbox" name="certifications" value="fiber_optic"  <%= workerCerts.includes('fiber_optic')  ? 'checked' : '' %>><span>Fiber Optic Certification (FOA)</span></label>
+          </div>
+        </fieldset>
+      </div>
+
+      <div class="form-card-actions">
+        <button type="submit" class="btn-sm btn-primary">Save</button>
+      </div>
+    </form>
+
+    <!-- Section 4: Vendor Status -->
+    <form class="form-card section-form-card" data-section="vendor" data-post="/labor/profile/section">
+      <div class="form-card-header" style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.25rem">
+        <h2 class="form-card-title" style="margin:0">4. Vendor Status</h2>
+        <span class="section-save-status" id="status-vendor">✓ Saved</span>
+      </div>
+
+      <div class="form-group">
+        <fieldset>
+          <legend class="form-label">SAM.gov Registered?</legend>
+          <div class="radio-group">
+            <label class="radio-item"><input type="radio" name="sam_registered" value="yes"       <%= locals.worker?.sam_registered === 'yes'       ? 'checked' : '' %>><span>Yes — I'm registered</span></label>
+            <label class="radio-item"><input type="radio" name="sam_registered" value="no"        <%= locals.worker?.sam_registered === 'no'        ? 'checked' : '' %>><span>No — not yet</span></label>
+            <label class="radio-item"><input type="radio" name="sam_registered" value="need_help" <%= locals.worker?.sam_registered === 'need_help' ? 'checked' : '' %>><span>I need help registering</span></label>
+          </div>
+        </fieldset>
+      </div>
+
+      <div class="form-group">
+        <label for="business_entity" class="form-label">Business Entity Type</label>
+        <select id="business_entity" name="business_entity" class="form-control">
+          <option value="">-- Select entity type --</option>
+          <option value="sole_proprietor" <%= locals.worker?.business_entity === 'sole_proprietor' ? 'selected' : '' %>>Sole Proprietor</option>
+          <option value="llc"             <%= locals.worker?.business_entity === 'llc'             ? 'selected' : '' %>>LLC</option>
+          <option value="s_corp"          <%= locals.worker?.business_entity === 's_corp'          ? 'selected' : '' %>>S-Corp</option>
+          <option value="c_corp"          <%= locals.worker?.business_entity === 'c_corp'          ? 'selected' : '' %>>C-Corp</option>
+          <option value="partnership"     <%= locals.worker?.business_entity === 'partnership'     ? 'selected' : '' %>>Partnership</option>
+        </select>
+      </div>
+
+      <div class="form-card-actions">
+        <button type="submit" class="btn-sm btn-primary">Save</button>
+      </div>
+    </form>
+
+    <!-- Section 5: Availability -->
+    <form class="form-card section-form-card" data-section="availability" data-post="/labor/profile/section">
+      <div class="form-card-header" style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.25rem">
+        <h2 class="form-card-title" style="margin:0">5. Location &amp; Availability</h2>
+        <span class="section-save-status" id="status-availability">✓ Saved</span>
+      </div>
+
+      <div class="form-group">
+        <fieldset>
+          <legend class="form-label">Willing to Travel?</legend>
+          <div class="radio-group">
+            <label class="radio-item"><input type="radio" name="travel_willingness" value="local_only"  <%= locals.worker?.travel_willingness === 'local_only'  ? 'checked' : '' %>><span>Local only (within 50 miles)</span></label>
+            <label class="radio-item"><input type="radio" name="travel_willingness" value="regional"    <%= locals.worker?.travel_willingness === 'regional'    ? 'checked' : '' %>><span>Regional (within my state)</span></label>
+            <label class="radio-item"><input type="radio" name="travel_willingness" value="national"    <%= locals.worker?.travel_willingness === 'national'    ? 'checked' : '' %>><span>National</span></label>
+            <label class="radio-item"><input type="radio" name="travel_willingness" value="per_project" <%= locals.worker?.travel_willingness === 'per_project' ? 'checked' : '' %>><span>Depends on project</span></label>
+          </div>
+        </fieldset>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group form-col-2">
+          <label for="city" class="form-label">City</label>
+          <input type="text" id="city" name="city" class="form-control" value="<%= locals.worker?.city || '' %>" autocomplete="address-level2">
+        </div>
+        <div class="form-group form-col-1">
+          <label for="state" class="form-label">State</label>
+          <input type="text" id="state" name="state" class="form-control" value="<%= locals.worker?.state || '' %>" maxlength="2" placeholder="TX" autocomplete="address-level1">
+        </div>
+        <div class="form-group form-col-1">
+          <label for="zip" class="form-label">ZIP</label>
+          <input type="text" id="zip" name="zip" class="form-control" value="<%= locals.worker?.zip || '' %>" maxlength="10" autocomplete="postal-code">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="experience_summary" class="form-label">Experience Summary</label>
+        <textarea id="experience_summary" name="experience_summary" class="form-control" rows="3"
+          placeholder="Brief summary of your work history and specialties..."><%= locals.worker?.experience_summary || '' %></textarea>
+      </div>
+
+      <div class="form-card-actions">
+        <button type="submit" class="btn-sm btn-primary">Save</button>
+      </div>
+    </form>
+
+    <!-- Section 6: Resume & Documents -->
+    <form class="form-card section-form-card" data-section="resume" data-post="/labor/profile/section" enctype="multipart/form-data">
+      <div class="form-card-header" style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.25rem">
+        <h2 class="form-card-title" style="margin:0">6. Resume &amp; Documents</h2>
+        <span class="section-save-status" id="status-resume">✓ Saved</span>
+      </div>
+
+      <% if (locals.worker?.resume_path) { %>
+      <div style="padding:.75rem 1rem;background:rgba(16,185,129,.1);border:1px solid rgba(16,185,129,.25);border-radius:8px;margin-bottom:1rem;font-size:.9rem">
+        ✓ Resume on file: <code style="color:#6ee7b7"><%= locals.worker.resume_path.split('/').pop() %></code>
+      </div>
+      <% } %>
+
+      <div class="form-group">
+        <label for="resume" class="form-label"><%= locals.worker?.resume_path ? 'Replace Resume' : 'Upload Resume' %></label>
+        <input type="file" id="resume" name="resume" class="form-control" accept=".pdf,.doc,.docx" aria-describedby="resume-hint">
+        <span id="resume-hint" class="field-hint">PDF, DOC, or DOCX only. Max 5MB. <%= locals.worker?.resume_path ? 'Leave blank to keep existing file.' : '' %></span>
+      </div>
+
+      <div class="form-card-actions">
+        <button type="submit" class="btn-sm btn-primary">Upload</button>
+      </div>
+    </form>
+
+  </div>
+</section>
+
+<script>
+// Skills tag input
+(function() {
+  const tagList = document.getElementById('skills-tag-list');
+  const input   = document.getElementById('skills-input');
+  const hidden  = document.getElementById('skills_json');
+  if (!tagList) return;
+  let skills = [];
+  try { skills = JSON.parse(hidden.value) || []; } catch(e) { skills = []; }
+  function renderTags() {
+    tagList.innerHTML = '';
+    skills.forEach(function(skill, i) {
+      const tag = document.createElement('span');
+      tag.className = 'tag';
+      tag.innerHTML = skill + ' <button type="button" aria-label="Remove ' + skill + '">&times;</button>';
+      tag.querySelector('button').addEventListener('click', function() {
+        skills.splice(i, 1);
+        hidden.value = JSON.stringify(skills);
+        renderTags();
+      });
+      tagList.appendChild(tag);
+    });
+    hidden.value = JSON.stringify(skills);
+  }
+  renderTags();
+  input.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter' || e.key === ',') {
+      e.preventDefault();
+      const val = input.value.trim().replace(/,$/, '');
+      if (val && !skills.includes(val)) { skills.push(val); renderTags(); }
+      input.value = '';
+    }
+  });
+})();
+
+// Section AJAX saves
+document.querySelectorAll('.section-form-card').forEach(function(form) {
+  form.addEventListener('submit', async function(e) {
+    e.preventDefault();
+
+    const section = form.dataset.section;
+    const url     = form.dataset.post;
+    const btn     = form.querySelector('button[type="submit"]');
+    const status  = document.getElementById('status-' + section);
+
+    btn.disabled    = true;
+    btn.textContent = 'Saving…';
+    if (status) status.classList.remove('visible');
+
+    const formData = new FormData(form);
+    formData.append('section', section);
+
+    try {
+      const res = await fetch(url, {
+        method: 'POST',
+        headers: { 'Accept': 'application/json' },
+        body: formData
+      });
+      const data = await res.json();
+
+      if (data.success) {
+        updateProgressBar(data.pct);
+        if (status) { status.classList.add('visible'); setTimeout(() => status.classList.remove('visible'), 3000); }
+      } else {
+        alert('Save failed: ' + (data.error || 'Unknown error'));
+      }
+    } catch (err) {
+      console.error('Section save error:', err);
+      alert('Network error — please try again.');
+    }
+
+    btn.disabled    = false;
+    btn.textContent = section === 'resume' ? 'Upload' : 'Save';
+  });
+});
+
+function updateProgressBar(pct) {
+  const color = pct >= 100 ? '#10B981' : pct >= 50 ? '#00D2FF' : '#F59E0B';
+  const fill  = document.getElementById('profile-pct-fill');
+  const text  = document.getElementById('profile-pct-text');
+  const label = document.getElementById('profile-pct-label');
+  if (fill)  { fill.style.width = pct + '%'; fill.style.background = color; }
+  if (text)  { text.textContent = pct + '%'; text.style.color = color; }
+  if (label) { label.textContent = pct >= 100 ? 'Profile complete — you\'re visible to prime contractors' : 'Complete all sections to maximize visibility'; }
+}
+</script>

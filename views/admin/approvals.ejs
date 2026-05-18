@@ -1,0 +1,160 @@
+<% const title = locals.title || 'Prime Approvals' %>
+
+<section class="admin-section">
+  <div class="container">
+
+    <%- include('../partials/flash') %>
+
+    <div class="admin-header" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem;margin-bottom:2rem">
+      <div>
+        <h1 style="margin:0;color:#0F172A">Prime Contractor Approvals</h1>
+        <p style="color:#64748B;margin:.25rem 0 0">Review and approve or deny prime contractor applications</p>
+      </div>
+      <div style="display:flex;gap:.75rem;flex-wrap:wrap">
+        <a href="/admin/dashboard" class="btn btn-secondary">&larr; Dashboard</a>
+        <a href="/admin/users" class="btn btn-secondary">All Users</a>
+      </div>
+    </div>
+
+    <!-- Stats -->
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:1rem;margin-bottom:2rem">
+      <div class="stat-card" style="border-left:4px solid #F59E0B">
+        <div class="stat-number" style="color:#D97706"><%= (locals.pendingList || []).length %></div>
+        <div class="stat-label">Pending Review</div>
+      </div>
+      <div class="stat-card" style="border-left:4px solid #EF4444">
+        <div class="stat-number" style="color:#DC2626"><%= (locals.deniedList || []).length %></div>
+        <div class="stat-label">Recently Denied</div>
+      </div>
+    </div>
+
+    <!-- Pending Applications -->
+    <div class="card" style="margin-bottom:2rem">
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:1.25rem 1.5rem;border-bottom:1px solid #E2E8F0">
+        <h2 style="margin:0;font-size:1.1rem;color:#0F172A">Pending Applications</h2>
+        <% if ((locals.pendingList || []).length > 0) { %>
+          <span style="background:#FEF3C7;color:#92400E;padding:.25rem .75rem;border-radius:999px;font-size:.8rem;font-weight:600"><%= pendingList.length %> pending</span>
+        <% } %>
+      </div>
+      <% if ((locals.pendingList || []).length > 0) { %>
+        <div style="overflow-x:auto">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Company</th>
+                <th>Contact</th>
+                <th>Email</th>
+                <th>Location</th>
+                <th>SAM UEI</th>
+                <th>Plan</th>
+                <th>Applied</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% pendingList.forEach(function(prime) { %>
+              <tr>
+                <td><strong><%= prime.company_name || '—' %></strong></td>
+                <td><%= prime.contact_name || '—' %></td>
+                <td><a href="mailto:<%= prime.email %>" style="color:#06B6D4"><%= prime.email %></a></td>
+                <td><%= [prime.city, prime.state].filter(Boolean).join(', ') || '—' %></td>
+                <td style="font-family:monospace;font-size:.85rem"><%= prime.sam_uei || '—' %></td>
+                <td><span style="background:#E0F2FE;color:#0369A1;padding:.2rem .6rem;border-radius:4px;font-size:.8rem;text-transform:capitalize"><%= prime.subscription_tier || 'basic' %></span></td>
+                <td><%= new Date(prime.created_at).toLocaleDateString() %></td>
+                <td style="white-space:nowrap">
+                  <form method="POST" action="/admin/approve/<%= prime.id %>" style="display:inline">
+                    <button type="submit" class="btn btn-primary" style="padding:.3rem .8rem;font-size:.8rem">Approve</button>
+                  </form>
+                  <button type="button" class="btn btn-danger" style="padding:.3rem .8rem;font-size:.8rem;margin-left:.5rem"
+                    onclick="openDenyModal(<%= prime.id %>, '<%= (prime.company_name || '').replace(/'/g, '') %>')">Deny</button>
+                </td>
+              </tr>
+              <% }) %>
+            </tbody>
+          </table>
+        </div>
+      <% } else { %>
+        <div style="padding:2.5rem;text-align:center;color:#64748B">
+          <div style="font-size:2.5rem;margin-bottom:.75rem">&#10003;</div>
+          <p style="font-size:1.05rem;font-weight:600;margin:0">All caught up — no pending applications.</p>
+        </div>
+      <% } %>
+    </div>
+
+    <!-- Recently Denied -->
+    <% if ((locals.deniedList || []).length > 0) { %>
+    <div class="card">
+      <div style="padding:1.25rem 1.5rem;border-bottom:1px solid #E2E8F0">
+        <h2 style="margin:0;font-size:1.1rem;color:#0F172A">Recently Denied (last 20)</h2>
+      </div>
+      <div style="overflow-x:auto">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Company</th>
+              <th>Contact</th>
+              <th>Email</th>
+              <th>SAM UEI</th>
+              <th>Plan</th>
+              <th>Date</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% deniedList.forEach(function(prime) { %>
+            <tr style="opacity:.75">
+              <td><strong><%= prime.company_name || '—' %></strong></td>
+              <td><%= prime.contact_name || '—' %></td>
+              <td><a href="mailto:<%= prime.email %>" style="color:#06B6D4"><%= prime.email %></a></td>
+              <td style="font-family:monospace;font-size:.85rem"><%= prime.sam_uei || '—' %></td>
+              <td style="text-transform:capitalize"><%= prime.subscription_tier || 'basic' %></td>
+              <td><%= new Date(prime.created_at).toLocaleDateString() %></td>
+              <td>
+                <form method="POST" action="/admin/approve/<%= prime.id %>" style="display:inline">
+                  <button type="submit" class="btn btn-secondary" style="padding:.3rem .8rem;font-size:.8rem">Re-approve</button>
+                </form>
+              </td>
+            </tr>
+            <% }) %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <% } %>
+
+  </div>
+</section>
+
+<!-- Deny Modal -->
+<div id="deny-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:9999;align-items:center;justify-content:center">
+  <div style="background:#fff;border-radius:12px;padding:2rem;max-width:480px;width:100%;margin:1rem;box-shadow:0 20px 60px rgba(0,0,0,.3)">
+    <h3 style="margin:0 0 .5rem;color:#0F172A">Deny Application</h3>
+    <p id="deny-company-name" style="color:#64748B;margin:0 0 1.25rem;font-size:.95rem"></p>
+    <form id="deny-form" method="POST" action="">
+      <div style="margin-bottom:1.25rem">
+        <label style="display:block;font-weight:600;margin-bottom:.5rem;color:#374151">Reason (optional — will be emailed to applicant)</label>
+        <textarea name="reason" rows="3" style="width:100%;border:1px solid #D1D5DB;border-radius:8px;padding:.75rem;font-size:.95rem;resize:vertical"
+          placeholder="e.g. SAM.gov UEI could not be verified"></textarea>
+      </div>
+      <div style="display:flex;gap:1rem;justify-content:flex-end">
+        <button type="button" onclick="closeDenyModal()" style="background:none;border:1px solid #D1D5DB;border-radius:8px;padding:.6rem 1.25rem;cursor:pointer;font-size:.9rem">Cancel</button>
+        <button type="submit" style="background:#DC2626;color:#fff;border:none;border-radius:8px;padding:.6rem 1.25rem;cursor:pointer;font-weight:600;font-size:.9rem">Deny &amp; Notify</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+function openDenyModal(id, company) {
+  document.getElementById('deny-company-name').textContent = company;
+  document.getElementById('deny-form').action = '/admin/deny/' + id;
+  var modal = document.getElementById('deny-modal');
+  modal.style.display = 'flex';
+}
+function closeDenyModal() {
+  document.getElementById('deny-modal').style.display = 'none';
+}
+document.getElementById('deny-modal').addEventListener('click', function(e) {
+  if (e.target === this) closeDenyModal();
+});
+</script>

@@ -1,5 +1,5 @@
 /**
- * CMS Renderer — PrimeReach
+ * CMS Renderer — WorkForce Connect
  *
  * Fetches page content and global settings from /api/cms and hydrates
  * data-cms-field attributes in the DOM. Must be included after all other
@@ -36,21 +36,45 @@
     // ── Main entry ──────────────────────────────────────────────────────────
     document.addEventListener('DOMContentLoaded', async function () {
         const slug = document.body.getAttribute('data-cms-page');
-        if (!slug) return; // Page not opted into CMS
 
         try {
-            const [pageData, globalData] = await Promise.all([
-                fetchJson(`${API}/cms/pages/${slug}`),
-                fetchJson(`${API}/cms/global`)
-            ]);
-
-            if (pageData)   hydratePage(pageData, globalData);
+            // Global data always fetched — applies to every page (email, announcement, etc.)
+            const globalData = await fetchJson(`${API}/cms/global`);
             if (globalData) hydrateGlobal(globalData);
+
+            // Page-specific hydration only when page is opted into CMS
+            if (slug) {
+                const urlParams  = new URLSearchParams(window.location.search);
+                const isPreview  = urlParams.get('preview') === 'true';
+                let pageData;
+
+                if (isPreview) {
+                    const previewData = localStorage.getItem('cms_preview_' + slug);
+                    if (previewData) {
+                        pageData = JSON.parse(previewData);
+                        showPreviewBanner();
+                    } else {
+                        pageData = await fetchJson(`${API}/cms/pages/${slug}`);
+                    }
+                } else {
+                    pageData = await fetchJson(`${API}/cms/pages/${slug}`);
+                }
+
+                if (pageData) hydratePage(pageData, globalData);
+                if (pageData) hydrateListSections(pageData);
+            }
 
         } catch (err) {
             console.warn('[CMS Renderer] Failed to load CMS content:', err.message);
         }
     });
+
+    function showPreviewBanner() {
+        const banner = document.createElement('div');
+        banner.style.cssText = 'position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:#003D5B;color:#fff;padding:10px 20px;border-radius:30px;box-shadow:0 4px 12px rgba(0,0,0,0.2);z-index:99999;font-size:14px;font-weight:600;display:flex;align-items:center;gap:10px;';
+        banner.innerHTML = '<span>👁️ CMS Preview Mode (Unsaved Changes)</span> <button style="background:rgba(255,255,255,0.2);border:none;color:#fff;border-radius:4px;padding:4px 8px;cursor:pointer;font-size:12px;" onclick="this.parentElement.remove()">Dismiss</button>';
+        document.body.appendChild(banner);
+    }
 
     // ── Page hydration ───────────────────────────────────────────────────────
     /**
@@ -164,9 +188,9 @@
             }
         }
 
-        // Contact email
+        // Contact email — targets all elements marked data-cms-contact-email
         if (globalData.site && globalData.site.contactEmail) {
-            document.querySelectorAll('a[href^="mailto:SBEss"]').forEach(el => {
+            document.querySelectorAll('[data-cms-contact-email]').forEach(el => {
                 el.href        = `mailto:${globalData.site.contactEmail}`;
                 if (el.textContent.includes('@')) el.textContent = globalData.site.contactEmail;
             });
@@ -292,6 +316,138 @@
                 navLink.className = 'btn btn-secondary btn-small';
             }
         });
+    }
+
+    // ── Dynamic list-section rendering ───────────────────────────────────────
+    /**
+     * Find every [data-cms-list] container on the page and replace its
+     * children with items from CMS data. This enables admin-added cards,
+     * tiles, and CTA columns to appear on the live site.
+     *
+     * Attribute contract on the container element:
+     *   data-cms-list="sectionId.fieldKey"   e.g. "value-tiles.tiles"
+     *   data-cms-list-type="tile|cta-column|card|step"
+     *
+     * @param {object} pageData
+     */
+    function hydrateListSections(pageData) {
+        var sectionMap = {};
+        if (Array.isArray(pageData.sections)) {
+            pageData.sections.forEach(function (s) { sectionMap[s.id] = s.fields || {}; });
+        }
+
+        document.querySelectorAll('[data-cms-list]').forEach(function (container) {
+            var fieldPath = container.getAttribute('data-cms-list');   // e.g. "value-tiles.tiles"
+            var listType  = container.getAttribute('data-cms-list-type') || '';
+            var dotIdx    = fieldPath.indexOf('.');
+            if (dotIdx === -1) return;
+            var sectionId  = fieldPath.slice(0, dotIdx);
+            var fieldParts = fieldPath.slice(dotIdx + 1).split('.');
+            var fields     = sectionMap[sectionId];
+            if (!fields) return;
+            var items = getNestedValue(fields, fieldParts);
+            if (!Array.isArray(items) || items.length === 0) return;
+
+            container.innerHTML = items.map(function (item, i) {
+                return renderDynamicItem(item, listType, i);
+            }).join('');
+        });
+    }
+
+    function renderDynamicItem(item, listType, index) {
+        if (!item || typeof item !== 'object') return '';
+        switch (listType) {
+            case 'tile':       return renderTileItem(item, index);
+            case 'cta-column': return renderCtaColumnItem(item);
+            case 'card':       return renderCardItem(item);
+            case 'video-card': return renderVideoCardItem(item);
+            default:           return '';
+        }
+    }
+
+    function renderTileItem(tile, index) {
+        var href     = safeAttr(tile.href || '#');
+        var title    = safeText(tile.title || '');
+        var desc     = String(tile.description || ''); // Allow HTML
+        var linkText = safeText(tile.linkText || 'Learn More');
+        var delay    = (index * 100) + 'ms';
+        return '<a href="' + href + '" class="action-tile reveal-slide-up" data-delay="' + delay + '">' +
+               '<h3 class="action-tile-title">' + title + '</h3>' +
+               '<p class="action-tile-description">' + desc + '</p>' +
+               '<span class="action-tile-link">' + linkText +
+               ' <span aria-hidden="true">→</span></span>' +
+               '</a>';
+    }
+
+    function renderCtaColumnItem(col) {
+        var href    = safeAttr(col.buttonHref || '#');
+        var label   = safeText(col.buttonLabel || 'Learn More');
+        var heading = col.heading
+            ? '<h3 class="mb-xs" style="color:white;font-size:var(--font-size-md);">' + safeText(col.heading) + '</h3>'
+            : '';
+        var text = col.text
+            ? '<p class="mb-sm" style="opacity:0.9;font-size:0.9rem;">' + String(col.text) + '</p>'
+            : '';
+        return '<div>' + heading + text +
+               '<a href="' + href + '" class="btn btn-secondary">' + label + '</a></div>';
+    }
+
+    function renderCardItem(card) {
+        var title   = safeText(card.title || '');
+        var body    = String(card.body  || ''); // Allow HTML
+        var imgHtml = card.image
+            ? '<img src="' + safeAttr(card.image) + '" alt="' + safeAttr(card.imageAlt || '') +
+              '" class="card-image" loading="lazy" style="width:100%;border-radius:4px;margin-bottom:.75rem">'
+            : '';
+        var btnHtml = (card.buttonLabel && card.buttonHref)
+            ? '<a href="' + safeAttr(card.buttonHref) + '" class="btn btn-outline btn-small"' +
+              (card.external ? ' target="_blank" rel="noopener noreferrer"' : '') + '>' +
+              safeText(card.buttonLabel) + '</a>'
+            : '';
+        return '<div class="feature-card" style="background:#fff;padding:1.5rem;border-radius:8px;' +
+               'box-shadow:0 2px 8px rgba(0,0,0,.08)">' +
+               imgHtml +
+               '<h3 style="font-size:1.05rem;margin-bottom:.5rem;color:var(--color-primary)">' + title + '</h3>' +
+               '<p style="color:var(--color-text-secondary);font-size:.9rem;margin-bottom:.75rem">' + body + '</p>' +
+               btnHtml + '</div>';
+    }
+
+    function renderVideoCardItem(video) {
+        var title = safeText(video.title || '');
+        var src = safeAttr(video.src || '');
+        
+        // Ensure YouTube URLs are embeddable format
+        if (src.includes('youtu.be/')) {
+            var id = src.split('youtu.be/')[1].split('?')[0];
+            src = 'https://www.youtube.com/embed/' + id;
+        } else if (src.includes('youtube.com/watch')) {
+            var urlParams = new URL(src).searchParams;
+            var id = urlParams.get('v');
+            if (id) src = 'https://www.youtube.com/embed/' + id;
+        }
+
+        return '<div class="video-card" style="background:#fff;border-radius:8px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,.08);display:flex;flex-direction:column;">' +
+               '<div class="video-wrapper" style="position:relative;padding-bottom:56.25%;height:0;overflow:hidden;">' +
+               '<iframe src="' + src + '" title="' + title + '" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen style="position:absolute;top:0;left:0;width:100%;height:100%;"></iframe>' +
+               '</div>' +
+               '<div style="padding:1rem;">' +
+               '<h3 style="font-size:1.05rem;margin:0;color:var(--color-primary)">' + title + '</h3>' +
+               '</div></div>';
+    }
+
+    // Safe-escaping helpers for renderer-generated HTML
+    function safeText(str) {
+        var d = document.createElement('div');
+        d.textContent = String(str || '');
+        return d.innerHTML;
+    }
+
+    function safeAttr(str) {
+        return String(str || '')
+            .replace(/&/g, '&amp;')
+            .replace(/"/g, '&quot;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;');
     }
 
     // ── Fetch helper ─────────────────────────────────────────────────────────

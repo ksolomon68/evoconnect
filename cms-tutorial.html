@@ -1,0 +1,1302 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, nofollow">
+    <title>CMS Admin Guide | WorkForce Connect</title>
+    <link rel="icon" href="assets/favicon.ico" type="image/x-icon">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#005A8C">
+    <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+    <link rel="stylesheet" href="css/design-system.css?v=1774555160000">
+    <link rel="stylesheet" href="css/main.css?v=1774555160000">
+    <link rel="stylesheet" href="css/accessibility-widget.css?v=1774549569000">
+    <style>
+        /* ===== PAGE WRAPPER ===== */
+        .tut-page { background: #f5f5f5; }
+
+        /* ===== INTRO BANNER ===== */
+        .tut-banner {
+            background: linear-gradient(135deg, #003D5C 0%, #005A8C 100%);
+            padding: 56px 32px;
+        }
+        .tut-banner-inner { max-width: 900px; margin: 0 auto; }
+        .tut-badge {
+            display: inline-block;
+            background: #FFCC00;
+            color: #000;
+            border-radius: 100px;
+            padding: 4px 16px;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-bottom: 16px;
+        }
+        .tut-banner h1 {
+            color: #fff !important;
+            font-size: 2.25rem !important;
+            margin: 0 0 12px 0 !important;
+            letter-spacing: -0.02em;
+            line-height: 1.2;
+        }
+        .tut-banner p {
+            color: rgba(255,255,255,0.88);
+            font-size: 1.1rem;
+            margin: 0 0 8px 0;
+            line-height: 1.6;
+        }
+        .tut-banner .tut-meta {
+            color: rgba(255,255,255,0.65);
+            font-size: 0.85rem;
+            margin-top: 16px;
+        }
+
+        /* ===== MAIN LAYOUT ===== */
+        .tut-layout {
+            display: grid;
+            grid-template-columns: 240px 1fr;
+            gap: 32px;
+            max-width: 1140px;
+            margin: 0 auto;
+            padding: 40px 24px 80px;
+        }
+        @media (max-width: 860px) {
+            .tut-layout { grid-template-columns: 1fr; }
+            .tut-toc { position: static !important; }
+        }
+
+        /* ===== TABLE OF CONTENTS ===== */
+        .tut-toc {
+            position: sticky;
+            top: 90px;
+            align-self: start;
+            background: #fff;
+            border: 2px solid #005A8C;
+            border-radius: 10px;
+            padding: 20px;
+        }
+        .tut-toc h2 {
+            font-size: 11px !important;
+            font-weight: 700 !important;
+            color: #005A8C !important;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin: 0 0 12px 0 !important;
+            padding-bottom: 8px;
+            border-bottom: 2px solid #FFCC00;
+        }
+        .tut-toc ol {
+            margin: 0 !important;
+            padding: 0 !important;
+            list-style: none;
+        }
+        .tut-toc ol li {
+            margin: 0 0 6px 0 !important;
+            padding: 0 !important;
+            display: flex;
+            align-items: baseline;
+            gap: 4px;
+        }
+        .tut-toc-num {
+            color: #005A8C;
+            font-weight: 700;
+            font-size: 12px;
+            flex-shrink: 0;
+        }
+        .tut-toc a {
+            color: #005A8C;
+            text-decoration: none;
+            font-size: 12px;
+            line-height: 1.4;
+        }
+        .tut-toc a:hover { text-decoration: underline; }
+
+        /* ===== SECTION BLOCK ===== */
+        .tut-section { margin-bottom: 12px; }
+        .tut-section-head {
+            background: #005A8C;
+            border-radius: 10px 10px 0 0;
+            padding: 14px 24px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin: 48px 0 0 0;
+        }
+        .tut-section:first-child .tut-section-head { margin-top: 0; }
+        .tut-section-num {
+            background: #FFCC00;
+            color: #000;
+            border-radius: 50%;
+            width: 34px;
+            height: 34px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+        .tut-section-head h2 {
+            color: #fff !important;
+            font-size: 1.2rem !important;
+            margin: 0 !important;
+            font-weight: 700;
+            line-height: 1.2;
+        }
+        .tut-section-body {
+            background: #fff;
+            border: 1px solid #ccc;
+            border-top: none;
+            border-radius: 0 0 10px 10px;
+            padding: 28px 28px 20px;
+        }
+
+        /* ===== HEADINGS INSIDE SECTION BODY ===== */
+        .tut-section-body h3 {
+            color: #003D5C !important;
+            font-size: 1.05rem !important;
+            font-weight: 700;
+            margin: 24px 0 8px 0 !important;
+            padding-bottom: 6px;
+            border-bottom: 2px solid #FFCC00;
+        }
+        .tut-section-body h3:first-child { margin-top: 0 !important; }
+        .tut-section-body h4 {
+            color: #005A8C !important;
+            font-size: 0.95rem !important;
+            font-weight: 700;
+            margin: 20px 0 6px 0 !important;
+        }
+        .tut-section-body p {
+            line-height: 1.7;
+            margin: 0 0 12px 0;
+            color: #111;
+        }
+        .tut-section-body ul {
+            margin: 8px 0 12px 0 !important;
+            padding-left: 24px !important;
+        }
+        .tut-section-body ul li {
+            margin-bottom: 6px !important;
+            line-height: 1.6;
+        }
+
+        /* ===== STEP LISTS ===== */
+        .tut-steps { margin: 12px 0 16px 0; }
+        .tut-step {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 14px;
+            align-items: flex-start;
+        }
+        .tut-step-num {
+            background: #005A8C;
+            color: #fff;
+            border-radius: 50%;
+            min-width: 28px;
+            height: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 13px;
+            font-weight: 700;
+            flex-shrink: 0;
+            margin-top: 1px;
+        }
+        .tut-step-body {
+            flex: 1;
+            line-height: 1.65;
+            padding-top: 2px;
+            color: #111;
+        }
+        .tut-step-body ul {
+            margin: 8px 0 0 0 !important;
+            padding-left: 20px !important;
+        }
+        .tut-step-body ul li {
+            margin-bottom: 4px !important;
+            line-height: 1.6;
+        }
+
+        /* ===== CALLOUT BOXES ===== */
+        .tut-callout {
+            display: flex;
+            gap: 12px;
+            align-items: flex-start;
+            border-radius: 8px;
+            padding: 14px 18px;
+            margin: 14px 0;
+        }
+        .tut-callout-icon { font-size: 18px; flex-shrink: 0; margin-top: 1px; line-height: 1; }
+        .tut-callout-body { flex: 1; }
+        .tut-callout-body strong {
+            display: block;
+            margin-bottom: 4px;
+            font-size: 14px;
+            font-weight: 700;
+        }
+        .tut-callout-body p { margin: 0 !important; font-size: 14px; line-height: 1.6; }
+        .tut-callout-body a { color: inherit; font-weight: 600; }
+        .tut-callout.tip { background: #E1F5FE; border-left: 4px solid #0277BD; }
+        .tut-callout.tip .tut-callout-body strong { color: #01579B; }
+        .tut-callout.warning { background: #FFF9C4; border-left: 4px solid #F9A825; }
+        .tut-callout.warning .tut-callout-body strong { color: #6D4C00; }
+        .tut-callout.danger { background: #FFEBEE; border-left: 4px solid #C62828; }
+        .tut-callout.danger .tut-callout-body strong { color: #B71C1C; }
+        .tut-callout.success { background: #E8F5E9; border-left: 4px solid #2E7D32; }
+        .tut-callout.success .tut-callout-body strong { color: #1B5E20; }
+
+        /* ===== DATA TABLES ===== */
+        .tut-table-wrap { overflow-x: auto; margin: 12px 0; }
+        .tut-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13.5px;
+            min-width: 400px;
+        }
+        .tut-table th {
+            background: #005A8C;
+            color: #fff;
+            padding: 10px 14px;
+            text-align: left;
+            font-weight: 700;
+        }
+        .tut-table td {
+            padding: 9px 14px;
+            border-bottom: 1px solid #e0e0e0;
+            vertical-align: top;
+            line-height: 1.5;
+        }
+        .tut-table tr:nth-child(even) td { background: #f5f5f5; }
+        .tut-table td:first-child { font-weight: 600; white-space: nowrap; }
+
+        /* ===== INLINE UI LABELS ===== */
+        .lbl {
+            display: inline-block;
+            background: #005A8C;
+            color: #fff;
+            border-radius: 4px;
+            padding: 1px 8px;
+            font-size: 12px;
+            font-weight: 700;
+            vertical-align: middle;
+            line-height: 1.6;
+        }
+        .lbl-gold { background: #FFCC00; color: #000; }
+        .lbl-green { background: #2E7D32; }
+        .lbl-red { background: #C62828; }
+
+        /* ===== COMPONENT TYPE CARDS ===== */
+        .comp-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 12px;
+            margin: 14px 0;
+        }
+        .comp-card {
+            background: #f5f5f5;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 14px;
+        }
+        .comp-card h5 {
+            color: #005A8C !important;
+            font-size: 0.875rem !important;
+            font-weight: 700 !important;
+            margin: 0 0 6px 0 !important;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        .comp-card h5 code {
+            background: #005A8C;
+            color: #fff;
+            border: none;
+            font-size: 11px;
+            padding: 2px 6px;
+            border-radius: 3px;
+        }
+        .comp-card p { margin: 0 !important; font-size: 13px; line-height: 1.55; color: #333; }
+
+        /* ===== CMS SIDEBAR DIAGRAM ===== */
+        .cms-sidebar-diagram {
+            background: #003D5C;
+            color: #fff;
+            border-radius: 8px;
+            padding: 16px;
+            margin: 12px 0;
+            font-size: 13px;
+        }
+        .cms-sidebar-diagram .sdb-section { margin-bottom: 12px; }
+        .cms-sidebar-diagram .sdb-label {
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.12em;
+            color: rgba(255,255,255,0.55);
+            margin-bottom: 4px;
+        }
+        .cms-sidebar-diagram .sdb-item {
+            background: rgba(255,255,255,0.12);
+            border-radius: 4px;
+            padding: 5px 12px;
+            margin-bottom: 3px;
+        }
+        .cms-sidebar-diagram .sdb-item.active { background: #FFCC00; color: #000; font-weight: 700; }
+        .cms-sidebar-diagram .sdb-divider {
+            border-top: 1px solid rgba(255,255,255,0.2);
+            margin: 10px 0 8px;
+        }
+        .cms-sidebar-diagram .sdb-item.logout { background: #C62828; }
+
+        /* ===== MISC ===== */
+        .tut-rule { border: none; border-top: 1px solid #e8e8e8; margin: 24px 0; }
+        .tut-back { display: block; text-align: right; margin-top: 16px; font-size: 12px; color: #005A8C; }
+        .tut-back:hover { color: #003D5C; }
+        code {
+            background: #f0f0f0;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+            padding: 1px 5px;
+            font-family: 'Consolas', 'Courier New', monospace;
+            font-size: 0.85em;
+            color: #003D5C;
+        }
+    </style>
+</head>
+
+<body class="tut-page">
+    <a href="#main-content" class="skip-link">Skip to main content</a>
+
+    <header class="site-header" role="banner">
+        <div class="container">
+            <a href="index.html" class="site-logo">
+                <img src="images/caltrans-logo.png" alt="Caltrans">
+            </a>
+            <button class="nav-toggle" aria-label="Toggle navigation" aria-expanded="false"><span></span></button>
+            <nav class="main-nav" role="navigation" aria-label="Main navigation">
+                <ul>
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="how-it-works.html">Small Businesses</a></li>
+                    <li><a href="index.html">Prime Contractors</a></li>
+                    <li><a href="index.html">Opportunities</a></li>
+                    <li><a href="how-it-works.html">How It Works</a></li>
+                    <li><a href="checklist.html">Resources</a></li>
+                    <li><a href="faq.html">FAQ</a></li>
+                    <li><a href="contact.html">Contact</a></li>
+                    <li><a href="login.html" class="btn btn-secondary btn-small">Log In</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main id="main-content">
+
+        <div class="tut-banner">
+            <div class="tut-banner-inner">
+                <span class="tut-badge">Internal Documentation</span>
+                <h1>WorkForce Connect CMS Admin Guide</h1>
+                <p>A complete reference for content administrators managing pages, FAQs, media, and site settings through the WorkForce Connect content management system.</p>
+                <p class="tut-meta">
+                    Access: <code style="background:rgba(255,255,255,0.2);border:none;color:#fff;font-size:13px;">/admin-cms.html</code>
+                    &ensp;&bull;&ensp; Last updated: May 2026
+                </p>
+            </div>
+        </div>
+
+        <div class="tut-layout">
+
+            <!-- Sidebar TOC -->
+            <aside class="tut-toc" aria-label="Table of contents">
+                <h2>Contents</h2>
+                <ol>
+                    <li><span class="tut-toc-num">1.</span><a href="#sec-intro">Introduction</a></li>
+                    <li><span class="tut-toc-num">2.</span><a href="#sec-login">Logging In</a></li>
+                    <li><span class="tut-toc-num">3.</span><a href="#sec-dashboard">Dashboard Overview</a></li>
+                    <li><span class="tut-toc-num">4.</span><a href="#sec-pages">Pages Management</a></li>
+                    <li><span class="tut-toc-num">5.</span><a href="#sec-sections">Section Types Reference</a></li>
+                    <li><span class="tut-toc-num">6.</span><a href="#sec-editor">Rich Text Editor</a></li>
+                    <li><span class="tut-toc-num">7.</span><a href="#sec-faq">FAQ Manager</a></li>
+                    <li><span class="tut-toc-num">8.</span><a href="#sec-global">Global Settings</a></li>
+                    <li><span class="tut-toc-num">9.</span><a href="#sec-media">Media Library</a></li>
+                    <li><span class="tut-toc-num">10.</span><a href="#sec-password">Changing Your Password</a></li>
+                    <li><span class="tut-toc-num">11.</span><a href="#sec-bestpractices">Best Practices</a></li>
+                    <li><span class="tut-toc-num">12.</span><a href="#sec-troubleshooting">Troubleshooting</a></li>
+                </ol>
+            </aside>
+
+            <!-- Main Content -->
+            <div class="tut-main">
+
+                <!-- SECTION 1 -->
+                <div class="tut-section">
+                    <div class="tut-section-head" id="sec-intro">
+                        <div class="tut-section-num" aria-hidden="true">1</div>
+                        <h2>Introduction &amp; What the CMS Controls</h2>
+                    </div>
+                    <div class="tut-section-body">
+
+                        <p>The WorkForce Connect Content Management System (CMS) is a web-based editor at <code>/admin-cms.html</code>. It lets authorized administrators update the text, images, and structured content shown on the public-facing website — without touching any code.</p>
+
+                        <h3>What Can You Edit with the CMS?</h3>
+                        <div class="tut-table-wrap">
+                            <table class="tut-table">
+                                <thead><tr><th>Module</th><th>What It Controls</th></tr></thead>
+                                <tbody>
+                                    <tr><td>Pages</td><td>Hero text, page sections, component content, page title, and meta description</td></tr>
+                                    <tr><td>FAQ Manager</td><td>All questions and answers on the FAQ page and FAQ accordion sections</td></tr>
+                                    <tr><td>Global Settings</td><td>Site-wide values: site title, contact email, phone number, social links, logo URL</td></tr>
+                                    <tr><td>Media Library</td><td>All images used in CMS-editable sections; upload, manage, and delete</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <h3>What the CMS Does NOT Control</h3>
+                        <ul>
+                            <li>The site navigation menu links</li>
+                            <li>User account dashboard pages</li>
+                            <li>Form functionality and validation</li>
+                            <li>The opportunities listing (live database content)</li>
+                            <li>Application processing workflows</li>
+                            <li>CSS styling and visual design (requires a developer)</li>
+                        </ul>
+
+                        <div class="tut-callout tip">
+                            <span class="tut-callout-icon" aria-hidden="true">ℹ️</span>
+                            <div class="tut-callout-body">
+                                <strong>Platform administration is separate</strong>
+                                <p>To manage user accounts, approve opportunities, or view analytics, see the <a href="admin-tutorial.html"><strong>Platform Admin Guide</strong></a>. The CMS only handles website content.</p>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+                <a href="#main-content" class="tut-back">Back to top &uarr;</a>
+
+                <!-- SECTION 2 -->
+                <div class="tut-section">
+                    <div class="tut-section-head" id="sec-login">
+                        <div class="tut-section-num" aria-hidden="true">2</div>
+                        <h2>Logging In</h2>
+                    </div>
+                    <div class="tut-section-body">
+
+                        <h3>How to Access the CMS</h3>
+                        <div class="tut-steps">
+                            <div class="tut-step">
+                                <div class="tut-step-num" aria-hidden="true">1</div>
+                                <div class="tut-step-body">Open your browser and navigate to: <code>caltransbizconnect.org/admin-cms.html</code></div>
+                            </div>
+                            <div class="tut-step">
+                                <div class="tut-step-num" aria-hidden="true">2</div>
+                                <div class="tut-step-body">The CMS login screen loads with two fields: <strong>Email</strong> and <strong>Password</strong>.</div>
+                            </div>
+                            <div class="tut-step">
+                                <div class="tut-step-num" aria-hidden="true">3</div>
+                                <div class="tut-step-body">Enter the email address associated with your admin account. This is the same email you use to log into the main platform.</div>
+                            </div>
+                            <div class="tut-step">
+                                <div class="tut-step-num" aria-hidden="true">4</div>
+                                <div class="tut-step-body">Enter your CMS password. Depending on how your account was set up, this may be your platform password or a separate CMS-specific password.</div>
+                            </div>
+                            <div class="tut-step">
+                                <div class="tut-step-num" aria-hidden="true">5</div>
+                                <div class="tut-step-body">Click <span class="lbl">Sign In</span>. If your credentials are correct, the CMS dashboard loads within a few seconds.</div>
+                            </div>
+                        </div>
+
+                        <div class="tut-callout warning">
+                            <span class="tut-callout-icon" aria-hidden="true">⚠️</span>
+                            <div class="tut-callout-body">
+                                <strong>Session duration is 24 hours</strong>
+                                <p>After 24 hours, your CMS session expires and you must sign in again. Always save your work before leaving the CMS — unsaved changes are lost when your session expires.</p>
+                            </div>
+                        </div>
+
+                        <h3>If Your Login Fails</h3>
+                        <ul>
+                            <li>Double-check for typos in your email address — it must match exactly.</li>
+                            <li>Check that Caps Lock is not on when entering your password.</li>
+                            <li>If you recently changed your password via the CMS "Change Password" feature, use the new password.</li>
+                            <li>If still unable to log in, contact the platform administrator to verify your account has CMS access.</li>
+                        </ul>
+
+                        <h3>How to Log Out</h3>
+                        <div class="tut-steps">
+                            <div class="tut-step">
+                                <div class="tut-step-num" aria-hidden="true">1</div>
+                                <div class="tut-step-body">Locate the <span class="lbl lbl-red">Logout</span> button in the CMS sidebar (left column, near the bottom).</div>
+                            </div>
+                            <div class="tut-step">
+                                <div class="tut-step-num" aria-hidden="true">2</div>
+                                <div class="tut-step-body">Click it. Your session token is invalidated immediately and you are returned to the login screen. Always log out when finished, especially on shared computers.</div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+                <a href="#main-content" class="tut-back">Back to top &uarr;</a>
+
+                <!-- SECTION 3 -->
+                <div class="tut-section">
+                    <div class="tut-section-head" id="sec-dashboard">
+                        <div class="tut-section-num" aria-hidden="true">3</div>
+                        <h2>CMS Dashboard Overview</h2>
+                    </div>
+                    <div class="tut-section-body">
+
+                        <p>After login you see the CMS dashboard — a two-panel interface. The left side is the navigation sidebar; the right side is the content area that changes based on your selection.</p>
+
+                        <h3>Sidebar Navigation</h3>
+                        <p>The sidebar is your primary navigation tool and is always visible on the left side of the screen:</p>
+
+                        <div class="cms-sidebar-diagram" role="img" aria-label="CMS sidebar navigation structure">
+                            <div class="sdb-section">
+                                <div class="sdb-label">Pages</div>
+                                <div class="sdb-item active">Pages</div>
+                            </div>
+                            <div class="sdb-section">
+                                <div class="sdb-label">Site</div>
+                                <div class="sdb-item">FAQ Manager</div>
+                                <div class="sdb-item">Global Settings</div>
+                                <div class="sdb-item">Media Library</div>
+                                <div class="sdb-item">Page Builder</div>
+                            </div>
+                            <div class="sdb-divider"></div>
+                            <div class="sdb-item">Change Password</div>
+                            <div class="sdb-item logout">Logout</div>
+                        </div>
+
+                        <h3>Dashboard Stats</h3>
+                        <p>When no section is selected, the dashboard shows a summary of your site's content inventory:</p>
+                        <div class="tut-table-wrap">
+                            <table class="tut-table">
+                                <thead><tr><th>Stat</th><th>What It Counts</th></tr></thead>
+                                <tbody>
+                                    <tr><td>Total Pages</td><td>All system and custom pages registered in the CMS</td></tr>
+                                    <tr><td>Active FAQs</td><td>FAQ entries with status set to Active</td></tr>
+                                    <tr><td>Media Files</td><td>Images uploaded to the Media Library</td></tr>
+                                    <tr><td>Active Users</td><td>Platform users with Active or Verified status (read-only reference)</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                    </div>
+                </div>
+                <a href="#main-content" class="tut-back">Back to top &uarr;</a>
+
+                <!-- SECTION 4 -->
+                <div class="tut-section">
+                    <div class="tut-section-head" id="sec-pages">
+                        <div class="tut-section-num" aria-hidden="true">4</div>
+                        <h2>Pages Management</h2>
+                    </div>
+                    <div class="tut-section-body">
+
+                        <p>The <strong>Pages</strong> module is where you edit the content of all public-facing website pages. Click <strong>Pages</strong> in the sidebar to open it.</p>
+
+                        <h3>Reading the Page List</h3>
+                        <div class="tut-table-wrap">
+                            <table class="tut-table">
+                                <thead><tr><th>Column</th><th>Description</th></tr></thead>
+                                <tbody>
+                                    <tr><td>Page Title</td><td>The human-readable title shown in the editor</td></tr>
+                                    <tr><td>Last Updated</td><td>Date and time of the most recent save</td></tr>
+                                    <tr><td>System Page</td><td>Badge shown for built-in pages that cannot be deleted</td></tr>
+                                    <tr><td>Actions</td><td>Edit, View (live link), and Delete (custom pages only)</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <p>System pages appear first in fixed order: Home, For Small Businesses, For Prime Contractors, Opportunities, How It Works, Resources, FAQ, Support Services, Eligibility, Contact. Custom pages appear after these, alphabetically.</p>
+
+                        <hr class="tut-rule">
+
+                        <h3>How to Edit a Page</h3>
+                        <div class="tut-steps">
+                            <div class="tut-step">
+                                <div class="tut-step-num" aria-hidden="true">1</div>
+                                <div class="tut-step-body">In the Pages list, find the page you want and click its <span class="lbl">Edit</span> button.</div>
+                            </div>
+                            <div class="tut-step">
+                                <div class="tut-step-num" aria-hidden="true">2</div>
+                                <div class="tut-step-body">The Page Editor opens with two main areas: <strong>Page Metadata</strong> at the top (Title, Meta Description) and <strong>Page Sections</strong> below.</div>
+                            </div>
+                            <div class="tut-step">
+                                <div class="tut-step-num" aria-hidden="true">3</div>
+                                <div class="tut-step-body">Edit the <strong>Page Title</strong> if needed. This is shown in the browser tab and search results. Edit the <strong>Meta Description</strong> to update the Google snippet — keep it under 160 characters.</div>
+                            </div>
+                            <div class="tut-step">
+                                <div class="tut-step-num" aria-hidden="true">4</div>
+                                <div class="tut-step-body">To edit a section's content, click the <span class="lbl">Edit</span> button on that section's row. The Section Editor opens in-line with all fields for that component type.</div>
+                            </div>
+                            <div class="tut-step">
+                                <div class="tut-step-num" aria-hidden="true">5</div>
+                                <div class="tut-step-body">Make your changes and click <span class="lbl lbl-green">Save</span> at the top of the page editor. Changes are saved to the database and appear live on the website immediately.</div>
+                            </div>
+                        </div>
+
+                        <div class="tut-callout danger">
+                            <span class="tut-callout-icon" aria-hidden="true">🚫</span>
+                            <div class="tut-callout-body">
+                                <strong>No auto-save</strong>
+                                <p>The CMS does <strong>not</strong> auto-save. If you navigate away without clicking Save, all your changes will be lost. Save frequently, especially after significant edits.</p>
+                            </div>
+                        </div>
+
+                        <hr class="tut-rule">
+
+                        <h3>How to Reorder Page Sections</h3>
+                        <div class="tut-steps">
+                            <div class="tut-step">
+                                <div class="tut-step-num" aria-hidden="true">1</div>
+                                <div class="tut-step-body">Locate the section you want to move in the section list.</div>
+                            </div>
+                            <div class="tut-step">
+                                <div class="tut-step-num" aria-hidden="true">2</div>
+                                <div class="tut-step-body">Click the <strong>up arrow</strong> to move it one position up, or the <strong>down arrow</strong> to move it one position down. Repeat until the section is in the desired position.</div>
+                            </div>
+                            <div class="tut-step">
+                                <div class="tut-step-num" aria-hidden="true">3</div>
+                                <div class="tut-step-body">Click <span class="lbl lbl-green">Save</span> to preserve the new order.</div>
+                            </div>
+                        </div>
+
+                        <hr class="tut-rule">
+
+                        <h3>How to Add a New Section</h3>
+                        <div class="tut-steps">
+                            <div class="tut-step">
+                                <div class="tut-step-num" aria-hidden="true">1</div>
+                                <div class="tut-step-body">In the Page Editor, scroll to the bottom of the section list and click <span class="lbl lbl-green">+ Add New Section</span>. A dropdown appears listing all available component types.</div>
+                            </div>
+                            <div class="tut-step">
+                                <div class="tut-step-num" aria-hidden="true">2</div>
+                                <div class="tut-step-body">Select the component type that best fits the content you want to add (see Section 5 for the full reference).</div>
+                            </div>
+                            <div class="tut-step">
+                                <div class="tut-step-num" aria-hidden="true">3</div>
+                                <div class="tut-step-body">A new empty section of that type is added. Click <span class="lbl">Edit</span> on the new section to fill in its content, then <span class="lbl lbl-green">Save</span>.</div>
+                            </div>
+                        </div>
+
+                        <hr class="tut-rule">
+
+                        <h3>How to Delete a Section</h3>
+                        <div class="tut-steps">
+                            <div class="tut-step">
+                                <div class="tut-step-num" aria-hidden="true">1</div>
+                                <div class="tut-step-body">In the Page Editor, click the <span class="lbl lbl-red">Delete Section</span> (trash) icon on the section's row.</div>
+                            </div>
+                            <div class="tut-step">
+                                <div class="tut-step-num" aria-hidden="true">2</div>
+                                <div class="tut-step-body">Confirm in the dialog. Then click <span class="lbl lbl-green">Save</span>. The section is permanently removed from that page.</div>
+                            </div>
+                        </div>
+
+                        <div class="tut-callout warning">
+                            <span class="tut-callout-icon" aria-hidden="true">⚠️</span>
+                            <div class="tut-callout-body">
+                                <strong>No undo for deletions</strong>
+                                <p>Once you save after deleting a section, the content is gone permanently. Before deleting, copy the content to a text document if there is any chance you'll need to restore it.</p>
+                            </div>
+                        </div>
+
+                        <hr class="tut-rule">
+
+                        <h3>How to Create a New Custom Page</h3>
+                        <div class="tut-steps">
+                            <div class="tut-step">
+                                <div class="tut-step-num" aria-hidden="true">1</div>
+                                <div class="tut-step-body">In the Pages list, click <span class="lbl lbl-green">+ New Page</span>.</div>
+                            </div>
+                            <div class="tut-step">
+                                <div class="tut-step-num" aria-hidden="true">2</div>
+                                <div class="tut-step-body">Enter a <strong>Page Title</strong> and a <strong>Page Slug</strong>. The slug becomes the URL — for example, slug <code>vendor-resources</code> creates the page at <code>/vendor-resources.html</code>. Use only lowercase letters, numbers, and hyphens.</div>
+                            </div>
+                            <div class="tut-step">
+                                <div class="tut-step-num" aria-hidden="true">3</div>
+                                <div class="tut-step-body">Click <span class="lbl lbl-green">Create Page</span>. The new page appears in the Pages list. Click <span class="lbl">Edit</span> to start adding sections.</div>
+                            </div>
+                        </div>
+
+                        <div class="tut-callout tip">
+                            <span class="tut-callout-icon" aria-hidden="true">💡</span>
+                            <div class="tut-callout-body">
+                                <strong>Custom pages are not automatically linked</strong>
+                                <p>Creating a page in the CMS does not add it to the site navigation. To make a custom page accessible, link to it from another page's content or ask a developer to add it to the nav.</p>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+                <a href="#main-content" class="tut-back">Back to top &uarr;</a>
+
+                <!-- SECTION 5 -->
+                <div class="tut-section">
+                    <div class="tut-section-head" id="sec-sections">
+                        <div class="tut-section-num" aria-hidden="true">5</div>
+                        <h2>Section Types Reference</h2>
+                    </div>
+                    <div class="tut-section-body">
+
+                        <p>When you add or edit a page section, the editing interface changes based on the component type. Below is a complete reference for every available type.</p>
+
+                        <div class="comp-grid">
+                            <div class="comp-card">
+                                <h5><code>text</code> Single-line Text</h5>
+                                <p>A plain text input for short content like titles, names, or captions. No formatting allowed. Use for headings or brief labels.</p>
+                            </div>
+                            <div class="comp-card">
+                                <h5><code>textarea</code> Multi-line Text</h5>
+                                <p>A larger text area for paragraphs. Basic HTML tags (bold, italic, links) are supported. Use for body copy, descriptions, or summaries.</p>
+                            </div>
+                            <div class="comp-card">
+                                <h5><code>url</code> URL Field</h5>
+                                <p>A validated text input for web addresses. Always include <code>https://</code>. Used for button links, image source URLs, or external references.</p>
+                            </div>
+                            <div class="comp-card">
+                                <h5><code>select</code> Dropdown</h5>
+                                <p>A predefined list of options. Common uses: selecting a layout variant, a color theme, or content alignment. Available options are fixed by the developer.</p>
+                            </div>
+                            <div class="comp-card">
+                                <h5><code>checkbox</code> Toggle</h5>
+                                <p>A boolean on/off switch. Use to show or hide a section, enable a feature, or control visibility of an element.</p>
+                            </div>
+                            <div class="comp-card">
+                                <h5><code>media</code> Image Picker</h5>
+                                <p>Opens the Media Library to select an uploaded image. Always set meaningful alt text for accessibility compliance.</p>
+                            </div>
+                            <div class="comp-card">
+                                <h5><code>button</code> CTA Button</h5>
+                                <p>Configures a call-to-action button: button text, destination URL, and style (primary/secondary). Use for prominent action links within sections.</p>
+                            </div>
+                            <div class="comp-card">
+                                <h5><code>card-list</code> Card Grid</h5>
+                                <p>A repeating list of cards, each with a title, body text, optional image, and optional button. Use for feature highlights, program overviews, or resource listings.</p>
+                            </div>
+                            <div class="comp-card">
+                                <h5><code>steps-list</code> Numbered Steps</h5>
+                                <p>A numbered process list where each step has a short label and detail text. Use for how-it-works sequences, onboarding flows, or application processes.</p>
+                            </div>
+                            <div class="comp-card">
+                                <h5><code>tile-list</code> Tile Grid</h5>
+                                <p>A compact grid of tiles, each with a title, short description, and optional link. Use for quick-link tiles or icon-based navigation sections.</p>
+                            </div>
+                            <div class="comp-card">
+                                <h5><code>accordion-list</code> Expandable FAQ</h5>
+                                <p>Collapsible question/answer pairs (accordion). Each item has a question (always visible) and an answer (shown when expanded). Use for inline FAQs or help content within a page.</p>
+                            </div>
+                            <div class="comp-card">
+                                <h5><code>cta-list</code> CTA Sections</h5>
+                                <p>One or more full call-to-action sections, each with a headline, supporting text, and a button. Use for key program actions at the bottom of or between major sections.</p>
+                            </div>
+                            <div class="comp-card">
+                                <h5><code>string-list</code> Simple List</h5>
+                                <p>A plain bullet list of text strings with no sub-fields. Use for eligibility requirements, feature lists, or quick facts that don't need individual titles.</p>
+                            </div>
+                            <div class="comp-card">
+                                <h5><code>pathway-card</code> Pathway Card</h5>
+                                <p>A specialized card for "pathway" navigation used on the Home page to direct users to Small Business or Prime Contractor sections. Has a fixed structure defined by the developer.</p>
+                            </div>
+                        </div>
+
+                        <h3>Working with List-Type Sections</h3>
+                        <p>For any component type with "list" in its name, the editor provides a list of items you manage individually:</p>
+                        <div class="tut-table-wrap">
+                            <table class="tut-table">
+                                <thead><tr><th>Action</th><th>How to Do It</th></tr></thead>
+                                <tbody>
+                                    <tr><td>Add a new item</td><td>Click <span class="lbl lbl-green">+ Add Item</span> below the item list. A new empty row is created at the bottom.</td></tr>
+                                    <tr><td>Edit an item</td><td>Click the <span class="lbl">Edit</span> (pencil) icon on the item row. Fields expand inline for editing.</td></tr>
+                                    <tr><td>Reorder items</td><td>Use the up/down arrow buttons on each item row to change its position.</td></tr>
+                                    <tr><td>Delete an item</td><td>Click the <span class="lbl lbl-red">Delete</span> (trash) icon and confirm. Save the page to finalize.</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                    </div>
+                </div>
+                <a href="#main-content" class="tut-back">Back to top &uarr;</a>
+
+                <!-- SECTION 6 -->
+                <div class="tut-section">
+                    <div class="tut-section-head" id="sec-editor">
+                        <div class="tut-section-num" aria-hidden="true">6</div>
+                        <h2>Rich Text Editor</h2>
+                    </div>
+                    <div class="tut-section-body">
+
+                        <p>Some fields — particularly long text answers in FAQs, accordion answers, and description fields — display a formatting toolbar above the text area. This is the Rich Text Editor.</p>
+
+                        <h3>Toolbar Buttons</h3>
+                        <div class="tut-table-wrap">
+                            <table class="tut-table">
+                                <thead><tr><th>Button</th><th>What It Does</th><th>When to Use</th></tr></thead>
+                                <tbody>
+                                    <tr><td><strong>B</strong> Bold</td><td>Wraps selected text in <code>&lt;strong&gt;</code> tags to make it bold on the page.</td><td>Highlight key terms, requirements, or important phrases. Use sparingly.</td></tr>
+                                    <tr><td><em>I</em> Italic</td><td>Wraps selected text in <code>&lt;em&gt;</code> tags to italicize it.</td><td>Document titles, technical terms, or gentle emphasis. Use sparingly.</td></tr>
+                                    <tr><td>&#8226; List</td><td>Inserts an unordered (bullet) list at the cursor position.</td><td>Eligibility criteria, document checklists, feature lists.</td></tr>
+                                    <tr><td>&#128279; Link</td><td>Inserts an anchor tag at the cursor. You'll be prompted for the URL and link text.</td><td>References to external resources, other pages, or downloadable forms.</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <h3>Character Count</h3>
+                        <p>Fields with a maximum length display a live character counter below the text area (e.g., "143 / 160 characters"). When you exceed the limit, the counter turns red. This most commonly applies to meta description fields — keep them under 160 characters for best search results.</p>
+
+                        <h3>Tips for Rich Text Fields</h3>
+                        <ul>
+                            <li><strong>Select first, then click the toolbar button</strong> — highlight text before clicking Bold or Italic.</li>
+                            <li><strong>Don't paste formatted content from Word or Google Docs</strong> — it may carry hidden formatting that breaks the layout. Paste as plain text first (Ctrl+Shift+V on most systems), then format using the toolbar.</li>
+                            <li><strong>Test all links before saving</strong> — paste the URL into a new browser tab to confirm it works before embedding it.</li>
+                            <li><strong>Use lists for three or more items</strong> — if you have two or fewer items, write them as inline text instead.</li>
+                        </ul>
+
+                    </div>
+                </div>
+                <a href="#main-content" class="tut-back">Back to top &uarr;</a>
+
+                <!-- SECTION 7 -->
+                <div class="tut-section">
+                    <div class="tut-section-head" id="sec-faq">
+                        <div class="tut-section-num" aria-hidden="true">7</div>
+                        <h2>FAQ Manager</h2>
+                    </div>
+                    <div class="tut-section-body">
+
+                        <p>The FAQ Manager controls all questions and answers displayed on the FAQ page and FAQ accordion sections across the site. Click <strong>FAQ Manager</strong> in the sidebar to open it.</p>
+
+                        <h3>Viewing and Filtering FAQs</h3>
+                        <ul>
+                            <li><strong>Category filter dropdown</strong> — show FAQs from one category only. Select "All Categories" to see everything.</li>
+                            <li><strong>Search field</strong> — filter by keywords in the question text. Results update as you type.</li>
+                        </ul>
+                        <p>The table displays: Category badge, Question (first 50 characters), Answer snippet (first 100 characters), Status (Active/Inactive), and action buttons.</p>
+
+                        <hr class="tut-rule">
+
+                        <h3>How to Create a New FAQ</h3>
+                        <div class="tut-steps">
+                            <div class="tut-step">
+                                <div class="tut-step-num" aria-hidden="true">1</div>
+                                <div class="tut-step-body">Click <span class="lbl lbl-green">+ New FAQ</span> above the table. The FAQ editor modal opens.</div>
+                            </div>
+                            <div class="tut-step">
+                                <div class="tut-step-num" aria-hidden="true">2</div>
+                                <div class="tut-step-body">Fill in the <strong>Category</strong> field. Select an existing category from the dropdown or type a new name. Categories group FAQs on the FAQ page under headings.</div>
+                            </div>
+                            <div class="tut-step">
+                                <div class="tut-step-num" aria-hidden="true">3</div>
+                                <div class="tut-step-body">Type the <strong>Question</strong> as a complete sentence (e.g., "How do I submit my capability statement?").</div>
+                            </div>
+                            <div class="tut-step">
+                                <div class="tut-step-num" aria-hidden="true">4</div>
+                                <div class="tut-step-body">Type the <strong>Answer</strong>. Use the Rich Text Editor toolbar if formatting is needed. Keep answers concise and direct.</div>
+                            </div>
+                            <div class="tut-step">
+                                <div class="tut-step-num" aria-hidden="true">5</div>
+                                <div class="tut-step-body">Set the <strong>Status</strong> dropdown to <em>Active</em> to make the FAQ visible on the site, or <em>Inactive</em> to save as a draft.</div>
+                            </div>
+                            <div class="tut-step">
+                                <div class="tut-step-num" aria-hidden="true">6</div>
+                                <div class="tut-step-body">Click <span class="lbl lbl-green">Save FAQ</span>. The new entry appears in the table immediately.</div>
+                            </div>
+                        </div>
+
+                        <hr class="tut-rule">
+
+                        <h3>Deactivating vs. Deleting an FAQ</h3>
+                        <div class="tut-table-wrap">
+                            <table class="tut-table">
+                                <thead><tr><th>Action</th><th>Result</th><th>When to Use</th></tr></thead>
+                                <tbody>
+                                    <tr><td><strong>Deactivate</strong> (set status to Inactive)</td><td>Hidden from the public site but preserved in the database</td><td>Temporarily remove a FAQ without losing the content (pending legal review, seasonal content)</td></tr>
+                                    <tr><td><strong>Delete</strong></td><td>Permanently removed from the database</td><td>The question is entirely obsolete and will never be needed again</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <hr class="tut-rule">
+
+                        <h3>How to Reorder FAQs with Drag-and-Drop</h3>
+                        <div class="tut-steps">
+                            <div class="tut-step">
+                                <div class="tut-step-num" aria-hidden="true">1</div>
+                                <div class="tut-step-body">Filter the FAQ table to show a single category using the Category dropdown.</div>
+                            </div>
+                            <div class="tut-step">
+                                <div class="tut-step-num" aria-hidden="true">2</div>
+                                <div class="tut-step-body">Click and hold the drag handle (&#9776; icon) on the left side of any FAQ row and drag it to the desired position.</div>
+                            </div>
+                            <div class="tut-step">
+                                <div class="tut-step-num" aria-hidden="true">3</div>
+                                <div class="tut-step-body">Click <span class="lbl lbl-green">Save Order</span> at the top of the table. The new display order is saved to the database.</div>
+                            </div>
+                        </div>
+
+                        <div class="tut-callout warning">
+                            <span class="tut-callout-icon" aria-hidden="true">⚠️</span>
+                            <div class="tut-callout-body">
+                                <strong>Save Order is a separate action</strong>
+                                <p>Reordering requires clicking the dedicated <strong>Save Order</strong> button — separate from the general Save button. If you close the FAQ Manager without clicking it, your reordering will be lost.</p>
+                            </div>
+                        </div>
+
+                        <hr class="tut-rule">
+
+                        <h3>How to Export FAQs</h3>
+                        <div class="tut-steps">
+                            <div class="tut-step">
+                                <div class="tut-step-num" aria-hidden="true">1</div>
+                                <div class="tut-step-body">Click <span class="lbl">Export FAQs</span> at the top of the FAQ Manager.</div>
+                            </div>
+                            <div class="tut-step">
+                                <div class="tut-step-num" aria-hidden="true">2</div>
+                                <div class="tut-step-body">Your browser downloads a JSON file containing all active FAQs — categories, questions, answers, and sort order. Use it as a backup or for content review outside the CMS.</div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+                <a href="#main-content" class="tut-back">Back to top &uarr;</a>
+
+                <!-- SECTION 8 -->
+                <div class="tut-section">
+                    <div class="tut-section-head" id="sec-global">
+                        <div class="tut-section-num" aria-hidden="true">8</div>
+                        <h2>Global Settings</h2>
+                    </div>
+                    <div class="tut-section-body">
+
+                        <p>Global Settings control site-wide values that appear across multiple pages. Click <strong>Global Settings</strong> in the sidebar to open it.</p>
+
+                        <div class="tut-callout danger">
+                            <span class="tut-callout-icon" aria-hidden="true">🚨</span>
+                            <div class="tut-callout-body">
+                                <strong>Changes are site-wide and immediate</strong>
+                                <p>When you save Global Settings, the changes take effect on <em>every page</em> of the website instantly. There is no preview mode. Double-check all values before clicking Save.</p>
+                            </div>
+                        </div>
+
+                        <h3>Available Global Settings Fields</h3>
+                        <div class="tut-table-wrap">
+                            <table class="tut-table">
+                                <thead><tr><th>Field</th><th>Where It Appears</th><th>Notes</th></tr></thead>
+                                <tbody>
+                                    <tr><td>Site Title</td><td>Browser tab title</td><td>Typically "WorkForce Connect" — change only if the program is rebranded</td></tr>
+                                    <tr><td>Site Description</td><td>Meta description fallback</td><td>Keep under 160 characters; should describe the site's purpose clearly</td></tr>
+                                    <tr><td>Contact Email</td><td>Footer, contact page, notifications</td><td>Use the official Caltrans program email; changes here update all footers</td></tr>
+                                    <tr><td>Phone Number</td><td>Footer and contact page</td><td>Format as (916) 324-1700 for consistency</td></tr>
+                                    <tr><td>Social Media Links</td><td>Footer social icons</td><td>Full URLs only; leave blank to hide that social icon</td></tr>
+                                    <tr><td>Logo URL</td><td>Site header and footer</td><td>Must be a URL to an image in the Media Library or an absolute external URL</td></tr>
+                                    <tr><td>Favicon URL</td><td>Browser tab icon</td><td>Small square image (32×32 or 16×16 pixels), preferably .ico or .png</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <h3>How to Update Global Settings</h3>
+                        <div class="tut-steps">
+                            <div class="tut-step">
+                                <div class="tut-step-num" aria-hidden="true">1</div>
+                                <div class="tut-step-body">Click <strong>Global Settings</strong> in the CMS sidebar. The settings form loads with all current values.</div>
+                            </div>
+                            <div class="tut-step">
+                                <div class="tut-step-num" aria-hidden="true">2</div>
+                                <div class="tut-step-body">Update only the fields you need to change — leave others as-is.</div>
+                            </div>
+                            <div class="tut-step">
+                                <div class="tut-step-num" aria-hidden="true">3</div>
+                                <div class="tut-step-body">Review your changes carefully, then click <span class="lbl lbl-green">Save Settings</span>. A success message confirms the save. Changes are live immediately.</div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+                <a href="#main-content" class="tut-back">Back to top &uarr;</a>
+
+                <!-- SECTION 9 -->
+                <div class="tut-section">
+                    <div class="tut-section-head" id="sec-media">
+                        <div class="tut-section-num" aria-hidden="true">9</div>
+                        <h2>Media Library</h2>
+                    </div>
+                    <div class="tut-section-body">
+
+                        <p>The Media Library is a centralized repository for all images used in CMS-editable sections. Click <strong>Media Library</strong> in the sidebar to open it. All uploaded images are shown as a grid of thumbnails.</p>
+
+                        <hr class="tut-rule">
+
+                        <h3>How to Upload an Image</h3>
+                        <div class="tut-steps">
+                            <div class="tut-step">
+                                <div class="tut-step-num" aria-hidden="true">1</div>
+                                <div class="tut-step-body">In the Media Library, locate the <strong>Upload Image</strong> section below the media grid.</div>
+                            </div>
+                            <div class="tut-step">
+                                <div class="tut-step-num" aria-hidden="true">2</div>
+                                <div class="tut-step-body">Click <strong>Choose File</strong> (or drag and drop a file onto the upload area). Accepted formats: JPEG, PNG, GIF, WebP, SVG. Maximum file size: <strong>10 MB</strong>.</div>
+                            </div>
+                            <div class="tut-step">
+                                <div class="tut-step-num" aria-hidden="true">3</div>
+                                <div class="tut-step-body">In the <strong>Alt Text</strong> field, type a description of the image. This is <strong>required</strong> by Caltrans accessibility policy. Write what the image shows — for example, "Construction workers installing a guardrail on a California highway" — not generic text like "image" or "photo."</div>
+                            </div>
+                            <div class="tut-step">
+                                <div class="tut-step-num" aria-hidden="true">4</div>
+                                <div class="tut-step-body">Click <span class="lbl lbl-green">Upload</span>. The image is uploaded to the server and appears in the media grid immediately.</div>
+                            </div>
+                        </div>
+
+                        <div class="tut-callout warning">
+                            <span class="tut-callout-icon" aria-hidden="true">⚠️</span>
+                            <div class="tut-callout-body">
+                                <strong>Alt text is required — and matters</strong>
+                                <p>Screen reader users cannot see images; they rely entirely on alt text. Write descriptive, specific alt text for every image. Never use filenames as alt text.</p>
+                            </div>
+                        </div>
+
+                        <h4>Image Size Recommendations</h4>
+                        <div class="tut-table-wrap">
+                            <table class="tut-table">
+                                <thead><tr><th>Use Case</th><th>Recommended Size</th><th>Format</th></tr></thead>
+                                <tbody>
+                                    <tr><td>Hero / Banner background</td><td>1400 × 600 px minimum</td><td>JPEG (smaller file size)</td></tr>
+                                    <tr><td>Card images</td><td>600 × 400 px</td><td>JPEG or WebP</td></tr>
+                                    <tr><td>Logos / Icons</td><td>200 × 200 px (square)</td><td>PNG or SVG</td></tr>
+                                    <tr><td>Thumbnails</td><td>400 × 300 px</td><td>JPEG or WebP</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div class="tut-callout tip">
+                            <span class="tut-callout-icon" aria-hidden="true">💡</span>
+                            <div class="tut-callout-body">
+                                <strong>Optimize before uploading</strong>
+                                <p>Large images slow down page load for all visitors. Compress your images using <a href="https://squoosh.app" target="_blank" rel="noopener noreferrer">Squoosh</a> or <a href="https://tinypng.com" target="_blank" rel="noopener noreferrer">TinyPNG</a> before uploading. Aim for under 300 KB for most images.</p>
+                            </div>
+                        </div>
+
+                        <hr class="tut-rule">
+
+                        <h3>How to Select an Image When Editing a Section</h3>
+                        <div class="tut-steps">
+                            <div class="tut-step">
+                                <div class="tut-step-num" aria-hidden="true">1</div>
+                                <div class="tut-step-body">While editing a section with a <code>media</code>-type field, click <span class="lbl">Choose Image</span>. The Media Picker modal opens.</div>
+                            </div>
+                            <div class="tut-step">
+                                <div class="tut-step-num" aria-hidden="true">2</div>
+                                <div class="tut-step-body">Click the image thumbnail you want to select. The modal closes and the image is applied to the section.</div>
+                            </div>
+                            <div class="tut-step">
+                                <div class="tut-step-num" aria-hidden="true">3</div>
+                                <div class="tut-step-body">The image's existing alt text is filled in automatically. Override it if this specific usage needs a different description. Click <span class="lbl lbl-green">Save</span>.</div>
+                            </div>
+                        </div>
+
+                        <hr class="tut-rule">
+
+                        <h3>How to Delete a Media File</h3>
+                        <div class="tut-steps">
+                            <div class="tut-step">
+                                <div class="tut-step-num" aria-hidden="true">1</div>
+                                <div class="tut-step-body">In the Media Library grid, click the <span class="lbl lbl-red">Delete</span> button below the image thumbnail.</div>
+                            </div>
+                            <div class="tut-step">
+                                <div class="tut-step-num" aria-hidden="true">2</div>
+                                <div class="tut-step-body">Confirm in the dialog. The file is permanently deleted from the server.</div>
+                            </div>
+                        </div>
+
+                        <div class="tut-callout danger">
+                            <span class="tut-callout-icon" aria-hidden="true">🚫</span>
+                            <div class="tut-callout-body">
+                                <strong>Check before deleting</strong>
+                                <p>If an image is currently used in a page section, deleting it from the Media Library will cause that section to display a broken image. Before deleting, find and replace any uses of that image in page sections first.</p>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+                <a href="#main-content" class="tut-back">Back to top &uarr;</a>
+
+                <!-- SECTION 10 -->
+                <div class="tut-section">
+                    <div class="tut-section-head" id="sec-password">
+                        <div class="tut-section-num" aria-hidden="true">10</div>
+                        <h2>Changing Your Password</h2>
+                    </div>
+                    <div class="tut-section-body">
+
+                        <p>You can update your CMS login password directly within the CMS — no need to contact a developer or administrator.</p>
+
+                        <h3>How to Change Your CMS Password</h3>
+                        <div class="tut-steps">
+                            <div class="tut-step">
+                                <div class="tut-step-num" aria-hidden="true">1</div>
+                                <div class="tut-step-body">Click <strong>Change Password</strong> in the CMS sidebar (near the bottom).</div>
+                            </div>
+                            <div class="tut-step">
+                                <div class="tut-step-num" aria-hidden="true">2</div>
+                                <div class="tut-step-body">Enter your <strong>Current Password</strong> in the first field.</div>
+                            </div>
+                            <div class="tut-step">
+                                <div class="tut-step-num" aria-hidden="true">3</div>
+                                <div class="tut-step-body">Enter your new password in the <strong>New Password</strong> field. Minimum 8 characters; mix uppercase and lowercase letters and include at least one number or special character.</div>
+                            </div>
+                            <div class="tut-step">
+                                <div class="tut-step-num" aria-hidden="true">4</div>
+                                <div class="tut-step-body">Enter your new password again in the <strong>Confirm New Password</strong> field to catch any typos.</div>
+                            </div>
+                            <div class="tut-step">
+                                <div class="tut-step-num" aria-hidden="true">5</div>
+                                <div class="tut-step-body">Click <span class="lbl lbl-green">Update Password</span>. A confirmation message appears. Your new password takes effect immediately and you'll need it at the next login.</div>
+                            </div>
+                        </div>
+
+                        <h3>Password Best Practices</h3>
+                        <ul>
+                            <li>Change your password every 90 days, or immediately if you suspect it has been compromised.</li>
+                            <li>Never use a password you use on any other website or application.</li>
+                            <li>Do not share your CMS password with colleagues — each admin should have their own account.</li>
+                            <li>Consider using a password manager (such as 1Password or Bitwarden) to generate and store a strong, unique password.</li>
+                        </ul>
+
+                    </div>
+                </div>
+                <a href="#main-content" class="tut-back">Back to top &uarr;</a>
+
+                <!-- SECTION 11 -->
+                <div class="tut-section">
+                    <div class="tut-section-head" id="sec-bestpractices">
+                        <div class="tut-section-num" aria-hidden="true">11</div>
+                        <h2>Best Practices</h2>
+                    </div>
+                    <div class="tut-section-body">
+
+                        <h3>Content Quality Standards</h3>
+                        <ul>
+                            <li><strong>Write in plain language.</strong> Avoid jargon. If a 10th-grader can't understand your content, rewrite it. Caltrans accessibility standards require plain language across all public-facing content.</li>
+                            <li><strong>Be consistent.</strong> Use the same terminology throughout the site. Always write "Small Business Enterprise" on first reference, followed by "(SBE)" in parentheses.</li>
+                            <li><strong>Keep sentences short.</strong> Aim for 20 words or fewer per sentence in body copy.</li>
+                            <li><strong>Proofread before saving.</strong> Changes go live immediately. Read your content aloud before clicking Save.</li>
+                        </ul>
+
+                        <h3>Accessibility Requirements</h3>
+                        <ul>
+                            <li><strong>Always provide alt text for images.</strong> Never leave the alt text field blank when uploading to the Media Library.</li>
+                            <li><strong>Don't use color alone to convey meaning.</strong> Make sure the meaning is also clear from the text itself.</li>
+                            <li><strong>Test your links.</strong> Every URL you add must be valid and working at the time you publish it.</li>
+                        </ul>
+
+                        <h3>Preview Before Publishing</h3>
+                        <div class="tut-steps">
+                            <div class="tut-step">
+                                <div class="tut-step-num" aria-hidden="true">1</div>
+                                <div class="tut-step-body">After saving, click the <span class="lbl">View</span> button (live page link) on the page in the Pages list.</div>
+                            </div>
+                            <div class="tut-step">
+                                <div class="tut-step-num" aria-hidden="true">2</div>
+                                <div class="tut-step-body">Review the page in the live view on a desktop-sized window, then resize or use DevTools to check the mobile view.</div>
+                            </div>
+                            <div class="tut-step">
+                                <div class="tut-step-num" aria-hidden="true">3</div>
+                                <div class="tut-step-body">If anything looks wrong, return to the CMS and make corrections.</div>
+                            </div>
+                        </div>
+
+                        <h3>Content Review Workflow</h3>
+                        <p>For significant content updates — especially program eligibility requirements, fee information, or legal language — follow this review process before publishing:</p>
+                        <div class="tut-steps">
+                            <div class="tut-step">
+                                <div class="tut-step-num" aria-hidden="true">1</div>
+                                <div class="tut-step-body">Draft the content in a shared Google Doc or Word document.</div>
+                            </div>
+                            <div class="tut-step">
+                                <div class="tut-step-num" aria-hidden="true">2</div>
+                                <div class="tut-step-body">Have at least one colleague review the draft for accuracy and clarity.</div>
+                            </div>
+                            <div class="tut-step">
+                                <div class="tut-step-num" aria-hidden="true">3</div>
+                                <div class="tut-step-body">Obtain approval from the program manager or legal team for content involving program rules or compliance language.</div>
+                            </div>
+                            <div class="tut-step">
+                                <div class="tut-step-num" aria-hidden="true">4</div>
+                                <div class="tut-step-body">Only then enter the reviewed, approved content into the CMS and save.</div>
+                            </div>
+                        </div>
+
+                        <div class="tut-callout success">
+                            <span class="tut-callout-icon" aria-hidden="true">✅</span>
+                            <div class="tut-callout-body">
+                                <strong>Good content update cadence</strong>
+                                <p>Review and refresh the FAQ and program overview pages at least quarterly. Outdated information — especially around deadlines, contact details, and program requirements — erodes user trust and can cause compliance issues.</p>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+                <a href="#main-content" class="tut-back">Back to top &uarr;</a>
+
+                <!-- SECTION 12 -->
+                <div class="tut-section">
+                    <div class="tut-section-head" id="sec-troubleshooting">
+                        <div class="tut-section-num" aria-hidden="true">12</div>
+                        <h2>Troubleshooting</h2>
+                    </div>
+                    <div class="tut-section-body">
+
+                        <h3>My login is failing even though my password is correct</h3>
+                        <ul>
+                            <li>Confirm you are going to <code>/admin-cms.html</code>, not <code>/login.html</code> (which is the platform login for vendors and agencies).</li>
+                            <li>Check for browser autofill filling in an old password — clear the field and type manually.</li>
+                            <li>Your session may have been invalidated by a password change. Try logging in from a fresh browser tab.</li>
+                            <li>If the problem persists, contact the platform administrator to reset your CMS credentials.</li>
+                        </ul>
+
+                        <h3>I saved a page but my changes are not showing on the live site</h3>
+                        <ul>
+                            <li>Hard-refresh the live page: press <strong>Ctrl+Shift+R</strong> (Windows) or <strong>Cmd+Shift+R</strong> (Mac) to bypass the browser cache.</li>
+                            <li>Open the live page in a private/incognito window — this always loads fresh content.</li>
+                            <li>If the old content still shows after a hard refresh, check that the save action completed successfully (look for the green "Saved" confirmation in the CMS).</li>
+                        </ul>
+
+                        <h3>I can't upload an image — the upload gives an error</h3>
+                        <ul>
+                            <li>Verify the file is one of the accepted formats: JPEG, PNG, GIF, WebP, SVG.</li>
+                            <li>Check the file size — it must be under 10 MB. Compress the image and try again.</li>
+                            <li>Ensure you have filled in the Alt Text field — the upload will not proceed without it.</li>
+                        </ul>
+
+                        <h3>My FAQ reordering was not saved</h3>
+                        <p>After dragging FAQs to their new positions, you must click the dedicated <strong>Save Order</strong> button at the top of the FAQ table. This is a separate action from the general Save button.</p>
+
+                        <h3>I deleted a section or page by mistake</h3>
+                        <p>Deletions in the CMS are permanent and cannot be undone from within the tool. If the deletion was very recent, contact the server administrator immediately to request a database restore from backup. For small sections, recreate the content manually using the Add Section feature.</p>
+
+                        <hr class="tut-rule">
+
+                        <h3>Getting Help</h3>
+                        <ul>
+                            <li><strong>Support:</strong> Use the <a href="contact.html">Contact Page</a> for assistance.</li>
+                            <li><strong>Phone:</strong> (916) 324-1700</li>
+                            <li><strong>Platform Admin Guide:</strong> <a href="admin-tutorial.html">Platform Admin Tutorial</a></li>
+                        </ul>
+
+                    </div>
+                </div>
+                <a href="#main-content" class="tut-back">Back to top &uarr;</a>
+
+            </div><!-- /.tut-main -->
+        </div><!-- /.tut-layout -->
+    </main>
+
+    </main>
+
+    <script src="js/config.js?v=1774549569000"></script>
+    <script src="js/main.js?v=1774549569000"></script>
+    <script src="js/accessibility-widget.js?v=1774549569000"></script>
+</body>
+</html>

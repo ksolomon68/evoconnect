@@ -1,0 +1,705 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="WorkForce Connect Labor connects skilled trade workers displaced by layoffs to active government contracts and the prime contractors who need you now. Register free.">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://workforceconnect.io/labor.html">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://workforceconnect.io/labor.html">
+  <meta property="og:title" content="WorkForce Connect Labor | Connect Your Trade to Government Contracts">
+  <meta property="og:description" content="Skilled trade workers get matched to active government contracts and connected with prime contractors who need them now.">
+  <meta property="og:image" content="https://workforceconnect.io/assets/og-image.jpg">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:url" content="https://workforceconnect.io/labor.html">
+  <meta name="twitter:title" content="WorkForce Connect Labor | Connect Your Trade to Government Contracts">
+  <meta name="twitter:description" content="Skilled trade workers get matched to active government contracts and connected with prime contractors who need them now.">
+  <meta name="twitter:image" content="https://workforceconnect.io/assets/og-image.jpg">
+  <title>WorkForce Connect Labor | Connect Your Trade to Government Contracts</title>
+  <link rel="icon" href="assets/favicon.ico" type="image/x-icon">
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#0A1628">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="WorkForce Connect">
+  <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+  <link rel="stylesheet" href="css/design-system.css?v=1774555160000">
+  <link rel="stylesheet" href="css/main.css?v=1774555160000">
+  <link rel="stylesheet" href="css/accessibility-widget.css?v=1774549569000">
+
+  <style>
+    :root {
+      --navy:  #0A1628;
+      --cyan:  #00B4D8;
+      --gold:  #C9A84C;
+      --white: #FFFFFF;
+      --gray-100: #F4F6F9;
+      --gray-200: #E4E8EF;
+      --gray-600: #4B5563;
+    }
+
+    /* ── Hero ─────────────────────────────────────────────── */
+    .lb-hero {
+      background: linear-gradient(135deg, var(--navy) 0%, #0d1f3c 100%);
+      color: var(--white);
+      padding: 5rem 1.5rem 4rem;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .lb-hero::before {
+      content: '';
+      position: absolute;
+      top: -60px; right: -60px;
+      width: 360px; height: 360px;
+      background: radial-gradient(circle, rgba(0,180,216,0.14) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .lb-hero::after {
+      content: '';
+      position: absolute;
+      bottom: -40px; left: -40px;
+      width: 280px; height: 280px;
+      background: radial-gradient(circle, rgba(201,168,76,0.08) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .lb-portal-badge {
+      display: inline-block;
+      background: rgba(201,168,76,0.18);
+      border: 1px solid rgba(201,168,76,0.5);
+      color: var(--gold);
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 0.35rem 1rem;
+      border-radius: 999px;
+      margin-bottom: 1.5rem;
+    }
+    .lb-hero h1 {
+      font-size: clamp(2rem, 5vw, 3.2rem);
+      font-weight: 800;
+      line-height: 1.15;
+      color: var(--white);
+      margin-bottom: 1.25rem;
+      max-width: 780px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .lb-hero h1 span { color: var(--cyan); }
+    .lb-hero-sub {
+      font-size: 1.1rem;
+      color: rgba(255,255,255,0.82);
+      max-width: 640px;
+      margin: 0 auto 2.5rem;
+      line-height: 1.7;
+    }
+    .lb-hero-ctas {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+    .btn-lb-primary {
+      background: var(--cyan);
+      color: var(--navy);
+      font-weight: 700;
+      font-size: 1rem;
+      padding: 0.85rem 2rem;
+      border-radius: 6px;
+      text-decoration: none;
+      display: inline-block;
+      transition: background 0.2s, transform 0.15s;
+    }
+    .btn-lb-primary:hover { background: #00c8f0; transform: translateY(-1px); }
+    .btn-lb-outline {
+      background: transparent;
+      color: var(--white);
+      font-weight: 600;
+      font-size: 1rem;
+      padding: 0.85rem 2rem;
+      border-radius: 6px;
+      border: 2px solid rgba(255,255,255,0.45);
+      text-decoration: none;
+      display: inline-block;
+      transition: border-color 0.2s, transform 0.15s;
+    }
+    .btn-lb-outline:hover { border-color: var(--white); transform: translateY(-1px); }
+
+    /* ── Shared section styles ────────────────────────────── */
+    .lb-section {
+      padding: 4.5rem 1.5rem;
+    }
+    .lb-section-alt {
+      background: var(--gray-100);
+    }
+    .lb-container {
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+    .lb-eyebrow {
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--cyan);
+      margin-bottom: 0.75rem;
+    }
+    .lb-heading {
+      font-size: clamp(1.6rem, 3vw, 2.2rem);
+      font-weight: 800;
+      color: var(--navy);
+      line-height: 1.2;
+      margin-bottom: 1rem;
+    }
+    .lb-subtext {
+      color: var(--gray-600);
+      font-size: 1rem;
+      line-height: 1.7;
+      max-width: 620px;
+    }
+    .lb-text-center { text-align: center; }
+    .lb-subtext-center { margin-left: auto; margin-right: auto; text-align: center; }
+
+    /* ── How It Works steps ───────────────────────────────── */
+    .lb-steps {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+      gap: 2rem;
+      margin-top: 3rem;
+    }
+    .lb-step {
+      text-align: center;
+      padding: 0 0.75rem;
+    }
+    .lb-step-num {
+      width: 56px; height: 56px;
+      background: var(--navy);
+      color: var(--cyan);
+      font-weight: 800;
+      font-size: 1.3rem;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 1rem;
+      border: 2px solid var(--cyan);
+    }
+    .lb-step h3 {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--navy);
+      margin-bottom: 0.5rem;
+    }
+    .lb-step p {
+      color: var(--gray-600);
+      font-size: 0.9rem;
+      line-height: 1.65;
+      margin: 0;
+    }
+
+    /* ── HIGH DEMAND Banner ───────────────────────────────── */
+    .lb-demand-banner {
+      background: var(--navy);
+      border: 2px solid var(--cyan);
+      border-radius: 12px;
+      padding: 2.5rem 2rem;
+      margin-top: 2rem;
+      position: relative;
+      overflow: hidden;
+    }
+    .lb-demand-banner::before {
+      content: '';
+      position: absolute;
+      top: 0; right: 0;
+      width: 300px; height: 200px;
+      background: radial-gradient(circle at top right, rgba(0,180,216,0.12) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .lb-demand-badge {
+      display: inline-block;
+      background: var(--cyan);
+      color: var(--navy);
+      font-size: 0.68rem;
+      font-weight: 800;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      padding: 0.3rem 0.9rem;
+      border-radius: 999px;
+      margin-bottom: 1rem;
+    }
+    .lb-demand-banner h3 {
+      font-size: clamp(1.25rem, 2.5vw, 1.65rem);
+      font-weight: 800;
+      color: var(--white);
+      margin-bottom: 0.75rem;
+      line-height: 1.25;
+    }
+    .lb-demand-banner p {
+      color: rgba(255,255,255,0.82);
+      font-size: 0.98rem;
+      line-height: 1.7;
+      max-width: 700px;
+      margin: 0;
+    }
+    .lb-demand-stats {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 2rem;
+      margin-top: 1.75rem;
+    }
+    .lb-demand-stat strong {
+      display: block;
+      font-size: 1.75rem;
+      font-weight: 800;
+      color: var(--cyan);
+      line-height: 1;
+      margin-bottom: 0.25rem;
+    }
+    .lb-demand-stat span {
+      font-size: 0.82rem;
+      color: rgba(255,255,255,0.68);
+    }
+
+    /* ── Trades Grid ──────────────────────────────────────── */
+    .lb-trades-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 1rem;
+      margin-top: 2.5rem;
+    }
+    .lb-trade-card {
+      background: var(--white);
+      border: 1px solid var(--gray-200);
+      border-radius: 10px;
+      padding: 1.25rem 1rem;
+      transition: box-shadow 0.2s, border-color 0.2s;
+    }
+    .lb-trade-card:hover {
+      box-shadow: 0 4px 18px rgba(10,22,40,0.1);
+      border-color: var(--cyan);
+    }
+    .lb-trade-card.telecom {
+      border-color: rgba(0,180,216,0.45);
+      box-shadow: 0 0 0 1px rgba(0,180,216,0.2), 0 2px 12px rgba(0,180,216,0.1);
+    }
+    .lb-trade-card.telecom:hover {
+      box-shadow: 0 0 0 2px var(--cyan), 0 4px 20px rgba(0,180,216,0.2);
+    }
+    .lb-trade-name {
+      font-weight: 700;
+      color: var(--navy);
+      font-size: 0.95rem;
+      margin-bottom: 0.5rem;
+    }
+    .lb-trade-telecom-badge {
+      display: inline-block;
+      background: rgba(0,180,216,0.12);
+      color: var(--cyan);
+      font-size: 0.62rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 2px 8px;
+      border-radius: 999px;
+      margin-bottom: 0.5rem;
+    }
+    .lb-trade-naics {
+      font-size: 0.75rem;
+      color: var(--gray-600);
+      line-height: 1.5;
+    }
+
+    /* ── Platform Features ────────────────────────────────── */
+    .lb-features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.5rem;
+      margin-top: 2.5rem;
+    }
+    .lb-feature-card {
+      background: var(--white);
+      border: 1px solid var(--gray-200);
+      border-radius: 10px;
+      padding: 1.75rem 1.5rem;
+      transition: box-shadow 0.2s;
+    }
+    .lb-feature-card:hover { box-shadow: 0 4px 20px rgba(10,22,40,0.09); }
+    .lb-feature-icon {
+      width: 44px; height: 44px;
+      background: rgba(0,180,216,0.1);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 1rem;
+      color: var(--cyan);
+    }
+    .lb-feature-card h3 {
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--navy);
+      margin-bottom: 0.45rem;
+    }
+    .lb-feature-card p {
+      color: var(--gray-600);
+      font-size: 0.88rem;
+      line-height: 1.65;
+      margin: 0;
+    }
+
+    /* ── CTA section ──────────────────────────────────────── */
+    .lb-cta {
+      background: var(--navy);
+      color: var(--white);
+      text-align: center;
+      padding: 4.5rem 1.5rem;
+    }
+    .lb-cta h2 {
+      font-size: clamp(1.6rem, 3vw, 2.2rem);
+      font-weight: 800;
+      color: var(--white);
+      margin-bottom: 0.75rem;
+      max-width: 640px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .lb-cta p {
+      color: rgba(255,255,255,0.75);
+      font-size: 1.05rem;
+      margin-bottom: 2rem;
+    }
+
+    @media (max-width: 600px) {
+      .lb-hero { padding: 3.5rem 1rem 3rem; }
+      .lb-demand-stats { gap: 1.25rem; }
+      .lb-demand-banner { padding: 1.75rem 1.25rem; }
+    }
+  </style>
+</head>
+
+<body>
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+
+  <!-- ── Site Header ──────────────────────────────────────── -->
+  <header class="site-header" role="banner">
+    <div class="container">
+      <a href="index.html" class="site-logo">
+        <img src="images/logo-light.png" alt="WorkForce Connect Logo">
+      </a>
+      <button class="nav-toggle" aria-label="Toggle navigation" aria-expanded="false"><span></span></button>
+      <nav class="main-nav" role="navigation" aria-label="Main navigation">
+        <ul>
+          <li><a href="index.html">Home</a></li>
+          <li><a href="how-it-works.html">How It Works</a></li>
+          <li><a href="trades.html">Trades</a></li>
+          <li><a href="checklist.html">Checklist</a></li>
+          <li><a href="faq.html">FAQ</a></li>
+          <li><a href="contact.html">Contact</a></li>
+          <li><a href="register-worker.html" class="btn btn-primary btn-small">Register Free</a></li>
+          <li><a href="login.html" class="btn btn-secondary btn-small">Log In</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main-content">
+
+    <!-- ── Section 1: Hero ──────────────────────────────── -->
+    <section class="lb-hero" aria-labelledby="labor-hero-title">
+      <div class="lb-container">
+        <div class="lb-portal-badge">Portal 2 &bull; Labor</div>
+        <h1 id="labor-hero-title">
+          Your Trade Is<br><span>Government Contract Ready.</span>
+        </h1>
+        <p class="lb-hero-sub">
+          WorkForce Connect Labor connects skilled workers displaced by layoffs to active government
+          contracts and the prime contractors who need you now. Register your skills free —
+          get matched to real contract opportunities in minutes.
+        </p>
+        <div class="lb-hero-ctas">
+          <a href="register-worker.html" class="btn-lb-primary">Register Your Skills Free</a>
+          <a href="index.html" class="btn-lb-outline">Back to All Portals</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── Section 2: How It Works ──────────────────────── -->
+    <section class="lb-section lb-section-alt" aria-labelledby="how-title">
+      <div class="lb-container">
+        <p class="lb-eyebrow lb-text-center">The Process</p>
+        <h2 id="how-title" class="lb-heading lb-text-center">Four Steps to a Government Contract</h2>
+        <p class="lb-subtext lb-subtext-center" style="margin-top:0.5rem;">
+          No experience with government contracting needed. We walk you through every step.
+        </p>
+        <div class="lb-steps">
+          <div class="lb-step">
+            <div class="lb-step-num" aria-hidden="true">1</div>
+            <h3>Register Your Skills</h3>
+            <p>Create your free worker profile in under 5 minutes. Select your trade, list your certifications, and tell us where you can work.</p>
+          </div>
+          <div class="lb-step">
+            <div class="lb-step-num" aria-hidden="true">2</div>
+            <h3>Get Contract Matches</h3>
+            <p>Our platform instantly maps your trade to active NAICS-coded government contracts using a skills-to-contract matching engine.</p>
+          </div>
+          <div class="lb-step">
+            <div class="lb-step-num" aria-hidden="true">3</div>
+            <h3>Complete Vendor Checklist</h3>
+            <p>Work through our guided vendor readiness checklist: SAM.gov registration, capability statement, set-aside education, and more.</p>
+          </div>
+          <div class="lb-step">
+            <div class="lb-step-num" aria-hidden="true">4</div>
+            <h3>Connect With Primes</h3>
+            <p>Prime contractors actively searching for your trade category can find your profile and send you a direct connection request.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── Section 3: HIGH DEMAND Banner ────────────────── -->
+    <section class="lb-section" aria-labelledby="demand-title">
+      <div class="lb-container">
+        <div class="lb-demand-banner" role="region" aria-labelledby="demand-title">
+          <div class="lb-demand-badge">High Demand &bull; BEAD Program</div>
+          <h2 id="demand-title" style="font-size:clamp(1.25rem,2.5vw,1.65rem);font-weight:800;color:#fff;margin-bottom:0.75rem;line-height:1.25;">
+            $42.45 Billion in Federal Broadband Infrastructure Is Being Deployed Now
+          </h2>
+          <p>
+            The BEAD (Broadband Equity, Access, and Deployment) Program is the largest federal broadband
+            investment in U.S. history. Fiber installers, cell site technicians, structured cabling specialists,
+            and telecom infrastructure workers are urgently needed across every state. Prime contractors are
+            actively searching for qualified workers to staff these contracts today.
+          </p>
+          <div class="lb-demand-stats">
+            <div class="lb-demand-stat">
+              <strong>$42.45B</strong>
+              <span>Federal BEAD allocation</span>
+            </div>
+            <div class="lb-demand-stat">
+              <strong>50</strong>
+              <span>States + territories receiving funding</span>
+            </div>
+            <div class="lb-demand-stat">
+              <strong>5+</strong>
+              <span>Telecom NAICS codes in high demand</span>
+            </div>
+            <div class="lb-demand-stat">
+              <strong>Now</strong>
+              <span>Contracts actively being staffed</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── Section 4: Trades We Serve ───────────────────── -->
+    <section class="lb-section lb-section-alt" aria-labelledby="trades-title">
+      <div class="lb-container">
+        <p class="lb-eyebrow">Eligible Trades</p>
+        <h2 id="trades-title" class="lb-heading">Trades We Serve</h2>
+        <p class="lb-subtext">
+          Every trade below maps to active government contract categories (NAICS codes).
+          Telecom trades are highlighted due to the BEAD program surge.
+        </p>
+        <div class="lb-trades-grid">
+
+          <div class="lb-trade-card telecom">
+            <div class="lb-trade-telecom-badge">High Demand</div>
+            <div class="lb-trade-name">Fiber / Broadband Installer</div>
+            <div class="lb-trade-naics">NAICS: 237130 &bull; 517311</div>
+          </div>
+
+          <div class="lb-trade-card telecom">
+            <div class="lb-trade-telecom-badge">High Demand</div>
+            <div class="lb-trade-name">Cell Site Technician</div>
+            <div class="lb-trade-naics">NAICS: 517311 &bull; 238210</div>
+          </div>
+
+          <div class="lb-trade-card telecom">
+            <div class="lb-trade-telecom-badge">High Demand</div>
+            <div class="lb-trade-name">Structured Cabling / DI</div>
+            <div class="lb-trade-naics">NAICS: 238210 &bull; 517410</div>
+          </div>
+
+          <div class="lb-trade-card telecom">
+            <div class="lb-trade-telecom-badge">High Demand</div>
+            <div class="lb-trade-name">Cloud / Network Infrastructure</div>
+            <div class="lb-trade-naics">NAICS: 541512 &bull; 517210</div>
+          </div>
+
+          <div class="lb-trade-card">
+            <div class="lb-trade-name">CDL / Trucking</div>
+            <div class="lb-trade-naics">NAICS: 484110 &bull; 484121 &bull; 484122 &bull; 488490</div>
+          </div>
+
+          <div class="lb-trade-card">
+            <div class="lb-trade-name">Concrete / Cement</div>
+            <div class="lb-trade-naics">NAICS: 238110 &bull; 238190 &bull; 237310</div>
+          </div>
+
+          <div class="lb-trade-card">
+            <div class="lb-trade-name">Construction General</div>
+            <div class="lb-trade-naics">NAICS: 236220 &bull; 237110 &bull; 237310 &bull; 238900</div>
+          </div>
+
+          <div class="lb-trade-card">
+            <div class="lb-trade-name">Welding / Fabrication</div>
+            <div class="lb-trade-naics">NAICS: 332312 &bull; 332313 &bull; 811310</div>
+          </div>
+
+          <div class="lb-trade-card">
+            <div class="lb-trade-name">Electrical</div>
+            <div class="lb-trade-naics">NAICS: 238210</div>
+          </div>
+
+          <div class="lb-trade-card">
+            <div class="lb-trade-name">Plumbing / HVAC</div>
+            <div class="lb-trade-naics">NAICS: 238220</div>
+          </div>
+
+          <div class="lb-trade-card">
+            <div class="lb-trade-name">Landscaping</div>
+            <div class="lb-trade-naics">NAICS: 561730</div>
+          </div>
+
+          <div class="lb-trade-card">
+            <div class="lb-trade-name">IT Support</div>
+            <div class="lb-trade-naics">NAICS: 541511 &bull; 541512 &bull; 811212</div>
+          </div>
+
+          <div class="lb-trade-card">
+            <div class="lb-trade-name">Admin / Clerical</div>
+            <div class="lb-trade-naics">NAICS: 561110 &bull; 561320</div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- ── Section 5: Platform Features ─────────────────── -->
+    <section class="lb-section" aria-labelledby="features-title">
+      <div class="lb-container">
+        <p class="lb-eyebrow lb-text-center">What You Get</p>
+        <h2 id="features-title" class="lb-heading lb-text-center">Platform Features</h2>
+        <p class="lb-subtext lb-subtext-center" style="margin-top:0.5rem;">
+          Everything you need to go from skilled worker to government contract-ready.
+        </p>
+        <div class="lb-features-grid">
+
+          <div class="lb-feature-card">
+            <div class="lb-feature-icon" aria-hidden="true">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+            </div>
+            <h3>Skills-to-NAICS Matching</h3>
+            <p>Your trade category is automatically mapped to the official government NAICS codes used to award contracts — so you appear in the right searches.</p>
+          </div>
+
+          <div class="lb-feature-card">
+            <div class="lb-feature-icon" aria-hidden="true">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
+            </div>
+            <h3>Vendor Readiness Checklist</h3>
+            <p>A guided step-by-step checklist covers SAM.gov registration, entity setup, capability statement creation, and set-aside certification paths.</p>
+          </div>
+
+          <div class="lb-feature-card">
+            <div class="lb-feature-icon" aria-hidden="true">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
+            </div>
+            <h3>Prime Contractor Directory</h3>
+            <p>Browse prime contractors actively working government contracts in your trade category and geographic area. Connect directly through the platform.</p>
+          </div>
+
+          <div class="lb-feature-card">
+            <div class="lb-feature-icon" aria-hidden="true">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
+            </div>
+            <h3>SAM.gov Opportunity Feed</h3>
+            <p>Live feed of federal contracting opportunities filtered to your NAICS codes so you always know what active contracts match your skill set.</p>
+          </div>
+
+          <div class="lb-feature-card">
+            <div class="lb-feature-icon" aria-hidden="true">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+            </div>
+            <h3>Capability Statement Generator</h3>
+            <p>Build a professional one-page capability statement from your profile. Export as PDF — the standard document prime contractors and agencies require.</p>
+          </div>
+
+          <div class="lb-feature-card">
+            <div class="lb-feature-icon" aria-hidden="true">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            </div>
+            <h3>Set-Aside Education</h3>
+            <p>Learn about 8(a), HUBZone, SDVOSB, WOSB, and other set-aside programs that can give your business preferential treatment on government bids.</p>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- ── Section 6: CTA ────────────────────────────────── -->
+    <section class="lb-cta" aria-labelledby="cta-title">
+      <h2 id="cta-title">Ready to Connect Your Trade to the Contract?</h2>
+      <p>Registration is free. It takes less than 5 minutes. Get matched to real government contract opportunities today.</p>
+      <a href="register-worker.html" class="btn-lb-primary" style="font-size:1.05rem;padding:1rem 2.5rem;">Register My Skills Free</a>
+    </section>
+
+  </main>
+
+  <!-- ── Footer ───────────────────────────────────────────── -->
+  <footer class="site-footer" role="contentinfo">
+    <div class="container">
+      <div class="footer-content">
+        <div class="footer-section">
+          <h3>Get Started</h3>
+          <ul>
+            <li><a href="register-worker.html">Register Free</a></li>
+            <li><a href="how-it-works.html">How It Works</a></li>
+            <li><a href="checklist.html">Vendor Checklist</a></li>
+            <li><a href="trades.html">Trade Directory</a></li>
+          </ul>
+        </div>
+        <div class="footer-section">
+          <h3>Resources</h3>
+          <ul>
+            <li><a href="faq.html">FAQ</a></li>
+            <li><a href="capability-statement.html">Capability Statement</a></li>
+            <li><a href="labor.html">Labor Portal</a></li>
+          </ul>
+        </div>
+        <div class="footer-section">
+          <h3>Account</h3>
+          <ul>
+            <li><a href="login.html">Log In</a></li>
+            <li><a href="dashboard-worker.html">My Dashboard</a></li>
+            <li><a href="worker-profile.html">My Profile</a></li>
+          </ul>
+        </div>
+        <div class="footer-section">
+          <h3>Contact</h3>
+          <ul>
+            <li><a href="contact.html">Contact Us</a></li>
+            <li><a href="mailto:info@workforceconnect.io">info@workforceconnect.io</a></li>
+            <li><a href="privacy-policy.html">Privacy Policy</a></li>
+            <li><a href="terms-of-service.html">Terms of Service</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>&copy; 2026 WorkForce Connect. All rights reserved.</p>
+        <p>WorkForce Connect - Worker Enterprise Supportive Services Program</p>
+      </div>
+    </div>
+  </footer>
+
+  <script src="js/config.js?v=1774549569000"></script>
+  <script src="js/main.js?v=1774549569000"></script>
+  <script src="js/accessibility-widget.js?v=1774549569000"></script>
+  <script src="js/pwa.js?v=1774549569000"></script>
+</body>
+
+</html>

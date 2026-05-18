@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, nofollow">
+    <title>Worker Settings - WorkForce Connect</title>
+    <link rel="icon" href="assets/favicon.ico" type="image/x-icon">
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#0A1628">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="WorkForce Connect">
+  <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+    <link rel="stylesheet" href="css/design-system.css?v=1774555160000">
+    <link rel="stylesheet" href="css/dashboard-new.css?v=1774555160000">
+    <link rel="stylesheet" href="css/dashboard-common.css?v=1774555160000">
+    <style>
+        .hero-section {
+            background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-light) 100%);
+            color: white;
+            padding: var(--space-2xl) var(--space-xl);
+            border-radius: var(--border-radius-lg);
+            margin-bottom: var(--space-xl);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="rgba(255,255,255,0.1)"/><stop offset="100%" stop-color="rgba(255,255,255,0)"/></linearGradient></defs><rect width="100" height="100" fill="url(%23grad)"/></svg>');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            opacity: 0.3;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .hero-welcome h1 {
+            font-size: 3.5rem;
+            font-weight: 800;
+            margin-bottom: var(--space-sm);
+            line-height: 1.1;
+        }
+
+        .hero-welcome p {
+            font-size: 1.25rem;
+            opacity: 0.9;
+            max-width: 600px;
+            line-height: 1.6;
+        }
+
+        @media (max-width: 768px) {
+            .hero-welcome h1 {
+                font-size: 2rem;
+            }
+            
+            .hero-welcome p {
+                font-size: 1rem;
+            }
+        }
+    </style>
+  <link rel="stylesheet" href="css/accessibility-widget.css?v=1774549569000">
+</head>
+
+<body class="dashboard-v2">
+    <!-- Skip to main content link for accessibility -->
+    <a href="#main-content" class="skip-link">Skip to main content</a>
+
+    <aside class="sidebar" id="sidebar"></aside>
+
+    <div class="dashboard-container">
+        <header class="header-top" id="header-top"></header>
+
+        <!-- Main Content -->
+        <main id="main-content" class="main-content">
+
+            <!-- Hero Section -->
+            <section class="hero-section">
+                <div class="hero-content">
+                    <h1 class="page-title">⚙️ Account Settings</h1>
+                    <p>Manage your account settings, notifications, and privacy preferences.</p>
+                </div>
+            </section>
+
+            <!-- Settings Form -->
+            <section class="content-card">
+                <h3>Account Settings</h3>
+                <form id="settingsForm">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="businessName">Business Name</label>
+                            <input type="text" id="businessName" name="businessName" class="form-control">
+                        </div>
+                        <div class="form-group">
+                            <label for="contactEmail">Email Address</label>
+                            <input type="email" id="contactEmail" name="contactEmail" class="form-control" readonly>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="businessPhone">Business Phone</label>
+                            <input type="tel" id="businessPhone" name="businessPhone" class="form-control">
+                        </div>
+                        <div class="form-group">
+                            <label for="businessWebsite">Website</label>
+                            <input type="url" id="businessWebsite" name="businessWebsite" class="form-control" placeholder="https://...">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="businessAddress">Business Address</label>
+                        <textarea id="businessAddress" name="businessAddress" class="form-control" rows="3"></textarea>
+                    </div>
+
+                    <div class="settings-section">
+                        <h4>Notification Preferences</h4>
+                        <div class="form-group">
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="emailAlerts" name="emailAlerts">
+                                <span class="checkmark"></span>
+                                Email alerts for new opportunities
+                            </label>
+                        </div>
+                        <div class="form-group">
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="smsAlerts" name="smsAlerts">
+                                <span class="checkmark"></span>
+                                SMS alerts for urgent opportunities
+                            </label>
+                        </div>
+                        <div class="form-group">
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="weeklyDigest" name="weeklyDigest">
+                                <span class="checkmark"></span>
+                                Weekly opportunity digest
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="settings-section">
+                        <h4>Privacy Settings</h4>
+                        <div class="form-group">
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="profilePublic" name="profilePublic">
+                                <span class="checkmark"></span>
+                                Make my profile publicly visible
+                            </label>
+                        </div>
+                        <div class="form-group">
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="contactVisible" name="contactVisible">
+                                <span class="checkmark"></span>
+                                Allow agencies to contact me directly
+                            </label>
+                        </div>
+                    </div>
+
+                    <div style="display: flex; gap: var(--space-md); margin-top: var(--space-xl);">
+                        <button type="button" class="btn btn-outline" onclick="resetForm()">Cancel</button>
+                        <button type="submit" class="btn btn-primary">Save Settings</button>
+                    </div>
+                </form>
+            </section>
+
+        </main>
+    </div>
+
+    <!-- Scripts -->
+    <script src="js/config.js?v=1774549569000"></script>
+    <script src="js/main.js?v=1774549569000"></script>
+    <script src="js/auth.js?v=1774549569000"></script>
+    <script src="js/components/navigation.js?v=1774549569000"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            setTimeout(() => {
+                Navigation.init('worker');
+                loadSettings();
+            }, 50);
+        });
+
+        function loadSettings() {
+            const user = JSON.parse(localStorage.getItem('wfc_user'));
+            if (!user) return;
+
+            // Load user data into form
+            document.getElementById('businessName').value = user.business_name || '';
+            document.getElementById('contactEmail').value = user.email || '';
+            document.getElementById('businessPhone').value = user.phone || '';
+            document.getElementById('businessWebsite').value = user.website || '';
+            document.getElementById('businessAddress').value = user.address || '';
+
+            // Load preferences
+            const prefs = user.preferences || {};
+            document.getElementById('emailAlerts').checked = prefs.email_alerts || true;
+            document.getElementById('smsAlerts').checked = prefs.sms_alerts || false;
+            document.getElementById('weeklyDigest').checked = prefs.weekly_digest || true;
+            document.getElementById('profilePublic').checked = prefs.profile_public || false;
+            document.getElementById('contactVisible').checked = prefs.contact_visible || true;
+
+            // Handle form submission
+            document.getElementById('settingsForm').addEventListener('submit', handleSubmit);
+        }
+
+        function handleSubmit(e) {
+            e.preventDefault();
+
+            const formData = new FormData(e.target);
+            const settings = {
+                business_name: formData.get('businessName'),
+                phone: formData.get('businessPhone'),
+                website: formData.get('businessWebsite'),
+                address: formData.get('businessAddress'),
+                preferences: {
+                    email_alerts: formData.get('emailAlerts') === 'on',
+                    sms_alerts: formData.get('smsAlerts') === 'on',
+                    weekly_digest: formData.get('weeklyDigest') === 'on',
+                    profile_public: formData.get('profilePublic') === 'on',
+                    contact_visible: formData.get('contactVisible') === 'on'
+                }
+            };
+
+            // Update user data
+            const user = JSON.parse(localStorage.getItem('wfc_user'));
+            const updatedUser = { ...user, ...settings };
+            localStorage.setItem('wfc_user', JSON.stringify(updatedUser));
+
+            alert('Settings saved successfully!');
+        }
+
+        function resetForm() {
+            document.getElementById('settingsForm').reset();
+        }
+    </script>
+
+  <script src="js/accessibility-widget.js?v=1774549569000"></script>
+  <script src="js/pwa.js?v=1774549569000"></script>
+</body>
+
+</html>

@@ -1,0 +1,223 @@
+<% const title = locals.title || 'Register as Prime Contractor' %>
+
+<section class="register-section">
+  <div class="container">
+    <div class="register-header text-center">
+      <h1>Register as a Prime Contractor</h1>
+      <p class="section-sub">Get access to EvoConnect's verified labor and business directories.</p>
+    </div>
+
+    <%- include('../partials/flash') %>
+
+    <% const currentStep = locals.step || 1 %>
+    <div class="stepper" aria-label="Registration progress">
+      <div class="step-item <%= currentStep >= 1 ? 'active' : '' %> <%= currentStep > 1 ? 'complete' : '' %>">
+        <div class="step-dot">1</div>
+        <span>Choose Your Plan</span>
+      </div>
+      <div class="step-divider"></div>
+      <div class="step-item <%= currentStep >= 2 ? 'active' : '' %> <%= currentStep > 2 ? 'complete' : '' %>">
+        <div class="step-dot">2</div>
+        <span>Company Info</span>
+      </div>
+      <div class="step-divider"></div>
+      <div class="step-item <%= currentStep >= 3 ? 'active' : '' %>">
+        <div class="step-dot">3</div>
+        <span>Create Account</span>
+      </div>
+    </div>
+
+    <form method="POST" action="/prime/register" class="register-form" novalidate>
+      <input type="hidden" name="step" value="<%= currentStep %>">
+
+      <!-- ===== STEP 1: Tier Selection ===== -->
+      <% if (currentStep === 1) { %>
+      <div class="form-section">
+        <h2 class="form-section-title">Step 1 — Choose Your Plan</h2>
+
+        <div class="form-group">
+          <fieldset>
+            <legend class="form-label sr-only">Select a subscription plan</legend>
+            <div class="tier-card-group">
+
+              <label class="tier-card <%= (locals.values?.tier === 'basic' || locals.queryTier === 'basic') ? 'selected' : '' %>">
+                <input type="radio" name="tier" value="basic" <%= (locals.values?.tier === 'basic' || locals.queryTier === 'basic') ? 'checked' : '' %>>
+                <div class="tier-card-inner">
+                  <div class="tier-name">Basic</div>
+                  <div class="tier-price">Free<span></span></div>
+                  <ul class="tier-features">
+                    <li>Labor &amp; Business Directory</li>
+                    <li>5 profile views/month</li>
+                    <li>5 connection requests/month</li>
+                    <li>Standard search filters</li>
+                  </ul>
+                </div>
+              </label>
+
+              <label class="tier-card tier-card-featured <%= (locals.values?.tier === 'pro' || locals.queryTier === 'pro' || (!locals.values?.tier && !locals.queryTier)) ? 'selected' : '' %>">
+                <div class="tier-card-badge">Most Popular</div>
+                <input type="radio" name="tier" value="pro" <%= (locals.values?.tier === 'pro' || locals.queryTier === 'pro' || (!locals.values?.tier && !locals.queryTier)) ? 'checked' : '' %>>
+                <div class="tier-card-inner">
+                  <div class="tier-name">Pro</div>
+                  <div class="tier-price">$49<span>/mo</span></div>
+                  <ul class="tier-features">
+                    <li>Unlimited profile views</li>
+                    <li>20 connection requests/month</li>
+                    <li>Advanced certification filters</li>
+                    <li>Contact card downloads</li>
+                  </ul>
+                </div>
+              </label>
+
+              <label class="tier-card <%= (locals.values?.tier === 'enterprise' || locals.queryTier === 'enterprise') ? 'selected' : '' %>">
+                <input type="radio" name="tier" value="enterprise" <%= (locals.values?.tier === 'enterprise' || locals.queryTier === 'enterprise') ? 'checked' : '' %>>
+                <div class="tier-card-inner">
+                  <div class="tier-name">Enterprise</div>
+                  <div class="tier-price">$99<span>/mo</span></div>
+                  <ul class="tier-features">
+                    <li>Unlimited connections + RFQ posting</li>
+                    <li>Bulk export of search results</li>
+                    <li>Dedicated account manager</li>
+                    <li>Custom NAICS matching</li>
+                  </ul>
+                </div>
+              </label>
+
+            </div>
+          </fieldset>
+          <% if (locals.errors?.tier) { %><span class="field-error" id="tier-error" role="alert"><%= errors.tier %></span><% } %>
+        </div>
+
+        <div class="form-actions">
+          <button type="submit" class="btn-primary">Continue to Company Info &rarr;</button>
+        </div>
+      </div>
+      <% } %>
+
+      <!-- ===== STEP 2: Company Info ===== -->
+      <% if (currentStep === 2) { %>
+      <input type="hidden" name="tier" value="<%= locals.values?.tier || 'pro' %>">
+      <div class="form-section">
+        <h2 class="form-section-title">Step 2 — Company Information</h2>
+        <div class="selected-tier-badge">
+          Selected Plan: <strong><%= (locals.values?.tier || 'pro').toUpperCase() %></strong>
+        </div>
+
+        <div class="form-group">
+          <label for="company_name" class="form-label">Company Name <span class="required">*</span></label>
+          <input type="text" id="company_name" name="company_name"
+            class="form-control<%= locals.errors?.company_name ? ' is-invalid' : '' %>"
+            value="<%= locals.values?.company_name || '' %>" required
+            aria-describedby="<%= locals.errors?.company_name ? 'company-name-error' : '' %>">
+          <% if (locals.errors?.company_name) { %><span class="field-error" id="company-name-error" role="alert"><%= errors.company_name %></span><% } %>
+        </div>
+
+        <div class="form-group">
+          <label for="contact_name" class="form-label">Primary Contact <span class="required">*</span></label>
+          <input type="text" id="contact_name" name="contact_name"
+            class="form-control<%= locals.errors?.contact_name ? ' is-invalid' : '' %>"
+            value="<%= locals.values?.contact_name || '' %>" required autocomplete="name">
+          <% if (locals.errors?.contact_name) { %><span class="field-error" role="alert"><%= errors.contact_name %></span><% } %>
+        </div>
+
+        <div class="form-group">
+          <label for="phone" class="form-label">Phone <span class="required">*</span></label>
+          <input type="tel" id="phone" name="phone"
+            class="form-control<%= locals.errors?.phone ? ' is-invalid' : '' %>"
+            value="<%= locals.values?.phone || '' %>" required autocomplete="tel">
+          <% if (locals.errors?.phone) { %><span class="field-error" role="alert"><%= errors.phone %></span><% } %>
+        </div>
+
+        <div class="form-group">
+          <label for="company_type" class="form-label">Company Type</label>
+          <select id="company_type" name="company_type" class="form-control">
+            <option value="">-- Select type --</option>
+            <option value="general_contractor" <%= locals.values?.company_type === 'general_contractor' ? 'selected' : '' %>>General Contractor (GC)</option>
+            <option value="prime_contractor" <%= locals.values?.company_type === 'prime_contractor' ? 'selected' : '' %>>Prime Contractor</option>
+            <option value="system_integrator" <%= locals.values?.company_type === 'system_integrator' ? 'selected' : '' %>>System Integrator</option>
+            <option value="construction_manager" <%= locals.values?.company_type === 'construction_manager' ? 'selected' : '' %>>Construction Manager</option>
+            <option value="other" <%= locals.values?.company_type === 'other' ? 'selected' : '' %>>Other</option>
+          </select>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group form-col-2">
+            <label for="city" class="form-label">City <span class="required">*</span></label>
+            <input type="text" id="city" name="city" class="form-control"
+              value="<%= locals.values?.city || '' %>" required>
+          </div>
+          <div class="form-group form-col-1">
+            <label for="state" class="form-label">State</label>
+            <input type="text" id="state" name="state" class="form-control"
+              value="<%= locals.values?.state || '' %>" maxlength="2">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="project_types" class="form-label">Primary Project Types</label>
+          <input type="text" id="project_types" name="project_types" class="form-control"
+            value="<%= locals.values?.project_types || '' %>"
+            placeholder="e.g. Broadband infrastructure, highway construction, federal buildings">
+        </div>
+
+        <div class="form-actions">
+          <a href="/prime/register?step=1" class="btn-secondary">&larr; Back</a>
+          <button type="submit" class="btn-primary">Continue to Create Account &rarr;</button>
+        </div>
+      </div>
+      <% } %>
+
+      <!-- ===== STEP 3: Create Account ===== -->
+      <% if (currentStep === 3) { %>
+      <input type="hidden" name="tier" value="<%= locals.values?.tier || 'pro' %>">
+      <div class="form-section">
+        <h2 class="form-section-title">Step 3 — Create Your Account</h2>
+
+        <div class="form-group">
+          <label for="email" class="form-label">Email Address <span class="required">*</span></label>
+          <input type="email" id="email" name="email"
+            class="form-control<%= locals.errors?.email ? ' is-invalid' : '' %>"
+            value="<%= locals.values?.email || '' %>" required autocomplete="email"
+            aria-describedby="<%= locals.errors?.email ? 'email-error' : '' %>">
+          <% if (locals.errors?.email) { %><span class="field-error" id="email-error" role="alert"><%= errors.email %></span><% } %>
+        </div>
+
+        <div class="form-group">
+          <label for="password" class="form-label">Password <span class="required">*</span></label>
+          <div class="input-with-toggle">
+            <input type="password" id="password" name="password"
+              class="form-control<%= locals.errors?.password ? ' is-invalid' : '' %>"
+              required minlength="8" autocomplete="new-password"
+              aria-describedby="password-hint<%= locals.errors?.password ? ' password-error' : '' %>">
+            <button type="button" class="toggle-password" aria-label="Toggle password visibility">&#128065;</button>
+          </div>
+          <span id="password-hint" class="field-hint">Minimum 8 characters</span>
+          <% if (locals.errors?.password) { %><span class="field-error" id="password-error" role="alert"><%= errors.password %></span><% } %>
+        </div>
+
+        <div class="form-group">
+          <label for="confirm_password" class="form-label">Confirm Password <span class="required">*</span></label>
+          <input type="password" id="confirm_password" name="confirm_password"
+            class="form-control<%= locals.errors?.confirm_password ? ' is-invalid' : '' %>"
+            required autocomplete="new-password">
+          <% if (locals.errors?.confirm_password) { %><span class="field-error" role="alert"><%= errors.confirm_password %></span><% } %>
+        </div>
+
+        <div class="order-summary">
+          <h3>Order Summary</h3>
+          <p>Plan: <strong><%= (locals.values?.tier || 'pro').charAt(0).toUpperCase() + (locals.values?.tier || 'pro').slice(1) %></strong></p>
+          <p>Billing: <strong>Monthly subscription</strong></p>
+          <p class="order-note">Your account will be reviewed by our team. You'll receive a confirmation email once approved.</p>
+        </div>
+
+        <div class="form-actions">
+          <a href="/prime/register?step=2" class="btn-secondary">&larr; Back</a>
+          <button type="submit" class="btn-amber">Complete Registration &#127942;</button>
+        </div>
+      </div>
+      <% } %>
+
+    </form>
+    <p class="register-login-note">Already have an account? <a href="/login">Log in here</a></p>
+  </div>
+</section>
