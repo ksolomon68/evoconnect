@@ -7,6 +7,7 @@ const multer = require('multer');
 const { getDb } = require('../database');
 const { requireType, signToken, setAuthCookie } = require('../middleware/auth');
 const { sendEmail } = require('../config/email');
+const { regLimiter } = require('../middleware/rateLimit');
 const router = express.Router();
 
 // ── NAICS Map ─────────────────────────────────────────────────────────────────
@@ -145,7 +146,7 @@ router.get('/register', (req, res) => {
 });
 
 // ── POST /labor/register ───────────────────────────────────────────────────────
-router.post('/register', (req, res, next) => {
+router.post('/register', regLimiter, (req, res, next) => {
     uploadResume.single('resume')(req, res, (err) => {
         if (err instanceof multer.MulterError || err) req.fileError = err.message || 'File upload error.';
         next();

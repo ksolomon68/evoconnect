@@ -5,6 +5,7 @@ const bcrypt = require('bcryptjs');
 const { getDb } = require('../database');
 const { requireType, signToken, setAuthCookie } = require('../middleware/auth');
 const { sendEmail } = require('../config/email');
+const { regLimiter } = require('../middleware/rateLimit');
 const router = express.Router();
 
 // ── US States ─────────────────────────────────────────────────────────────────
@@ -97,7 +98,7 @@ router.get('/register', (req, res) => {
 });
 
 // ── POST /business/register ────────────────────────────────────────────────────
-router.post('/register', async (req, res) => {
+router.post('/register', regLimiter, async (req, res) => {
     const v = req.body;
     const errors = [];
 

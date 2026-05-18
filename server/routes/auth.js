@@ -6,6 +6,7 @@ const crypto = require('crypto');
 const { getDb } = require('../database');
 const { signToken, setAuthCookie, clearAuthCookie } = require('../middleware/auth');
 const { sendEmail } = require('../config/email');
+const { authLimiter } = require('../middleware/rateLimit');
 const router = express.Router();
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
@@ -47,7 +48,7 @@ router.get('/login', (req, res) => {
 });
 
 // ── POST /login ────────────────────────────────────────────────────────────────
-router.post('/login', async (req, res) => {
+router.post('/login', authLimiter, async (req, res) => {
     const email = (req.body.email || '').trim().toLowerCase();
     const password = req.body.password || '';
     const userType = req.body.userType || null; // 'worker'|'business'|'prime'|'admin'
@@ -105,7 +106,7 @@ router.get('/forgot-password', (req, res) => {
 });
 
 // ── POST /forgot-password ──────────────────────────────────────────────────────
-router.post('/forgot-password', async (req, res) => {
+router.post('/forgot-password', authLimiter, async (req, res) => {
     const email = (req.body.email || '').trim().toLowerCase();
     const userType = req.body.userType || null;
 
@@ -188,7 +189,7 @@ router.get('/reset-password/:token', async (req, res) => {
 });
 
 // ── POST /reset-password/:token ────────────────────────────────────────────────
-router.post('/reset-password/:token', async (req, res) => {
+router.post('/reset-password/:token', authLimiter, async (req, res) => {
     const { token } = req.params;
     const { password, confirm_password } = req.body;
 

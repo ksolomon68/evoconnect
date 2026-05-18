@@ -8,7 +8,6 @@ const flash       = require('connect-flash');
 const methodOvr   = require('method-override');
 const helmet      = require('helmet');
 const cors        = require('cors');
-const rateLimit   = require('express-rate-limit');
 const fs          = require('fs');
 
 dotenv.config({ path: path.join(__dirname, '../.env') });
@@ -20,6 +19,7 @@ const { initDatabase } = require('./database');
 const { attachUser }   = require('./middleware/auth');
 
 const app  = express();
+app.set('trust proxy', 1);
 const PORT = process.env.PORT || 3001;
 
 // ── Security ──────────────────────────────────────────────────────
@@ -71,10 +71,6 @@ app.use(cors({
     credentials: true,
 }));
 
-// ── Rate limits ───────────────────────────────────────────────────
-const isDev = process.env.NODE_ENV !== 'production';
-const authLimiter = rateLimit({ windowMs: 15 * 60 * 1000, max: isDev ? 10000 : 20, standardHeaders: true, legacyHeaders: false });
-const regLimiter  = rateLimit({ windowMs: 60 * 60 * 1000, max: isDev ? 10000 : 10, standardHeaders: true, legacyHeaders: false });
 
 // ── Globals: attach user + flash to res.locals ────────────────────
 app.use(attachUser);
@@ -136,12 +132,12 @@ async function startServer() {
         await initDatabase();
 
         // Auth
-        app.use('/', authLimiter, require('./routes/auth'));
+        app.use('/', require('./routes/auth'));
 
         // Portal routes
-        app.use('/labor',    regLimiter,  require('./routes/labor'));
-        app.use('/business', regLimiter,  require('./routes/business'));
-        app.use('/prime',    regLimiter,  require('./routes/prime'));
+        app.use('/labor',    require('./routes/labor'));
+        app.use('/business', require('./routes/business'));
+        app.use('/prime',    require('./routes/prime'));
         app.use('/admin',    require('./routes/admin'));
         app.use('/api/cms',  require('./routes/cms'));
 
