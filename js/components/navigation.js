@@ -1,6 +1,7 @@
 /**
  * WorkForce Connect Navigation Component (Refactored)
  * Dynamically renders sidebars and headers based on user roles.
+ * Updated for WCAG 2.1 AA (44x44px targets), secure session management, and Express routing.
  */
 
 const Navigation = {
@@ -9,59 +10,59 @@ const Navigation = {
         small_business: {
             title: 'Small Business Portal',
             items: [
-                { label: 'Dashboard',             href: 'dashboard-worker.html',  icon: '🏠' },
-                { label: 'Search Opportunities',  href: 'search-opportunities.html',       icon: '🔍' },
-                { label: 'My Applications',       href: 'dashboard-worker.html',icon: '📋' },
-                { label: 'Saved Items',           href: 'saved-opportunities.html',        icon: '⭐' },
-                { label: 'Messages',              href: 'messages.html',                   icon: '✉️' },
-                { label: 'My Profile',            href: 'worker-profile.html',     icon: '👤' },
-                { label: 'Preferences',           href: 'small-business-preferences.html', icon: '🎛️' },
-                { label: 'Settings',              href: 'worker-settings.html',    icon: '⚙️' },
-                { label: 'Resources',             href: 'resources.html',                  icon: '📚' },
-                { label: 'Help & FAQ',            href: 'faq.html',                        icon: '❓' }
+                { label: 'Dashboard',             href: '/labor/dashboard',       icon: '🏠' },
+                { label: 'Search Opportunities',  href: '/labor/search',          icon: '🔍' },
+                { label: 'My Applications',       href: '/labor/applications',    icon: '📋' },
+                { label: 'Saved Items',           href: '/labor/saved',           icon: '⭐' },
+                { label: 'Messages',              href: '/labor/messages',        icon: '✉️' },
+                { label: 'My Profile',            href: '/labor/profile',         icon: '👤' },
+                { label: 'Checklist',             href: '/labor/checklist',       icon: '✅' },
+                { label: 'Settings',              href: '/labor/settings',        icon: '⚙️' },
+                { label: 'Resources',             href: '/labor/resources',       icon: '📚' },
+                { label: 'Help & FAQ',            href: '/labor/faq',             icon: '❓' }
             ]
         },
         agency: {
             title: 'Prime Contractor Portal',
             items: [
-                { label: 'Dashboard',               href: 'dashboard-prime-contractor.html',  icon: '🏠' },
-                { label: 'Post Opportunity',        href: 'post-opportunity.html',             icon: '➕' },
-                { label: 'Manage Postings',         href: 'manage-opportunities.html',         icon: '📂' },
-                { label: 'View Applications',       href: 'view-applications.html',            icon: '📝' },
-                { label: 'Search Small Businesses', href: 'search-small-businesses.html',      icon: '🔍' },
-                { label: 'Messages',                href: 'messages.html',                     icon: '📬' },
-                { label: 'Analytics',               href: 'prime-contractor-analytics.html',   icon: '📈' },
-                { label: 'My Profile',              href: 'prime-contractor-profile.html',     icon: '👤' },
-                { label: 'Settings',                href: 'prime-contractor-settings.html',    icon: '⚙️' },
-                { label: 'Help & FAQ',              href: 'faq.html',                          icon: '❓' }
+                { label: 'Dashboard',               href: '/prime/dashboard',         icon: '🏠' },
+                { label: 'Post Opportunity',        href: '/prime/post-opportunity',  icon: '➕' },
+                { label: 'Manage Postings',         href: '/prime/opportunities',     icon: '📂' },
+                { label: 'View Applications',       href: '/prime/applications',      icon: '📝' },
+                { label: 'Search Small Businesses', href: '/prime/search',            icon: '🔍' },
+                { label: 'Messages',                href: '/prime/messages',          icon: '📬' },
+                { label: 'Analytics',               href: '/prime/analytics',         icon: '📈' },
+                { label: 'My Profile',              href: '/prime/profile',           icon: '👤' },
+                { label: 'Settings',                href: '/prime/settings',          icon: '⚙️' },
+                { label: 'Help & FAQ',              href: '/prime/faq',               icon: '❓' }
             ]
         },
         admin: {
             title: 'Admin Console',
             items: [
-                { label: 'Dashboard',            href: 'dashboard-admin.html',    icon: '🏠' },
-                { label: 'User Management',      href: 'admin-users.html',        icon: '👥' },
-                { label: 'Opportunity Approval', href: 'manage-opportunities.html',icon: '✅' },
-                { label: 'Analytics',            href: 'admin-analytics.html',    icon: '📊' },
-                { label: 'Content Management',   href: 'admin-cms.html',          icon: '🖊️' },
-                { label: 'Report Issue',         href: 'report-issue.html',       icon: '🚨' },
-                { label: 'Admin Guide',          href: 'admin-tutorial.html',     icon: '📖' },
-                { label: 'Help & FAQ',           href: 'faq.html',                icon: '❓' }
+                { label: 'Dashboard',            href: '/admin/dashboard',        icon: '🏠' },
+                { label: 'User Management',      href: '/admin/users',            icon: '👥' },
+                { label: 'Opportunity Approval', href: '/admin/opportunities',    icon: '✅' },
+                { label: 'Analytics',            href: '/admin/analytics',        icon: '📊' },
+                { label: 'Content Management',   href: '/admin/cms',              icon: '🖊️' },
+                { label: 'Report Issue',         href: '/admin/issues',           icon: '🚨' },
+                { label: 'Admin Guide',          href: '/admin/tutorial',         icon: '📖' },
+                { label: 'Help & FAQ',           href: '/admin/faq',              icon: '❓' }
             ]
         },
         staff: {
             title: 'Caltrans Staff Portal',
             items: [
-                { label: 'Overview',                href: 'dashboard-admin.html',          icon: '🏠' },
-                { label: 'Manage Opportunities',    href: 'manage-opportunities.html',         icon: '📂' },
-                { label: 'Search Small Businesses', href: 'search-small-businesses.html',      icon: '🔍' },
-                { label: 'Analytics',               href: 'prime-contractor-analytics.html',   icon: '📈' },
-                { label: 'Support Services',        href: 'support-services.html',             icon: '🎧' },
-                { label: 'Content Management',      href: 'admin-cms.html',                    icon: '🖊️' },
-                { label: 'Resources',               href: 'resources.html',                    icon: '📚' },
-                { label: 'Report Issue',            href: 'report-issue.html',                 icon: '🚨' },
-                { label: 'CMS Guide',               href: 'cms-tutorial.html',                 icon: '📖' },
-                { label: 'Help & FAQ',              href: 'faq.html',                          icon: '❓' }
+                { label: 'Overview',                href: '/admin/dashboard',         icon: '🏠' },
+                { label: 'Manage Opportunities',    href: '/admin/opportunities',     icon: '📂' },
+                { label: 'Search Small Businesses', href: '/admin/search',            icon: '🔍' },
+                { label: 'Analytics',               href: '/admin/analytics',         icon: '📈' },
+                { label: 'Support Services',        href: '/admin/support',           icon: '🎧' },
+                { label: 'Content Management',      href: '/admin/cms',               icon: '🖊️' },
+                { label: 'Resources',               href: '/admin/resources',         icon: '📚' },
+                { label: 'Report Issue',            href: '/admin/issues',            icon: '🚨' },
+                { label: 'CMS Guide',               href: '/admin/tutorial',          icon: '📖' },
+                { label: 'Help & FAQ',              href: '/admin/faq',               icon: '❓' }
             ]
         }
     },
@@ -69,9 +70,12 @@ const Navigation = {
     // Map legacy DB role values to config keys
     _normalizeRole(role) {
         const map = {
-            'vendor': 'worker',
+            'worker': 'small_business',
+            'vendor': 'small_business',
+            'prime': 'agency',
             'prime_contractor': 'agency',
-            'wfc_admin': 'staff'
+            'wfc_admin': 'staff',
+            'admin': 'admin'
         };
         return map[role] || role;
     },
@@ -93,18 +97,26 @@ const Navigation = {
         this.renderHeader(role);
         this.setupMobileToggle();
         this.initNotifications();
+        
+        window._navInitialized = true;
+    },
+
+    // Handle logout: clear local storage and redirect to backend logout route
+    handleLogout() {
+        localStorage.removeItem('wfc_user');
+        window.location.href = '/auth/logout';
     },
 
     renderSidebar(role) {
         const sidebar = document.getElementById('sidebar') || document.querySelector('.sidebar');
         if (!sidebar) return;
 
-        const config = this.config[role] || this.config['worker'];
-        const currentPath = window.location.pathname.split('/').pop() || 'index.html';
+        const config = this.config[role] || this.config['small_business'];
+        const currentPath = window.location.pathname;
 
         let html = `
-            <div class="sidebar-brand">
-                <button class="sidebar-close-btn" aria-label="Close menu">&times;</button>
+            <div class="sidebar-brand" style="display: flex; justify-content: flex-end;">
+                <button class="sidebar-close-btn" aria-label="Close menu" style="width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; background: transparent; border: none; font-size: 1.5rem; cursor: pointer; color: var(--color-text-secondary);">&times;</button>
             </div>
             <nav class="sidebar-nav" style="padding: 1rem 0; flex: 1; overflow-y: auto;">
                 <div style="padding: 0 1.5rem 0.5rem; font-size: 0.75rem; text-transform: uppercase; color: var(--color-text-secondary); font-weight: 700;">
@@ -113,7 +125,7 @@ const Navigation = {
         `;
 
         config.items.forEach(item => {
-            const isActive = currentPath === item.href ? 'active' : '';
+            const isActive = currentPath.includes(item.href) ? 'active' : '';
             const ariaCurrent = isActive ? 'aria-current="page"' : '';
             html += `
                 <a href="${item.href}" class="nav-item ${isActive}" ${ariaCurrent} style="
@@ -121,6 +133,7 @@ const Navigation = {
                     align-items: center;
                     gap: 0.75rem;
                     padding: 0.875rem 1.5rem;
+                    min-height: 44px;
                     color: var(--color-text-primary);
                     text-decoration: none;
                     background: ${isActive ? 'var(--color-bg-tertiary)' : 'transparent'};
@@ -137,20 +150,17 @@ const Navigation = {
         html += `
             </nav>
             <div class="sidebar-footer">
-                <a href="index.html" class="sidebar-footer-link">
+                <a href="/" class="sidebar-footer-link" style="min-height: 44px; display: flex; align-items: center; gap: 0.75rem; text-decoration: none; color: var(--color-text-secondary);">
                     <span style="font-size: 1.25rem;">🌐</span> Back to Public Site
                 </a>
-                <button onclick="if(typeof logout === 'function') { logout() } else { localStorage.removeItem('wfc_user'); window.location.href='index.html'; }"
-                    class="sidebar-footer-link sidebar-signout-btn">
+                <button onclick="Navigation.handleLogout()"
+                    class="sidebar-footer-link sidebar-signout-btn" style="min-height: 44px; display: flex; align-items: center; gap: 0.75rem; width: 100%; background: none; border: none; cursor: pointer; color: var(--color-text-secondary); text-align: left; padding: 0;">
                     <span style="font-size: 1.25rem;">🚪</span> Sign Out
                 </button>
             </div>
         `;
 
         sidebar.innerHTML = html;
-
-        // On desktop, sidebar is always visible via CSS (no 'active' needed).
-        // On mobile, sidebar starts hidden (no 'active' class).
         sidebar.className = 'sidebar';
 
         // Close button inside sidebar (mobile only)
@@ -166,11 +176,11 @@ const Navigation = {
 
         const user = JSON.parse(localStorage.getItem('wfc_user')) || { name: 'Portal User' };
         const userName = user.business_name || user.organization_name || user.contact_name || user.name || 'User';
-        const config = this.config[role] || this.config['worker'];
+        const config = this.config[role] || this.config['small_business'];
 
         header.innerHTML = `
             <div style="display: flex; align-items: center; gap: 1rem;">
-                <button id="mobile-toggle" class="mobile-toggle-btn" aria-label="Open navigation menu" aria-expanded="false" aria-controls="sidebar">
+                <button id="mobile-toggle" class="mobile-toggle-btn" aria-label="Open navigation menu" aria-expanded="false" aria-controls="sidebar" style="width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; padding: 0; background: transparent; border: none; cursor: pointer; color: var(--color-text-secondary);">
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
                         <line x1="4" y1="12" x2="20" y2="12"></line>
                         <line x1="4" y1="6" x2="20" y2="6"></line>
@@ -178,39 +188,47 @@ const Navigation = {
                     </svg>
                 </button>
                 <div class="header-logo" style="display: flex; align-items: center;">
-                    <a href="index.html" style="text-decoration: none; display: flex; align-items: center;" aria-label="WorkForce Connect Home">
-                        <img src="assets/caltrans-logo.png" alt="Caltrans logo" style="height: 32px; width: auto; display: block;">
-                        <span style="font-weight: 700; color: var(--color-primary); font-size: 1.1rem; letter-spacing: -0.01em; margin-left: 0.5rem; border-left: 1px solid var(--color-border); padding-left: 0.5rem;">BizConnect</span>
+                    <a href="/labor/dashboard" style="text-decoration: none; display: flex; align-items: center; min-height: 44px;" aria-label="WorkForce Connect Dashboard">
+                        <img src="/images/caltrans-logo.png" alt="Caltrans logo" style="height: 32px; width: auto; display: block;" onerror="this.src='/images/favicon.png';">
+                        <span style="font-weight: 700; color: var(--color-primary); font-size: 1.1rem; letter-spacing: -0.01em; margin-left: 0.5rem; border-left: 1px solid var(--color-border); padding-left: 0.5rem;">EvoConnect</span>
                     </a>
                 </div>
-                <span class="header-portal-title" aria-hidden="true" style="font-size: 0.85rem; color: var(--color-text-secondary); margin-left: 0.5rem;">${config.title}</span>
+                <span class="header-portal-title" aria-hidden="true" style="font-size: 0.85rem; color: var(--color-text-secondary); margin-left: 0.5rem; display: none;">${config.title}</span>
             </div>
             <div style="display: flex; align-items: center; gap: 1rem;">
                 
                 <!-- Notification Bell -->
                 <div class="notification-container" style="position: relative; margin-right: 10px;">
-                    <button id="notification-bell" class="btn btn-outline btn-small" style="position: relative; border-radius: 50%; width: 44px; height: 44px; padding: 0; display: flex; align-items: center; justify-content: center;" aria-label="Notifications" aria-expanded="false" aria-controls="notification-dropdown" aria-haspopup="true">
+                    <button id="notification-bell" class="btn btn-outline btn-small" style="position: relative; border-radius: 50%; width: 44px; height: 44px; padding: 0; display: flex; align-items: center; justify-content: center; background: transparent; border: 1px solid var(--color-border);" aria-label="Notifications" aria-expanded="false" aria-controls="notification-dropdown" aria-haspopup="true">
                         <span aria-hidden="true" style="font-size: 1.2rem;">🔔</span>
-                        <span id="notification-badge" role="status" aria-live="polite" class="badge" style="position: absolute; top: -5px; right: -5px; background: red; color: white; display: none; padding: 2px 6px; border-radius: 10px; font-size: 0.7rem;">0</span>
+                        <span id="notification-badge" role="status" aria-live="polite" class="badge" style="position: absolute; top: -5px; right: -5px; background: var(--color-error); color: white; display: none; padding: 2px 6px; border-radius: 10px; font-size: 0.7rem; min-width: 18px; text-align: center;">0</span>
                     </button>
-                    <div id="notification-dropdown" role="menu" aria-label="Notifications" class="notification-dropdown" style="display: none; position: absolute; top: 100%; right: 0; width: 300px; background: var(--card-bg, #fff); border: 1px solid var(--color-border, #ddd); border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); z-index: 1000; max-height: 400px; overflow-y: auto;">
+                    <div id="notification-dropdown" role="menu" aria-label="Notifications" class="notification-dropdown" style="display: none; position: absolute; top: 100%; right: 0; width: 300px; background: var(--card-bg, #fff); border: 1px solid var(--color-border, #ddd); border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); z-index: 1000; max-height: 400px; overflow-y: auto; margin-top: 8px;">
                         <div style="padding: 10px; border-bottom: 1px solid var(--color-border, #ddd); font-weight: bold;">Notifications</div>
                         <div id="notification-list" aria-live="polite" style="padding: 10px;">Loading...</div>
                     </div>
                 </div>
 
-                <div class="header-user-info">
+                <div class="header-user-info" style="display: none;">
                     <div style="font-weight: 600; font-size: 0.9rem; color: var(--color-text-primary);">${userName}</div>
                     <div style="font-size: 0.75rem; color: var(--color-text-secondary); text-transform: capitalize;">${config.title}</div>
                 </div>
-                <div class="header-avatar">
+                <div class="header-avatar" style="width: 44px; height: 44px; border-radius: 50%; background: var(--color-primary-light); color: var(--color-primary); display: flex; align-items: center; justify-content: center; font-weight: bold;">
                     ${userName.charAt(0).toUpperCase()}
                 </div>
-                <button class="mobile-signout-btn" onclick="if(typeof logout === 'function') { logout() } else { localStorage.removeItem('wfc_user'); window.location.href='index.html'; }" aria-label="Sign Out" title="Sign Out">
+                <button class="mobile-signout-btn" onclick="Navigation.handleLogout()" aria-label="Sign Out" title="Sign Out" style="width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; background: transparent; border: none; cursor: pointer; font-size: 1.25rem;">
                     🚪
                 </button>
             </div>
         `;
+
+        // Update display logic for tablet/desktop
+        if (!this._isMobile()) {
+            const portalTitle = header.querySelector('.header-portal-title');
+            const userInfo = header.querySelector('.header-user-info');
+            if (portalTitle) portalTitle.style.display = 'inline';
+            if (userInfo) userInfo.style.display = 'block';
+        }
     },
 
     openSidebar() {
@@ -275,7 +293,7 @@ const Navigation = {
 
     initNotifications() {
         const user = JSON.parse(localStorage.getItem('wfc_user'));
-        if (!user) return;
+        if (!user || !user.id) return;
         
         const bell = document.getElementById('notification-bell');
         const dropdown = document.getElementById('notification-dropdown');
@@ -305,32 +323,40 @@ const Navigation = {
             }
         });
 
-        this.fetchNotifications(user.id);
-        
-        // Poll every 30 seconds
-        setInterval(() => this.fetchNotifications(user.id), 30000);
+        // Start recursive polling
+        this.pollNotifications(user.id);
+    },
+
+    pollNotifications(userId) {
+        this.fetchNotifications(userId).finally(() => {
+            this._pollingTimeout = setTimeout(() => {
+                this.pollNotifications(userId);
+            }, 30000); // 30 seconds
+        });
     },
 
     async fetchNotifications(userId) {
         try {
-            const url = window.APP_CONFIG ? window.APP_CONFIG.API_URL : '/api';
-            const token = localStorage.getItem('caltrans_token');
-            const res = await fetch(`${url}/notifications/user/${userId}`, {
+            const url = window.APP_CONFIG ? window.APP_CONFIG.API_URL : '';
+            // Make request without Authorization header initially since it uses session cookies
+            const res = await fetch(`${url}/api/notifications`, {
                 headers: { 
-                    'x-user-id': userId,
-                    'Authorization': `Bearer ${token}`
+                    'x-user-id': userId
                 }
             });
             
             const list = document.getElementById('notification-list');
             
             if (!res.ok) {
-                if (list) list.innerHTML = '<div style="color: var(--text-muted); text-align: center; padding: 10px;">No new notifications</div>';
+                if (list && list.innerHTML.includes('Loading')) {
+                    list.innerHTML = '<div style="color: var(--text-muted); text-align: center; padding: 10px;">No new notifications</div>';
+                }
                 return;
             }
-            const notifications = await res.json();
             
+            const notifications = await res.json();
             const badge = document.getElementById('notification-badge');
+            
             if (badge) {
                 if (notifications.length > 0) {
                     badge.textContent = notifications.length;
@@ -345,11 +371,11 @@ const Navigation = {
                     list.innerHTML = '<div style="color: var(--text-muted); text-align: center; padding: 10px;">No new notifications</div>';
                 } else {
                     list.innerHTML = notifications.map(n => `
-                        <div class="notification-item" style="padding: 10px; border-bottom: 1px solid #eee; cursor: pointer;" onclick="Navigation.markNotificationRead('${n.id}', ${n.message_id}, ${userId})">
+                        <div class="notification-item" style="padding: 10px; border-bottom: 1px solid var(--color-border); cursor: pointer;" onclick="Navigation.markNotificationRead('${n.id}', '${n.message_id || ''}', '${userId}')">
                             <div style="font-size: 0.8rem; color: var(--color-primary); font-weight: bold;">${n.message_type ? n.message_type.toUpperCase() : 'NEW MESSAGE'}</div>
                             <div style="font-size: 0.9rem;">From: ${n.sender_business_name || 'System'}</div>
-                            <div style="font-size: 0.8rem; color: #666; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${n.subject || 'No subject'}</div>
-                            <div style="font-size: 0.7rem; color: #999; margin-top: 4px;">${new Date(n.created_at).toLocaleString()}</div>
+                            <div style="font-size: 0.8rem; color: var(--color-text-secondary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${n.subject || 'No subject'}</div>
+                            <div style="font-size: 0.7rem; color: var(--color-text-muted); margin-top: 4px;">${new Date(n.created_at).toLocaleString()}</div>
                         </div>
                     `).join('');
                 }
@@ -365,17 +391,15 @@ const Navigation = {
 
     async markNotificationRead(id, messageId, userId) {
         try {
-            const url = window.APP_CONFIG ? window.APP_CONFIG.API_URL : '/api';
-            const token = localStorage.getItem('caltrans_token');
-            await fetch(`${url}/notifications/${id}/read`, {
+            const url = window.APP_CONFIG ? window.APP_CONFIG.API_URL : '';
+            await fetch(`${url}/api/notifications/${id}/read`, {
                 method: 'POST',
                 headers: { 
-                    'x-user-id': userId,
-                    'Authorization': `Bearer ${token}`
+                    'x-user-id': userId
                 }
             });
-            // Redirect to messages
-            window.location.href = `messages.html?id=${messageId || ''}`;
+            // Map legacy message URL if applicable
+            window.location.href = `/labor/messages${messageId ? '?id=' + messageId : ''}`;
         } catch (e) {
             console.error(e);
         }
