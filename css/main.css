@@ -1514,6 +1514,9 @@ body {
 }
 
 /* Tier cards (prime register) */
+.register-form:has(.tier-card-group) {
+  max-width: 1050px;
+}
 .tier-card-group { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; }
 .tier-card {
   border: 2px solid #E5E7EB;
