@@ -178,7 +178,7 @@ async function startServer() {
             const base = `https://${cfg.domain}`;
             const urls = [
                 '/', '/labor', '/business', '/prime', 
-                '/labor/register', '/business/register', '/prime/register', 
+                '/register', '/labor/register', '/business/register', '/prime/register', 
                 '/login', '/labor/faq', '/business/faq', '/prime/faq',
                 '/accessibility-statement', '/privacy-policy', '/terms-of-service'
             ];
