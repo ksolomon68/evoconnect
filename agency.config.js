@@ -17,12 +17,12 @@ window.AGENCY = {
   logoAlt:   'EvoConnect Logo',
 
   colors: {
-    primary:        '#0F172A',
-    primaryDark:    '#090d16',
-    primaryLight:   '#06B6D4',
-    secondary:      '#2563EB', // High-end official Cobalt Blue
-    secondaryDark:  '#1D4ED8', // Royal Blue dark
-    secondaryLight: '#60A5FA', // Cobalt Light
+    primary:        '#0F172A', // Background base
+    primaryDark:    '#0B1220', // Surface theme
+    primaryLight:   '#06B6D4', // Cyan primary action
+    secondary:      '#1E293B', // Surface slate
+    secondaryDark:  '#1E3A4A', // Border
+    secondaryLight: '#94A3B8', // Muted text
     theme:          '#0F172A'
   },
 

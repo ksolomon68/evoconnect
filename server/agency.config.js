@@ -18,8 +18,8 @@ module.exports = {
     address:         { street: '', city: 'Dallas', state: 'TX', zip: '' },
     colors: {
         slate: '#0F172A',
-        cyan:  '#06B6D4',
-        amber: '#2563EB', // High-end official Cobalt Blue
+        cyan:  '#14B8A6', // Premium Teal
+        amber: '#0D9488', // Premium Teal dark/interactive
         light: '#F8FAFC',
     }
 };

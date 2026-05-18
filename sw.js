@@ -14,7 +14,7 @@ const AGENCY_STORAGE_PREFIX = 'primereach';   // storagePrefix value from agency
 const AGENCY_APP_NAME       = 'PrimeReach'; // name value from agency.config.js
 const AGENCY_LOGO_PATH      = '/images/logo.png'; // logoPath from agency.config.js
 
-const CACHE_VERSION = 'v1.1.0';
+const CACHE_VERSION = 'v1.2.1';
 const STATIC_CACHE  = `${AGENCY_STORAGE_PREFIX}-static-${CACHE_VERSION}`;
 const API_CACHE     = `${AGENCY_STORAGE_PREFIX}-api-${CACHE_VERSION}`;
 const ALL_CACHES    = [STATIC_CACHE, API_CACHE];

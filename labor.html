@@ -31,30 +31,36 @@
 
   <style>
     :root {
-      --navy:  #0A1628;
-      --cyan:  #00B4D8;
-      --gold:  #C9A84C;
-      --white: #FFFFFF;
-      --gray-100: #F4F6F9;
-      --gray-200: #E4E8EF;
-      --gray-600: #4B5563;
+      --navy:  #0F172A;
+      --cyan:  #06B6D4;
+      --gold:  #F59E0B;
+      --white: #F8FAFC;
+      --gray-100: #0F172A;
+      --gray-200: #1E3A4A;
+      --gray-600: #94A3B8;
+    }
+
+    body {
+      background-color: #0F172A;
+      color: var(--white);
     }
 
     /* ── Hero ─────────────────────────────────────────────── */
     .lb-hero {
-      background: linear-gradient(135deg, var(--navy) 0%, #0d1f3c 100%);
+      background: linear-gradient(135deg, var(--navy) 0%, #1E293B 100%);
       color: var(--white);
       padding: 5rem 1.5rem 4rem;
       text-align: center;
       position: relative;
       overflow: hidden;
+      border-bottom: 1px solid var(--gray-200);
     }
     .lb-hero::before {
       content: '';
       position: absolute;
       top: -60px; right: -60px;
       width: 360px; height: 360px;
-      background: radial-gradient(circle, rgba(0,180,216,0.14) 0%, transparent 70%);
+      background: radial-gradient(circle, rgba(6,182,212,0.08) 0%, transparent 70%);
       pointer-events: none;
     }
     .lb-hero::after {
@@ -62,14 +68,14 @@
       position: absolute;
       bottom: -40px; left: -40px;
       width: 280px; height: 280px;
-      background: radial-gradient(circle, rgba(201,168,76,0.08) 0%, transparent 70%);
+      background: radial-gradient(circle, rgba(245,158,11,0.03) 0%, transparent 70%);
       pointer-events: none;
     }
     .lb-portal-badge {
       display: inline-block;
-      background: rgba(201,168,76,0.18);
-      border: 1px solid rgba(201,168,76,0.5);
-      color: var(--gold);
+      background: rgba(6,182,212,0.1);
+      border: 1px solid rgba(6,182,212,0.3);
+      color: var(--cyan);
       font-size: 0.72rem;
       font-weight: 700;
       letter-spacing: 0.1em;
@@ -91,7 +97,7 @@
     .lb-hero h1 span { color: var(--cyan); }
     .lb-hero-sub {
       font-size: 1.1rem;
-      color: rgba(255,255,255,0.82);
+      color: var(--gray-600);
       max-width: 640px;
       margin: 0 auto 2.5rem;
       line-height: 1.7;
@@ -104,7 +110,7 @@
     }
     .btn-lb-primary {
       background: var(--cyan);
-      color: var(--navy);
+      color: #0F172A;
       font-weight: 700;
       font-size: 1rem;
       padding: 0.85rem 2rem;
@@ -113,7 +119,7 @@
       display: inline-block;
       transition: background 0.2s, transform 0.15s;
     }
-    .btn-lb-primary:hover { background: #00c8f0; transform: translateY(-1px); }
+    .btn-lb-primary:hover { background: #0891B2; transform: translateY(-1px); }
     .btn-lb-outline {
       background: transparent;
       color: var(--white);
@@ -133,7 +139,9 @@
       padding: 4.5rem 1.5rem;
     }
     .lb-section-alt {
-      background: var(--gray-100);
+      background: #0F172A;
+      border-top: 1px solid var(--gray-200);
+      border-bottom: 1px solid var(--gray-200);
     }
     .lb-container {
       max-width: 1100px;
@@ -150,7 +158,7 @@
     .lb-heading {
       font-size: clamp(1.6rem, 3vw, 2.2rem);
       font-weight: 800;
-      color: var(--navy);
+      color: var(--white);
       line-height: 1.2;
       margin-bottom: 1rem;
     }
@@ -176,7 +184,7 @@
     }
     .lb-step-num {
       width: 56px; height: 56px;
-      background: var(--navy);
+      background: #1E293B;
       color: var(--cyan);
       font-weight: 800;
       font-size: 1.3rem;
@@ -190,7 +198,7 @@
     .lb-step h3 {
       font-size: 1.05rem;
       font-weight: 700;
-      color: var(--navy);
+      color: var(--white);
       margin-bottom: 0.5rem;
     }
     .lb-step p {
@@ -202,8 +210,8 @@
 
     /* ── HIGH DEMAND Banner ───────────────────────────────── */
     .lb-demand-banner {
-      background: var(--navy);
-      border: 2px solid var(--cyan);
+      background: #1E293B;
+      border: 1px solid var(--cyan);
       border-radius: 12px;
       padding: 2.5rem 2rem;
       margin-top: 2rem;
@@ -215,13 +223,13 @@
       position: absolute;
       top: 0; right: 0;
       width: 300px; height: 200px;
-      background: radial-gradient(circle at top right, rgba(0,180,216,0.12) 0%, transparent 70%);
+      background: radial-gradient(circle at top right, rgba(6,182,212,0.06) 0%, transparent 70%);
       pointer-events: none;
     }
     .lb-demand-badge {
       display: inline-block;
       background: var(--cyan);
-      color: var(--navy);
+      color: #0F172A;
       font-size: 0.68rem;
       font-weight: 800;
       letter-spacing: 0.12em;
@@ -238,7 +246,7 @@
       line-height: 1.25;
     }
     .lb-demand-banner p {
-      color: rgba(255,255,255,0.82);
+      color: var(--gray-600);
       font-size: 0.98rem;
       line-height: 1.7;
       max-width: 700px;
@@ -260,7 +268,7 @@
     }
     .lb-demand-stat span {
       font-size: 0.82rem;
-      color: rgba(255,255,255,0.68);
+      color: var(--gray-600);
     }
 
     /* ── Trades Grid ──────────────────────────────────────── */
@@ -271,32 +279,35 @@
       margin-top: 2.5rem;
     }
     .lb-trade-card {
-      background: var(--white);
+      background: #1E293B;
       border: 1px solid var(--gray-200);
       border-radius: 10px;
       padding: 1.25rem 1rem;
-      transition: box-shadow 0.2s, border-color 0.2s;
+      transition: background 0.15s, border-color 0.2s;
     }
     .lb-trade-card:hover {
-      box-shadow: 0 4px 18px rgba(10,22,40,0.1);
+      background: #263348;
       border-color: var(--cyan);
     }
     .lb-trade-card.telecom {
-      border-color: rgba(0,180,216,0.45);
-      box-shadow: 0 0 0 1px rgba(0,180,216,0.2), 0 2px 12px rgba(0,180,216,0.1);
+      background: transparent !important;
+      border: 1px solid rgba(6,182,212,0.3) !important;
+      box-shadow: none !important;
     }
     .lb-trade-card.telecom:hover {
-      box-shadow: 0 0 0 2px var(--cyan), 0 4px 20px rgba(0,180,216,0.2);
+      background: rgba(6,182,212,0.05) !important;
+      border-color: var(--cyan) !important;
+      box-shadow: none !important;
     }
     .lb-trade-name {
       font-weight: 700;
-      color: var(--navy);
+      color: var(--white);
       font-size: 0.95rem;
       margin-bottom: 0.5rem;
     }
     .lb-trade-telecom-badge {
       display: inline-block;
-      background: rgba(0,180,216,0.12);
+      background: rgba(6,182,212,0.12);
       color: var(--cyan);
       font-size: 0.62rem;
       font-weight: 700;
@@ -320,16 +331,16 @@
       margin-top: 2.5rem;
     }
     .lb-feature-card {
-      background: var(--white);
+      background: #1E293B;
       border: 1px solid var(--gray-200);
       border-radius: 10px;
       padding: 1.75rem 1.5rem;
-      transition: box-shadow 0.2s;
+      transition: background 0.15s;
     }
-    .lb-feature-card:hover { box-shadow: 0 4px 20px rgba(10,22,40,0.09); }
+    .lb-feature-card:hover { background: #263348; }
     .lb-feature-icon {
       width: 44px; height: 44px;
-      background: rgba(0,180,216,0.1);
+      background: rgba(6,182,212,0.1);
       border-radius: 10px;
       display: flex;
       align-items: center;
@@ -340,7 +351,7 @@
     .lb-feature-card h3 {
       font-size: 1rem;
       font-weight: 700;
-      color: var(--navy);
+      color: var(--white);
       margin-bottom: 0.45rem;
     }
     .lb-feature-card p {
@@ -352,10 +363,12 @@
 
     /* ── CTA section ──────────────────────────────────────── */
     .lb-cta {
-      background: var(--navy);
+      background: #1E293B;
       color: var(--white);
       text-align: center;
       padding: 4.5rem 1.5rem;
+      border-top: 1px solid var(--gray-200);
+      border-bottom: 1px solid var(--gray-200);
     }
     .lb-cta h2 {
       font-size: clamp(1.6rem, 3vw, 2.2rem);
