@@ -19,7 +19,7 @@ module.exports = {
     colors: {
         slate: '#0F172A',
         cyan:  '#06B6D4',
-        amber: '#F59E0B',
+        amber: '#2563EB', // High-end official Cobalt Blue
         light: '#F8FAFC',
     }
 };

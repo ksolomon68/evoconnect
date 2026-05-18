@@ -368,7 +368,7 @@ async function initDatabase() {
         }, 60 * 60 * 1000);
 
     } catch (err) {
-        console.error('EvoConnect DB CRITICAL ERROR:', err.message);
+        console.error('EvoConnect DB CRITICAL ERROR:', err);
     }
 }
 

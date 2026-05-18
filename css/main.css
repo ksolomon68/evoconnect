@@ -1334,7 +1334,7 @@ body {
 
 :root {
   --cyan-glow: rgba(6,182,212,.25);
-  --amber-glow: rgba(245,158,11,.2);
+  --amber-glow: rgba(37, 99, 235, 0.2);
   --glass-bg: rgba(15,23,42,.75);
   --glass-border: rgba(255,255,255,.08);
   --nav-height: 68px;
@@ -1344,7 +1344,7 @@ body {
   --shadow-card: 0 4px 24px rgba(0,0,0,.08), 0 1px 3px rgba(0,0,0,.06);
   --shadow-card-hover: 0 12px 40px rgba(6,182,212,.12), 0 4px 12px rgba(0,0,0,.1);
   --gradient-brand: linear-gradient(135deg,#06B6D4 0%,#0891B2 100%);
-  --gradient-amber: linear-gradient(135deg,#F59E0B 0%,#D97706 100%);
+  --gradient-amber: linear-gradient(135deg,#2563EB 0%,#1D4ED8 100%);
   --gradient-dark: linear-gradient(135deg,#0F172A 0%,#1E293B 100%);
   --gradient-page: linear-gradient(160deg,#F8FAFC 0%,#EFF6FF 50%,#F0FDFA 100%);
   
@@ -1358,7 +1358,9 @@ body {
   --cyan: #06B6D4;
   --cyan-dark: #0891B2;
   --cyan-light: #CFFAFE;
-  --amber: #F59E0B;
+  --amber: #2563EB;
+  --amber-dark: #1D4ED8;
+  --amber-light: #EFF6FF;
   --green: #10B981;
   --red: #EF4444;
   --white: #FFFFFF;
@@ -1563,12 +1565,12 @@ body {
 .tier-card-featured { border-color: var(--amber); background: #fff; }
 .tier-card-badge {
   position: absolute; top: -1px; left: 50%; transform: translateX(-50%);
-  background: var(--gradient-amber); color: var(--slate);
+  background: var(--gradient-amber); color: var(--white);
   font-size: .65rem; font-weight: 800; letter-spacing: .08em;
   padding: .2rem .8rem; border-radius: 0 0 .5rem .5rem;
   white-space: nowrap;
 }
-.tier-card-featured:has(input:checked), .tier-card-featured.selected { border-color: var(--amber); box-shadow: 0 0 0 3px rgba(245,158,11,.2), var(--shadow-card); }
+.tier-card-featured:has(input:checked), .tier-card-featured.selected { border-color: var(--amber); box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.2), var(--shadow-card); }
 
 /* -- FOOTER: premium dark gradient -- */
 .site-footer {
@@ -1829,12 +1831,12 @@ body {
   background: var(--gradient-amber);
   color: var(--white) !important;
   border: none;
-  box-shadow: 0 4px 12px rgba(245, 158, 11, 0.2);
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);
 }
 .btn-amber:hover {
   background: var(--amber-dark);
   color: var(--white) !important;
-  box-shadow: 0 6px 20px rgba(245, 158, 11, 0.4);
+  box-shadow: 0 6px 20px rgba(37, 99, 235, 0.4);
   transform: translateY(-2px);
 }
 
@@ -2258,7 +2260,7 @@ body {
 }
 .badge-blue { background: rgba(59, 130, 246, 0.15); color: #60a5fa; border: 1px solid rgba(59, 130, 246, 0.3); }
 .badge-green { background: rgba(16, 185, 129, 0.15); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.3); }
-.badge-amber { background: rgba(245, 166, 35, 0.15); color: #fbbf24; border: 1px solid rgba(245, 166, 35, 0.3); }
+.badge-amber { background: rgba(37, 99, 235, 0.15); color: #60a5fa; border: 1px solid rgba(37, 99, 235, 0.3); }
 
 .reg-card-desc {
   font-size: 0.95rem;
@@ -2301,10 +2303,10 @@ body {
 .profile-ring svg { transform: rotate(-90deg); }
 .profile-ring-bg { fill: none; stroke: rgba(255,255,255,0.08); stroke-width: 8; }
 .profile-ring-fill { fill: none; stroke-width: 8; stroke-linecap: round; transition: stroke-dashoffset 0.6s ease; }
-.ring-amber .profile-ring-fill  { stroke: #F59E0B; }
+.ring-amber .profile-ring-fill  { stroke: #2563EB; }
 .ring-cyan  .profile-ring-fill  { stroke: #00D2FF; }
 .ring-green .profile-ring-fill  { stroke: #10B981; }
-.ring-amber .profile-ring-label { color: #F59E0B; }
+.ring-amber .profile-ring-label { color: #2563EB; }
 .ring-cyan  .profile-ring-label { color: #00D2FF; }
 .ring-green .profile-ring-label { color: #10B981; }
 .profile-ring-label {

@@ -20,9 +20,9 @@ window.AGENCY = {
     primary:        '#0F172A',
     primaryDark:    '#090d16',
     primaryLight:   '#06B6D4',
-    secondary:      '#F59E0B',
-    secondaryDark:  '#d97706',
-    secondaryLight: '#fbbf24',
+    secondary:      '#2563EB', // High-end official Cobalt Blue
+    secondaryDark:  '#1D4ED8', // Royal Blue dark
+    secondaryLight: '#60A5FA', // Cobalt Light
     theme:          '#0F172A'
   },
 
