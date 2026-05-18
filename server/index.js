@@ -138,6 +138,12 @@ async function startServer() {
         app.use('/business', regLimiter,  require('./routes/business'));
         app.use('/prime',    regLimiter,  require('./routes/prime'));
         app.use('/admin',    require('./routes/admin'));
+        app.use('/api/cms',  require('./routes/cms'));
+
+        // CMS admin SPA (file-based content management, JWT auth)
+        app.get('/admin-cms', (req, res) => {
+            res.sendFile(path.join(__dirname, '../admin-cms.html'));
+        });
 
         // Public home
         app.get('/', (req, res) => {

@@ -25,7 +25,7 @@ const fs      = require('fs');
 const multer  = require('multer');
 const jwt     = require('jsonwebtoken');
 const bcrypt  = require('bcryptjs');
-const { db }  = require('../database');
+// DB not needed — CMS uses file-based storage + env-var auth
 
 const router = express.Router();
 
@@ -104,27 +104,6 @@ router.post('/login', async (req, res) => {
     }
 
     try {
-        // First: check DB for an admin/wfc_admin user with this email
-        const [rows] = await db.execute(
-            "SELECT id, email, password_hash, type FROM users WHERE email = ? AND type IN ('admin', 'wfc_admin')",
-            [email]
-        );
-
-        if (rows.length > 0) {
-            const user = rows[0];
-            const match = await bcrypt.compare(password, user.password_hash);
-            if (!match) {
-                return res.status(401).json({ error: 'Invalid credentials' });
-            }
-            const token = jwt.sign(
-                { id: user.id, email: user.email, type: 'wfc_admin' },
-                CMS_JWT_SECRET,
-                { expiresIn: '24h' }
-            );
-            return res.json({ success: true, token, email: user.email, message: 'CMS login successful' });
-        }
-
-        // Fallback: static CMS password (env var or cms-auth.json override)
         const pwdInfo = getCmsPasswordInfo();
         if (!pwdInfo) {
             return res.status(500).json({ error: 'CMS_ADMIN_PASSWORD is not configured on the server' });
@@ -160,22 +139,6 @@ router.post('/change-password', requireAdmin, async (req, res) => {
     }
 
     try {
-        // If the admin is a DB user, update their password_hash in the DB
-        const adminEmail = req.user.email;
-        const [rows] = await db.execute(
-            "SELECT id, password_hash FROM users WHERE email = ? AND type IN ('admin', 'wfc_admin')",
-            [adminEmail]
-        );
-
-        if (rows.length > 0) {
-            const match = await bcrypt.compare(currentPassword, rows[0].password_hash);
-            if (!match) return res.status(401).json({ error: 'Current password is incorrect' });
-            const newHash = await bcrypt.hash(newPassword, 12);
-            await db.execute('UPDATE users SET password_hash = ? WHERE id = ?', [newHash, rows[0].id]);
-            return res.json({ success: true, message: 'Password updated successfully' });
-        }
-
-        // Fallback: update static CMS password file (store bcrypt hash, never plaintext)
         const pwdInfo = getCmsPasswordInfo();
         const currentMatch = pwdInfo
             ? (pwdInfo.isHashed ? await bcrypt.compare(currentPassword, pwdInfo.hash) : currentPassword === pwdInfo.hash)
@@ -372,8 +335,8 @@ router.post('/pages', requireAdmin, (req, res) => {
         },
         header: {
             backgroundImage: '',
-            logoImage:       'images/caltrans-logo.png',
-            logoAlt:         'Caltrans'
+            logoImage:       '/images/logo-light.png',
+            logoAlt:         'EvoConnect'
         },
         sections:  sections || [],
         createdAt: new Date().toISOString(),
@@ -496,148 +459,25 @@ router.delete('/media/:filename', requireAdmin, (req, res) => {
     res.json({ success: true, message: `"${filename}" deleted` });
 });
 
-// ─── FAQ MANAGER ─────────────────────────────────────────────────────────────
+// ─── FAQ MANAGER (stubs — FAQs are managed in EJS templates) ─────────────────
 
-/** GET /api/cms/faqs — list all FAQs ordered by category + sort_order */
-router.get('/faqs', requireAdmin, async (_req, res) => {
-    try {
-        const [rows] = await db.execute(
-            'SELECT * FROM cms_faqs ORDER BY category, sort_order, id'
-        );
-        res.json(rows);
-    } catch (err) {
-        console.error('CMS FAQs GET error:', err);
-        res.status(500).json({ error: 'Failed to fetch FAQs' });
-    }
-});
+router.get('/faqs',           requireAdmin, (_req, res) => res.json([]));
+router.get('/faq-categories', requireAdmin, (_req, res) => res.json([]));
+router.get('/faqs/export',               (_req, res) => res.json([]));
+router.post('/faqs',          requireAdmin, (_req, res) => res.status(501).json({ error: 'FAQ DB management not enabled' }));
+router.put('/faqs/:id',       requireAdmin, (_req, res) => res.status(501).json({ error: 'FAQ DB management not enabled' }));
+router.delete('/faqs/:id',    requireAdmin, (_req, res) => res.status(501).json({ error: 'FAQ DB management not enabled' }));
+router.post('/faqs/reorder',  requireAdmin, (_req, res) => res.json({ message: 'ok' }));
 
-/** GET /api/cms/faq-categories — distinct active categories */
-router.get('/faq-categories', requireAdmin, async (_req, res) => {
-    try {
-        const [rows] = await db.execute(
-            "SELECT DISTINCT category FROM cms_faqs WHERE status = 'active' ORDER BY category"
-        );
-        res.json(rows.map(r => r.category));
-    } catch (err) {
-        console.error('CMS FAQ categories GET error:', err);
-        res.status(500).json({ error: 'Failed to fetch categories' });
-    }
-});
-
-/** POST /api/cms/faqs — create a new FAQ */
-router.post('/faqs', requireAdmin, async (req, res) => {
-    const { category, question, answer, status } = req.body || {};
-
-    if (!category || !question || !answer) {
-        return res.status(400).json({ error: 'category, question, and answer are required' });
-    }
-
-    try {
-        // Place new FAQ at the end of its category
-        const [[{ next_order }]] = await db.execute(
-            'SELECT COALESCE(MAX(sort_order), -1) + 1 AS next_order FROM cms_faqs WHERE category = ?',
-            [category]
-        );
-        const [result] = await db.execute(
-            `INSERT INTO cms_faqs (category, question, answer, status, sort_order)
-             VALUES (?, ?, ?, ?, ?)`,
-            [category.trim(), question.trim(), answer, status || 'active', next_order]
-        );
-        res.status(201).json({ id: result.insertId, message: 'FAQ created' });
-    } catch (err) {
-        console.error('CMS FAQ POST error:', err);
-        res.status(500).json({ error: 'Failed to create FAQ' });
-    }
-});
-
-/** PUT /api/cms/faqs/:id — update an existing FAQ */
-router.put('/faqs/:id', requireAdmin, async (req, res) => {
-    const { id } = req.params;
-    const { category, question, answer, status } = req.body || {};
-
-    if (!category || !question || !answer) {
-        return res.status(400).json({ error: 'category, question, and answer are required' });
-    }
-
-    try {
-        const [result] = await db.execute(
-            `UPDATE cms_faqs SET category = ?, question = ?, answer = ?, status = ? WHERE id = ?`,
-            [category.trim(), question.trim(), answer, status || 'active', id]
-        );
-        if (result.affectedRows === 0) return res.status(404).json({ error: 'FAQ not found' });
-        res.json({ message: 'FAQ updated' });
-    } catch (err) {
-        console.error('CMS FAQ PUT error:', err);
-        res.status(500).json({ error: 'Failed to update FAQ' });
-    }
-});
-
-/** DELETE /api/cms/faqs/:id — delete a FAQ */
-router.delete('/faqs/:id', requireAdmin, async (req, res) => {
-    const { id } = req.params;
-    try {
-        const [result] = await db.execute('DELETE FROM cms_faqs WHERE id = ?', [id]);
-        if (result.affectedRows === 0) return res.status(404).json({ error: 'FAQ not found' });
-        res.json({ message: 'FAQ deleted' });
-    } catch (err) {
-        console.error('CMS FAQ DELETE error:', err);
-        res.status(500).json({ error: 'Failed to delete FAQ' });
-    }
-});
-
-/** POST /api/cms/faqs/reorder — bulk update sort_order */
-router.post('/faqs/reorder', requireAdmin, async (req, res) => {
-    const { updates } = req.body || {};
-    if (!Array.isArray(updates)) {
-        return res.status(400).json({ error: 'updates array required' });
-    }
-    try {
-        for (const { id, sort_order } of updates) {
-            await db.execute('UPDATE cms_faqs SET sort_order = ? WHERE id = ?', [sort_order, id]);
-        }
-        res.json({ message: 'Order saved' });
-    } catch (err) {
-        console.error('CMS FAQ reorder error:', err);
-        res.status(500).json({ error: 'Failed to reorder FAQs' });
-    }
-});
-
-/** GET /api/cms/faqs/export — download FAQs as JSON (public for faq.html renderer) */
-router.get('/faqs/export', async (_req, res) => {
-    try {
-        const [rows] = await db.execute(
-            "SELECT id, category, question, answer, sort_order FROM cms_faqs WHERE status = 'active' ORDER BY category, sort_order"
-        );
-        res.setHeader('Content-Type', 'application/json');
-        res.setHeader('Content-Disposition', 'attachment; filename=faqs-export.json');
-        res.json(rows);
-    } catch (err) {
-        console.error('CMS FAQ export error:', err);
-        res.status(500).json({ error: 'Failed to export FAQs' });
-    }
-});
-
-/** GET /api/cms/stats — dashboard stats */
-router.get('/stats', requireAdmin, async (_req, res) => {
-    try {
-        const [[{ pages }]]  = await db.execute(
-            "SELECT COUNT(*) AS pages FROM information_schema.tables WHERE table_schema = DATABASE() AND table_name = 'cms_faqs'"
-        );
-        // Count JSON page files
-        const pageFiles = fs.existsSync(PAGES_DIR)
-            ? fs.readdirSync(PAGES_DIR).filter(f => f.endsWith('.json')).length
-            : 0;
-        const [[{ faqs }]]   = await db.execute("SELECT COUNT(*) AS faqs FROM cms_faqs WHERE status = 'active'");
-        const [[{ users }]]  = await db.execute("SELECT COUNT(*) AS users FROM users WHERE status = 'active'");
-        const mediaFiles = fs.existsSync(MEDIA_DIR)
-            ? fs.readdirSync(MEDIA_DIR).filter(f => /\.(jpg|jpeg|png|gif|webp|svg)$/i.test(f)).length
-            : 0;
-
-        res.json({ pages: pageFiles, faqs, media: mediaFiles, users });
-    } catch (err) {
-        console.error('CMS stats error:', err);
-        res.status(500).json({ error: 'Failed to fetch stats' });
-    }
+/** GET /api/cms/stats — dashboard stats (file-based) */
+router.get('/stats', requireAdmin, (_req, res) => {
+    const pageFiles = fs.existsSync(PAGES_DIR)
+        ? fs.readdirSync(PAGES_DIR).filter(f => f.endsWith('.json')).length
+        : 0;
+    const mediaFiles = fs.existsSync(MEDIA_DIR)
+        ? fs.readdirSync(MEDIA_DIR).filter(f => /\.(jpg|jpeg|png|gif|webp|svg)$/i.test(f)).length
+        : 0;
+    res.json({ pages: pageFiles, faqs: 0, media: mediaFiles, users: 0 });
 });
 
 // ─── Utility ──────────────────────────────────────────────────────────────────

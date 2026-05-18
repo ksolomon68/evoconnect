@@ -49,7 +49,7 @@ function showLoginScreen() {
     document.getElementById('cms-app').innerHTML = `
     <div class="cms-login-screen" role="main">
       <div class="cms-login-card">
-        <img src="images/caltrans-logo.png" alt="WorkForce Connect Logo">
+        <img src="/images/logo-light.png" alt="EvoConnect Logo" style="max-height:48px">
         <h1>CMS Admin</h1>
         <p>Sign in with your admin account to manage site content.</p>
         <div id="login-error" class="cms-alert cms-alert-error cms-hidden" role="alert"></div>
