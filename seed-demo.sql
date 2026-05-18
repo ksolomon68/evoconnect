@@ -1,6 +1,6 @@
 -- EvoConnect Demo Accounts
 -- Password for ALL accounts: DemoPass1!
--- Run this in phpMyAdmin against u579331817_primereach
+-- Run this in phpMyAdmin against u579331817_evoconnect
 -- Safe to run multiple times (INSERT IGNORE skips duplicates)
 
 -- Admin
