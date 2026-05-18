@@ -195,7 +195,10 @@ async function startServer() {
         // 500
         app.use((err, req, res, next) => {
             console.error('EvoConnect Server Error:', err);
-            res.status(500).render('errors/500', { title: 'Server Error' });
+            res.status(500).render('errors/500', {
+                title: 'Server Error',
+                errMsg: isLive ? null : (err.message || String(err))
+            });
         });
 
         // Start

@@ -123,8 +123,7 @@ router.get('/dashboard', requireAdmin, async (req, res) => {
 
     } catch (err) {
         console.error('EvoConnect [admin/dashboard]:', err);
-        flash(req, 'error', 'Failed to load dashboard data.');
-        res.redirect('/admin/dashboard');
+        res.status(500).render('errors/500', { title: 'Server Error' });
     }
 });
 
