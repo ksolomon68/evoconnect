@@ -51,12 +51,14 @@ window.AGENCY = {
   const cfg = window.AGENCY;
   if (!cfg) return;
 
+  // Only apply dark-mode CSS variable overrides on public marketing pages, not light-mode dashboard portals
+  const isDashboard = document.body && document.body.classList.contains('dashboard-v2');
   const styleId = 'agency-color-overrides';
-  if (!document.getElementById(styleId)) {
+  if (!isDashboard && !document.getElementById(styleId)) {
     const style = document.createElement('style');
     style.id = styleId;
     style.textContent = [
-      ':root {',
+      'body:not(.dashboard-v2) {',
       `  --color-primary:         ${cfg.colors.primary};`,
       `  --color-primary-dark:    ${cfg.colors.primaryDark};`,
       `  --color-primary-light:   ${cfg.colors.primaryLight};`,

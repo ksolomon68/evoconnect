@@ -49,7 +49,10 @@ function showLoginScreen() {
     document.getElementById('cms-app').innerHTML = `
     <div class="cms-login-screen" role="main">
       <div class="cms-login-card">
-        <img src="/images/logo-light.png" alt="EvoConnect Logo" style="max-height:48px">
+        <div style="display:flex;align-items:center;justify-content:center;gap:0.6rem;margin-bottom:0.75rem;">
+          <img src="/images/favicon.png" alt="EvoConnect" style="height:40px;width:auto;">
+          <span style="font-size:1.6rem;font-weight:800;color:#0F172A;letter-spacing:-0.02em;">EvoConnect</span>
+        </div>
         <h1>CMS Admin</h1>
         <p>Sign in with your admin account to manage site content.</p>
         <div id="login-error" class="cms-alert cms-alert-error cms-hidden" role="alert"></div>
@@ -67,6 +70,10 @@ function showLoginScreen() {
             Sign In
           </button>
         </form>
+        <div style="margin-top:1.25rem;padding-top:1rem;border-top:1px solid #E2E8F0;display:flex;justify-content:space-between;font-size:0.9rem;">
+          <a href="/admin/dashboard" style="color:#005A8C;text-decoration:none;font-weight:600;">← Admin Dashboard</a>
+          <a href="/?public=1" style="color:#5a6472;text-decoration:none;">Public Site</a>
+        </div>
       </div>
     </div>`;
 
@@ -111,11 +118,15 @@ async function showShell() {
 
       <!-- Header -->
       <header class="cms-header" role="banner">
-        <a href="index.html" class="cms-header-brand" target="_blank" rel="noopener">
-          <img src="images/caltrans-logo.png" alt="WorkForce Connect">
-          <span>CMS Admin</span>
+        <a href="/admin/dashboard" class="cms-header-brand">
+          <img src="/images/favicon.png" alt="EvoConnect" style="height:28px;width:auto;background:#fff;padding:3px;border-radius:6px;">
+          <span>EvoConnect CMS Admin</span>
         </a>
         <div class="cms-header-actions">
+          <a href="/admin/dashboard" class="cms-btn cms-btn-sm"
+                  style="background:rgba(255,255,255,.15);color:#fff;border-color:transparent;text-decoration:none;display:inline-flex;align-items:center;gap:4px">
+            ← Admin Console
+          </a>
           <span class="cms-header-user" aria-label="Logged in as ${escHtml(currentAdmin.email)}">
             ${escHtml(currentAdmin.email)}
           </span>

@@ -103,18 +103,49 @@ const navCfg = NAV_CONFIG[currentRole] || NAV_CONFIG.worker;
     <link rel="stylesheet" href="/css/dashboard-common.css?v=3.3.0">
     <link rel="stylesheet" href="/css/accessibility-widget.css?v=3.3.0">
     <style>
+        html, body.dashboard-v2 {
+            --color-primary: #0284C7 !important;
+            --color-primary-dark: #0369A1 !important;
+            --color-primary-light: #0EA5E9 !important;
+            --color-secondary: #0F172A !important;
+            --color-secondary-dark: #1E293B !important;
+            --color-secondary-light: #64748B !important;
+            --color-bg-primary: #FFFFFF !important;
+            --color-bg-secondary: #F8FAFC !important;
+            --color-bg-tertiary: #E0F2FE !important;
+            --color-bg-dark: #0F172A !important;
+            --color-text-primary: #0F172A !important;
+            --color-text-secondary: #334155 !important;
+            --color-text-muted: #64748B !important;
+            --color-text-inverse: #FFFFFF !important;
+            --text-primary: #0F172A !important;
+            --text-secondary: #334155 !important;
+            --text-muted: #64748B !important;
+            --text-main: #0F172A !important;
+            --text-inverse: #FFFFFF !important;
+            --bg-white: #FFFFFF !important;
+            --bg-gray-50: #F8FAFC !important;
+            --bg-gray-100: #F1F5F9 !important;
+            --card-bg: #FFFFFF !important;
+            --dashboard-bg: #F8FAFC !important;
+            --brand-blue: #0284C7 !important;
+            --brand-blue-soft: #E0F2FE !important;
+            --color-border: #CBD5E1 !important;
+            --color-border-light: #E2E8F0 !important;
+            --border-color: #E2E8F0 !important;
+        }
         body.dashboard-v2 {
             display: flex !important;
             min-height: 100vh;
-            background-color: var(--dashboard-bg, #F8FAFC) !important;
-            color: var(--text-main, #0F172A) !important;
+            background-color: #F8FAFC !important;
+            color: #0F172A !important;
             margin: 0;
         }
         aside.sidebar {
             width: 280px;
             min-width: 280px;
-            background: #FFFFFF;
-            border-right: 1px solid #E2E8F0;
+            background: #FFFFFF !important;
+            border-right: 1px solid #E2E8F0 !important;
             display: flex;
             flex-direction: column;
             position: sticky;
@@ -122,6 +153,21 @@ const navCfg = NAV_CONFIG[currentRole] || NAV_CONFIG.worker;
             height: 100vh;
             padding: 0;
             z-index: 100;
+        }
+        aside.sidebar .nav-item {
+            color: #1E293B !important;
+            background: transparent !important;
+            border-left: 4px solid transparent !important;
+        }
+        aside.sidebar .nav-item:hover {
+            background: #F1F5F9 !important;
+            color: #0284C7 !important;
+        }
+        aside.sidebar .nav-item.active {
+            background: #E0F2FE !important;
+            color: #0284C7 !important;
+            border-left: 4px solid #0284C7 !important;
+            font-weight: 700 !important;
         }
         aside.sidebar .sidebar-footer {
             position: relative !important;
@@ -138,10 +184,89 @@ const navCfg = NAV_CONFIG[currentRole] || NAV_CONFIG.worker;
             background: #F8FAFC;
         }
         body.dashboard-v2 .main-content {
-            background: #F8FAFC;
-            color: #0F172A;
+            background: #F8FAFC !important;
+            color: #0F172A !important;
             padding: 1.5rem 2rem 3rem;
             flex: 1;
+        }
+        body.dashboard-v2 .card,
+        body.dashboard-v2 .content-card,
+        body.dashboard-v2 .standard-card,
+        body.dashboard-v2 .enhanced-card,
+        body.dashboard-v2 .summary-card,
+        body.dashboard-v2 .action-card,
+        body.dashboard-v2 .stat-card,
+        body.dashboard-v2 .recommendations-list {
+            background-color: #FFFFFF !important;
+            color: #0F172A !important;
+            border: 1px solid #E2E8F0 !important;
+        }
+        body.dashboard-v2 h1,
+        body.dashboard-v2 h2,
+        body.dashboard-v2 h3,
+        body.dashboard-v2 h4,
+        body.dashboard-v2 h5,
+        body.dashboard-v2 h6,
+        body.dashboard-v2 label,
+        body.dashboard-v2 .form-label {
+            color: #0F172A;
+        }
+        body.dashboard-v2 .hero-section h1,
+        body.dashboard-v2 .hero-section h2,
+        body.dashboard-v2 .hero-section p {
+            color: #FFFFFF !important;
+        }
+        body.dashboard-v2 .form-control,
+        body.dashboard-v2 input[type="text"],
+        body.dashboard-v2 input[type="email"],
+        body.dashboard-v2 input[type="password"],
+        body.dashboard-v2 input[type="tel"],
+        body.dashboard-v2 input[type="url"],
+        body.dashboard-v2 input[type="date"],
+        body.dashboard-v2 input[type="number"],
+        body.dashboard-v2 select,
+        body.dashboard-v2 textarea {
+            background-color: #FFFFFF !important;
+            color: #0F172A !important;
+            border: 1px solid #CBD5E1 !important;
+        }
+        body.dashboard-v2 .form-control::placeholder,
+        body.dashboard-v2 input::placeholder,
+        body.dashboard-v2 textarea::placeholder {
+            color: #94A3B8 !important;
+        }
+        body.dashboard-v2 .btn-secondary,
+        body.dashboard-v2 .btn-ghost {
+            background-color: #F1F5F9 !important;
+            color: #1E293B !important;
+            border: 1px solid #CBD5E1 !important;
+            font-weight: 600;
+            text-decoration: none;
+        }
+        body.dashboard-v2 .btn-secondary:hover,
+        body.dashboard-v2 .btn-ghost:hover {
+            background-color: #E2E8F0 !important;
+            color: #0F172A !important;
+        }
+        body.dashboard-v2 .btn-primary {
+            background-color: #0284C7 !important;
+            border-color: #0284C7 !important;
+            color: #FFFFFF !important;
+        }
+        body.dashboard-v2 .btn-primary:hover {
+            background-color: #0369A1 !important;
+            border-color: #0369A1 !important;
+            color: #FFFFFF !important;
+        }
+        body.dashboard-v2 .btn-danger {
+            background-color: #FEE2E2 !important;
+            color: #B91C1C !important;
+            border: 1px solid #FECACA !important;
+            font-weight: 600;
+        }
+        body.dashboard-v2 .btn-danger:hover {
+            background-color: #FECACA !important;
+            color: #991B1B !important;
         }
         body.dashboard-v2 .dashboard-section,
         body.dashboard-v2 .admin-section,
@@ -160,17 +285,25 @@ const navCfg = NAV_CONFIG[currentRole] || NAV_CONFIG.worker;
         .data-table {
             width: 100%;
             border-collapse: collapse;
+            background: #FFFFFF !important;
         }
         .data-table th, .data-table td {
             padding: 0.75rem 1rem;
             text-align: left;
-            border-bottom: 1px solid #E2E8F0;
+            border-bottom: 1px solid #E2E8F0 !important;
+            color: #0F172A;
+        }
+        .data-table td strong {
+            color: #0F172A !important;
+        }
+        .data-table tr:hover {
+            background: #F8FAFC !important;
         }
         .data-table th {
-            background: #F8FAFC;
+            background: #F8FAFC !important;
             font-weight: 600;
             font-size: 0.85rem;
-            color: #475569;
+            color: #475569 !important;
             text-transform: uppercase;
         }
         @media (max-width: 1024px) {
@@ -283,7 +416,7 @@ const navCfg = NAV_CONFIG[currentRole] || NAV_CONFIG.worker;
                 </div>
 
                 <!-- Always-Visible Sign Out Button -->
-                <a href="/logout" onclick="localStorage.removeItem('wfc_user');" class="btn btn-sm btn-secondary" style="padding:0.4rem 0.85rem;font-size:0.85rem;text-decoration:none;color:#DC2626;border-color:#FECACA;background:#FEF2F2;">
+                <a href="/logout" onclick="localStorage.removeItem('wfc_user');" class="btn btn-sm" style="padding:0.4rem 0.85rem;font-size:0.85rem;text-decoration:none;color:#B91C1C !important;border:1px solid #FECACA !important;background:#FEE2E2 !important;font-weight:600;border-radius:6px;">
                     🚪 Sign Out
                 </a>
             </div>

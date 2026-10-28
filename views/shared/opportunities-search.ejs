@@ -1,147 +1,222 @@
-<% if (locals.user) { locals.layout = 'layouts/dashboard'; } %>
-<% const title = locals.title || 'Search Contracting Opportunities | EvoConnect' %>
-<% const basePath = locals.basePath || (locals.user?.type === 'business' ? '/business' : '/labor') %>
-<% const oppList = locals.opportunities || [] %>
-<% const savedIds = (locals.savedIds || []).map(String) %>
-<% const appliedIds = (locals.appliedIds || []).map(String) %>
-<% const filters = locals.filters || {} %>
+<% if (locals.user) { locals.layout='layouts/dashboard' ; } %>
+    <% const title=locals.title || 'Search Contracting Opportunities | EvoConnect' %>
+        <% const basePath=locals.basePath || (locals.user?.type==='business' ? '/business' : '/labor' ) %>
+            <% const oppList=locals.opportunities || [] %>
+                <% const savedIds=(locals.savedIds || []).map(String) %>
+                    <% const appliedIds=(locals.appliedIds || []).map(String) %>
+                        <% const filters=locals.filters || {} %>
 
-<%- include('../partials/flash') %>
+                            <%- include('../partials/flash') %>
 
-<section class="hero-section">
-    <div class="hero-content hero-welcome">
-        <h1>🔍 Contracting Opportunities</h1>
-        <p>Browse active government and prime contractor solicitations, save opportunities for later, or submit your application directly.</p>
-    </div>
-</section>
+                                <section class="hero-section">
+                                    <div class="hero-content hero-welcome">
+                                        <h1>🔍 Contracting Opportunities</h1>
+                                        <p>Browse active government and prime contractor solicitations, save
+                                            opportunities for later, or submit your application directly.</p>
+                                    </div>
+                                </section>
 
-<!-- Filter Form -->
-<div class="recommendations-list" style="padding: var(--space-xl); margin-bottom: var(--space-xl);">
-    <form method="GET" action="<%= basePath %>/search" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:1rem;align-items:end;">
-        <div>
-            <label style="display:block;font-weight:600;margin-bottom:.35rem;font-size:.9rem;">Keyword / Project Title</label>
-            <input type="text" name="q" value="<%= filters.q || '' %>" placeholder="Search title, scope, agency..." class="form-control">
-        </div>
-        <div>
-            <label style="display:block;font-weight:600;margin-bottom:.35rem;font-size:.9rem;">Category</label>
-            <select name="category" class="form-control">
-                <option value="">All Categories</option>
-                <% [
-                    { val: 'electrical', label: 'Electrical & Lighting' },
-                    { val: 'fiber-broadband', label: 'Fiber & Broadband' },
-                    { val: 'environmental', label: 'Environmental Services' },
-                    { val: 'concrete-cement', label: 'Concrete & Civil Construction' },
-                    { val: 'IT & Cloud Infrastructure', label: 'IT & Cloud Infrastructure' },
-                    { val: 'Transportation & Logistics', label: 'Transportation & Logistics' }
-                ].forEach(function(cat) { %>
-                    <option value="<%= cat.val %>" <%= filters.category === cat.val ? 'selected' : '' %>><%= cat.label %></option>
-                <% }) %>
-            </select>
-        </div>
-        <div>
-            <label style="display:block;font-weight:600;margin-bottom:.35rem;font-size:.9rem;">NAICS Code</label>
-            <input type="text" name="naics" value="<%= filters.naics || '' %>" placeholder="e.g. 237130" class="form-control">
-        </div>
-        <div style="display:flex;gap:.5rem;">
-            <button type="submit" class="btn btn-primary" style="flex:1;">Filter</button>
-            <a href="<%= basePath %>/search" class="btn btn-secondary">Reset</a>
-        </div>
-    </form>
-</div>
+                                <!-- Filter Form -->
+                                <div class="recommendations-list"
+                                    style="padding: var(--space-xl); margin-bottom: var(--space-xl);">
+                                    <form method="GET" action="<%= basePath %>/search"
+                                        style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:1rem;align-items:end;">
+                                        <div>
+                                            <label
+                                                style="display:block;font-weight:600;margin-bottom:.35rem;font-size:.9rem;">Keyword
+                                                / Project Title</label>
+                                            <input type="text" name="q" value="<%= filters.q || '' %>"
+                                                placeholder="Search title, scope, agency..." class="form-control">
+                                        </div>
+                                        <div>
+                                            <label
+                                                style="display:block;font-weight:600;margin-bottom:.35rem;font-size:.9rem;">Category</label>
+                                            <select name="category" class="form-control">
+                                                <option value="">All Categories</option>
+                                                <% [ { val: 'electrical' , label: 'Electrical & Lighting' }, {
+                                                    val: 'fiber-broadband' , label: 'Fiber & Broadband' }, {
+                                                    val: 'environmental' , label: 'Environmental Services' }, {
+                                                    val: 'concrete-cement' , label: 'Concrete & Civil Construction' }, {
+                                                    val: 'IT & Cloud Infrastructure' ,
+                                                    label: 'IT & Cloud Infrastructure' }, {
+                                                    val: 'Transportation & Logistics' ,
+                                                    label: 'Transportation & Logistics' } ].forEach(function(cat) { %>
+                                                    <option value="<%= cat.val %>" <%=filters.category===cat.val
+                                                        ? 'selected' : '' %>><%= cat.label %>
+                                                    </option>
+                                                    <% }) %>
+                                            </select>
+                                        </div>
+                                        <div>
+                                            <label
+                                                style="display:block;font-weight:600;margin-bottom:.35rem;font-size:.9rem;">NAICS
+                                                Code</label>
+                                            <input type="text" name="naics" value="<%= filters.naics || '' %>"
+                                                placeholder="e.g. 237130" class="form-control">
+                                        </div>
+                                        <div style="display:flex;gap:.5rem;">
+                                            <button type="submit" class="btn btn-primary"
+                                                style="flex:1;">Filter</button>
+                                            <a href="<%= basePath %>/search" class="btn btn-secondary">Reset</a>
+                                        </div>
+                                    </form>
+                                </div>
 
-<!-- Opportunities List -->
-<div style="display:grid;gap:var(--space-lg);">
-    <% if (oppList.length > 0) { %>
-        <% oppList.forEach(function(opp) { 
-            const oppIdStr = String(opp.id);
-            const isSaved = savedIds.includes(oppIdStr);
-            const isApplied = appliedIds.includes(oppIdStr);
-        %>
-        <div class="recommendations-list" style="padding: var(--space-xl);">
-            <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:1rem;margin-bottom:0.75rem;">
-                <div>
-                    <div style="display:flex;align-items:center;gap:0.5rem;flex-wrap:wrap;margin-bottom:0.35rem;">
-                        <span class="status-badge badge-consulting" style="margin:0;"><%= opp.category_name || opp.category || 'General Contracting' %></span>
-                        <% if (opp.naics_codes) { %>
-                            <span style="font-size:0.8rem;font-family:monospace;background:#f1f5f9;padding:0.2rem 0.5rem;border-radius:4px;color:#334155;">NAICS: <%= opp.naics_codes %></span>
-                        <% } %>
-                        <% if (opp.certifications || opp.certifications_required) { %>
-                            <span class="status-badge badge-construction" style="margin:0;"><%= opp.certifications || opp.certifications_required %></span>
-                        <% } %>
-                    </div>
-                    <h3 style="margin:0;font-size:1.25rem;color:var(--color-text-primary);"><%= opp.title %></h3>
-                    <div style="color:var(--text-muted);font-size:0.9rem;margin-top:0.25rem;">
-                        <strong><%= opp.posted_by_name || 'Prime Contractor' %></strong>
-                        <% if (opp.district_name || opp.location) { %> • 📍 <%= opp.district_name || opp.location %><% } %>
-                        • Ref: <code><%= opp.project_ref || opp.id %></code>
-                    </div>
-                </div>
-                <div style="text-align:right;">
-                    <div style="font-size:1.1rem;font-weight:700;color:var(--color-primary);"><%= opp.estimated_value || 'TBD' %></div>
-                    <% if (opp.due_date) { %>
-                        <div style="font-size:0.85rem;color:var(--text-muted);">Due: <%= opp.due_date %> <%= opp.due_time || '' %></div>
-                    <% } %>
-                </div>
-            </div>
+                                <!-- Opportunities List -->
+                                <div style="display:grid;gap:var(--space-lg);">
+                                    <% if (oppList.length> 0) { %>
+                                        <% oppList.forEach(function(opp) { const oppIdStr=String(opp.id); const
+                                            isSaved=savedIds.includes(oppIdStr); const
+                                            isApplied=appliedIds.includes(oppIdStr); %>
+                                            <div class="recommendations-list" style="padding: var(--space-xl);">
+                                                <div
+                                                    style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:1rem;margin-bottom:0.75rem;">
+                                                    <div>
+                                                        <div
+                                                            style="display:flex;align-items:center;gap:0.5rem;flex-wrap:wrap;margin-bottom:0.35rem;">
+                                                            <span class="status-badge badge-consulting"
+                                                                style="margin:0;">
+                                                                <%= opp.category_name || opp.category
+                                                                    || 'General Contracting' %>
+                                                            </span>
+                                                            <% if (opp.naics_codes) { %>
+                                                                <span
+                                                                    style="font-size:0.8rem;font-family:monospace;background:#f1f5f9;padding:0.2rem 0.5rem;border-radius:4px;color:#334155;">NAICS:
+                                                                    <%= opp.naics_codes %></span>
+                                                                <% } %>
+                                                                    <% if (opp.certifications ||
+                                                                        opp.certifications_required) { %>
+                                                                        <span class="status-badge badge-construction"
+                                                                            style="margin:0;">
+                                                                            <%= opp.certifications ||
+                                                                                opp.certifications_required %>
+                                                                        </span>
+                                                                        <% } %>
+                                                        </div>
+                                                        <h3
+                                                            style="margin:0;font-size:1.25rem;color:var(--color-text-primary);">
+                                                            <%= opp.title %>
+                                                        </h3>
+                                                        <div
+                                                            style="color:var(--text-muted);font-size:0.9rem;margin-top:0.25rem;">
+                                                            <strong>
+                                                                <%= opp.posted_by_name || 'Prime Contractor' %>
+                                                            </strong>
+                                                            <% if (opp.district_name || opp.location) { %> • 📍 <%=
+                                                                    opp.district_name || opp.location %>
+                                                                    <% } %>
+                                                                        • Ref:
+                                                                        <code><%= opp.project_ref || opp.id %></code>
+                                                        </div>
+                                                    </div>
+                                                    <div style="text-align:right;">
+                                                        <div
+                                                            style="font-size:1.1rem;font-weight:700;color:var(--color-primary);">
+                                                            <%= opp.estimated_value || 'TBD' %>
+                                                        </div>
+                                                        <% if (opp.due_date) { %>
+                                                            <div style="font-size:0.85rem;color:var(--text-muted);">Due:
+                                                                <%= opp.due_date %>
+                                                                    <%= opp.due_time || '' %>
+                                                            </div>
+                                                            <% } %>
+                                                    </div>
+                                                </div>
 
-            <p style="color:var(--color-text-secondary);line-height:1.6;margin:0.75rem 0 1.25rem;"><%= opp.scope_summary %></p>
+                                                <p
+                                                    style="color:var(--color-text-secondary);line-height:1.6;margin:0.75rem 0 1.25rem;">
+                                                    <%= opp.scope_summary %>
+                                                </p>
 
-            <% if (locals.user && (locals.user.type === 'worker' || locals.user.type === 'business')) { %>
-            <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:0.75rem;border-top:1px solid var(--border-color);padding-top:1rem;">
-                <div style="display:flex;gap:0.5rem;align-items:center;">
-                    <form method="POST" action="<%= basePath %>/saved/toggle" style="display:inline;">
-                        <input type="hidden" name="opportunity_id" value="<%= opp.id %>">
-                        <button type="submit" class="btn btn-sm <%= isSaved ? 'btn-primary' : 'btn-outline' %>">
-                            <%= isSaved ? '⭐ Saved' : '☆ Save Opportunity' %>
-                        </button>
-                    </form>
-                    <% if (opp.submission_method) { %>
-                        <span style="font-size:0.8rem;color:var(--text-muted);">Submission: <%= opp.submission_method %></span>
-                    <% } %>
-                </div>
+                                                <% if (locals.user && (locals.user.type==='worker' ||
+                                                    locals.user.type==='business' )) { %>
+                                                    <div
+                                                        style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:0.75rem;border-top:1px solid var(--border-color);padding-top:1rem;">
+                                                        <div style="display:flex;gap:0.5rem;align-items:center;">
+                                                            <form method="POST" action="<%= basePath %>/saved/toggle"
+                                                                style="display:inline;">
+                                                                <input type="hidden" name="opportunity_id"
+                                                                    value="<%= opp.id %>">
+                                                                <button type="submit"
+                                                                    class="btn btn-sm <%= isSaved ? 'btn-primary' : 'btn-outline' %>">
+                                                                    <%= isSaved ? '⭐ Saved' : '☆ Save Opportunity' %>
+                                                                </button>
+                                                            </form>
+                                                            <% if (opp.submission_method) { %>
+                                                                <span
+                                                                    style="font-size:0.8rem;color:var(--text-muted);">Submission:
+                                                                    <%= opp.submission_method %></span>
+                                                                <% } %>
+                                                        </div>
 
-                <div>
-                    <% if (isApplied) { %>
-                        <span class="status-badge badge-consulting" style="margin:0;padding:0.45rem 0.9rem;">✓ Application Submitted</span>
-                    <% } else { %>
-                        <button type="button" class="btn btn-sm btn-primary" onclick="document.getElementById('apply-form-<%= oppIdStr %>').style.display = document.getElementById('apply-form-<%= oppIdStr %>').style.display === 'none' ? 'block' : 'none'">
-                            Apply / Submit Bid
-                        </button>
-                    <% } %>
-                </div>
-            </div>
+                                                        <div>
+                                                            <% if (isApplied) { %>
+                                                                <span class="status-badge badge-consulting"
+                                                                    style="margin:0;padding:0.45rem 0.9rem;">✓
+                                                                    Application Submitted</span>
+                                                                <% } else { %>
+                                                                    <button type="button" class="btn btn-sm btn-primary"
+                                                                        onclick="document.getElementById('apply-form-<%= oppIdStr %>').style.display = document.getElementById('apply-form-<%= oppIdStr %>').style.display === 'none' ? 'block' : 'none'">
+                                                                        Apply / Submit Bid
+                                                                    </button>
+                                                                    <% } %>
+                                                        </div>
+                                                    </div>
 
-            <% if (!isApplied) { %>
-            <div id="apply-form-<%= oppIdStr %>" style="display:none;margin-top:1rem;padding:1.25rem;background:var(--color-bg-secondary);border-radius:var(--border-radius-md);">
-                <h4 style="margin:0 0 0.75rem;">Submit Application for <%= opp.title %></h4>
-                <form method="POST" action="<%= basePath %>/applications/apply">
-                    <input type="hidden" name="opportunity_id" value="<%= opp.id %>">
-                    <div class="form-group" style="margin-bottom:0.75rem;">
-                        <label style="display:block;font-weight:600;margin-bottom:0.25rem;font-size:0.9rem;">Proposed Bid / Rate (Optional)</label>
-                        <input type="text" name="proposed_amount" class="form-control" placeholder="e.g. $85,000 fixed price or $75/hr">
-                    </div>
-                    <div class="form-group" style="margin-bottom:0.75rem;">
-                        <label style="display:block;font-weight:600;margin-bottom:0.25rem;font-size:0.9rem;">Capability Summary & Cover Note *</label>
-                        <textarea name="notes" rows="3" class="form-control" required placeholder="Describe your relevant experience, certifications, and availability for this scope of work..."></textarea>
-                    </div>
-                    <div style="display:flex;gap:0.5rem;">
-                        <button type="submit" class="btn btn-sm btn-primary">Submit Application</button>
-                        <button type="button" class="btn btn-sm btn-secondary" onclick="document.getElementById('apply-form-<%= oppIdStr %>').style.display='none'">Cancel</button>
-                    </div>
-                </form>
-            </div>
-            <% } %>
-            <% } else if (!locals.user) { %>
-            <div style="border-top:1px solid var(--border-color);padding-top:1rem;display:flex;justify-content:flex-end;">
-                <a href="/login" class="btn btn-sm btn-primary">Log In to Apply</a>
-            </div>
-            <% } %>
-        </div>
-        <% }) %>
-    <% } else { %>
-        <div class="recommendations-list" style="padding: var(--space-2xl); text-align:center; color:var(--text-muted);">
-            <p style="font-size:1.1rem;margin-bottom:0.5rem;">No opportunities matched your search filters.</p>
-            <a href="<%= basePath %>/search" class="btn btn-sm btn-secondary">View All Open Opportunities</a>
-        </div>
-    <% } %>
-</div>
+                                                    <% if (!isApplied) { %>
+                                                        <div id="apply-form-<%= oppIdStr %>"
+                                                            style="display:none;margin-top:1rem;padding:1.25rem;background:var(--color-bg-secondary);border-radius:var(--border-radius-md);">
+                                                            <h4 style="margin:0 0 0.75rem;">Submit Application for <%=
+                                                                    opp.title %>
+                                                            </h4>
+                                                            <form method="POST"
+                                                                action="<%= basePath %>/applications/apply">
+                                                                <input type="hidden" name="opportunity_id"
+                                                                    value="<%= opp.id %>">
+                                                                <div class="form-group" style="margin-bottom:0.75rem;">
+                                                                    <label
+                                                                        style="display:block;font-weight:600;margin-bottom:0.25rem;font-size:0.9rem;">Proposed
+                                                                        Bid / Rate (Optional)</label>
+                                                                    <input type="text" name="proposed_amount"
+                                                                        class="form-control"
+                                                                        placeholder="e.g. $85,000 fixed price or $75/hr">
+                                                                </div>
+                                                                <div class="form-group" style="margin-bottom:0.75rem;">
+                                                                    <label
+                                                                        style="display:block;font-weight:600;margin-bottom:0.25rem;font-size:0.9rem;">Capability
+                                                                        Summary & Cover Note *</label>
+                                                                    <textarea name="notes" rows="3" class="form-control"
+                                                                        required
+                                                                        placeholder="Describe your relevant experience, certifications, and availability for this scope of work..."></textarea>
+                                                                </div>
+                                                                <div style="display:flex;gap:0.5rem;">
+                                                                    <button type="submit"
+                                                                        class="btn btn-sm btn-primary">Submit
+                                                                        Application</button>
+                                                                    <button type="button"
+                                                                        class="btn btn-sm btn-secondary"
+                                                                        onclick="document.getElementById('apply-form-<%= oppIdStr %>').style.display='none'">Cancel</button>
+                                                                </div>
+                                                            </form>
+                                                        </div>
+                                                        <% } %>
+                                                            <% } else if (!locals.user) { %>
+                                                                <div
+                                                                    style="border-top:1px solid var(--border-color);padding-top:1rem;display:flex;justify-content:flex-end;">
+                                                                    <a href="/login" class="btn btn-sm btn-primary">Log
+                                                                        In to Apply</a>
+                                                                </div>
+                                                                <% } %>
+                                            </div>
+                                            <% }) %>
+                                                <% } else { %>
+                                                    <div class="recommendations-list"
+                                                        style="padding: var(--space-2xl); text-align:center; color:var(--text-muted);">
+                                                        <p style="font-size:1.1rem;margin-bottom:0.5rem;">No
+                                                            opportunities matched your search filters.</p>
+                                                        <a href="<%= basePath %>/search"
+                                                            class="btn btn-sm btn-secondary">View All Open
+                                                            Opportunities</a>
+                                                    </div>
+                                                    <% } %>
+                                </div>
