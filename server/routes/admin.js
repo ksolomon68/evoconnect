@@ -656,7 +656,7 @@ const pf = require('./portalFeatures');
 router.get('/opportunities', requireAdmin, async (req, res) => {
     try {
         const db = getDb();
-        const [opportunities] = await db.execute('SELECT * FROM opportunities ORDER BY created_at DESC');
+        const [opportunities] = await db.execute('SELECT * FROM opportunities ORDER BY posted_date DESC');
         res.render('admin/opportunities', {
             title: 'Opportunity Manager | EvoConnect Admin',
             flash: getFlash(req),
@@ -713,7 +713,8 @@ router.get('/analytics', requireAdmin, async (req, res) => {
 router.get('/issues', requireAdmin, async (req, res) => {
     try {
         const db = getDb();
-        const [issues] = await db.execute('SELECT * FROM site_issues ORDER BY created_at DESC');
+        const [rawIssues] = await db.execute('SELECT * FROM site_issues ORDER BY created_at DESC');
+        const issues = rawIssues.map(i => ({ ...i, reporter_name: i.reporter_name || i.name, reporter_email: i.reporter_email || i.email }));
         res.render('admin/issues', {
             title: 'Reported Issues | EvoConnect Admin',
             flash: getFlash(req),

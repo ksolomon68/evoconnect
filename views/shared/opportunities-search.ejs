@@ -2,8 +2,8 @@
 <% const title = locals.title || 'Search Contracting Opportunities | EvoConnect' %>
 <% const basePath = locals.basePath || (locals.user?.type === 'business' ? '/business' : '/labor') %>
 <% const oppList = locals.opportunities || [] %>
-<% const savedIds = locals.savedIds || [] %>
-<% const appliedIds = locals.appliedIds || [] %>
+<% const savedIds = (locals.savedIds || []).map(String) %>
+<% const appliedIds = (locals.appliedIds || []).map(String) %>
 <% const filters = locals.filters || {} %>
 
 <%- include('../partials/flash') %>
@@ -26,8 +26,15 @@
             <label style="display:block;font-weight:600;margin-bottom:.35rem;font-size:.9rem;">Category</label>
             <select name="category" class="form-control">
                 <option value="">All Categories</option>
-                <% ['Broadband & Fiber','Electrical & Utility','IT & Cloud Infrastructure','Civil & Concrete','Transportation & Logistics','Facilities & HVAC','Professional Services'].forEach(function(cat) { %>
-                    <option value="<%= cat %>" <%= filters.category === cat ? 'selected' : '' %>><%= cat %></option>
+                <% [
+                    { val: 'electrical', label: 'Electrical & Lighting' },
+                    { val: 'fiber-broadband', label: 'Fiber & Broadband' },
+                    { val: 'environmental', label: 'Environmental Services' },
+                    { val: 'concrete-cement', label: 'Concrete & Civil Construction' },
+                    { val: 'IT & Cloud Infrastructure', label: 'IT & Cloud Infrastructure' },
+                    { val: 'Transportation & Logistics', label: 'Transportation & Logistics' }
+                ].forEach(function(cat) { %>
+                    <option value="<%= cat.val %>" <%= filters.category === cat.val ? 'selected' : '' %>><%= cat.label %></option>
                 <% }) %>
             </select>
         </div>
@@ -46,32 +53,33 @@
 <div style="display:grid;gap:var(--space-lg);">
     <% if (oppList.length > 0) { %>
         <% oppList.forEach(function(opp) { 
-            const isSaved = savedIds.includes(opp.id);
-            const isApplied = appliedIds.includes(opp.id);
+            const oppIdStr = String(opp.id);
+            const isSaved = savedIds.includes(oppIdStr);
+            const isApplied = appliedIds.includes(oppIdStr);
         %>
         <div class="recommendations-list" style="padding: var(--space-xl);">
             <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:1rem;margin-bottom:0.75rem;">
                 <div>
                     <div style="display:flex;align-items:center;gap:0.5rem;flex-wrap:wrap;margin-bottom:0.35rem;">
-                        <span class="status-badge badge-consulting" style="margin:0;"><%= opp.category || 'General Contracting' %></span>
+                        <span class="status-badge badge-consulting" style="margin:0;"><%= opp.category_name || opp.category || 'General Contracting' %></span>
                         <% if (opp.naics_codes) { %>
                             <span style="font-size:0.8rem;font-family:monospace;background:#f1f5f9;padding:0.2rem 0.5rem;border-radius:4px;color:#334155;">NAICS: <%= opp.naics_codes %></span>
                         <% } %>
-                        <% if (opp.certifications_required) { %>
-                            <span class="status-badge badge-construction" style="margin:0;"><%= opp.certifications_required %></span>
+                        <% if (opp.certifications || opp.certifications_required) { %>
+                            <span class="status-badge badge-construction" style="margin:0;"><%= opp.certifications || opp.certifications_required %></span>
                         <% } %>
                     </div>
                     <h3 style="margin:0;font-size:1.25rem;color:var(--color-text-primary);"><%= opp.title %></h3>
                     <div style="color:var(--text-muted);font-size:0.9rem;margin-top:0.25rem;">
                         <strong><%= opp.posted_by_name || 'Prime Contractor' %></strong>
-                        <% if (opp.location || opp.district_name) { %> • 📍 <%= opp.location || opp.district_name %><% } %>
-                        <% if (opp.project_ref) { %> • Ref: <code><%= opp.project_ref %></code><% } %>
+                        <% if (opp.district_name || opp.location) { %> • 📍 <%= opp.district_name || opp.location %><% } %>
+                        • Ref: <code><%= opp.project_ref || opp.id %></code>
                     </div>
                 </div>
                 <div style="text-align:right;">
                     <div style="font-size:1.1rem;font-weight:700;color:var(--color-primary);"><%= opp.estimated_value || 'TBD' %></div>
                     <% if (opp.due_date) { %>
-                        <div style="font-size:0.85rem;color:var(--text-muted);">Due: <%= new Date(opp.due_date).toLocaleDateString() %> <%= opp.due_time || '' %></div>
+                        <div style="font-size:0.85rem;color:var(--text-muted);">Due: <%= opp.due_date %> <%= opp.due_time || '' %></div>
                     <% } %>
                 </div>
             </div>
@@ -96,7 +104,7 @@
                     <% if (isApplied) { %>
                         <span class="status-badge badge-consulting" style="margin:0;padding:0.45rem 0.9rem;">✓ Application Submitted</span>
                     <% } else { %>
-                        <button type="button" class="btn btn-sm btn-primary" onclick="document.getElementById('apply-form-<%= opp.id %>').style.display = document.getElementById('apply-form-<%= opp.id %>').style.display === 'none' ? 'block' : 'none'">
+                        <button type="button" class="btn btn-sm btn-primary" onclick="document.getElementById('apply-form-<%= oppIdStr %>').style.display = document.getElementById('apply-form-<%= oppIdStr %>').style.display === 'none' ? 'block' : 'none'">
                             Apply / Submit Bid
                         </button>
                     <% } %>
@@ -104,7 +112,7 @@
             </div>
 
             <% if (!isApplied) { %>
-            <div id="apply-form-<%= opp.id %>" style="display:none;margin-top:1rem;padding:1.25rem;background:var(--color-bg-secondary);border-radius:var(--border-radius-md);">
+            <div id="apply-form-<%= oppIdStr %>" style="display:none;margin-top:1rem;padding:1.25rem;background:var(--color-bg-secondary);border-radius:var(--border-radius-md);">
                 <h4 style="margin:0 0 0.75rem;">Submit Application for <%= opp.title %></h4>
                 <form method="POST" action="<%= basePath %>/applications/apply">
                     <input type="hidden" name="opportunity_id" value="<%= opp.id %>">
@@ -118,7 +126,7 @@
                     </div>
                     <div style="display:flex;gap:0.5rem;">
                         <button type="submit" class="btn btn-sm btn-primary">Submit Application</button>
-                        <button type="button" class="btn btn-sm btn-secondary" onclick="document.getElementById('apply-form-<%= opp.id %>').style.display='none'">Cancel</button>
+                        <button type="button" class="btn btn-sm btn-secondary" onclick="document.getElementById('apply-form-<%= oppIdStr %>').style.display='none'">Cancel</button>
                     </div>
                 </form>
             </div>

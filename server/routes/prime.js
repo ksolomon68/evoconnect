@@ -345,7 +345,7 @@ router.get('/dashboard', requireType('prime'), async (req, res) => {
             [userId]
         );
 
-        const [[{ myOppsCount }]] = await db.execute("SELECT COUNT(*) AS myOppsCount FROM opportunities WHERE posted_by_id = ? OR status = 'published'", [userId]);
+        const [[{ myOppsCount }]] = await db.execute("SELECT COUNT(*) AS myOppsCount FROM opportunities WHERE posted_by = ? OR status = 'published'", [userId]);
         const [[{ wCnt }]] = await db.execute("SELECT COUNT(*) AS wCnt FROM workers WHERE status='active'");
         const [[{ bCnt }]] = await db.execute("SELECT COUNT(*) AS bCnt FROM businesses WHERE status='active'");
         res.render('prime/dashboard', {
@@ -869,9 +869,9 @@ router.post('/post-opportunity', requireType('prime'), async (req, res) => {
 
         await db.execute(`
             INSERT INTO opportunities
-                (project_ref, title, scope_summary, category, estimated_value, location, naics_codes, certifications_required, due_date, status, posted_by_id, posted_by_name)
-            VALUES (?,?,?,?,?,?,?,?,?,'published',?,?)
-        `, [ref, title.trim(), scope_summary.trim(), category || 'General', estimated_value || 'TBD', location || 'Regional', naics_codes || null, certifications_required || null, due_date || null, req.user.id, companyName]);
+                (id, title, scope_summary, description, district_name, category, category_name, estimated_value, naics_codes, certifications, due_date, status, posted_by, posted_by_name)
+            VALUES (?,?,?,?,?,?,?,?,?,?,?,'published',?,?)
+        `, [ref, title.trim(), scope_summary.trim(), scope_summary.trim(), location || 'Statewide', category || 'general', category || 'General Contracting', estimated_value || 'TBD', naics_codes || null, certifications_required || null, due_date || null, req.user.id, companyName]);
 
         flash(req, 'success', 'Contracting opportunity published!');
         res.redirect('/prime/opportunities');
@@ -887,7 +887,7 @@ router.get('/opportunities', requireType('prime'), async (req, res) => {
     try {
         const db = getDb();
         const [opportunities] = await db.execute(
-            'SELECT * FROM opportunities WHERE posted_by_id = ? OR posted_by_id IS NULL ORDER BY created_at DESC',
+            "SELECT * FROM opportunities WHERE posted_by = ? OR posted_by IS NULL OR status = 'published' ORDER BY posted_date DESC",
             [req.user.id]
         );
         const [businesses] = await db.execute("SELECT id, company_name FROM businesses WHERE status='active' ORDER BY company_name ASC LIMIT 50");
@@ -945,13 +945,13 @@ router.post('/opportunities/:id/invite', requireType('prime'), async (req, res) 
         const subject = `Invitation to Bid: ${opp.title}`;
         const body = `Hello ${targetName},\n\nYou are invited by ${req.user.name} to review and submit an application for "${opp.title}" (Ref: ${opp.project_ref || opp.id}, Value: ${opp.estimated_value || 'TBD'}).\n\nVisit your Search Opportunities board to apply.`;
 
-        await db.execute(
-            'INSERT INTO messages (sender_type, sender_id, sender_name, receiver_type, receiver_id, receiver_name, subject, body) VALUES (?,?,?,?,?,?,?,?)',
-            ['prime', req.user.id, req.user.name, targetType, targetId, targetName, subject, body]
+        const [msgRes] = await db.execute(
+            "INSERT INTO messages (sender_type, sender_id, sender_business_name, receiver_type, receiver_id, receiver_business_name, opportunity_id, message_type, subject, body) VALUES ('prime',?,?,?,?,?,?,'invite',?,?)",
+            [req.user.id, req.user.name, targetType, targetId, targetName, opp.id, subject, body]
         );
         await db.execute(
-            'INSERT INTO notifications (user_type, user_id, type, message, related_id) VALUES (?,?,?,?,?)',
-            [targetType, targetId, 'invitation', `${req.user.name} invited you to apply for "${opp.title}"`, opp.id]
+            'INSERT INTO notifications (user_type, user_id, message_id) VALUES (?,?,?)',
+            [targetType, targetId, msgRes.insertId]
         );
 
         flash(req, 'success', `Invitation sent to ${targetName}.`);
@@ -1012,7 +1012,7 @@ router.get('/analytics', requireType('prime'), async (req, res) => {
         const userId = req.user.id;
         const [pRows] = await db.execute('SELECT * FROM primes WHERE id = ?', [userId]);
         const prime = pRows[0] || {};
-        const [[{ oppsCount }]] = await db.execute('SELECT COUNT(*) AS oppsCount FROM opportunities WHERE posted_by_id = ? OR status = "published"', [userId]);
+        const [[{ oppsCount }]] = await db.execute('SELECT COUNT(*) AS oppsCount FROM opportunities WHERE posted_by = ? OR status = "published"', [userId]);
         const [[{ appsCount }]] = await db.execute('SELECT COUNT(*) AS appsCount FROM applications');
         const [[{ connectionsSent }]] = await db.execute('SELECT COUNT(*) AS connectionsSent FROM connections WHERE prime_id = ?', [userId]);
         const [[{ connectionsAccepted }]] = await db.execute("SELECT COUNT(*) AS connectionsAccepted FROM connections WHERE prime_id = ? AND status = 'accepted'", [userId]);

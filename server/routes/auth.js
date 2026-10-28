@@ -17,23 +17,114 @@ function flash(req, type, message) {
 
 const APP_URL = process.env.APP_URL || 'https://evoconnect.evobrand.net';
 
-// Look up a user by email across all tables.  Returns { row, userType } or null.
+const TYPE_BY_TABLE = {
+    workers:    'worker',
+    businesses: 'business',
+    primes:     'prime',
+    admins:     'admin'
+};
+
+// Normalize the singular type label back to a table name
+function tableFor(type) {
+    const map = { worker: 'workers', business: 'businesses', businesse: 'businesses', prime: 'primes', admin: 'admins' };
+    return map[type] || 'workers';
+}
+
+// Look up a user by email across all tables. Returns { row, userType } or null.
 async function findUserByEmail(db, email, userType) {
     const tables = userType
-        ? [userType]
+        ? [tableFor(userType)]
         : ['workers', 'businesses', 'primes', 'admins'];
 
     for (const table of tables) {
         const [rows] = await db.execute(`SELECT * FROM ${table} WHERE email = ?`, [email]);
-        if (rows.length) return { row: rows[0], userType: table.replace(/s$/, '') };
+        if (rows.length) {
+            return { row: rows[0], userType: TYPE_BY_TABLE[table] || 'worker' };
+        }
     }
     return null;
 }
 
-// Normalize the singular type label used by findUserByEmail back to a table name
-function tableFor(type) {
-    const map = { worker: 'workers', business: 'businesses', prime: 'primes', admin: 'admins' };
-    return map[type] || type + 's';
+// Ensure a demo account exists and return { row, userType }
+async function ensureDemoAccount(db, email) {
+    const demoEmails = {
+        'demo-labor@evoconnect.io':    'worker',
+        'demo-business@evoconnect.io': 'business',
+        'demo-prime@evoconnect.io':    'prime',
+        'demo-admin@evoconnect.io':    'admin'
+    };
+    const role = demoEmails[email];
+    if (!role) return null;
+
+    const hash = await bcrypt.hash('DemoPass1!', 10);
+
+    if (role === 'admin') {
+        await db.execute(
+            `INSERT INTO admins (email, password_hash, name) VALUES (?, ?, 'Demo Admin')
+             ON DUPLICATE KEY UPDATE password_hash = VALUES(password_hash), name = 'Demo Admin'`,
+            [email, hash]
+        );
+        const [rows] = await db.execute('SELECT * FROM admins WHERE email = ?', [email]);
+        return { row: rows[0], userType: 'admin' };
+    }
+
+    if (role === 'prime') {
+        await db.execute(
+            `INSERT INTO primes
+                (company_name, contact_name, email, password_hash, phone,
+                 sam_uei, contract_vehicles, naics_codes, city, state, zip,
+                 subscription_tier, active, approved_at)
+             VALUES ('Apex Construction Group', 'Marcus Thompson', ?, ?, '512-555-0201',
+                     'APEXCG1234567', 'GSA MAS, IDIQ, BPA', '["237310","238110","238210","238990"]',
+                     'Austin', 'TX', '78701', 'enterprise', 1, NOW())
+             ON DUPLICATE KEY UPDATE password_hash = VALUES(password_hash), active = 1, subscription_tier = 'enterprise'`,
+            [email, hash]
+        );
+        const [rows] = await db.execute('SELECT * FROM primes WHERE email = ?', [email]);
+        return { row: rows[0], userType: 'prime' };
+    }
+
+    if (role === 'business') {
+        await db.execute(
+            `INSERT INTO businesses
+                (company_name, contact_name, email, password_hash, phone,
+                 business_type, certifications, sam_uei, sam_registered,
+                 naics_codes, service_description, city, state, zip,
+                 service_radius, profile_pct, status)
+             VALUES ('GreenPath Environmental Services', 'Tanya Williams', ?, ?, '210-555-0301',
+                     'LLC', '["DBE","SBE","WBE"]', 'GRNPTH9876543', 'yes',
+                     '["541620","562910","238910"]',
+                     'Environmental consulting, site assessment, NEPA compliance, and hazardous materials management for transportation and infrastructure projects.',
+                     'San Antonio', 'TX', '78205', 'statewide', 85, 'active')
+             ON DUPLICATE KEY UPDATE password_hash = VALUES(password_hash), status = 'active'`,
+            [email, hash]
+        );
+        const [rows] = await db.execute('SELECT * FROM businesses WHERE email = ?', [email]);
+        return { row: rows[0], userType: 'business' };
+    }
+
+    if (role === 'worker') {
+        await db.execute(
+            `INSERT INTO workers
+                (full_name, email, password_hash, phone, trade_category,
+                 skills, certifications, years_experience,
+                 sam_registered, business_entity,
+                 city, state, zip, travel_willingness, experience_summary,
+                 profile_pct, status)
+             VALUES ('James Okafor', ?, ?, '713-555-0302', 'electrical',
+                     '["Traffic Signal Installation","Highway Lighting","Conduit & Pull Box","Fiber Conduit","Certified Payroll"]',
+                     '["OSHA 30","IMSA Signal Level I","C-10 License"]', 12,
+                     'yes', 'sole_proprietor', 'Houston', 'TX', '77002', 'regional',
+                     'Licensed electrical contractor with 12 years specializing in highway lighting, traffic signal upgrades, and electrical infrastructure.',
+                     72, 'active')
+             ON DUPLICATE KEY UPDATE password_hash = VALUES(password_hash), status = 'active'`,
+            [email, hash]
+        );
+        const [rows] = await db.execute('SELECT * FROM workers WHERE email = ?', [email]);
+        return { row: rows[0], userType: 'worker' };
+    }
+
+    return null;
 }
 
 // ── GET /login ─────────────────────────────────────────────────────────────────
@@ -47,30 +138,84 @@ router.get('/login', (req, res) => {
     });
 });
 
+// ── GET /auth/demo/:role (1-click Demo Login) ──────────────────────────────────
+router.get('/auth/demo/:role', async (req, res) => {
+    const roleMap = {
+        worker:   'demo-labor@evoconnect.io',
+        labor:    'demo-labor@evoconnect.io',
+        business: 'demo-business@evoconnect.io',
+        prime:    'demo-prime@evoconnect.io',
+        admin:    'demo-admin@evoconnect.io'
+    };
+    const email = roleMap[req.params.role];
+    if (!email) return res.redirect('/login');
+
+    try {
+        const db = getDb();
+        const found = await ensureDemoAccount(db, email);
+        if (!found || !found.row) {
+            flash(req, 'error', 'Could not initialize demo account.');
+            return res.redirect('/login');
+        }
+        const { row, userType } = found;
+        const name = row.company_name || row.full_name || row.contact_name || row.name || row.email;
+        const token = signToken({ id: row.id, email: row.email, type: userType, name });
+        setAuthCookie(res, token);
+
+        const redirectMap = {
+            worker:   '/labor/dashboard',
+            business: '/business/dashboard',
+            prime:    '/prime/dashboard',
+            admin:    '/admin/dashboard'
+        };
+        return res.redirect(redirectMap[userType] || '/');
+    } catch (err) {
+        console.error('EvoConnect [auth/demo]:', err);
+        flash(req, 'error', 'Demo login failed. Please try again.');
+        return res.redirect('/login');
+    }
+});
+
 // ── POST /login ────────────────────────────────────────────────────────────────
 router.post('/login', authLimiter, async (req, res) => {
     const email = (req.body.email || '').trim().toLowerCase();
     const password = req.body.password || '';
-    const userType = req.body.userType || null; // 'worker'|'business'|'prime'|'admin'
+    const userType = req.body.userType || null;
 
     try {
         const db = getDb();
-        const found = await findUserByEmail(db, email, userType ? tableFor(userType) : null);
 
-        if (!found) {
+        // If logging in with one of the 4 official demo emails and DemoPass1!, auto-ensure it exists
+        let found = null;
+        const isDemoEmail = [
+            'demo-labor@evoconnect.io',
+            'demo-business@evoconnect.io',
+            'demo-prime@evoconnect.io',
+            'demo-admin@evoconnect.io'
+        ].includes(email);
+
+        if (isDemoEmail && password === 'DemoPass1!') {
+            found = await ensureDemoAccount(db, email);
+        } else {
+            found = await findUserByEmail(db, email, userType);
+        }
+
+        if (!found || !found.row) {
             flash(req, 'error', 'Invalid email or password.');
             return res.redirect('/login');
         }
 
         const { row, userType: foundType } = found;
-        const match = await bcrypt.compare(password, row.password_hash);
+        const match = (isDemoEmail && password === 'DemoPass1!')
+            ? true
+            : await bcrypt.compare(password, row.password_hash);
 
         if (!match) {
             flash(req, 'error', 'Invalid email or password.');
             return res.redirect('/login');
         }
 
-        const name = row.full_name || row.contact_name || row.name || row.email;
+        const name = row.company_name || row.full_name || row.contact_name || row.name || row.email;
         const token = signToken({ id: row.id, email: row.email, type: foundType, name });
         setAuthCookie(res, token);
 
@@ -80,7 +225,7 @@ router.post('/login', authLimiter, async (req, res) => {
             prime:    '/prime/dashboard',
             admin:    '/admin/dashboard'
         };
-        res.redirect(redirectMap[foundType] || '/');
+        res.redirect(redirectMap[foundType] || '/labor/dashboard');
 
     } catch (err) {
         console.error('EvoConnect [auth/login]:', err);
@@ -89,10 +234,29 @@ router.post('/login', authLimiter, async (req, res) => {
     }
 });
 
-// ── GET /logout ────────────────────────────────────────────────────────────────
+// ── GET & POST /logout + /auth/logout ──────────────────────────────────────────
 router.get('/logout', (req, res) => {
     clearAuthCookie(res);
-    res.redirect('/');
+    if (req.session) req.session.destroy(() => {});
+    res.redirect('/login');
+});
+
+router.post('/logout', (req, res) => {
+    clearAuthCookie(res);
+    if (req.session) req.session.destroy(() => {});
+    res.redirect('/login');
+});
+
+router.get('/auth/logout', (req, res) => {
+    clearAuthCookie(res);
+    if (req.session) req.session.destroy(() => {});
+    res.redirect('/login');
+});
+
+router.post('/auth/logout', (req, res) => {
+    clearAuthCookie(res);
+    if (req.session) req.session.destroy(() => {});
+    res.redirect('/login');
 });
 
 // ── GET /forgot-password ───────────────────────────────────────────────────────
@@ -109,18 +273,16 @@ router.get('/forgot-password', (req, res) => {
 router.post('/forgot-password', authLimiter, async (req, res) => {
     const email = (req.body.email || '').trim().toLowerCase();
     const userType = req.body.userType || null;
-
-    // Always render the same success message regardless of outcome
     const successMsg = "If that email is registered, you'll receive a reset link shortly.";
 
     try {
         const db = getDb();
-        const found = await findUserByEmail(db, email, userType ? tableFor(userType) : null);
+        const found = await findUserByEmail(db, email, userType);
 
         if (found) {
             const { row, userType: foundType } = found;
             const resetToken = crypto.randomBytes(32).toString('hex');
-            const expiresAt = new Date(Date.now() + 60 * 60 * 1000); // 1 hour
+            const expiresAt = new Date(Date.now() + 60 * 60 * 1000);
 
             await db.execute(
                 `INSERT INTO password_reset_tokens (user_type, user_id, token, expires_at)
@@ -247,8 +409,5 @@ router.get('/register', (req, res) => {
         title: 'Choose Your Account Type | EvoConnect'
     });
 });
-
-router.get('/auth/logout', (req, res) => { clearAuthCookie(res); res.redirect('/'); });
-router.post('/auth/logout', (req, res) => { clearAuthCookie(res); res.redirect('/'); });
 
 module.exports = router;

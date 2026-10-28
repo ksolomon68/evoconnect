@@ -1,50 +1,293 @@
+<%
+const currentRole = (locals.user && locals.user.type) ? (locals.user.type === 'businesse' ? 'business' : locals.user.type) : 'worker';
+const userName = (locals.user && (locals.user.name || locals.user.email)) ? (locals.user.name || locals.user.email) : 'Portal User';
+
+const NAV_CONFIG = {
+    worker: {
+        title: 'Labor Portal',
+        dashboardHref: '/labor/dashboard',
+        messagesHref: '/labor/messages',
+        items: [
+            { label: 'Dashboard',             href: '/labor/dashboard',       icon: '🏠' },
+            { label: 'Search Opportunities',  href: '/labor/search',          icon: '🔍' },
+            { label: 'My Applications',       href: '/labor/applications',    icon: '📋' },
+            { label: 'Saved Opportunities',   href: '/labor/saved',           icon: '⭐' },
+            { label: 'Connection Requests',   href: '/labor/connections',     icon: '🤝' },
+            { label: 'Messages',              href: '/labor/messages',        icon: '✉️' },
+            { label: 'My Profile',            href: '/labor/profile',         icon: '👤' },
+            { label: 'Readiness Checklist',   href: '/labor/checklist',       icon: '✅' },
+            { label: 'Resources',             href: '/labor/resources',       icon: '📚' },
+            { label: 'Settings',              href: '/labor/settings',        icon: '⚙️' },
+            { label: 'Help & FAQ',            href: '/labor/faq',             icon: '❓' }
+        ]
+    },
+    business: {
+        title: 'Small Business Portal',
+        dashboardHref: '/business/dashboard',
+        messagesHref: '/business/messages',
+        items: [
+            { label: 'Dashboard',             href: '/business/dashboard',            icon: '🏠' },
+            { label: 'Search Opportunities',  href: '/business/search',               icon: '🔍' },
+            { label: 'My Applications',       href: '/business/applications',         icon: '📋' },
+            { label: 'Saved Opportunities',   href: '/business/saved',                icon: '⭐' },
+            { label: 'Connection Requests',   href: '/business/connections',          icon: '🤝' },
+            { label: 'Messages',              href: '/business/messages',             icon: '✉️' },
+            { label: 'Capability Statement',  href: '/business/capability-statement', icon: '📄' },
+            { label: 'My Profile',            href: '/business/profile',              icon: '👤' },
+            { label: 'Readiness Checklist',   href: '/business/checklist',            icon: '✅' },
+            { label: 'Resources',             href: '/business/resources',            icon: '📚' },
+            { label: 'Settings',              href: '/business/settings',             icon: '⚙️' },
+            { label: 'Help & FAQ',            href: '/business/faq',                  icon: '❓' }
+        ]
+    },
+    prime: {
+        title: 'Prime Contractor Portal',
+        dashboardHref: '/prime/dashboard',
+        messagesHref: '/prime/messages',
+        items: [
+            { label: 'Dashboard',               href: '/prime/dashboard',          icon: '🏠' },
+            { label: 'Post Opportunity',        href: '/prime/post-opportunity',   icon: '➕' },
+            { label: 'Manage Postings',         href: '/prime/opportunities',      icon: '📂' },
+            { label: 'View Applications',       href: '/prime/applications',       icon: '📝' },
+            { label: 'Subcontractor RFQs',      href: '/prime/rfq',                icon: '📋' },
+            { label: 'Search Small Businesses', href: '/prime/search/businesses',  icon: '🏢' },
+            { label: 'Search Labor Directory',  href: '/prime/search/workers',     icon: '👷' },
+            { label: 'Connections',             href: '/prime/connections',        icon: '🤝' },
+            { label: 'Messages',                href: '/prime/messages',           icon: '📬' },
+            { label: 'Analytics',               href: '/prime/analytics',          icon: '📈' },
+            { label: 'My Profile',              href: '/prime/profile/edit',       icon: '👤' },
+            { label: 'Settings',                href: '/prime/settings',           icon: '⚙️' },
+            { label: 'Help & FAQ',              href: '/prime/faq',                icon: '❓' }
+        ]
+    },
+    admin: {
+        title: 'Admin Console',
+        dashboardHref: '/admin/dashboard',
+        messagesHref: '/admin/messages',
+        items: [
+            { label: 'Dashboard',            href: '/admin/dashboard',      icon: '🏠' },
+            { label: 'User Management',      href: '/admin/users',          icon: '👥' },
+            { label: 'Prime Approvals',      href: '/admin/approvals',      icon: '🛡️' },
+            { label: 'Opportunity Manager',  href: '/admin/opportunities',  icon: '💼' },
+            { label: 'NAICS Codes',          href: '/admin/naics',          icon: '🏷️' },
+            { label: 'Resource Library',     href: '/admin/resources',      icon: '📚' },
+            { label: 'Announcements',        href: '/admin/announcements',  icon: '📢' },
+            { label: 'Analytics',            href: '/admin/analytics',      icon: '📊' },
+            { label: 'Messages',             href: '/admin/messages',       icon: '📬' },
+            { label: 'Content Management',   href: '/admin-cms',            icon: '🖊️' },
+            { label: 'Reported Issues',      href: '/admin/issues',         icon: '🚨' },
+            { label: 'Admin Guide',          href: '/admin/tutorial',       icon: '📘' },
+            { label: 'CMS Guide',            href: '/admin/cms-tutorial',   icon: '📝' }
+        ]
+    }
+};
+
+const navCfg = NAV_CONFIG[currentRole] || NAV_CONFIG.worker;
+%>
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="robots" content="noindex, nofollow">
-    <title><%= locals.title ? locals.title + ' | EvoConnect' : 'Dashboard - EvoConnect' %></title>
+    <title><%= locals.title ? locals.title : 'Dashboard — EvoConnect' %></title>
     
     <link rel="icon" href="/images/favicon.png" type="image/png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     
-    <link rel="stylesheet" href="/css/evo.css?v=3.2.0">
-    <link rel="stylesheet" href="/css/design-system.css?v=3.2.0">
-    <link rel="stylesheet" href="/css/main.css?v=3.2.0">
-    <link rel="stylesheet" href="/css/dashboard-new.css?v=3.2.0">
-    <link rel="stylesheet" href="/css/dashboard-common.css?v=3.2.0">
-    <link rel="stylesheet" href="/css/accessibility-widget.css?v=3.2.0">
+    <link rel="stylesheet" href="/css/design-system.css?v=3.3.0">
+    <link rel="stylesheet" href="/css/main.css?v=3.3.0">
+    <link rel="stylesheet" href="/css/dashboard-new.css?v=3.3.0">
+    <link rel="stylesheet" href="/css/dashboard-common.css?v=3.3.0">
+    <link rel="stylesheet" href="/css/accessibility-widget.css?v=3.3.0">
     <style>
         body.dashboard-v2 {
-            display: block;
-            background-color: var(--dashboard-bg, var(--color-bg-secondary));
-            color: var(--text-main, var(--color-text-primary));
+            display: flex !important;
+            min-height: 100vh;
+            background-color: var(--dashboard-bg, #F8FAFC) !important;
+            color: var(--text-main, #0F172A) !important;
+            margin: 0;
+        }
+        aside.sidebar {
+            width: 280px;
+            min-width: 280px;
+            background: #FFFFFF;
+            border-right: 1px solid #E2E8F0;
+            display: flex;
+            flex-direction: column;
+            position: sticky;
+            top: 0;
+            height: 100vh;
+            padding: 0;
+            z-index: 100;
+        }
+        aside.sidebar .sidebar-footer {
+            position: relative !important;
+            margin-top: auto;
+            border-top: 1px solid #E2E8F0;
+            padding: 0.75rem 0;
+            background: #FFFFFF;
+        }
+        .dashboard-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            min-width: 0;
+            background: #F8FAFC;
+        }
+        body.dashboard-v2 .main-content {
+            background: #F8FAFC;
+            color: #0F172A;
+            padding: 1.5rem 2rem 3rem;
+            flex: 1;
         }
         body.dashboard-v2 .dashboard-section,
         body.dashboard-v2 .admin-section,
-        body.dashboard-v2 .portal-section {
+        body.dashboard-v2 .portal-section,
+        body.dashboard-v2 .profile-section {
             padding-top: 0;
         }
         body.dashboard-v2 .dashboard-section > .container,
         body.dashboard-v2 .admin-section > .container,
-        body.dashboard-v2 .portal-section > .container {
+        body.dashboard-v2 .portal-section > .container,
+        body.dashboard-v2 .profile-section > .container {
             max-width: 100%;
             padding-left: 0;
             padding-right: 0;
         }
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .data-table th, .data-table td {
+            padding: 0.75rem 1rem;
+            text-align: left;
+            border-bottom: 1px solid #E2E8F0;
+        }
+        .data-table th {
+            background: #F8FAFC;
+            font-weight: 600;
+            font-size: 0.85rem;
+            color: #475569;
+            text-transform: uppercase;
+        }
+        @media (max-width: 1024px) {
+            body.dashboard-v2 {
+                display: block !important;
+            }
+            aside.sidebar {
+                display: none;
+                position: fixed;
+                top: 0;
+                left: -280px;
+                bottom: 0;
+                z-index: 1100;
+            }
+            aside.sidebar.active {
+                display: flex !important;
+                left: 0;
+            }
+        }
     </style>
-    <script src="https://primereachgov.com/license-gate.js"></script>
 </head>
 <body class="dashboard-v2">
     <a href="#main-content" class="skip-link">Skip to main content</a>
     
-    <aside class="sidebar" id="sidebar"></aside>
+    <!-- Server-Rendered Caltrans Sidebar -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-brand" style="display:flex;align-items:center;justify-content:space-between;padding:1.1rem 1.5rem;border-bottom:1px solid #E2E8F0;">
+            <a href="<%= navCfg.dashboardHref %>" style="text-decoration:none;display:flex;align-items:center;gap:0.5rem;font-weight:800;font-size:1.15rem;color:var(--color-primary, #005A8C);">
+                <img src="/images/favicon.png" alt="EvoConnect" style="height:28px;width:auto;">
+                <span>EvoConnect</span>
+            </a>
+            <button class="sidebar-close-btn" aria-label="Close menu" onclick="Navigation.closeSidebar()">&times;</button>
+        </div>
+
+        <nav class="sidebar-nav" style="padding:1rem 0;flex:1;overflow-y:auto;">
+            <div style="padding:0 1.5rem 0.5rem;font-size:0.75rem;text-transform:uppercase;color:#64748B;font-weight:700;letter-spacing:0.04em;">
+                <%= navCfg.title %>
+            </div>
+            <% navCfg.items.forEach(function(item) { %>
+                <a href="<%= item.href %>" class="nav-item" style="display:flex;align-items:center;gap:0.75rem;padding:0.65rem 1.5rem;min-height:42px;color:#1E293B;text-decoration:none;font-weight:500;font-size:0.92rem;border-radius:0;margin:0;">
+                    <span aria-hidden="true" style="font-size:1.15rem;width:24px;text-align:center;"><%= item.icon %></span>
+                    <span><%= item.label %></span>
+                </a>
+            <% }) %>
+
+            <!-- Quick Role / Demo Switcher -->
+            <div style="padding:1rem 1.5rem 0.35rem;font-size:0.7rem;text-transform:uppercase;color:#94A3B8;font-weight:700;letter-spacing:0.04em;border-top:1px solid #F1F5F9;margin-top:0.75rem;">
+                Switch Demo Portal
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.35rem;padding:0.25rem 1.25rem;">
+                <a href="/auth/demo/worker" style="font-size:0.78rem;padding:0.35rem 0.5rem;border:1px solid #E2E8F0;border-radius:6px;text-decoration:none;color:<%= currentRole === 'worker' ? '#0284C7' : '#475569' %>;background:<%= currentRole === 'worker' ? '#E0F2FE' : '#F8FAFC' %>;font-weight:600;text-align:center;">👷 Labor</a>
+                <a href="/auth/demo/business" style="font-size:0.78rem;padding:0.35rem 0.5rem;border:1px solid #E2E8F0;border-radius:6px;text-decoration:none;color:<%= currentRole === 'business' ? '#0284C7' : '#475569' %>;background:<%= currentRole === 'business' ? '#E0F2FE' : '#F8FAFC' %>;font-weight:600;text-align:center;">🏢 Business</a>
+                <a href="/auth/demo/prime" style="font-size:0.78rem;padding:0.35rem 0.5rem;border:1px solid #E2E8F0;border-radius:6px;text-decoration:none;color:<%= currentRole === 'prime' ? '#0284C7' : '#475569' %>;background:<%= currentRole === 'prime' ? '#E0F2FE' : '#F8FAFC' %>;font-weight:600;text-align:center;">🏗️ Prime</a>
+                <a href="/auth/demo/admin" style="font-size:0.78rem;padding:0.35rem 0.5rem;border:1px solid #E2E8F0;border-radius:6px;text-decoration:none;color:<%= currentRole === 'admin' ? '#0284C7' : '#475569' %>;background:<%= currentRole === 'admin' ? '#E0F2FE' : '#F8FAFC' %>;font-weight:600;text-align:center;">🛡️ Admin</a>
+            </div>
+        </nav>
+
+        <div class="sidebar-footer">
+            <a href="/?public=1" class="sidebar-footer-link" style="min-height:40px;display:flex;align-items:center;gap:0.75rem;padding:0.5rem 1.5rem;text-decoration:none;color:#475569;font-size:0.9rem;">
+                <span style="font-size:1.1rem;">🌐</span> Back to Public Site
+            </a>
+            <a href="/logout" onclick="localStorage.removeItem('wfc_user');" class="sidebar-footer-link sidebar-signout-btn" style="min-height:40px;display:flex;align-items:center;gap:0.75rem;padding:0.5rem 1.5rem;text-decoration:none;color:#DC2626;font-weight:600;font-size:0.9rem;">
+                <span style="font-size:1.1rem;">🚪</span> Sign Out
+            </a>
+        </div>
+    </aside>
 
     <div class="dashboard-container">
-        <header class="header-top" id="header-top"></header>
+        <!-- Server-Rendered Caltrans Top Header -->
+        <header class="header-top" id="header-top" style="background:#FFFFFF;border-bottom:1px solid #E2E8F0;padding:0 1.75rem;height:70px;display:flex;align-items:center;justify-content:space-between;">
+            <div style="display:flex;align-items:center;gap:1rem;">
+                <button id="mobile-toggle" class="mobile-toggle-btn" aria-label="Open navigation menu" aria-expanded="false" aria-controls="sidebar">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="4" y1="12" x2="20" y2="12"></line>
+                        <line x1="4" y1="6" x2="20" y2="6"></line>
+                        <line x1="4" y1="18" x2="20" y2="18"></line>
+                    </svg>
+                </button>
+                <span class="header-portal-title" style="font-size:1rem;font-weight:700;color:#0F172A;"><%= navCfg.title %></span>
+            </div>
+
+            <div style="display:flex;align-items:center;gap:1rem;">
+                <!-- Messages Shortcut -->
+                <a href="<%= navCfg.messagesHref %>" class="btn btn-sm btn-outline" style="padding:0.4rem 0.85rem;font-size:0.85rem;text-decoration:none;display:inline-flex;align-items:center;gap:0.35rem;">
+                    💬 Messages
+                </a>
+
+                <!-- Notification Bell -->
+                <div class="notification-container" style="position:relative;">
+                    <button id="notification-bell" class="btn btn-outline btn-small" style="position:relative;border-radius:50%;width:40px;height:40px;padding:0;display:flex;align-items:center;justify-content:center;background:transparent;border:1px solid #CBD5E1;cursor:pointer;" aria-label="Notifications">
+                        <span aria-hidden="true" style="font-size:1.1rem;">🔔</span>
+                        <span id="notification-badge" class="badge" style="position:absolute;top:-5px;right:-5px;background:#DC2626;color:white;display:none;padding:2px 6px;border-radius:10px;font-size:0.7rem;min-width:18px;text-align:center;">0</span>
+                    </button>
+                    <div id="notification-dropdown" class="notification-dropdown" style="display:none;position:absolute;top:100%;right:0;width:320px;background:#FFFFFF;border:1px solid #E2E8F0;border-radius:8px;box-shadow:0 10px 25px rgba(0,0,0,0.12);z-index:1000;max-height:400px;overflow-y:auto;margin-top:8px;">
+                        <div style="padding:12px 14px;border-bottom:1px solid #E2E8F0;font-weight:700;display:flex;justify-content:space-between;align-items:center;">
+                            <span>Notifications</span>
+                            <a href="<%= navCfg.messagesHref %>" style="font-size:0.8rem;color:#0284C7;text-decoration:none;font-weight:600;">View Messages</a>
+                        </div>
+                        <div id="notification-list" style="padding:10px;font-size:0.85rem;color:#64748B;">No new notifications</div>
+                    </div>
+                </div>
+
+                <!-- User Info -->
+                <div class="header-user-info" style="text-align:right;">
+                    <div style="font-weight:600;font-size:0.9rem;color:#0F172A;"><%= userName %></div>
+                    <div style="font-size:0.75rem;color:#64748B;"><%= navCfg.title %></div>
+                </div>
+                <div class="header-avatar" style="width:38px;height:38px;border-radius:50%;background:#E0F2FE;color:#0284C7;display:flex;align-items:center;justify-content:center;font-weight:700;">
+                    <%= String(userName).charAt(0).toUpperCase() %>
+                </div>
+
+                <!-- Always-Visible Sign Out Button -->
+                <a href="/logout" onclick="localStorage.removeItem('wfc_user');" class="btn btn-sm btn-secondary" style="padding:0.4rem 0.85rem;font-size:0.85rem;text-decoration:none;color:#DC2626;border-color:#FECACA;background:#FEF2F2;">
+                    🚪 Sign Out
+                </a>
+            </div>
+        </header>
         
         <!-- Main Content -->
         <main id="main-content" class="main-content">
@@ -58,22 +301,31 @@
             localStorage.setItem('wfc_user', JSON.stringify({
                 id: "<%= user.id %>",
                 email: "<%= user.email %>",
-                type: "<%= user.type %>",
-                name: "<%= user.name ? String(user.name).replace(/"/g, '\\"') : user.email %>"
+                type: "<%= currentRole %>",
+                name: "<%= userName.replace(/"/g, '\\"') %>"
             }));
         <% } %>
     </script>
     <script src="/agency.config.js"></script>
     <script src="/js/config.js"></script>
-    <script src="/js/components/navigation.js?v=3.2.0"></script>
+    <script src="/js/components/navigation.js?v=3.3.0"></script>
     <script src="/js/accessibility-widget.js"></script>
     <script src="/js/pwa.js"></script>
     <script src="/js/evo.js"></script>
     
     <script>
         document.addEventListener('DOMContentLoaded', function() {
+            // Highlight current active link in sidebar
+            var currentPath = window.location.pathname;
+            document.querySelectorAll('#sidebar .nav-item').forEach(function(link) {
+                var href = link.getAttribute('href');
+                if (href === currentPath || (href !== '<%= navCfg.dashboardHref %>' && currentPath.indexOf(href) === 0)) {
+                    link.classList.add('active');
+                }
+            });
             if (typeof Navigation !== 'undefined') {
-                Navigation.init("<%= locals.user ? locals.user.type : 'worker' %>");
+                Navigation.setupMobileToggle();
+                Navigation.initNotifications("<%= currentRole %>");
             }
         });
     </script>

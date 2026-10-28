@@ -23,13 +23,13 @@ async function renderOpportunitiesSearch(req, res, roleType, basePath) {
         const params = [];
 
         if (q && q.trim()) {
-            conditions.push('(title LIKE ? OR scope_summary LIKE ? OR posted_by_name LIKE ? OR location LIKE ?)');
+            conditions.push('(title LIKE ? OR scope_summary LIKE ? OR posted_by_name LIKE ? OR district_name LIKE ?)');
             const term = `%${q.trim()}%`;
             params.push(term, term, term, term);
         }
         if (category && category.trim()) {
-            conditions.push('category = ?');
-            params.push(category.trim());
+            conditions.push('(category = ? OR category_name = ?)');
+            params.push(category.trim(), category.trim());
         }
         if (naics && naics.trim()) {
             conditions.push('naics_codes LIKE ?');
@@ -37,7 +37,7 @@ async function renderOpportunitiesSearch(req, res, roleType, basePath) {
         }
 
         const [opportunities] = await db.execute(
-            `SELECT * FROM opportunities WHERE ${conditions.join(' AND ')} ORDER BY created_at DESC`,
+            `SELECT * FROM opportunities WHERE ${conditions.join(' AND ')} ORDER BY posted_date DESC`,
             params
         );
 
@@ -48,13 +48,13 @@ async function renderOpportunitiesSearch(req, res, roleType, basePath) {
                 'SELECT opportunity_id FROM saved_opportunities WHERE user_type = ? AND user_id = ?',
                 [roleType, req.user.id]
             );
-            savedIds = sRows.map(r => Number(r.opportunity_id));
+            savedIds = sRows.map(r => String(r.opportunity_id));
 
             const [aRows] = await db.execute(
                 'SELECT opportunity_id FROM applications WHERE applicant_type = ? AND applicant_id = ?',
                 [roleType, req.user.id]
             );
-            appliedIds = aRows.map(r => Number(r.opportunity_id));
+            appliedIds = aRows.map(r => String(r.opportunity_id));
         }
 
         res.render('shared/opportunities-search', {
@@ -77,7 +77,7 @@ async function renderOpportunitiesSearch(req, res, roleType, basePath) {
 async function toggleSavedOpportunity(req, res, roleType, basePath) {
     try {
         const db = getDb();
-        const oppId = parseInt(req.body.opportunity_id);
+        const oppId = String(req.body.opportunity_id || '').trim();
         const redirectTo = req.body.redirect_to || `${basePath}/search`;
         if (!oppId) return res.redirect(redirectTo);
 
@@ -91,7 +91,7 @@ async function toggleSavedOpportunity(req, res, roleType, basePath) {
             flash(req, 'success', 'Removed from saved opportunities.');
         } else {
             await db.execute(
-                'INSERT IGNORE INTO saved_opportunities (user_type, user_id, opportunity_id) VALUES (?, ?, ?)',
+                'INSERT INTO saved_opportunities (user_type, user_id, opportunity_id) VALUES (?, ?, ?)',
                 [roleType, req.user.id, oppId]
             );
             flash(req, 'success', 'Opportunity saved.');
@@ -113,14 +113,14 @@ async function renderSavedOpportunities(req, res, roleType, basePath) {
             FROM saved_opportunities s
             JOIN opportunities o ON s.opportunity_id = o.id
             WHERE s.user_type = ? AND s.user_id = ?
-            ORDER BY s.saved_date DESC
+            ORDER BY s.saved_at DESC
         `, [roleType, req.user.id]);
 
         const [aRows] = await db.execute(
             'SELECT opportunity_id FROM applications WHERE applicant_type = ? AND applicant_id = ?',
             [roleType, req.user.id]
         );
-        const appliedIds = aRows.map(r => Number(r.opportunity_id));
+        const appliedIds = aRows.map(r => String(r.opportunity_id));
 
         res.render('shared/opportunities-saved', {
             title: 'Saved Opportunities | EvoConnect',
@@ -139,28 +139,53 @@ async function renderSavedOpportunities(req, res, roleType, basePath) {
 async function submitApplication(req, res, roleType, basePath) {
     try {
         const db = getDb();
-        const oppId = parseInt(req.body.opportunity_id);
+        const oppId = String(req.body.opportunity_id || '').trim();
         const notes = (req.body.notes || '').trim();
-        const proposedAmount = (req.body.proposed_amount || '').trim() || null;
+        const proposedAmount = (req.body.proposed_amount || '').trim();
+        const fullNotes = proposedAmount ? `[Proposed: ${proposedAmount}] ${notes}` : notes;
 
         if (!oppId || !notes) {
             flash(req, 'error', 'Please provide a capability summary / note for your application.');
             return res.redirect(`${basePath}/search`);
         }
 
-        await db.execute(`
-            INSERT INTO applications (opportunity_id, applicant_type, applicant_id, notes, proposed_amount, status)
-            VALUES (?, ?, ?, ?, ?, 'submitted')
-            ON DUPLICATE KEY UPDATE notes = VALUES(notes), proposed_amount = VALUES(proposed_amount), updated_at = CURRENT_TIMESTAMP
-        `, [oppId, roleType, req.user.id, notes, proposedAmount]);
+        const [existing] = await db.execute(
+            'SELECT id FROM applications WHERE opportunity_id = ? AND applicant_type = ? AND applicant_id = ?',
+            [oppId, roleType, req.user.id]
+        );
 
-        // Notify prime contractor if opportunity belongs to a prime
-        const [opps] = await db.execute('SELECT title, posted_by_id FROM opportunities WHERE id = ?', [oppId]);
-        if (opps.length && opps[0].posted_by_id) {
-            await db.execute(`
-                INSERT INTO notifications (user_type, user_id, type, message, related_id)
-                VALUES ('prime', ?, 'application', ?, ?)
-            `, [opps[0].posted_by_id, `New application submitted for "${opps[0].title}" by ${req.user.name}`, oppId]);
+        if (existing.length) {
+            await db.execute(
+                'UPDATE applications SET notes = ?, status = ? WHERE id = ?',
+                [fullNotes, 'submitted', existing[0].id]
+            );
+        } else {
+            await db.execute(
+                'INSERT INTO applications (opportunity_id, applicant_type, applicant_id, notes, status) VALUES (?, ?, ?, ?, ?)',
+                [oppId, roleType, req.user.id, fullNotes, 'submitted']
+            );
+        }
+
+        // Send internal message & notification to prime contractor
+        const [opps] = await db.execute('SELECT title, posted_by, posted_by_name FROM opportunities WHERE id = ?', [oppId]);
+        if (opps.length && opps[0].posted_by) {
+            const [msgRes] = await db.execute(`
+                INSERT INTO messages (sender_type, sender_id, sender_business_name, receiver_type, receiver_id, receiver_business_name, opportunity_id, message_type, subject, body)
+                VALUES (?, ?, ?, 'prime', ?, ?, ?, 'application', ?, ?)
+            `, [
+                roleType,
+                req.user.id,
+                req.user.name || req.user.email,
+                opps[0].posted_by,
+                opps[0].posted_by_name || 'Prime Contractor',
+                oppId,
+                `New Application: ${opps[0].title}`,
+                `${req.user.name || req.user.email} submitted an application for "${opps[0].title}".\n\n${fullNotes}`
+            ]);
+            await db.execute(
+                'INSERT INTO notifications (user_type, user_id, message_id) VALUES (?, ?, ?)',
+                ['prime', opps[0].posted_by, msgRes.insertId]
+            );
         }
 
         flash(req, 'success', 'Application submitted successfully!');
@@ -177,7 +202,7 @@ async function renderApplicationsList(req, res, roleType, basePath) {
     try {
         const db = getDb();
         const [applications] = await db.execute(`
-            SELECT a.*, o.title AS opportunity_title, o.project_ref, o.posted_by_name
+            SELECT a.*, o.title AS opportunity_title, o.id AS project_ref, o.posted_by_name
             FROM applications a
             JOIN opportunities o ON a.opportunity_id = o.id
             WHERE a.applicant_type = ? AND a.applicant_id = ?
@@ -202,21 +227,33 @@ async function renderMessages(req, res, roleType, basePath) {
         const db = getDb();
         const userId = req.user.id;
 
-        // Mark unread messages as read
+        // Mark unread messages & notifications as read
         await db.execute(
             'UPDATE messages SET is_read = 1 WHERE receiver_type = ? AND receiver_id = ? AND is_read = 0',
             [roleType, userId]
         );
+        await db.execute(
+            'UPDATE notifications SET is_read = 1 WHERE user_type = ? AND user_id = ? AND is_read = 0',
+            [roleType, userId]
+        );
 
-        const [inbox] = await db.execute(
+        const [inboxRows] = await db.execute(
             'SELECT * FROM messages WHERE receiver_type = ? AND receiver_id = ? ORDER BY created_at DESC LIMIT 50',
             [roleType, userId]
         );
+        const inbox = inboxRows.map(m => ({
+            ...m,
+            sender_name: m.sender_business_name || m.sender_name || m.sender_type
+        }));
 
-        const [sent] = await db.execute(
+        const [sentRows] = await db.execute(
             'SELECT * FROM messages WHERE sender_type = ? AND sender_id = ? ORDER BY created_at DESC LIMIT 50',
             [roleType, userId]
         );
+        const sent = sentRows.map(m => ({
+            ...m,
+            receiver_name: m.receiver_business_name || m.receiver_name || m.receiver_type
+        }));
 
         // Build recipient list depending on role
         const recipients = [];
@@ -233,6 +270,9 @@ async function renderMessages(req, res, roleType, basePath) {
             if (roleType === 'prime') {
                 const [admins] = await db.execute('SELECT id, name FROM admins ORDER BY id ASC LIMIT 5');
                 admins.forEach(a => recipients.push({ type: 'admin', id: a.id, name: a.name || 'Platform Admin', label: `🛡️ ${a.name || 'EvoConnect Support'} (Admin)` }));
+            } else if (roleType === 'admin') {
+                const [primes] = await db.execute('SELECT id, company_name FROM primes ORDER BY company_name ASC LIMIT 50');
+                primes.forEach(p => recipients.push({ type: 'prime', id: p.id, name: p.company_name, label: `🏗️ ${p.company_name} (Prime Contractor)` }));
             }
         }
 
@@ -264,15 +304,15 @@ async function sendMessage(req, res, roleType, basePath) {
         const receiverId = parseInt(parts[1]);
         const receiverName = parts.slice(2).join(':') || 'Recipient';
 
-        await db.execute(`
-            INSERT INTO messages (sender_type, sender_id, sender_name, receiver_type, receiver_id, receiver_name, subject, body)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+        const [msgRes] = await db.execute(`
+            INSERT INTO messages (sender_type, sender_id, sender_business_name, receiver_type, receiver_id, receiver_business_name, message_type, subject, body)
+            VALUES (?, ?, ?, ?, ?, ?, 'reply', ?, ?)
         `, [roleType, req.user.id, req.user.name || req.user.email, receiverType, receiverId, receiverName, (subject || '').trim() || 'New Message', body.trim()]);
 
-        await db.execute(`
-            INSERT INTO notifications (user_type, user_id, type, message)
-            VALUES (?, ?, 'message', ?)
-        `, [receiverType, receiverId, `New message from ${req.user.name || req.user.email}: "${(subject || 'Inquiry').slice(0, 60)}"`]);
+        await db.execute(
+            'INSERT INTO notifications (user_type, user_id, message_id) VALUES (?, ?, ?)',
+            [receiverType, receiverId, msgRes.insertId]
+        );
 
         flash(req, 'success', `Message sent to ${receiverName}.`);
         res.redirect(`${basePath}/messages`);

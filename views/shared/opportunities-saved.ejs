@@ -2,7 +2,7 @@
 <% const title = locals.title || 'Saved Opportunities | EvoConnect' %>
 <% const basePath = locals.basePath || (locals.user?.type === 'business' ? '/business' : '/labor') %>
 <% const oppList = locals.opportunities || [] %>
-<% const appliedIds = locals.appliedIds || [] %>
+<% const appliedIds = (locals.appliedIds || []).map(String) %>
 
 <%- include('../partials/flash') %>
 
@@ -16,13 +16,13 @@
 <div style="display:grid;gap:var(--space-lg);">
     <% if (oppList.length > 0) { %>
         <% oppList.forEach(function(opp) { 
-            const isApplied = appliedIds.includes(opp.id);
+            const isApplied = appliedIds.includes(String(opp.id));
         %>
         <div class="recommendations-list" style="padding: var(--space-xl);">
             <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:1rem;margin-bottom:0.75rem;">
                 <div>
                     <div style="display:flex;align-items:center;gap:0.5rem;flex-wrap:wrap;margin-bottom:0.35rem;">
-                        <span class="status-badge badge-consulting" style="margin:0;"><%= opp.category || 'General Contracting' %></span>
+                        <span class="status-badge badge-consulting" style="margin:0;"><%= opp.category_name || opp.category || 'General Contracting' %></span>
                         <% if (opp.naics_codes) { %>
                             <span style="font-size:0.8rem;font-family:monospace;background:#f1f5f9;padding:0.2rem 0.5rem;border-radius:4px;color:#334155;">NAICS: <%= opp.naics_codes %></span>
                         <% } %>
@@ -30,13 +30,13 @@
                     <h3 style="margin:0;font-size:1.25rem;color:var(--color-text-primary);"><%= opp.title %></h3>
                     <div style="color:var(--text-muted);font-size:0.9rem;margin-top:0.25rem;">
                         <strong><%= opp.posted_by_name || 'Prime Contractor' %></strong>
-                        <% if (opp.location) { %> • 📍 <%= opp.location %><% } %>
+                        <% if (opp.district_name || opp.location) { %> • 📍 <%= opp.district_name || opp.location %><% } %>
                     </div>
                 </div>
                 <div style="text-align:right;">
                     <div style="font-size:1.1rem;font-weight:700;color:var(--color-primary);"><%= opp.estimated_value || 'TBD' %></div>
                     <% if (opp.due_date) { %>
-                        <div style="font-size:0.85rem;color:var(--text-muted);">Due: <%= new Date(opp.due_date).toLocaleDateString() %></div>
+                        <div style="font-size:0.85rem;color:var(--text-muted);">Due: <%= opp.due_date %></div>
                     <% } %>
                 </div>
             </div>

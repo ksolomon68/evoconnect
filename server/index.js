@@ -97,7 +97,8 @@ app.use((req, res, next) => {
             (p.startsWith('/labor/') && !p.startsWith('/labor/register')) ||
             (p.startsWith('/business/') && !p.startsWith('/business/register') && !p.startsWith('/business/capability-statement')) ||
             (p.startsWith('/prime/') && !p.startsWith('/prime/register')) ||
-            p.startsWith('/admin');
+            p.startsWith('/admin') ||
+            p === '/opportunities';
         if (isPortalSubpage) {
             res.locals.layout = 'layouts/dashboard';
         }
@@ -162,10 +163,13 @@ async function startServer() {
                 const userId = req.user?.id || req.query.userId;
                 const userType = req.user?.type || req.query.userType || 'worker';
                 if (!userId) return res.json([]);
-                const [rows] = await db.execute(
-                    'SELECT * FROM notifications WHERE user_type = ? AND user_id = ? ORDER BY created_at DESC LIMIT 20',
-                    [userType, userId]
-                );
+                const [rows] = await db.execute(`
+                    SELECT n.*, m.subject, m.message_type, m.sender_business_name
+                    FROM notifications n
+                    LEFT JOIN messages m ON n.message_id = m.id
+                    WHERE n.user_type = ? AND n.user_id = ?
+                    ORDER BY n.created_at DESC LIMIT 20
+                `, [userType, userId]);
                 res.json(rows);
             } catch (err) {
                 res.json([]);
@@ -197,9 +201,9 @@ async function startServer() {
 
         // Public home
         app.get('/', (req, res) => {
-            if (req.user) {
+            if (req.user && !req.query.public) {
                 const dest = { worker: '/labor/dashboard', business: '/business/dashboard', prime: '/prime/dashboard', admin: '/admin/dashboard' };
-                return res.redirect(dest[req.user.type] || '/');
+                if (dest[req.user.type]) return res.redirect(dest[req.user.type]);
             }
             res.render('index', {
                 title:      'Government Contract Workforce Ecosystem',
@@ -215,7 +219,7 @@ async function startServer() {
                 const db = getDb();
                 const { name, email, subject, message, issue_type } = req.body;
                 await db.execute(
-                    'INSERT INTO site_issues (reporter_name, reporter_email, issue_type, page_url, description) VALUES (?,?,?,?,?)',
+                    'INSERT INTO site_issues (name, email, issue_type, page_url, description) VALUES (?,?,?,?,?)',
                     [name || 'Visitor', email || '', issue_type || 'Contact Inquiry', subject || '/contact', message || '']
                 );
                 req.session.flash = { type: 'success', message: 'Thank you! Your message has been received by our team.' };
@@ -229,7 +233,7 @@ async function startServer() {
                 const db = getDb();
                 const { name, email, subject, message, issue_type, page_url } = req.body;
                 await db.execute(
-                    'INSERT INTO site_issues (reporter_name, reporter_email, issue_type, page_url, description) VALUES (?,?,?,?,?)',
+                    'INSERT INTO site_issues (name, email, issue_type, page_url, description) VALUES (?,?,?,?,?)',
                     [name || 'Visitor', email || '', issue_type || 'Support', page_url || subject || '', message || '']
                 );
                 res.json({ success: true });

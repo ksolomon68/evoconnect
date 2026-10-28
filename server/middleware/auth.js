@@ -3,8 +3,29 @@ const jwt = require('jsonwebtoken');
 const JWT_SECRET = process.env.JWT_SECRET || 'evoconnect-change-in-production-2026';
 const COOKIE_NAME = 'evo_token';
 
+function normalizeUserType(type) {
+    if (!type) return 'worker';
+    const map = {
+        worker: 'worker',
+        workers: 'worker',
+        labor: 'worker',
+        business: 'business',
+        businesse: 'business',
+        businesses: 'business',
+        small_business: 'business',
+        vendor: 'business',
+        prime: 'prime',
+        primes: 'prime',
+        prime_contractor: 'prime',
+        admin: 'admin',
+        admins: 'admin'
+    };
+    return map[type] || type;
+}
+
 function signToken(payload) {
-    return jwt.sign(payload, JWT_SECRET, { expiresIn: '24h' });
+    const normalized = { ...payload, type: normalizeUserType(payload.type) };
+    return jwt.sign(normalized, JWT_SECRET, { expiresIn: '24h' });
 }
 
 function setAuthCookie(res, token) {
@@ -12,16 +33,22 @@ function setAuthCookie(res, token) {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production',
         sameSite: 'lax',
+        path: '/',
         maxAge: 24 * 60 * 60 * 1000 // 24 hours
     });
 }
 
 function clearAuthCookie(res) {
-    res.clearCookie(COOKIE_NAME);
+    res.clearCookie(COOKIE_NAME, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'lax',
+        path: '/'
+    });
+    res.clearCookie(COOKIE_NAME, { path: '/' });
 }
 
 function getTokenFromRequest(req) {
-    // Cookie-first, fallback to Bearer header
     if (req.cookies && req.cookies[COOKIE_NAME]) return req.cookies[COOKIE_NAME];
     const auth = req.headers['authorization'];
     if (auth && auth.startsWith('Bearer ')) return auth.slice(7);
@@ -36,7 +63,10 @@ function requireAuth(req, res, next) {
         return res.redirect('/login');
     }
     try {
-        req.user = jwt.verify(token, JWT_SECRET);
+        const decoded = jwt.verify(token, JWT_SECRET);
+        decoded.type = normalizeUserType(decoded.type);
+        req.user = decoded;
+        res.locals.user = decoded;
         next();
     } catch {
         clearAuthCookie(res);
@@ -48,8 +78,15 @@ function requireAuth(req, res, next) {
 // Middleware: require specific user type
 function requireType(...types) {
     return [requireAuth, (req, res, next) => {
-        if (!types.includes(req.user.type)) {
-            return res.status(403).render('errors/403', { title: 'Access Denied' });
+        const normTypes = types.map(normalizeUserType);
+        if (!normTypes.includes(req.user.type)) {
+            const dest = {
+                worker: '/labor/dashboard',
+                business: '/business/dashboard',
+                prime: '/prime/dashboard',
+                admin: '/admin/dashboard'
+            };
+            return res.redirect(dest[req.user.type] || '/login');
         }
         next();
     }];
@@ -61,8 +98,17 @@ function requireAdmin(req, res, next) {
     if (!token) return res.redirect('/login');
     try {
         const decoded = jwt.verify(token, JWT_SECRET);
-        if (decoded.type !== 'admin') return res.status(403).render('errors/403', { title: 'Access Denied' });
+        decoded.type = normalizeUserType(decoded.type);
+        if (decoded.type !== 'admin') {
+            const dest = {
+                worker: '/labor/dashboard',
+                business: '/business/dashboard',
+                prime: '/prime/dashboard'
+            };
+            return res.redirect(dest[decoded.type] || '/login');
+        }
         req.user = decoded;
+        res.locals.user = decoded;
         next();
     } catch {
         clearAuthCookie(res);
@@ -70,12 +116,15 @@ function requireAdmin(req, res, next) {
     }
 }
 
-// Middleware: attach user to res.locals if logged in (non-blocking)
+// Middleware: attach user to req.user AND res.locals.user if logged in (non-blocking)
 function attachUser(req, res, next) {
     const token = getTokenFromRequest(req);
     if (token) {
         try {
-            res.locals.user = jwt.verify(token, JWT_SECRET);
+            const decoded = jwt.verify(token, JWT_SECRET);
+            decoded.type = normalizeUserType(decoded.type);
+            req.user = decoded;
+            res.locals.user = decoded;
         } catch {
             clearAuthCookie(res);
         }
@@ -83,4 +132,15 @@ function attachUser(req, res, next) {
     next();
 }
 
-module.exports = { signToken, setAuthCookie, clearAuthCookie, requireAuth, requireType, requireAdmin, attachUser, JWT_SECRET, COOKIE_NAME };
+module.exports = {
+    signToken,
+    setAuthCookie,
+    clearAuthCookie,
+    requireAuth,
+    requireType,
+    requireAdmin,
+    attachUser,
+    normalizeUserType,
+    JWT_SECRET,
+    COOKIE_NAME
+};

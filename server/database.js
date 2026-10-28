@@ -548,14 +548,15 @@ async function initDatabase() {
             const adminPassword = process.env.ADMIN_DEFAULT_PASSWORD || 'EvoConnect2026!';
             const hash = await bcrypt.hash(adminPassword, 12);
             await db.execute(
-                `INSERT IGNORE INTO admins (email, password_hash, name) VALUES (?, ?, ?)`,
+                `INSERT INTO admins (email, password_hash, name) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE password_hash = VALUES(password_hash), name = VALUES(name)`,
                 [process.env.ADMIN_EMAIL || 'admin@evoconnect.evobrand.net', hash, 'EvoConnect Admin']
             );
             console.log('EvoConnect DB: Default admin created.');
         }
 
         // ── Auto-Seed Demo Accounts for All 4 Roles (Password: DemoPass1!) ──
-        const demoHash = '$2a$12$x58F8CcalrNndb9SYpQCBu1qUN6LU9BIm6H56kGlDR0LqIj6SF.Qy';
+        const bcryptDemo = require('bcryptjs');
+        const demoHash = await bcryptDemo.hash('DemoPass1!', 10);
 
         await db.execute(
             `INSERT IGNORE INTO admins (email, password_hash, name) VALUES (?, ?, ?)`,
@@ -567,7 +568,7 @@ async function initDatabase() {
                 (company_name, contact_name, email, password_hash, phone,
                  sam_uei, contract_vehicles, naics_codes, city, state, zip,
                  subscription_tier, active, approved_at)
-             VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,NOW())`,
+             VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,NOW()) ON DUPLICATE KEY UPDATE password_hash = VALUES(password_hash), active = 1, subscription_tier = 'enterprise'`,
             [
                 'Apex Construction Group',
                 'Marcus Thompson',
@@ -584,12 +585,12 @@ async function initDatabase() {
         );
 
         await db.execute(
-            `INSERT IGNORE INTO businesses
+            `INSERT INTO businesses
                 (company_name, contact_name, email, password_hash, phone,
                  business_type, certifications, sam_uei, sam_registered,
                  naics_codes, service_description, city, state, zip,
                  service_radius, profile_pct, status)
-             VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`,
+             VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?) ON DUPLICATE KEY UPDATE password_hash = VALUES(password_hash), status = 'active'`,
             [
                 'GreenPath Environmental Services',
                 'Tanya Williams',
@@ -610,13 +611,13 @@ async function initDatabase() {
         );
 
         await db.execute(
-            `INSERT IGNORE INTO workers
+            `INSERT INTO workers
                 (full_name, email, password_hash, phone, trade_category,
                  skills, certifications, years_experience,
                  sam_registered, business_entity,
                  city, state, zip, travel_willingness, experience_summary,
                  profile_pct, status)
-             VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`,
+             VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?) ON DUPLICATE KEY UPDATE password_hash = VALUES(password_hash), status = 'active'`,
             [
                 'James Okafor',
                 'demo-labor@evoconnect.io',
