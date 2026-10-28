@@ -248,4 +248,7 @@ router.get('/register', (req, res) => {
     });
 });
 
+router.get('/auth/logout', (req, res) => { clearAuthCookie(res); res.redirect('/'); });
+router.post('/auth/logout', (req, res) => { clearAuthCookie(res); res.redirect('/'); });
+
 module.exports = router;

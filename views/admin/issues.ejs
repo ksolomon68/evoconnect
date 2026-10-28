@@ -1,0 +1,66 @@
+<%- locals.layout = 'layouts/dashboard'; %>
+<% const title = locals.title || 'Reported Issues | EvoConnect Admin' %>
+<% const issues = locals.issues || [] %>
+
+<%- include('../partials/flash') %>
+
+<section class="hero-section">
+    <div class="hero-content hero-welcome">
+        <h1>🚩 Reported Issues & Support Inquiries</h1>
+        <p>Review technical reports, accessibility feedback, and contact inquiries submitted by platform users.</p>
+    </div>
+</section>
+
+<div class="recommendations-list" style="padding: var(--space-xl);">
+    <div class="section-header">
+        <h2>Support Queue (<%= issues.length %>)</h2>
+    </div>
+
+    <% if (issues.length > 0) { %>
+        <div style="overflow-x:auto;">
+            <table class="data-table" style="width:100%;">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Reporter</th>
+                        <th>Type</th>
+                        <th>Page / Subject</th>
+                        <th>Description</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% issues.forEach(function(issue) { %>
+                    <tr>
+                        <td><%= new Date(issue.created_at).toLocaleDateString() %></td>
+                        <td>
+                            <strong><%= issue.reporter_name || 'Visitor' %></strong>
+                            <% if (issue.reporter_email) { %><div><a href="mailto:<%= issue.reporter_email %>" style="font-size:0.8rem;color:var(--color-primary);"><%= issue.reporter_email %></a></div><% } %>
+                        </td>
+                        <td><%= issue.issue_type || 'General' %></td>
+                        <td><%= issue.page_url || '—' %></td>
+                        <td style="max-width:300px;font-size:0.88rem;"><%= issue.description %></td>
+                        <td>
+                            <span class="status-badge <%= issue.status === 'resolved' ? 'badge-consulting' : 'badge-construction' %>" style="text-transform:capitalize;margin:0;">
+                                <%= issue.status || 'open' %>
+                            </span>
+                        </td>
+                        <td>
+                            <% if (issue.status !== 'resolved') { %>
+                            <form method="POST" action="/admin/issues/<%= issue.id %>/resolve" style="display:inline;">
+                                <button type="submit" class="btn btn-sm btn-primary">Mark Resolved</button>
+                            </form>
+                            <% } else { %>
+                            <span style="color:var(--text-muted);font-size:0.85rem;">✓ Resolved</span>
+                            <% } %>
+                        </td>
+                    </tr>
+                    <% }) %>
+                </tbody>
+            </table>
+        </div>
+    <% } else { %>
+        <p style="color:var(--text-muted);text-align:center;padding:2rem;">No open support issues or technical reports.</p>
+    <% } %>
+</div>

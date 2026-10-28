@@ -10,23 +10,81 @@ console.log('EvoConnect DB: Initializing MySQL Connection Pool...');
 
 let pool;
 
+function createPool() {
+    const cfg = {
+        host:             (process.env.DB_HOST     || 'localhost').trim(),
+        user:             (process.env.DB_USER     || 'root').trim(),
+        password:         (process.env.DB_PASSWORD || '').trim(),
+        database:         (process.env.DB_NAME     || 'evoconnect').trim(),
+        port:             parseInt((process.env.DB_PORT || '3306').toString().trim(), 10),
+        waitForConnections: true,
+        connectionLimit:  10,
+        queueLimit:       0,
+        enableKeepAlive:  true,
+        keepAliveInitialDelay: 10000
+    };
+    const p = mysql.createPool(cfg);
+    p.pool.on('error', (err) => {
+        console.error('EvoConnect DB: Pool connection error —', err.message);
+        if (err.code === 'PROTOCOL_CONNECTION_LOST' || err.code === 'ECONNRESET') {
+            pool = null;
+        }
+    });
+    console.log(`EvoConnect DB: MySQL Pool Created → ${cfg.user}@${cfg.host}/${cfg.database}`);
+    return p;
+}
+
 function getDb() {
     if (!pool) {
-        pool = mysql.createPool({
-            host:             process.env.DB_HOST || 'localhost',
-            user:             process.env.DB_USER,
-            password:         process.env.DB_PASSWORD,
-            database:         process.env.DB_NAME,
-            waitForConnections: true,
-            connectionLimit:  10,
-            queueLimit:       0,
-            enableKeepAlive:  true,
-            keepAliveInitialDelay: 10000
-        });
-        console.log('EvoConnect DB: MySQL Pool Created.');
+        pool = createPool();
     }
-    return pool;
+    return {
+        async execute(sql, values) {
+            try {
+                return await pool.execute(sql, values);
+            } catch (err) {
+                if (err.code === 'PROTOCOL_CONNECTION_LOST' || err.code === 'ECONNRESET') {
+                    console.warn(`EvoConnect DB: Connection lost during execute, retrying... (${err.message})`);
+                    pool = createPool();
+                    return await pool.execute(sql, values);
+                }
+                throw err;
+            }
+        },
+        async query(sql, values) {
+            try {
+                return await pool.query(sql, values);
+            } catch (err) {
+                if (err.code === 'PROTOCOL_CONNECTION_LOST' || err.code === 'ECONNRESET') {
+                    console.warn(`EvoConnect DB: Connection lost during query, retrying... (${err.message})`);
+                    pool = createPool();
+                    return await pool.query(sql, values);
+                }
+                throw err;
+            }
+        },
+        async getConnection() {
+            try {
+                return await pool.getConnection();
+            } catch (err) {
+                if (err.code === 'PROTOCOL_CONNECTION_LOST' || err.code === 'ECONNRESET') {
+                    pool = createPool();
+                    return await pool.getConnection();
+                }
+                throw err;
+            }
+        }
+    };
 }
+
+// Keep-alive ping every 60s to prevent Hostinger idle disconnects
+setInterval(async () => {
+    try {
+        await getDb().execute('SELECT 1');
+    } catch (e) {
+        pool = null;
+    }
+}, 60 * 1000);
 
 async function initDatabase() {
     console.log('EvoConnect DB: Running initDatabase()...');
@@ -34,7 +92,7 @@ async function initDatabase() {
     try {
         const setupConn = await mysql.createConnection({
             host:     process.env.DB_HOST || 'localhost',
-            user:     process.env.DB_USER,
+            user:     process.env.DB_USER || 'root',
             password: process.env.DB_PASSWORD || ''
         });
         const dbName = process.env.DB_NAME || 'evoconnect';
@@ -274,7 +332,147 @@ async function initDatabase() {
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
         `);
 
-        console.log('EvoConnect DB: Core tables initialized.');
+        // ── 13. Contracting Opportunities (Caltrans Parity) ────────
+        await db.execute(`
+            CREATE TABLE IF NOT EXISTS opportunities (
+                id VARCHAR(100) PRIMARY KEY,
+                title VARCHAR(255) NOT NULL,
+                scope_summary TEXT NOT NULL,
+                description TEXT,
+                district VARCHAR(50) NOT NULL DEFAULT 'all',
+                district_name VARCHAR(100) NOT NULL DEFAULT 'Statewide / All Regions',
+                category VARCHAR(100) NOT NULL,
+                category_name VARCHAR(100) NOT NULL,
+                subcategory VARCHAR(100),
+                estimated_value VARCHAR(100),
+                due_date VARCHAR(50),
+                due_time VARCHAR(50),
+                submission_method VARCHAR(255) DEFAULT 'Online Portal',
+                status VARCHAR(50) NOT NULL DEFAULT 'published',
+                posted_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                posted_by INT,
+                posted_by_name VARCHAR(255),
+                attachments TEXT,
+                duration VARCHAR(100),
+                requirements TEXT,
+                certifications TEXT,
+                experience TEXT,
+                tags TEXT,
+                naics_codes TEXT,
+                INDEX idx_opp_status (status),
+                INDEX idx_opp_cat (category),
+                INDEX idx_opp_posted_by (posted_by)
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
+        `);
+
+        // ── 14. Opportunity Applications (Caltrans Parity) ─────────
+        await db.execute(`
+            CREATE TABLE IF NOT EXISTS applications (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                opportunity_id VARCHAR(100) NOT NULL,
+                applicant_type VARCHAR(50) NOT NULL DEFAULT 'business',
+                applicant_id INT NOT NULL DEFAULT 0,
+                small_business_id INT,
+                prime_contractor_id INT,
+                status VARCHAR(50) NOT NULL DEFAULT 'pending',
+                applied_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                notes TEXT,
+                INDEX idx_app_opp (opportunity_id),
+                INDEX idx_app_user (applicant_type, applicant_id)
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
+        `);
+
+        // Safe column additions if legacy applications table existed
+        await db.execute(`ALTER TABLE applications ADD COLUMN IF NOT EXISTS applicant_type VARCHAR(50) NOT NULL DEFAULT 'business'`).catch(() => {});
+        await db.execute(`ALTER TABLE applications ADD COLUMN IF NOT EXISTS applicant_id INT NOT NULL DEFAULT 0`).catch(() => {});
+
+        // ── 15. Saved Opportunities (Caltrans Parity) ──────────────
+        await db.execute(`
+            CREATE TABLE IF NOT EXISTS saved_opportunities (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                user_type VARCHAR(50) NOT NULL DEFAULT 'business',
+                user_id INT NOT NULL DEFAULT 0,
+                small_business_id INT,
+                opportunity_id VARCHAR(100) NOT NULL,
+                saved_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                INDEX idx_saved_user (user_type, user_id),
+                INDEX idx_saved_opp (opportunity_id)
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
+        `);
+
+        await db.execute(`ALTER TABLE saved_opportunities ADD COLUMN IF NOT EXISTS user_type VARCHAR(50) NOT NULL DEFAULT 'business'`).catch(() => {});
+        await db.execute(`ALTER TABLE saved_opportunities ADD COLUMN IF NOT EXISTS user_id INT NOT NULL DEFAULT 0`).catch(() => {});
+
+        // ── 16. Internal Messages (Caltrans Parity) ────────────────
+        await db.execute(`
+            CREATE TABLE IF NOT EXISTS messages (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                sender_type VARCHAR(50) DEFAULT 'prime',
+                sender_id INT NOT NULL,
+                receiver_type VARCHAR(50) DEFAULT 'business',
+                receiver_id INT NOT NULL,
+                sender_business_name VARCHAR(255),
+                receiver_business_name VARCHAR(255),
+                opportunity_id VARCHAR(100),
+                message_type ENUM('invite','application','reply','system') DEFAULT 'reply',
+                subject VARCHAR(255),
+                body TEXT NOT NULL,
+                is_read TINYINT DEFAULT 0,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                INDEX idx_msg_receiver (receiver_type, receiver_id),
+                INDEX idx_msg_sender (sender_type, sender_id)
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
+        `);
+
+        await db.execute(`ALTER TABLE messages ADD COLUMN IF NOT EXISTS sender_type VARCHAR(50) DEFAULT 'prime'`).catch(() => {});
+        await db.execute(`ALTER TABLE messages ADD COLUMN IF NOT EXISTS receiver_type VARCHAR(50) DEFAULT 'business'`).catch(() => {});
+
+        // ── 17. Notifications (Caltrans Parity) ────────────────────
+        await db.execute(`
+            CREATE TABLE IF NOT EXISTS notifications (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                user_type VARCHAR(50) DEFAULT 'business',
+                user_id INT NOT NULL,
+                message_id INT,
+                is_read TINYINT DEFAULT 0,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                INDEX idx_notif_user (user_type, user_id)
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
+        `);
+
+        await db.execute(`ALTER TABLE notifications ADD COLUMN IF NOT EXISTS user_type VARCHAR(50) DEFAULT 'business'`).catch(() => {});
+
+        // ── 18. Site Issues & Contact Submissions ──────────────────
+        await db.execute(`
+            CREATE TABLE IF NOT EXISTS site_issues (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                user_type VARCHAR(50),
+                user_id INT,
+                name VARCHAR(255),
+                email VARCHAR(255),
+                issue_type VARCHAR(100) DEFAULT 'general',
+                page_url VARCHAR(500),
+                description TEXT NOT NULL,
+                status ENUM('open','resolved') DEFAULT 'open',
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
+        `);
+
+        // ── 19. CMS FAQs Table (Caltrans CMS Parity) ───────────────
+        await db.execute(`
+            CREATE TABLE IF NOT EXISTS cms_faqs (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                category VARCHAR(100) NOT NULL DEFAULT 'General',
+                question TEXT NOT NULL,
+                answer LONGTEXT NOT NULL,
+                sort_order INT DEFAULT 0,
+                status ENUM('active', 'inactive') DEFAULT 'active',
+                created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+                updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
+        `);
+
+        console.log('EvoConnect DB: Core + Caltrans parity tables initialized.');
 
         // ── Seed NAICS codes ───────────────────────────────────────
         const [[{ nc }]] = await db.execute('SELECT COUNT(*) AS nc FROM naics_codes');
@@ -308,6 +506,8 @@ async function initDatabase() {
                 ['237310','Highway, Street, Bridge Construction','concrete-cement','$1M–$50M',1],
                 ['236115','New Single-Family Housing Construction','construction-general','$250K–$5M',0],
                 ['541330','Engineering Services','cloud-network-infra','$250K–$5M',1],
+                ['541620','Environmental Consulting Services','environmental','$85K–$500K',1],
+                ['562910','Remediation Services','environmental','$100K–$1M',1],
                 ['561110','Office Administrative Services','admin-clerical','$50K–$500K',1],
             ];
             for (const [code, desc, trade, avg, sa] of naics) {
@@ -348,13 +548,213 @@ async function initDatabase() {
             const adminPassword = process.env.ADMIN_DEFAULT_PASSWORD || 'EvoConnect2026!';
             const hash = await bcrypt.hash(adminPassword, 12);
             await db.execute(
-                `INSERT INTO admins (email, password_hash, name) VALUES (?, ?, ?)`,
+                `INSERT IGNORE INTO admins (email, password_hash, name) VALUES (?, ?, ?)`,
                 [process.env.ADMIN_EMAIL || 'admin@evoconnect.evobrand.net', hash, 'EvoConnect Admin']
             );
             console.log('EvoConnect DB: Default admin created.');
         }
 
-        console.log('EvoConnect DB: All tables initialized successfully.');
+        // ── Auto-Seed Demo Accounts for All 4 Roles (Password: DemoPass1!) ──
+        const demoHash = '$2a$12$x58F8CcalrNndb9SYpQCBu1qUN6LU9BIm6H56kGlDR0LqIj6SF.Qy';
+
+        await db.execute(
+            `INSERT IGNORE INTO admins (email, password_hash, name) VALUES (?, ?, ?)`,
+            ['demo-admin@evoconnect.io', demoHash, 'Demo Admin']
+        );
+
+        await db.execute(
+            `INSERT IGNORE INTO primes
+                (company_name, contact_name, email, password_hash, phone,
+                 sam_uei, contract_vehicles, naics_codes, city, state, zip,
+                 subscription_tier, active, approved_at)
+             VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,NOW())`,
+            [
+                'Apex Construction Group',
+                'Marcus Thompson',
+                'demo-prime@evoconnect.io',
+                demoHash,
+                '512-555-0201',
+                'APEXCG1234567',
+                'GSA MAS, IDIQ, BPA',
+                '["237310","238110","238210","238990"]',
+                'Austin', 'TX', '78701',
+                'enterprise',
+                1
+            ]
+        );
+
+        await db.execute(
+            `INSERT IGNORE INTO businesses
+                (company_name, contact_name, email, password_hash, phone,
+                 business_type, certifications, sam_uei, sam_registered,
+                 naics_codes, service_description, city, state, zip,
+                 service_radius, profile_pct, status)
+             VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`,
+            [
+                'GreenPath Environmental Services',
+                'Tanya Williams',
+                'demo-business@evoconnect.io',
+                demoHash,
+                '210-555-0301',
+                'LLC',
+                '["DBE","SBE","WBE"]',
+                'GRNPTH9876543',
+                'yes',
+                '["541620","562910","238910"]',
+                'Environmental consulting, site assessment, NEPA compliance, and hazardous materials management for transportation and infrastructure projects.',
+                'San Antonio', 'TX', '78205',
+                'statewide',
+                85,
+                'active'
+            ]
+        );
+
+        await db.execute(
+            `INSERT IGNORE INTO workers
+                (full_name, email, password_hash, phone, trade_category,
+                 skills, certifications, years_experience,
+                 sam_registered, business_entity,
+                 city, state, zip, travel_willingness, experience_summary,
+                 profile_pct, status)
+             VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`,
+            [
+                'James Okafor',
+                'demo-labor@evoconnect.io',
+                demoHash,
+                '713-555-0302',
+                'electrical',
+                '["Traffic Signal Installation","Highway Lighting","Conduit & Pull Box","Fiber Conduit","Certified Payroll"]',
+                '["OSHA 30","IMSA Signal Level I","C-10 License"]',
+                12,
+                'yes',
+                'sole_proprietor',
+                'Houston', 'TX', '77002',
+                'regional',
+                'Licensed electrical contractor with 12 years specializing in highway lighting, traffic signal upgrades, and electrical infrastructure for TxDOT and local public works projects.',
+                72,
+                'active'
+            ]
+        );
+
+        // Ensure demo worker has NAICS matches
+        const [demoW] = await db.execute(`SELECT id FROM workers WHERE email = 'demo-labor@evoconnect.io'`);
+        if (demoW.length) {
+            await db.execute(`INSERT IGNORE INTO worker_matches (worker_id, naics_code) VALUES (?, '238210')`, [demoW[0].id]);
+            await db.execute(`INSERT IGNORE INTO worker_matches (worker_id, naics_code) VALUES (?, '237130')`, [demoW[0].id]);
+        }
+
+        // ── Seed Sample Opportunities if empty ─────────────────────
+        const [[{ oppCount }]] = await db.execute('SELECT COUNT(*) AS oppCount FROM opportunities');
+        if (oppCount === 0) {
+            const [demoP] = await db.execute(`SELECT id FROM primes WHERE email = 'demo-prime@evoconnect.io'`);
+            const primeId = demoP.length ? demoP[0].id : 1;
+
+            const sampleOpps = [
+                [
+                    'OPP-2026-001',
+                    'I-35 Corridor Intelligent Traffic Signal & Highway Lighting Upgrade',
+                    'Electrical subcontracting for 18 miles of highway lighting, conduit trenching, pull boxes, and traffic signal cabinet installations along the I-35 corridor.',
+                    'TX-Austin',
+                    'Central Texas / Austin Region',
+                    'electrical',
+                    'Electrical & Lighting',
+                    'Traffic Signals',
+                    '$450,000 – $850,000',
+                    '2026-12-15',
+                    '17:00',
+                    'EvoConnect Portal',
+                    'published',
+                    primeId,
+                    'Apex Construction Group',
+                    '8 months',
+                    'Active electrical license, OSHA-30 certified crew, prevailing wage / certified payroll compliance.',
+                    'DBE, SBE, HUB, OSHA-30',
+                    '["238210","237310"]'
+                ],
+                [
+                    'OPP-2026-002',
+                    'BEAD Rural Fiber Backbone Deployment — Phase II',
+                    'Underground directional boring, fiber optic cable pulling, splicing, and testing across 42 miles of rural right-of-way.',
+                    'TX-Houston',
+                    'Gulf Coast / Houston Region',
+                    'fiber-broadband',
+                    'Fiber & Broadband',
+                    'OSP Fiber Construction',
+                    '$1,200,000 – $2,500,000',
+                    '2026-12-30',
+                    '16:00',
+                    'EvoConnect Portal',
+                    'published',
+                    primeId,
+                    'Apex Construction Group',
+                    '14 months',
+                    'SAM.gov active registration, minimum 3 years OSP fiber construction experience, COI $2M aggregate.',
+                    'HUB, SDVOSB, 8(a)',
+                    '["237130","517311"]'
+                ],
+                [
+                    'OPP-2026-003',
+                    'NEPA Environmental Assessment & Stormwater Compliance Support',
+                    'Environmental consulting, wetland delineation, SWPPP inspections, and hazardous materials screening for public works bridge replacements.',
+                    'TX-SanAntonio',
+                    'South Central / San Antonio Region',
+                    'environmental',
+                    'Environmental Services',
+                    'NEPA & Compliance',
+                    '$180,000 – $320,000',
+                    '2026-11-30',
+                    '15:00',
+                    'EvoConnect Portal',
+                    'published',
+                    primeId,
+                    'Apex Construction Group',
+                    '6 months',
+                    'Prior DOT NEPA documentation experience and certified environmental professionals on staff.',
+                    'DBE, WBE, SBE',
+                    '["541620","562910"]'
+                ],
+                [
+                    'OPP-2026-004',
+                    'Municipal Bridge Deck Concrete Rehabilitation & Structural Repair',
+                    'Structural concrete forming, rebar placement, spall repair, and bridge deck overlay for 4 municipal overpass structures.',
+                    'TX-Dallas',
+                    'North Texas / DFW Region',
+                    'concrete-cement',
+                    'Concrete & Civil Construction',
+                    'Bridge Rehabilitation',
+                    '$900,000 – $1,600,000',
+                    '2027-01-20',
+                    '14:00',
+                    'EvoConnect Portal',
+                    'published',
+                    primeId,
+                    'Apex Construction Group',
+                    '10 months',
+                    'Bonding capacity $1M+, municipal or DOT bridge deck experience.',
+                    'DBE, MBE, HUB',
+                    '["237310","238110"]'
+                ]
+            ];
+
+            for (const opp of sampleOpps) {
+                await db.execute(`
+                    INSERT IGNORE INTO opportunities (
+                        id, title, scope_summary, description, district, district_name,
+                        category, category_name, subcategory, estimated_value,
+                        due_date, due_time, submission_method, status, posted_by, posted_by_name,
+                        duration, requirements, certifications, naics_codes
+                    ) VALUES (?,?,?, ?,?,?, ?,?,?,?, ?,?,?,?,?,?, ?,?,?,?)
+                `, [
+                    opp[0], opp[1], opp[2], opp[2], opp[3], opp[4],
+                    opp[5], opp[6], opp[7], opp[8],
+                    opp[9], opp[10], opp[11], opp[12], opp[13], opp[14],
+                    opp[15], opp[16], opp[17], opp[18]
+                ]);
+            }
+            console.log('EvoConnect DB: Seeded 4 sample contracting opportunities.');
+        }
+
+        console.log('EvoConnect DB: All tables and demo data initialized successfully.');
 
         // Cleanup expired tokens hourly
         setInterval(async () => {
@@ -369,4 +769,8 @@ async function initDatabase() {
     }
 }
 
-module.exports = { getDb, initDatabase };
+module.exports = {
+    get db() { return getDb(); },
+    getDb,
+    initDatabase
+};

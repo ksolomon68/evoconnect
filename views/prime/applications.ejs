@@ -1,0 +1,71 @@
+<%- locals.layout = 'layouts/dashboard'; %>
+<% const title = locals.title || 'Review Applications | EvoConnect Prime' %>
+<% const appList = locals.applications || [] %>
+
+<%- include('../partials/flash') %>
+
+<section class="hero-section">
+    <div class="hero-content hero-welcome">
+        <h1>📥 Submitted Applications</h1>
+        <p>Review bids and capability statements submitted by small businesses and skilled workers.</p>
+    </div>
+</section>
+
+<div class="recommendations-list" style="padding: var(--space-xl);">
+    <div class="section-header">
+        <h2>Received Applications (<%= appList.length %>)</h2>
+        <a href="/prime/opportunities" class="btn btn-sm btn-secondary">Manage Opportunities</a>
+    </div>
+
+    <% if (appList.length > 0) { %>
+        <div style="overflow-x:auto;">
+            <table class="data-table" style="width:100%;">
+                <thead>
+                    <tr>
+                        <th>Applicant</th>
+                        <th>Type</th>
+                        <th>Opportunity</th>
+                        <th>Proposed Bid</th>
+                        <th>Notes / Summary</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% appList.forEach(function(app) { %>
+                    <tr>
+                        <td>
+                            <strong><%= app.applicant_name || 'Vendor' %></strong>
+                            <% if (app.applicant_email) { %><div><a href="mailto:<%= app.applicant_email %>" style="font-size:0.8rem;color:var(--color-primary);"><%= app.applicant_email %></a></div><% } %>
+                        </td>
+                        <td style="text-transform:capitalize;"><%= app.applicant_type %></td>
+                        <td><strong><%= app.opportunity_title %></strong></td>
+                        <td><%= app.proposed_amount || 'Standard' %></td>
+                        <td style="max-width:260px;font-size:0.85rem;"><%= app.notes || '—' %></td>
+                        <td>
+                            <span class="status-badge <%= app.status === 'awarded' ? 'badge-consulting' : (app.status === 'declined' ? 'badge-construction' : 'badge-consulting') %>" style="text-transform:capitalize;margin:0;">
+                                <%= (app.status || 'submitted').replace('_', ' ') %>
+                            </span>
+                        </td>
+                        <td style="white-space:nowrap;">
+                            <form method="POST" action="/prime/applications/<%= app.id %>/status" style="display:flex;gap:0.35rem;">
+                                <select name="status" class="form-control" style="padding:0.25rem 0.5rem;font-size:0.8rem;width:auto;">
+                                    <option value="submitted" <%= app.status === 'submitted' ? 'selected' : '' %>>Submitted</option>
+                                    <option value="under_review" <%= app.status === 'under_review' ? 'selected' : '' %>>Under Review</option>
+                                    <option value="awarded" <%= app.status === 'awarded' ? 'selected' : '' %>>Awarded</option>
+                                    <option value="declined" <%= app.status === 'declined' ? 'selected' : '' %>>Declined</option>
+                                </select>
+                                <button type="submit" class="btn btn-sm btn-primary">Save</button>
+                            </form>
+                        </td>
+                    </tr>
+                    <% }) %>
+                </tbody>
+            </table>
+        </div>
+    <% } else { %>
+        <div style="padding:2.5rem;text-align:center;color:var(--text-muted);">
+            <p>No applications received yet. Invite qualified businesses or workers from your directory search!</p>
+        </div>
+    <% } %>
+</div>

@@ -1,4 +1,5 @@
-<% const title = locals.title || 'Business Dashboard' %>
+<%- locals.layout = 'layouts/dashboard'; %>
+<% const title = locals.title || 'Small Business Dashboard' %>
 
 <%
 const federalChecklist = [
@@ -30,236 +31,256 @@ const byTrack = locals.checklistByTrack || {};
 const fedChecked   = byTrack.federal       || {};
 const stateChecked = byTrack.state         || {};
 const subChecked   = byTrack.subcontractor || {};
+
+const pct = business.profile_pct || 0;
+const pendingBizConns = (locals.connections || []).filter(c => c.status === 'pending');
+const naicsMatches = locals.naicsDetails || [];
+const openOpps = locals.openOppsCount ?? naicsMatches.length;
+const savedCount = locals.savedCount ?? 0;
+const appsCount = locals.appsCount ?? 0;
 %>
 
-<section class="dashboard-section">
-  <div class="container">
+<%- include('../partials/flash') %>
 
-    <%- include('../partials/flash') %>
+<!-- Hero Section -->
+<section class="hero-section">
+    <div class="hero-content hero-welcome">
+        <h1>💼 Small Business Dashboard</h1>
+        <p>Welcome back, <%= business.company_name || business.contact_name || 'there' %>! Track your business growth and discover new contracting opportunities.</p>
+    </div>
+</section>
 
-    <!-- Profile Completion Ring -->
-    <%
-      const pct = business.profile_pct || 0;
-      const ringClass = pct >= 100 ? 'ring-green' : pct >= 50 ? 'ring-cyan' : 'ring-amber';
-    %>
-    <div class="profile-ring-wrap <%= ringClass %>">
-      <div class="profile-ring" data-pct="<%= pct %>" aria-label="Profile <%= pct %>% complete">
-        <svg width="100" height="100" viewBox="0 0 100 100" aria-hidden="true">
-          <circle class="profile-ring-bg"   cx="50" cy="50" r="40"/>
-          <circle class="profile-ring-fill" cx="50" cy="50" r="40"/>
-        </svg>
-        <span class="profile-ring-label"><%= pct %>%</span>
-      </div>
-      <div class="profile-ring-info">
-        <h3><% if (pct >= 100) { %>Profile Complete<% } else { %>Profile <%= pct %>% Complete<% } %></h3>
-        <p>
-          <% if (pct >= 100) { %>
-            Your business profile is live and searchable by prime contractors.
-          <% } else if (pct >= 50) { %>
-            Getting there! Finish the remaining sections to boost your visibility.
-          <% } else { %>
-            Complete your profile to appear in the Prime Contractor directory.
-          <% } %>
-        </p>
-        <a href="/business/profile/edit" class="btn-sm <%= pct >= 100 ? 'btn-secondary' : 'btn-primary' %>">
-          <%= pct >= 100 ? 'View Profile' : 'Complete Profile' %>
+<!-- Warm Notifications -->
+<% if (pendingBizConns.length > 0) { %>
+<div id="notificationBanner" style="margin-bottom:var(--space-lg);border-radius:var(--border-radius-lg);padding:var(--space-md) var(--space-lg);background:linear-gradient(135deg,#e8f4fd,#f0f9ff);border-left:4px solid var(--color-primary);display:flex;align-items:center;gap:var(--space-md);">
+    <span style="font-size:1.5rem;">👋</span>
+    <div style="flex:1;font-weight:500;color:var(--color-text-primary);">
+        You have <strong><%= pendingBizConns.length %> pending connection request<%= pendingBizConns.length > 1 ? 's' : '' %></strong> from prime contractors. Review them below!
+    </div>
+    <button onclick="this.parentElement.style.display='none'" style="background:none;border:none;cursor:pointer;color:var(--text-muted);font-size:1.2rem;padding:0 0.25rem;" aria-label="Dismiss">&times;</button>
+</div>
+<% } else if (pct < 100) { %>
+<div id="notificationBanner" style="margin-bottom:var(--space-lg);border-radius:var(--border-radius-lg);padding:var(--space-md) var(--space-lg);background:linear-gradient(135deg,#fffbf0,#fff4d6);border-left:4px solid var(--color-warning);display:flex;align-items:center;gap:var(--space-md);">
+    <span style="font-size:1.5rem;">⚠️</span>
+    <div style="flex:1;font-weight:500;color:var(--color-text-primary);">
+        Your business profile is <strong><%= pct %>% complete</strong>. Complete your profile and generate your Capability Statement to maximize visibility to prime contractors.
+    </div>
+    <button onclick="this.parentElement.style.display='none'" style="background:none;border:none;cursor:pointer;color:var(--text-muted);font-size:1.2rem;padding:0 0.25rem;" aria-label="Dismiss">&times;</button>
+</div>
+<% } %>
+
+<!-- Summary Cards (Stats Grid) -->
+<section class="quick-stats">
+    <div class="summary-grid">
+        <div class="summary-card primary">
+            <div class="summary-value"><%= openOpps %></div>
+            <div class="summary-label">Open Opportunities</div>
+        </div>
+        <div class="summary-card success">
+            <div class="summary-value"><%= savedCount %></div>
+            <div class="summary-label">Saved Opportunities</div>
+        </div>
+        <div class="summary-card <%= (pendingBizConns.length + appsCount) > 0 ? 'warning' : 'primary' %>">
+            <div class="summary-value"><%= pendingBizConns.length + appsCount %></div>
+            <div class="summary-label">Connections &amp; Applications</div>
+        </div>
+        <div class="summary-card <%= pct >= 80 ? 'success' : 'primary' %>">
+            <div class="summary-value"><%= pct %>%</div>
+            <div class="summary-label">Profile Completion</div>
+        </div>
+    </div>
+</section>
+
+<!-- Quick Actions (Caltrans Action Grid) -->
+<section class="action-section">
+    <div class="section-header">
+        <h2>🚀 Quick Actions</h2>
+    </div>
+    <div class="action-grid">
+        <a href="/business/search" class="action-card">
+            <div class="icon-box" style="background:var(--color-bg-secondary);">🏢</div>
+            <h3>Search Opportunities</h3>
+            <p>Find and filter contracting opportunities that match your NAICS profile.</p>
         </a>
-      </div>
+        <a href="/business/saved" class="action-card">
+            <div class="icon-box" style="background:var(--color-bg-secondary);">⭐</div>
+            <h3>Saved Opportunities</h3>
+            <p>View your bookmarked contracting opportunities and deadlines.</p>
+        </a>
+        <a href="/business/applications" class="action-card">
+            <div class="icon-box" style="background:var(--color-bg-secondary);">📋</div>
+            <h3>My Applications</h3>
+            <p>Track submitted proposals and prime contractor review status.</p>
+        </a>
+        <a href="/business/capability-statement" target="_blank" class="action-card">
+            <div class="icon-box" style="background:var(--color-bg-secondary);">📄</div>
+            <h3>Capability Statement</h3>
+            <p>Generate and print your formatted one-page business capability statement.</p>
+        </a>
+        <a href="/business/profile" class="action-card">
+            <div class="icon-box" style="background:var(--color-bg-secondary);">👤</div>
+            <h3>My Profile</h3>
+            <p>Update your business information, NAICS codes, and certifications.</p>
+        </a>
+        <a href="/business/checklist" class="action-card">
+            <div class="icon-box" style="background:var(--color-bg-secondary);">✅</div>
+            <h3>Readiness Checklist</h3>
+            <p>Track Federal, State, and Subcontractor readiness milestones.</p>
+        </a>
+        <a href="/business/messages" class="action-card">
+            <div class="icon-box" style="background:var(--color-bg-secondary);">✉️</div>
+            <h3>Messages</h3>
+            <p>Read invitations and communicate with prime contractors.</p>
+        </a>
+        <a href="/business/settings" class="action-card">
+            <div class="icon-box" style="background:var(--color-bg-secondary);">🔧</div>
+            <h3>Settings</h3>
+            <p>Manage account security, password, and directory visibility.</p>
+        </a>
     </div>
-    <script>
-    document.querySelectorAll('.profile-ring[data-pct]').forEach(function(ring) {
-      var p = parseInt(ring.dataset.pct) || 0;
-      var circ = Math.round(2 * Math.PI * 40);
-      var fill = ring.querySelector('.profile-ring-fill');
-      if (fill) { fill.style.strokeDasharray = circ; fill.style.strokeDashoffset = Math.round(circ * (1 - p / 100)); }
-    });
-    </script>
+</section>
 
-    <div class="dashboard-header">
-      <h1>Welcome, <%= business.company_name || 'there' %>!</h1>
-      <p class="section-sub">Your EvoConnect business dashboard.</p>
-    </div>
+<!-- Detailed Sections -->
+<div class="dashboard-grid" style="margin-top: var(--space-xl);">
 
-    <div class="dashboard-grid">
-
-      <!-- 1. My NAICS Matches -->
-      <div class="dash-card dash-wide">
+    <!-- 1. My NAICS Matches -->
+    <div class="dash-card dash-wide">
         <div class="dash-card-header">
-          <h2>My NAICS Matches</h2>
-          <span class="badge badge-cyan">Contract Opportunities</span>
+            <h2>My NAICS Matches</h2>
+            <span class="badge badge-cyan">Contract Opportunities</span>
         </div>
-        <% if (locals.naicsDetails && naicsDetails.length > 0) { %>
-          <div class="match-list">
-            <% naicsDetails.forEach(function(match) { %>
-            <div class="match-item">
-              <div class="match-code"><%= match.code %></div>
-              <div class="match-desc">
-                <strong><%= match.description %></strong>
-                <% if (match.avg_contract_size) { %><span class="match-meta">Avg. contract: $<%= match.avg_contract_size.toLocaleString() %></span><% } %>
-              </div>
-              <% if (match.set_aside_eligible) { %><span class="badge badge-amber">Set-Aside Eligible</span><% } %>
+        <% if (naicsMatches.length > 0) { %>
+            <div class="match-list">
+                <% naicsMatches.forEach(function(match) { %>
+                <div class="match-item">
+                    <div class="match-code"><%= match.code %></div>
+                    <div class="match-desc">
+                        <strong><%= match.description %></strong>
+                        <% if (match.avg_contract_size) { %><span class="match-meta">Avg. contract: <%= match.avg_contract_size %></span><% } %>
+                    </div>
+                    <% if (match.set_aside_eligible) { %><span class="badge badge-amber">Set-Aside Eligible</span><% } %>
+                </div>
+                <% }) %>
             </div>
-            <% }) %>
-          </div>
         <% } else { %>
-          <div class="empty-state">
-            <p>No NAICS matches yet. <a href="/business/profile">Add NAICS codes to your profile</a> to see matched opportunities.</p>
-          </div>
+            <div class="empty-state">
+                <p>No NAICS matches yet. <a href="/business/profile">Add NAICS codes to your profile</a> to see matched opportunities.</p>
+            </div>
         <% } %>
-      </div>
+    </div>
 
-      <!-- 2. Certifications Status -->
-      <div class="dash-card">
+    <!-- 2. Certifications Status -->
+    <div class="dash-card">
         <div class="dash-card-header">
-          <h2>Certifications</h2>
-          <a href="/business/profile" class="btn-sm">Edit</a>
+            <h2>Certifications</h2>
+            <a href="/business/profile" class="btn-sm">Edit</a>
         </div>
-        <% let bizCerts = []; try { bizCerts = JSON.parse(business.certifications || '[]'); } catch(e){} %>
+        <% let bizCerts = Array.isArray(business.certifications) ? business.certifications : []; %>
         <% if (bizCerts.length > 0) { %>
-          <ul class="cert-status-list">
-            <% bizCerts.forEach(function(cert) { %>
-            <li class="cert-status-item">
-              <span class="cert-badge-sm"><%= cert.toUpperCase() %></span>
-              <span class="cert-status-label"><%= cert.toUpperCase() %></span>
-              <span class="badge badge-success">Active</span>
-            </li>
-            <% }) %>
-          </ul>
+            <ul class="cert-status-list">
+                <% bizCerts.forEach(function(cert) { %>
+                <li class="cert-status-item">
+                    <span class="cert-badge-sm"><%= String(cert).toUpperCase() %></span>
+                    <span class="cert-status-label"><%= String(cert).toUpperCase() %></span>
+                    <span class="badge badge-success">Active</span>
+                </li>
+                <% }) %>
+            </ul>
         <% } else { %>
-          <div class="empty-state">
-            <p>No certifications on file. <a href="/business/profile">Add your certifications</a> to qualify for more contracts.</p>
-          </div>
+            <div class="empty-state">
+                <p>No certifications on file. <a href="/business/profile">Add your certifications</a> to qualify for set-aside contracts.</p>
+            </div>
         <% } %>
-      </div>
+    </div>
 
-      <!-- 3. Vendor Readiness Checklist -->
-      <div class="dash-card dash-wide">
+    <!-- 3. Connection Requests -->
+    <div class="dash-card">
         <div class="dash-card-header">
-          <h2>Vendor Readiness Checklist</h2>
+            <h2>Connection Requests</h2>
+            <% if (pendingBizConns.length > 0) { %>
+                <span class="badge badge-amber"><%= pendingBizConns.length %> pending</span>
+            <% } %>
+        </div>
+        <% if (pendingBizConns.length > 0) { %>
+            <ul class="connection-list">
+                <% pendingBizConns.forEach(function(conn) { %>
+                <li class="connection-item">
+                    <div class="connection-info">
+                        <strong><%= conn.prime_company_name || conn.prime_contact || 'Prime Contractor' %></strong>
+                        <% if (conn.message) { %><p class="connection-msg"><%= conn.message %></p><% } %>
+                        <span class="connection-date"><%= new Date(conn.created_at).toLocaleDateString() %></span>
+                    </div>
+                    <div class="connection-actions">
+                        <form method="POST" action="/business/connections/<%= conn.id %>" style="display:inline">
+                            <input type="hidden" name="action" value="accept">
+                            <button type="submit" class="btn-sm btn-primary">Accept</button>
+                        </form>
+                        <form method="POST" action="/business/connections/<%= conn.id %>" style="display:inline">
+                            <input type="hidden" name="action" value="decline">
+                            <button type="submit" class="btn-sm btn-secondary">Decline</button>
+                        </form>
+                    </div>
+                </li>
+                <% }) %>
+            </ul>
+        <% } else { %>
+            <div class="empty-state"><p>No pending requests. Complete your profile to attract prime contractors.</p></div>
+        <% } %>
+    </div>
+
+    <!-- 4. Vendor Readiness Checklist -->
+    <div class="dash-card dash-wide">
+        <div class="dash-card-header">
+            <h2>Vendor Readiness Checklist</h2>
+            <a href="/business/checklist" class="btn-sm">Full View</a>
         </div>
         <div class="checklist-tabs" role="tablist">
-          <button class="tab-btn active" role="tab" aria-selected="true" aria-controls="tab-federal" id="btn-federal">Federal Track</button>
-          <button class="tab-btn" role="tab" aria-selected="false" aria-controls="tab-state" id="btn-state">State (Texas)</button>
-          <button class="tab-btn" role="tab" aria-selected="false" aria-controls="tab-sub" id="btn-sub">Subcontractor</button>
+            <button class="tab-btn active" role="tab" aria-selected="true" aria-controls="tab-federal" id="btn-federal">Federal Track</button>
+            <button class="tab-btn" role="tab" aria-selected="false" aria-controls="tab-state" id="btn-state">State (Texas)</button>
+            <button class="tab-btn" role="tab" aria-selected="false" aria-controls="tab-sub" id="btn-sub">Subcontractor</button>
         </div>
 
         <div class="tab-panel active" id="tab-federal" role="tabpanel" aria-labelledby="btn-federal">
-          <% const fedDone = federalChecklist.filter(i => fedChecked[i.key]).length %>
-          <div class="progress-bar-wrap">
-            <div class="progress-bar" style="width: <%= Math.round((fedDone/federalChecklist.length)*100) %>%"></div>
-          </div>
-          <p class="progress-label"><%= fedDone %> of <%= federalChecklist.length %> complete</p>
-          <ul class="checklist-list">
-            <% federalChecklist.forEach(function(item) { %>
-            <li class="checklist-item"><label class="checklist-label"><input type="checkbox" class="checklist-check" data-key="<%= item.key %>" data-track="federal" <%= fedChecked[item.key] ? 'checked' : '' %>><span><%= item.label %></span></label></li>
-            <% }) %>
-          </ul>
+            <% const fedDone = federalChecklist.filter(i => fedChecked[i.key]).length %>
+            <div class="progress-bar-wrap">
+                <div class="progress-bar" style="width: <%= Math.round((fedDone/federalChecklist.length)*100) %>%"></div>
+            </div>
+            <p class="progress-label"><%= fedDone %> of <%= federalChecklist.length %> complete</p>
+            <ul class="checklist-list">
+                <% federalChecklist.forEach(function(item) { %>
+                <li class="checklist-item"><label class="checklist-label"><input type="checkbox" class="checklist-check" data-key="<%= item.key %>" data-track="federal" <%= fedChecked[item.key] ? 'checked' : '' %>><span><%= item.label %></span></label></li>
+                <% }) %>
+            </ul>
         </div>
 
         <div class="tab-panel" id="tab-state" role="tabpanel" aria-labelledby="btn-state" hidden>
-          <% const stateDone = stateChecklist.filter(i => stateChecked[i.key]).length %>
-          <div class="progress-bar-wrap">
-            <div class="progress-bar" style="width: <%= Math.round((stateDone/stateChecklist.length)*100) %>%"></div>
-          </div>
-          <p class="progress-label"><%= stateDone %> of <%= stateChecklist.length %> complete</p>
-          <ul class="checklist-list">
-            <% stateChecklist.forEach(function(item) { %>
-            <li class="checklist-item"><label class="checklist-label"><input type="checkbox" class="checklist-check" data-key="<%= item.key %>" data-track="state" <%= stateChecked[item.key] ? 'checked' : '' %>><span><%= item.label %></span></label></li>
-            <% }) %>
-          </ul>
+            <% const stateDone = stateChecklist.filter(i => stateChecked[i.key]).length %>
+            <div class="progress-bar-wrap">
+                <div class="progress-bar" style="width: <%= Math.round((stateDone/stateChecklist.length)*100) %>%"></div>
+            </div>
+            <p class="progress-label"><%= stateDone %> of <%= stateChecklist.length %> complete</p>
+            <ul class="checklist-list">
+                <% stateChecklist.forEach(function(item) { %>
+                <li class="checklist-item"><label class="checklist-label"><input type="checkbox" class="checklist-check" data-key="<%= item.key %>" data-track="state" <%= stateChecked[item.key] ? 'checked' : '' %>><span><%= item.label %></span></label></li>
+                <% }) %>
+            </ul>
         </div>
 
-        <div class="tab-panel" id="tab-sub" role="tabpanel" aria-labelledby="btn-sub" hidden>
-          <% const subDone = subChecklist.filter(i => subChecked[i.key]).length %>
-          <div class="progress-bar-wrap">
-            <div class="progress-bar" style="width: <%= Math.round((subDone/subChecklist.length)*100) %>%"></div>
-          </div>
-          <p class="progress-label"><%= subDone %> of <%= subChecklist.length %> complete</p>
-          <ul class="checklist-list">
-            <% subChecklist.forEach(function(item) { %>
-            <li class="checklist-item"><label class="checklist-label"><input type="checkbox" class="checklist-check" data-key="<%= item.key %>" data-track="subcontractor" <%= subChecked[item.key] ? 'checked' : '' %>><span><%= item.label %></span></label></li>
-            <% }) %>
-          </ul>
+        <div class="tab-panel" id="tab-sub" role="tabpanel" aria-labelledby="tab-sub" hidden>
+            <% const subDone = subChecklist.filter(i => subChecked[i.key]).length %>
+            <div class="progress-bar-wrap">
+                <div class="progress-bar" style="width: <%= Math.round((subDone/subChecklist.length)*100) %>%"></div>
+            </div>
+            <p class="progress-label"><%= subDone %> of <%= subChecklist.length %> complete</p>
+            <ul class="checklist-list">
+                <% subChecklist.forEach(function(item) { %>
+                <li class="checklist-item"><label class="checklist-label"><input type="checkbox" class="checklist-check" data-key="<%= item.key %>" data-track="subcontractor" <%= subChecked[item.key] ? 'checked' : '' %>><span><%= item.label %></span></label></li>
+                <% }) %>
+            </ul>
         </div>
-      </div>
-
-      <!-- 4. Capability Statement -->
-      <div class="dash-card">
-        <div class="dash-card-header">
-          <h2>Capability Statement</h2>
-        </div>
-        <div class="cap-statement-preview">
-          <p>Your capability statement is a one-page document that showcases your business to prime contractors. Generate one from your profile data.</p>
-          <a href="/business/capability-statement" class="btn-primary" target="_blank">View / Print Capability Statement</a>
-        </div>
-      </div>
-
-      <!-- 5. Connection Requests -->
-      <div class="dash-card">
-        <div class="dash-card-header">
-          <h2>Connection Requests</h2>
-          <% if (locals.connections && connections.length > 0) { %>
-            <span class="badge badge-amber"><%= connections.filter(c => c.status === 'pending').length %> pending</span>
-          <% } %>
-        </div>
-        <% const pendingBizConns = (locals.connections || []).filter(c => c.status === 'pending'); %>
-        <% if (pendingBizConns.length > 0) { %>
-          <ul class="connection-list">
-            <% pendingBizConns.forEach(function(conn) { %>
-            <li class="connection-item">
-              <div class="connection-info">
-                <strong><%= conn.prime_company_name || conn.prime_contact || 'Prime Contractor' %></strong>
-                <% if (conn.message) { %><p class="connection-msg"><%= conn.message %></p><% } %>
-                <span class="connection-date"><%= new Date(conn.created_at).toLocaleDateString() %></span>
-              </div>
-              <div class="connection-actions">
-                <form method="POST" action="/business/connections/<%= conn.id %>" style="display:inline">
-                  <input type="hidden" name="action" value="accept">
-                  <button type="submit" class="btn-sm btn-primary">Accept</button>
-                </form>
-                <form method="POST" action="/business/connections/<%= conn.id %>" style="display:inline">
-                  <input type="hidden" name="action" value="decline">
-                  <button type="submit" class="btn-sm btn-secondary">Decline</button>
-                </form>
-              </div>
-            </li>
-            <% }) %>
-          </ul>
-        <% } else { %>
-          <div class="empty-state"><p>No pending requests. Complete your profile to attract prime contractors.</p></div>
-        <% } %>
-      </div>
-
-      <!-- 6. Resources -->
-      <div class="dash-card dash-wide">
-        <div class="dash-card-header"><h2>Resources</h2></div>
-        <div class="resource-grid">
-          <a href="https://sam.gov" target="_blank" rel="noopener" class="resource-card">
-            <div class="resource-icon">&#127963;</div>
-            <h4>SAM.gov</h4>
-            <p>Register for federal contracts</p>
-          </a>
-          <a href="https://comptroller.texas.gov/purchasing/vendor/hub/" target="_blank" rel="noopener" class="resource-card">
-            <div class="resource-icon">&#127919;</div>
-            <h4>Texas HUB Program</h4>
-            <p>Apply for HUB certification</p>
-          </a>
-          <a href="https://www.sba.gov/federal-contracting/contracting-assistance-programs/8a-business-development-program" target="_blank" rel="noopener" class="resource-card">
-            <div class="resource-icon">&#128200;</div>
-            <h4>SBA 8(a) Program</h4>
-            <p>Apply for the business development program</p>
-          </a>
-          <a href="/business/faq" class="resource-card">
-            <div class="resource-icon">&#10067;</div>
-            <h4>FAQ</h4>
-            <p>Common questions for businesses</p>
-          </a>
-        </div>
-      </div>
-
     </div>
-  </div>
-</section>
+
+</div>
 
 <script>
 document.querySelectorAll('.checklist-check').forEach(function(cb) {
@@ -295,7 +316,7 @@ document.querySelectorAll('.tab-btn').forEach(function(btn) {
     document.querySelectorAll('.tab-btn').forEach(function(b) { b.classList.remove('active'); b.setAttribute('aria-selected', 'false'); });
     document.querySelectorAll('.tab-panel').forEach(function(p) { p.classList.remove('active'); p.hidden = true; });
     btn.classList.add('active'); btn.setAttribute('aria-selected', 'true');
-    const panel = document.getElementById(btn.getAttribute('aria-controls'));
+    var panel = document.getElementById(btn.getAttribute('aria-controls'));
     if (panel) { panel.classList.add('active'); panel.hidden = false; }
   });
 });

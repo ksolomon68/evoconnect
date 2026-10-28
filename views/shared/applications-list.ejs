@@ -1,0 +1,61 @@
+<% if (locals.user) { locals.layout = 'layouts/dashboard'; } %>
+<% const title = locals.title || 'My Applications | EvoConnect' %>
+<% const basePath = locals.basePath || (locals.user?.type === 'business' ? '/business' : '/labor') %>
+<% const appList = locals.applications || [] %>
+
+<%- include('../partials/flash') %>
+
+<section class="hero-section">
+    <div class="hero-content hero-welcome">
+        <h1>📋 My Submitted Applications</h1>
+        <p>Track the status of your submitted bids, capability statements, and subcontracting applications.</p>
+    </div>
+</section>
+
+<div class="recommendations-list" style="padding: var(--space-xl);">
+    <div class="section-header">
+        <h2>Application History (<%= appList.length %>)</h2>
+        <a href="<%= basePath %>/search" class="btn btn-sm btn-primary">Find More Opportunities</a>
+    </div>
+
+    <% if (appList.length > 0) { %>
+        <div style="overflow-x:auto;">
+            <table class="data-table" style="width:100%;">
+                <thead>
+                    <tr>
+                        <th>Opportunity</th>
+                        <th>Prime Contractor</th>
+                        <th>Proposed Bid</th>
+                        <th>Submitted</th>
+                        <th>Status</th>
+                        <th>Notes</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% appList.forEach(function(app) { %>
+                    <tr>
+                        <td>
+                            <strong><%= app.opportunity_title || 'Contract Opportunity' %></strong>
+                            <% if (app.project_ref) { %><div style="font-size:0.8rem;color:var(--text-muted);">Ref: <%= app.project_ref %></div><% } %>
+                        </td>
+                        <td><%= app.posted_by_name || 'Prime Contractor' %></td>
+                        <td><%= app.proposed_amount || 'Standard Rate' %></td>
+                        <td><%= new Date(app.applied_date).toLocaleDateString() %></td>
+                        <td>
+                            <span class="status-badge <%= app.status === 'awarded' ? 'badge-consulting' : (app.status === 'declined' ? 'badge-construction' : 'badge-consulting') %>" style="text-transform:capitalize;margin:0;">
+                                <%= (app.status || 'submitted').replace('_', ' ') %>
+                            </span>
+                        </td>
+                        <td style="max-width:260px;font-size:0.85rem;color:var(--text-muted);"><%= app.notes || '—' %></td>
+                    </tr>
+                    <% }) %>
+                </tbody>
+            </table>
+        </div>
+    <% } else { %>
+        <div style="padding:2.5rem;text-align:center;color:var(--text-muted);">
+            <p style="margin-bottom:1rem;">You haven't submitted any applications yet.</p>
+            <a href="<%= basePath %>/search" class="btn btn-primary">Search Open Opportunities</a>
+        </div>
+    <% } %>
+</div>

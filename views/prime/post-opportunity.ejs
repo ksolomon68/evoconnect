@@ -1,0 +1,74 @@
+<%- locals.layout = 'layouts/dashboard'; %>
+<% const title = locals.title || 'Post New Opportunity | EvoConnect Prime' %>
+
+<%- include('../partials/flash') %>
+
+<section class="hero-section">
+    <div class="hero-content hero-welcome">
+        <h1>➕ Post Contracting Opportunity</h1>
+        <p>Publish a solicitation or subcontracting opportunity to qualified businesses and skilled workers on EvoConnect.</p>
+    </div>
+</section>
+
+<div class="recommendations-list" style="padding: var(--space-xl);">
+    <form method="POST" action="/prime/post-opportunity" style="display:grid;gap:1.25rem;">
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:1rem;">
+            <div>
+                <label style="display:block;font-weight:600;margin-bottom:.35rem;">Opportunity Title *</label>
+                <input type="text" name="title" class="form-control" required placeholder="e.g. Regional Fiber Optic Splicing & Conduit Subcontract">
+            </div>
+            <div>
+                <label style="display:block;font-weight:600;margin-bottom:.35rem;">Project Reference / Solicitation #</label>
+                <input type="text" name="project_ref" class="form-control" placeholder="e.g. OPP-2026-105">
+            </div>
+        </div>
+
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1rem;">
+            <div>
+                <label style="display:block;font-weight:600;margin-bottom:.35rem;">Category *</label>
+                <select name="category" class="form-control" required>
+                    <option value="Broadband & Fiber">Broadband & Fiber</option>
+                    <option value="Electrical & Utility">Electrical & Utility</option>
+                    <option value="IT & Cloud Infrastructure">IT & Cloud Infrastructure</option>
+                    <option value="Civil & Concrete">Civil & Concrete</option>
+                    <option value="Transportation & Logistics">Transportation & Logistics</option>
+                    <option value="Facilities & HVAC">Facilities & HVAC</option>
+                    <option value="Professional Services">Professional Services</option>
+                </select>
+            </div>
+            <div>
+                <label style="display:block;font-weight:600;margin-bottom:.35rem;">Estimated Contract Value</label>
+                <input type="text" name="estimated_value" class="form-control" placeholder="e.g. $250,000 - $500,000">
+            </div>
+            <div>
+                <label style="display:block;font-weight:600;margin-bottom:.35rem;">Location / Service Area *</label>
+                <input type="text" name="location" class="form-control" required placeholder="e.g. Austin / Central Texas">
+            </div>
+        </div>
+
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1rem;">
+            <div>
+                <label style="display:block;font-weight:600;margin-bottom:.35rem;">Target NAICS Codes</label>
+                <input type="text" name="naics_codes" class="form-control" placeholder="e.g. 237130, 517311">
+            </div>
+            <div>
+                <label style="display:block;font-weight:600;margin-bottom:.35rem;">Certifications Preferred</label>
+                <input type="text" name="certifications_required" class="form-control" placeholder="e.g. HUB, 8(a), SDVOSB, WOSB">
+            </div>
+            <div>
+                <label style="display:block;font-weight:600;margin-bottom:.35rem;">Application Due Date</label>
+                <input type="date" name="due_date" class="form-control">
+            </div>
+        </div>
+
+        <div>
+            <label style="display:block;font-weight:600;margin-bottom:.35rem;">Scope of Work & Requirements *</label>
+            <textarea name="scope_summary" rows="5" class="form-control" required placeholder="Describe deliverables, timeline, insurance/bonding requirements, and evaluation criteria..."></textarea>
+        </div>
+
+        <div style="display:flex;gap:0.75rem;">
+            <button type="submit" class="btn btn-primary">Publish Opportunity</button>
+            <a href="/prime/opportunities" class="btn btn-secondary">Cancel</a>
+        </div>
+    </form>
+</div>

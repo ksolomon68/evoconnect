@@ -1,0 +1,67 @@
+<% if (locals.user) { locals.layout = 'layouts/dashboard'; } %>
+<% const title = locals.title || 'Saved Opportunities | EvoConnect' %>
+<% const basePath = locals.basePath || (locals.user?.type === 'business' ? '/business' : '/labor') %>
+<% const oppList = locals.opportunities || [] %>
+<% const appliedIds = locals.appliedIds || [] %>
+
+<%- include('../partials/flash') %>
+
+<section class="hero-section">
+    <div class="hero-content hero-welcome">
+        <h1>⭐ Saved Opportunities</h1>
+        <p>Review contracting opportunities you have bookmarked and submit your applications before the deadline.</p>
+    </div>
+</section>
+
+<div style="display:grid;gap:var(--space-lg);">
+    <% if (oppList.length > 0) { %>
+        <% oppList.forEach(function(opp) { 
+            const isApplied = appliedIds.includes(opp.id);
+        %>
+        <div class="recommendations-list" style="padding: var(--space-xl);">
+            <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:1rem;margin-bottom:0.75rem;">
+                <div>
+                    <div style="display:flex;align-items:center;gap:0.5rem;flex-wrap:wrap;margin-bottom:0.35rem;">
+                        <span class="status-badge badge-consulting" style="margin:0;"><%= opp.category || 'General Contracting' %></span>
+                        <% if (opp.naics_codes) { %>
+                            <span style="font-size:0.8rem;font-family:monospace;background:#f1f5f9;padding:0.2rem 0.5rem;border-radius:4px;color:#334155;">NAICS: <%= opp.naics_codes %></span>
+                        <% } %>
+                    </div>
+                    <h3 style="margin:0;font-size:1.25rem;color:var(--color-text-primary);"><%= opp.title %></h3>
+                    <div style="color:var(--text-muted);font-size:0.9rem;margin-top:0.25rem;">
+                        <strong><%= opp.posted_by_name || 'Prime Contractor' %></strong>
+                        <% if (opp.location) { %> • 📍 <%= opp.location %><% } %>
+                    </div>
+                </div>
+                <div style="text-align:right;">
+                    <div style="font-size:1.1rem;font-weight:700;color:var(--color-primary);"><%= opp.estimated_value || 'TBD' %></div>
+                    <% if (opp.due_date) { %>
+                        <div style="font-size:0.85rem;color:var(--text-muted);">Due: <%= new Date(opp.due_date).toLocaleDateString() %></div>
+                    <% } %>
+                </div>
+            </div>
+
+            <p style="color:var(--color-text-secondary);line-height:1.6;margin:0.75rem 0 1.25rem;"><%= opp.scope_summary %></p>
+
+            <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:0.75rem;border-top:1px solid var(--border-color);padding-top:1rem;">
+                <form method="POST" action="<%= basePath %>/saved/toggle" style="display:inline;">
+                    <input type="hidden" name="opportunity_id" value="<%= opp.id %>">
+                    <input type="hidden" name="redirect_to" value="<%= basePath %>/saved">
+                    <button type="submit" class="btn btn-sm btn-secondary">Remove from Saved</button>
+                </form>
+
+                <% if (isApplied) { %>
+                    <span class="status-badge badge-consulting" style="margin:0;padding:0.45rem 0.9rem;">✓ Application Submitted</span>
+                <% } else { %>
+                    <a href="<%= basePath %>/search?q=<%= encodeURIComponent(opp.title) %>" class="btn btn-sm btn-primary">Go to Apply</a>
+                <% } %>
+            </div>
+        </div>
+        <% }) %>
+    <% } else { %>
+        <div class="recommendations-list" style="padding: var(--space-2xl); text-align:center; color:var(--text-muted);">
+            <p style="font-size:1.1rem;margin-bottom:0.75rem;">You haven't saved any contracting opportunities yet.</p>
+            <a href="<%= basePath %>/search" class="btn btn-primary">Browse Open Opportunities</a>
+        </div>
+    <% } %>
+</div>

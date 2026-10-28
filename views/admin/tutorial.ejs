@@ -1,0 +1,42 @@
+<%- locals.layout = 'layouts/dashboard'; %>
+<% const title = locals.title || 'Admin Guide | EvoConnect' %>
+<% const guideType = locals.guideType || 'platform' %>
+
+<%- include('../partials/flash') %>
+
+<section class="hero-section">
+    <div class="hero-content hero-welcome">
+        <h1>📖 <%= guideType === 'cms' ? 'CMS Administrator Guide' : 'Platform Administrator Guide' %></h1>
+        <p><%= guideType === 'cms' ? 'Instructions for updating public website copy, FAQs, and portal content.' : 'Complete operating procedures for managing users, prime approvals, opportunities, and compliance reporting.' %></p>
+    </div>
+</section>
+
+<div class="recommendations-list" style="padding: var(--space-xl); display:grid; gap:1.5rem;">
+    <% if (guideType === 'cms') { %>
+        <div>
+            <h3>1. Accessing the Content Management System (CMS)</h3>
+            <p style="color:var(--color-text-secondary);">Click <strong>Content Management (CMS)</strong> in the left sidebar (or visit <a href="/admin-cms">/admin-cms</a>) and sign in with your CMS administrator password.</p>
+        </div>
+        <div>
+            <h3>2. Editing Homepage & Portal Copy</h3>
+            <p style="color:var(--color-text-secondary);">Use the section editor to modify hero headlines, calls to action, and feature descriptions. Changes are saved immediately and reflected on the public site.</p>
+        </div>
+        <div>
+            <h3>3. Managing Resources & Announcements</h3>
+            <p style="color:var(--color-text-secondary);">Use <a href="/admin/resources">Resource Library</a> to publish downloadable templates and guides, and <a href="/admin/announcements">Announcements</a> to post site-wide banners.</p>
+        </div>
+    <% } else { %>
+        <div>
+            <h3>1. Approving Prime Contractors</h3>
+            <p style="color:var(--color-text-secondary);">New prime contractors register with their SAM.gov UEI. Visit <a href="/admin/approvals">Prime Approvals</a> to verify their UEI and click <strong>Approve</strong> to grant directory search and opportunity posting access.</p>
+        </div>
+        <div>
+            <h3>2. Managing Contracting Opportunities</h3>
+            <p style="color:var(--color-text-secondary);">Visit <a href="/admin/opportunities">Opportunity Manager</a> to review, publish, close, or remove solicitations posted by prime contractors.</p>
+        </div>
+        <div>
+            <h3>3. NAICS Codes & Compliance Exports</h3>
+            <p style="color:var(--color-text-secondary);">Maintain target NAICS classifications in <a href="/admin/naics">NAICS Codes</a> and export complete registration and readiness data anytime via <a href="/admin/export/csv">Export CSV</a>.</p>
+        </div>
+    <% } %>
+</div>

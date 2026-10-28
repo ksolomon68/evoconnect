@@ -1,168 +1,247 @@
-<% const title = locals.title || 'Prime Dashboard' %>
+<%- locals.layout = 'layouts/dashboard'; %>
+<% const title = locals.title || 'Prime Contractor Dashboard' %>
 
-<section class="dashboard-section">
-  <div class="container">
+<%
+const connList = locals.connections || [];
+const rfqList = locals.rfqs || [];
+const oppsCount = locals.myOppsCount ?? rfqList.length;
+const totalSubcontractors = locals.totalDirectoryCount ?? 0;
+const pendingApps = locals.pendingAppsCount ?? connList.filter(c => c.status === 'pending').length;
+const acceptedConns = connList.filter(c => c.status === 'accepted').length;
+%>
 
-    <%- include('../partials/flash') %>
+<%- include('../partials/flash') %>
 
-    <!-- Account Status Banner -->
-    <% if (prime.status === 'pending') { %>
-      <div class="banner banner-warning">
-        <strong>Account Under Review.</strong> Your registration is being reviewed by our team. You'll receive an email once approved. Typical review time: 1-2 business days.
-      </div>
-    <% } else if (prime.status === 'active') { %>
-      <div class="banner banner-success">
-        Account Active
-        <span class="tier-badge tier-<%= prime.tier %>"><%= prime.tier ? prime.tier.charAt(0).toUpperCase() + prime.tier.slice(1) : 'Basic' %> Plan</span>
-      </div>
-    <% } else if (prime.status === 'suspended') { %>
-      <div class="banner banner-error">
-        <strong>Account Suspended.</strong> Please contact <a href="mailto:support@evoconnect.io">support@evoconnect.io</a> for assistance.
-      </div>
-    <% } %>
-
-    <div class="dashboard-header">
-      <h1>Prime Contractor Dashboard</h1>
-      <p class="section-sub">Welcome, <%= prime.company_name || prime.contact_name || 'there' %>.</p>
+<!-- Hero Section -->
+<section class="hero-section">
+    <div class="hero-content hero-welcome">
+        <h1>🏢 Prime Contractor Dashboard</h1>
+        <p>Welcome, <%= prime.company_name || prime.contact_name || 'Prime Partner' %>! Manage opportunities, track small business &amp; worker engagement, and monitor performance.</p>
     </div>
+</section>
 
-    <div class="dashboard-grid">
+<!-- Account Status Banner -->
+<% if (prime.status === 'pending') { %>
+<div class="banner banner-warning" style="margin-bottom:var(--space-lg);">
+    <strong>Account Under Review.</strong> Your registration is being reviewed by our team. You'll receive an email once approved. Typical review time: 1–2 business days.
+</div>
+<% } else if (prime.status === 'active') { %>
+<div id="welcomeBanner" style="margin-bottom:var(--space-lg);border-radius:var(--border-radius-lg);padding:var(--space-md) var(--space-lg);background:linear-gradient(135deg,#e8f4fd,#f0f9ff);border-left:4px solid var(--color-primary);display:flex;align-items:center;gap:var(--space-md);">
+    <span style="font-size:1.5rem;">👋</span>
+    <div style="flex:1;font-weight:500;color:var(--color-text-primary);">
+        <strong>Account Active</strong> (<%= prime.tier ? prime.tier.charAt(0).toUpperCase() + prime.tier.slice(1) : 'Basic' %> Plan) —
+        <% if (pendingApps > 0) { %>
+            You have <strong><%= pendingApps %> pending connection/application<%= pendingApps > 1 ? 's' : '' %></strong> waiting for review.
+        <% } else { %>
+            Get started by <a href="/prime/post-opportunity" style="color:var(--color-primary);font-weight:700;">posting a contracting opportunity</a> or searching the directory.
+        <% } %>
+    </div>
+    <button onclick="this.parentElement.style.display='none'" style="background:none;border:none;cursor:pointer;color:var(--text-muted);font-size:1.2rem;padding:0 0.25rem;" aria-label="Dismiss">&times;</button>
+</div>
+<% } else if (prime.status === 'suspended') { %>
+<div class="banner banner-error" style="margin-bottom:var(--space-lg);">
+    <strong>Account Suspended.</strong> Please contact <a href="mailto:ks@evobrand.net">ks@evobrand.net</a> for assistance.
+</div>
+<% } %>
 
-      <!-- Search Panel: Labor -->
-      <div class="dash-card">
+<!-- Summary Cards (Stats Grid) -->
+<section class="quick-stats">
+    <div class="summary-grid">
+        <div class="summary-card primary">
+            <div class="summary-value"><%= oppsCount %></div>
+            <div class="summary-label">My Active Postings</div>
+        </div>
+        <div class="summary-card success">
+            <div class="summary-value"><%= totalSubcontractors %></div>
+            <div class="summary-label">Registered Subs &amp; Workers</div>
+        </div>
+        <div class="summary-card <%= pendingApps > 0 ? 'warning' : 'primary' %>">
+            <div class="summary-value"><%= pendingApps %></div>
+            <div class="summary-label">Pending Applications</div>
+        </div>
+        <div class="summary-card success">
+            <div class="summary-value"><%= acceptedConns %></div>
+            <div class="summary-label">Accepted Connections</div>
+        </div>
+    </div>
+</section>
+
+<!-- Quick Actions (Caltrans Action Grid) -->
+<section class="action-section">
+    <div class="section-header">
+        <h2>🚀 Quick Actions</h2>
+    </div>
+    <div class="action-grid">
+        <a href="/prime/post-opportunity" class="action-card">
+            <div class="icon-box" style="background:var(--color-bg-secondary);">📝</div>
+            <h3>Post New Opportunity</h3>
+            <p>Create and publish contracting opportunities for small businesses and workers.</p>
+        </a>
+        <a href="/prime/opportunities" class="action-card">
+            <div class="icon-box" style="background:var(--color-bg-secondary);">📋</div>
+            <h3>Manage Opportunities</h3>
+            <p>Review applications, update status, and manage active postings.</p>
+        </a>
+        <a href="/prime/applications" class="action-card">
+            <div class="icon-box" style="background:var(--color-bg-secondary);">📂</div>
+            <h3>View Applications</h3>
+            <p>Evaluate proposals and award contracts to qualified subcontractors.</p>
+        </a>
+        <a href="/prime/search/businesses" class="action-card">
+            <div class="icon-box" style="background:var(--color-bg-secondary);">🏢</div>
+            <h3>Search Small Businesses</h3>
+            <p>Find certified DBE, HUB, 8(a), WBE, and SDVOSB subcontractors by NAICS code.</p>
+        </a>
+        <a href="/prime/search/workers" class="action-card">
+            <div class="icon-box" style="background:var(--color-bg-secondary);">👷</div>
+            <h3>Search Labor Directory</h3>
+            <p>Connect with skilled tradespeople by trade category, state, and certifications.</p>
+        </a>
+        <a href="/prime/search/businesses?invite=true" class="action-card">
+            <div class="icon-box" style="background:rgba(245,158,11,0.15);">✉️</div>
+            <h3>Invite to Apply</h3>
+            <p>Search for a qualified small business or worker and send a direct invitation.</p>
+        </a>
+        <a href="/prime/analytics" class="action-card">
+            <div class="icon-box" style="background:var(--color-bg-secondary);">📈</div>
+            <h3>View Analytics</h3>
+            <p>Monitor engagement metrics, outreach compliance, and performance analytics.</p>
+        </a>
+        <a href="/prime/settings" class="action-card">
+            <div class="icon-box" style="background:var(--color-bg-secondary);">⚙️</div>
+            <h3>Prime Settings</h3>
+            <p>Update organization profile, subscription tier, and account settings.</p>
+        </a>
+    </div>
+</section>
+
+<!-- Directory Search & RFQs & Connections -->
+<div class="dashboard-grid" style="margin-top: var(--space-xl);">
+
+    <!-- Search Panel: Labor -->
+    <div class="dash-card">
         <div class="dash-card-header">
-          <h2>Search Labor Directory</h2>
-          <a href="/prime/search/workers" class="btn-sm btn-primary">Open Search</a>
+            <h2>Quick Search: Labor Directory</h2>
+            <a href="/prime/search/workers" class="btn-sm btn-primary">Open Search</a>
         </div>
         <form method="GET" action="/prime/search/workers" class="quick-search-form">
-          <div class="form-group">
-            <label for="qs-trade" class="form-label">Trade</label>
-            <select id="qs-trade" name="trade" class="form-control">
-              <option value="">All trades</option>
-              <option value="telecom_fiber">Telecom &amp; Fiber</option>
-              <option value="electrical">Electrical</option>
-              <option value="civil_construction">Civil Construction</option>
-              <option value="it_network">IT / Network</option>
-              <option value="underground_utilities">Underground Utilities</option>
-              <option value="plumbing">Plumbing</option>
-              <option value="hvac_mechanical">HVAC / Mechanical</option>
-              <option value="general_labor">General Labor</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label for="qs-state" class="form-label">State</label>
-            <input type="text" id="qs-state" name="state" class="form-control" maxlength="2" placeholder="TX">
-          </div>
-          <button type="submit" class="btn-primary btn-sm">Search Workers</button>
+            <div class="form-group">
+                <label for="qs-trade" class="form-label">Trade</label>
+                <select id="qs-trade" name="trade" class="form-control">
+                    <option value="">All trades</option>
+                    <option value="fiber-broadband">Fiber &amp; Broadband</option>
+                    <option value="electrical">Electrical</option>
+                    <option value="construction-general">General Construction</option>
+                    <option value="concrete-cement">Concrete &amp; Cement</option>
+                    <option value="cdl-trucking">CDL Trucking</option>
+                    <option value="welding-fabrication">Welding &amp; Fabrication</option>
+                    <option value="plumbing-hvac">Plumbing &amp; HVAC</option>
+                    <option value="cloud-network-infra">Cloud &amp; Network Infra</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="qs-state" class="form-label">State</label>
+                <input type="text" id="qs-state" name="state" class="form-control" maxlength="2" placeholder="TX">
+            </div>
+            <button type="submit" class="btn-primary btn-sm">Search Workers</button>
         </form>
-      </div>
+    </div>
 
-      <!-- Search Panel: Business -->
-      <div class="dash-card">
+    <!-- Search Panel: Business -->
+    <div class="dash-card">
         <div class="dash-card-header">
-          <h2>Search Business Directory</h2>
-          <a href="/prime/search/businesses" class="btn-sm btn-primary">Open Search</a>
+            <h2>Quick Search: Business Directory</h2>
+            <a href="/prime/search/businesses" class="btn-sm btn-primary">Open Search</a>
         </div>
         <form method="GET" action="/prime/search/businesses" class="quick-search-form">
-          <div class="form-group">
-            <label for="qs-cert" class="form-label">Certification</label>
-            <select id="qs-cert" name="cert" class="form-control">
-              <option value="">All certifications</option>
-              <option value="dbe">DBE</option>
-              <option value="mbe">MBE</option>
-              <option value="wbe">WBE</option>
-              <option value="hub">HUB</option>
-              <option value="sdvosb">SDVOSB</option>
-              <option value="8a">SBA 8(a)</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label for="qs-naics" class="form-label">NAICS Code</label>
-            <input type="text" id="qs-naics" name="naics" class="form-control" placeholder="e.g. 237130">
-          </div>
-          <button type="submit" class="btn-primary btn-sm">Search Businesses</button>
+            <div class="form-group">
+                <label for="qs-cert" class="form-label">Certification</label>
+                <select id="qs-cert" name="certifications" class="form-control">
+                    <option value="">All certifications</option>
+                    <option value="DBE">DBE</option>
+                    <option value="MBE">MBE</option>
+                    <option value="WBE">WBE</option>
+                    <option value="HUB">HUB</option>
+                    <option value="SDVOSB">SDVOSB</option>
+                    <option value="8a">SBA 8(a)</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="qs-naics" class="form-label">NAICS Code</label>
+                <input type="text" id="qs-naics" name="naics_code" class="form-control" placeholder="e.g. 237130">
+            </div>
+            <button type="submit" class="btn-primary btn-sm">Search Businesses</button>
         </form>
-      </div>
-
-      <!-- My RFQs -->
-      <div class="dash-card dash-wide">
-        <div class="dash-card-header">
-          <h2>My RFQs</h2>
-          <% if (prime.tier === 'enterprise') { %>
-            <a href="/prime/rfq" class="btn-sm btn-primary">Post RFQ</a>
-          <% } else { %>
-            <span class="badge badge-amber">Enterprise Only</span>
-          <% } %>
-        </div>
-        <% if (prime.tier !== 'enterprise') { %>
-          <div class="upgrade-prompt">
-            <p>RFQ posting is available on the <strong>Enterprise plan</strong>. Upgrade to push project requirements directly to matched subcontractors.</p>
-            <a href="/prime/billing" class="btn-amber btn-sm">Upgrade to Enterprise</a>
-          </div>
-        <% } else if (locals.rfqs && rfqs.length > 0) { %>
-          <table class="data-table">
-            <thead>
-              <tr>
-                <th>Project</th>
-                <th>NAICS</th>
-                <th>Deadline</th>
-                <th>Responses</th>
-                <th></th>
-              </tr>
-            </thead>
-            <tbody>
-              <% rfqs.forEach(function(rfq) { %>
-              <tr>
-                <td><%= rfq.title %></td>
-                <td><%= rfq.naics_code %></td>
-                <td><%= rfq.deadline ? new Date(rfq.deadline).toLocaleDateString() : '—' %></td>
-                <td><%= rfq.response_count || 0 %></td>
-                <td><a href="/prime/rfq/<%= rfq.id %>" class="btn-sm">View</a></td>
-              </tr>
-              <% }) %>
-            </tbody>
-          </table>
-        <% } else { %>
-          <div class="empty-state">
-            <p>No RFQs posted yet. <a href="/prime/rfq">Post your first RFQ</a> to reach qualified subcontractors.</p>
-          </div>
-        <% } %>
-      </div>
-
-      <!-- Connection History -->
-      <div class="dash-card dash-wide">
-        <div class="dash-card-header">
-          <h2>Connection History</h2>
-          <span class="badge badge-cyan"><%= locals.connectionCount || 0 %> total</span>
-        </div>
-        <% if (locals.connections && connections.length > 0) { %>
-          <table class="data-table">
-            <thead>
-              <tr>
-                <th>Name / Company</th>
-                <th>Type</th>
-                <th>Status</th>
-                <th>Date</th>
-              </tr>
-            </thead>
-            <tbody>
-              <% connections.forEach(function(conn) { %>
-              <tr>
-                <td><%= conn.name || conn.company_name || '—' %></td>
-                <td><span class="badge badge-<%= conn.recipient_type === 'worker' ? 'cyan' : 'amber' %>"><%= conn.recipient_type %></span></td>
-                <td><span class="badge badge-<%= conn.status === 'accepted' ? 'success' : (conn.status === 'pending' ? 'warning' : 'muted') %>"><%= conn.status %></span></td>
-                <td><%= new Date(conn.created_at).toLocaleDateString() %></td>
-              </tr>
-              <% }) %>
-            </tbody>
-          </table>
-        <% } else { %>
-          <div class="empty-state">
-            <p>No connections yet. Start searching the <a href="/prime/search/workers">Labor Directory</a> or <a href="/prime/search/businesses">Business Directory</a>.</p>
-          </div>
-        <% } %>
-      </div>
-
     </div>
-  </div>
-</section>
+
+    <!-- My RFQs -->
+    <div class="dash-card dash-wide">
+        <div class="dash-card-header">
+            <h2>Subcontractor RFQs</h2>
+            <a href="/prime/rfq" class="btn-sm btn-primary">Manage RFQs</a>
+        </div>
+        <% if (rfqList.length > 0) { %>
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Project</th>
+                        <th>Trade / Service</th>
+                        <th>Location</th>
+                        <th>Timeline</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% rfqList.forEach(function(rfq) { %>
+                    <tr>
+                        <td><strong><%= rfq.title %></strong></td>
+                        <td><%= rfq.trade_service || '—' %></td>
+                        <td><%= rfq.location || '—' %></td>
+                        <td><%= rfq.timeline || '—' %></td>
+                        <td><span class="badge badge-success"><%= rfq.status %></span></td>
+                    </tr>
+                    <% }) %>
+                </tbody>
+            </table>
+        <% } else { %>
+            <div class="empty-state">
+                <p>No RFQs posted yet. <a href="/prime/post-opportunity">Post a contracting opportunity</a> or <a href="/prime/rfq">create a direct RFQ</a>.</p>
+            </div>
+        <% } %>
+    </div>
+
+    <!-- Connection History -->
+    <div class="dash-card dash-wide">
+        <div class="dash-card-header">
+            <h2>Recent Connections</h2>
+            <a href="/prime/connections" class="btn-sm">View All (<%= connList.length %>)</a>
+        </div>
+        <% if (connList.length > 0) { %>
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Name / Company</th>
+                        <th>Type</th>
+                        <th>Status</th>
+                        <th>Date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% connList.slice(0, 8).forEach(function(conn) { %>
+                    <tr>
+                        <td><%= conn.target_name || conn.name || conn.company_name || '—' %></td>
+                        <td><span class="badge badge-<%= conn.target_type === 'worker' ? 'cyan' : 'amber' %>"><%= conn.target_type %></span></td>
+                        <td><span class="badge badge-<%= conn.status === 'accepted' ? 'success' : (conn.status === 'pending' ? 'warning' : 'muted') %>"><%= conn.status %></span></td>
+                        <td><%= new Date(conn.created_at).toLocaleDateString() %></td>
+                    </tr>
+                    <% }) %>
+                </tbody>
+            </table>
+        <% } else { %>
+            <div class="empty-state">
+                <p>No connections yet. Start searching the <a href="/prime/search/workers">Labor Directory</a> or <a href="/prime/search/businesses">Business Directory</a>.</p>
+            </div>
+        <% } %>
+    </div>
+
+</div>

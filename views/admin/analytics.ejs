@@ -1,0 +1,49 @@
+<%- locals.layout = 'layouts/dashboard'; %>
+<% const title = locals.title || 'Platform Analytics | EvoConnect Admin' %>
+<% const stats = locals.stats || {} %>
+
+<%- include('../partials/flash') %>
+
+<section class="hero-section">
+    <div class="hero-content hero-welcome">
+        <h1>📊 Platform Analytics</h1>
+        <p>Monitor ecosystem growth, vendor readiness progress, and contracting engagement across all roles.</p>
+    </div>
+</section>
+
+<section class="quick-stats">
+    <div class="summary-grid" style="grid-template-columns:repeat(auto-fit,minmax(180px,1fr));">
+        <div class="summary-card primary">
+            <div class="summary-value"><%= stats.workerCount || 0 %></div>
+            <div class="summary-label">Skilled Workers</div>
+        </div>
+        <div class="summary-card success">
+            <div class="summary-value"><%= stats.bizCount || 0 %></div>
+            <div class="summary-label">Small Businesses</div>
+        </div>
+        <div class="summary-card primary">
+            <div class="summary-value"><%= stats.primeCount || 0 %></div>
+            <div class="summary-label">Prime Contractors</div>
+        </div>
+        <div class="summary-card success">
+            <div class="summary-value"><%= stats.oppsCount || 0 %></div>
+            <div class="summary-label">Open Opportunities</div>
+        </div>
+        <div class="summary-card primary">
+            <div class="summary-value"><%= stats.appsCount || 0 %></div>
+            <div class="summary-label">Submitted Applications</div>
+        </div>
+        <div class="summary-card success">
+            <div class="summary-value"><%= stats.connectionCount || 0 %></div>
+            <div class="summary-label">Total Connections</div>
+        </div>
+    </div>
+</section>
+
+<div class="recommendations-list" style="padding: var(--space-xl);">
+    <div class="section-header">
+        <h2>Data Export & Reporting</h2>
+        <a href="/admin/export/csv" class="btn btn-sm btn-primary">⬇️ Download Full CSV Report</a>
+    </div>
+    <p style="color:var(--color-text-secondary);">Export complete user registration, SAM.gov readiness, and NAICS classification data for compliance and utilization reporting.</p>
+</div>

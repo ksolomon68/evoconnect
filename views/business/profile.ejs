@@ -1,3 +1,4 @@
+<% if (locals.user) { locals.layout = 'layouts/dashboard'; } %>
 <% const title = locals.title || 'Edit Business Profile' %>
 <% const pct = locals.business?.profile_pct || 0 %>
 <% const pctColor = pct >= 100 ? '#10B981' : pct >= 50 ? '#00D2FF' : '#F59E0B' %>

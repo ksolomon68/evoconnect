@@ -16,7 +16,7 @@ dotenv.config({ path: path.join(__dirname, '../.env.production'), override: true
 const isLive = !!(process.env.PHUSION_PASSENGER || process.env.PASSENGER_NODE_CONTROL_REPO || process.env.NODE_ENV === 'production');
 
 const cfg = require('./agency.config');
-const { initDatabase } = require('./database');
+const { initDatabase, getDb } = require('./database');
 const { attachUser }   = require('./middleware/auth');
 
 const app  = express();
@@ -89,6 +89,19 @@ app.use((req, res, next) => {
     }
     res.locals.cfg     = cfg;
     res.locals.year    = new Date().getFullYear();
+
+    // Automatically use dashboard layout for logged-in portal sub-pages
+    if (req.user) {
+        const p = req.path;
+        const isPortalSubpage =
+            (p.startsWith('/labor/') && !p.startsWith('/labor/register')) ||
+            (p.startsWith('/business/') && !p.startsWith('/business/register') && !p.startsWith('/business/capability-statement')) ||
+            (p.startsWith('/prime/') && !p.startsWith('/prime/register')) ||
+            p.startsWith('/admin');
+        if (isPortalSubpage) {
+            res.locals.layout = 'layouts/dashboard';
+        }
+    }
     next();
 });
 
@@ -142,6 +155,41 @@ async function startServer() {
         app.use('/admin',    require('./routes/admin'));
         app.use('/api/cms',  require('./routes/cms'));
 
+        // Notifications API (cookie-aware + query fallback)
+        app.get('/api/notifications', async (req, res) => {
+            try {
+                const db = getDb();
+                const userId = req.user?.id || req.query.userId;
+                const userType = req.user?.type || req.query.userType || 'worker';
+                if (!userId) return res.json([]);
+                const [rows] = await db.execute(
+                    'SELECT * FROM notifications WHERE user_type = ? AND user_id = ? ORDER BY created_at DESC LIMIT 20',
+                    [userType, userId]
+                );
+                res.json(rows);
+            } catch (err) {
+                res.json([]);
+            }
+        });
+
+        app.post('/api/notifications/:id/read', async (req, res) => {
+            try {
+                const db = getDb();
+                await db.execute('UPDATE notifications SET is_read = 1 WHERE id = ?', [req.params.id]);
+                res.json({ success: true });
+            } catch (err) {
+                res.json({ success: false });
+            }
+        });
+
+        // Public Opportunities Board
+        const pf = require('./routes/portalFeatures');
+        app.get('/opportunities', (req, res) => {
+            const roleType = req.user?.type || 'worker';
+            const basePath = req.user?.type === 'business' ? '/business' : '/labor';
+            return pf.renderOpportunitiesSearch(req, res, roleType, basePath);
+        });
+
         // CMS admin SPA (file-based content management, JWT auth)
         app.get('/admin-cms', (req, res) => {
             res.sendFile(path.join(__dirname, '../admin-cms.html'));
@@ -160,8 +208,35 @@ async function startServer() {
             });
         });
 
-        // Contact page (kept for compatibility)
+        // Contact & Issue Reporting
         app.get('/contact', (req, res) => res.render('contact', { title: 'Contact' }));
+        app.post('/contact', async (req, res) => {
+            try {
+                const db = getDb();
+                const { name, email, subject, message, issue_type } = req.body;
+                await db.execute(
+                    'INSERT INTO site_issues (reporter_name, reporter_email, issue_type, page_url, description) VALUES (?,?,?,?,?)',
+                    [name || 'Visitor', email || '', issue_type || 'Contact Inquiry', subject || '/contact', message || '']
+                );
+                req.session.flash = { type: 'success', message: 'Thank you! Your message has been received by our team.' };
+            } catch (err) {
+                console.error('EvoConnect [/contact POST]:', err);
+            }
+            res.redirect('/contact');
+        });
+        app.post('/api/contact/submit', async (req, res) => {
+            try {
+                const db = getDb();
+                const { name, email, subject, message, issue_type, page_url } = req.body;
+                await db.execute(
+                    'INSERT INTO site_issues (reporter_name, reporter_email, issue_type, page_url, description) VALUES (?,?,?,?,?)',
+                    [name || 'Visitor', email || '', issue_type || 'Support', page_url || subject || '', message || '']
+                );
+                res.json({ success: true });
+            } catch (err) {
+                res.status(500).json({ success: false });
+            }
+        });
 
         // Legal information pages (canonical URLs + short aliases)
         app.get('/accessibility-statement', (req, res) => res.render('accessibility-statement', { title: 'Accessibility Statement', year: new Date().getFullYear() }));

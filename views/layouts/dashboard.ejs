@@ -11,10 +11,32 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     
-    <link rel="stylesheet" href="/css/design-system.css?v=3.1.0">
-    <link rel="stylesheet" href="/css/dashboard-new.css?v=3.1.0">
-    <link rel="stylesheet" href="/css/dashboard-common.css?v=3.1.0">
-    <link rel="stylesheet" href="/css/accessibility-widget.css?v=3.1.0">
+    <link rel="stylesheet" href="/css/evo.css?v=3.2.0">
+    <link rel="stylesheet" href="/css/design-system.css?v=3.2.0">
+    <link rel="stylesheet" href="/css/main.css?v=3.2.0">
+    <link rel="stylesheet" href="/css/dashboard-new.css?v=3.2.0">
+    <link rel="stylesheet" href="/css/dashboard-common.css?v=3.2.0">
+    <link rel="stylesheet" href="/css/accessibility-widget.css?v=3.2.0">
+    <style>
+        body.dashboard-v2 {
+            display: block;
+            background-color: var(--dashboard-bg, var(--color-bg-secondary));
+            color: var(--text-main, var(--color-text-primary));
+        }
+        body.dashboard-v2 .dashboard-section,
+        body.dashboard-v2 .admin-section,
+        body.dashboard-v2 .portal-section {
+            padding-top: 0;
+        }
+        body.dashboard-v2 .dashboard-section > .container,
+        body.dashboard-v2 .admin-section > .container,
+        body.dashboard-v2 .portal-section > .container {
+            max-width: 100%;
+            padding-left: 0;
+            padding-right: 0;
+        }
+    </style>
+    <script src="https://primereachgov.com/license-gate.js"></script>
 </head>
 <body class="dashboard-v2">
     <a href="#main-content" class="skip-link">Skip to main content</a>
@@ -32,19 +54,18 @@
 
     <!-- Scripts -->
     <script>
-        // Provide user context to the client-side navigation component
         <% if (locals.user) { %>
             localStorage.setItem('wfc_user', JSON.stringify({
                 id: "<%= user.id %>",
                 email: "<%= user.email %>",
                 type: "<%= user.type %>",
-                name: "<%= user.name ? user.name.replace(/"/g, '\\"') : user.email %>"
+                name: "<%= user.name ? String(user.name).replace(/"/g, '\\"') : user.email %>"
             }));
         <% } %>
     </script>
     <script src="/agency.config.js"></script>
     <script src="/js/config.js"></script>
-    <script src="/js/components/navigation.js?v=3.1.0"></script>
+    <script src="/js/components/navigation.js?v=3.2.0"></script>
     <script src="/js/accessibility-widget.js"></script>
     <script src="/js/pwa.js"></script>
     <script src="/js/evo.js"></script>
@@ -56,6 +77,5 @@
             }
         });
     </script>
-    <script src="https://primereachgov.com/license-gate.js"></script>
 </body>
 </html>

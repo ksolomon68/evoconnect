@@ -54,6 +54,27 @@
 
       </form>
 
+      <div class="auth-divider"><span>Quick Demo Logins</span></div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.5rem;margin-bottom:1.25rem;">
+        <button type="button" class="btn btn-outline btn-sm" onclick="fillDemoLogin('demo-labor@evoconnect.io','DemoPass1!')">👷 Labor Demo</button>
+        <button type="button" class="btn btn-outline btn-sm" onclick="fillDemoLogin('demo-business@evoconnect.io','DemoPass1!')">🏢 Business Demo</button>
+        <button type="button" class="btn btn-outline btn-sm" onclick="fillDemoLogin('demo-prime@evoconnect.io','DemoPass1!')">🏗️ Prime Demo</button>
+        <button type="button" class="btn btn-outline btn-sm" onclick="fillDemoLogin('demo-admin@evoconnect.io','DemoPass1!')">🛡️ Admin Demo</button>
+      </div>
+
+      <script>
+        function fillDemoLogin(email, pass) {
+          var e = document.getElementById('email');
+          var p = document.getElementById('password');
+          if (e && p) {
+            e.value = email;
+            p.value = pass;
+            e.form.submit();
+          }
+        }
+      </script>
+
       <div class="auth-divider"><span>Don't have an account?</span></div>
 
       <div class="auth-register-links">

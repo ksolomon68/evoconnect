@@ -1,3 +1,4 @@
+<% if (locals.user) { locals.layout = 'layouts/dashboard'; } %>
 <% const title = locals.title || 'Edit My Profile' %>
 <% const pct = locals.worker?.profile_pct || 0 %>
 <% const pctColor = pct >= 100 ? '#10B981' : pct >= 50 ? '#00D2FF' : '#F59E0B' %>

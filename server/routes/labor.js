@@ -820,4 +820,17 @@ function safeJson(val, fallback) {
     try { return JSON.parse(val); } catch { return fallback; }
 }
 
+
+const pf = require('./portalFeatures');
+
+router.get('/search', requireType('worker'), (req, res) => pf.renderOpportunitiesSearch(req, res, 'worker', '/labor'));
+router.get('/saved', requireType('worker'), (req, res) => pf.renderSavedOpportunities(req, res, 'worker', '/labor'));
+router.post('/saved/toggle', requireType('worker'), (req, res) => pf.toggleSavedOpportunity(req, res, 'worker', '/labor'));
+router.get('/applications', requireType('worker'), (req, res) => pf.renderApplicationsList(req, res, 'worker', '/labor'));
+router.post('/applications/apply', requireType('worker'), (req, res) => pf.submitApplication(req, res, 'worker', '/labor'));
+router.get('/messages', requireType('worker'), (req, res) => pf.renderMessages(req, res, 'worker', '/labor'));
+router.post('/messages/send', requireType('worker'), (req, res) => pf.sendMessage(req, res, 'worker', '/labor'));
+router.get('/settings', requireType('worker'), (req, res) => pf.renderSettings(req, res, '/labor'));
+router.post('/settings/password', requireType('worker'), (req, res) => pf.updatePassword(req, res, 'workers', '/labor'));
+
 module.exports = router;

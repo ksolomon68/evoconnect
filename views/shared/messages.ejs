@@ -1,0 +1,93 @@
+<% if (locals.user) { locals.layout = 'layouts/dashboard'; } %>
+<% const title = locals.title || 'Messages | EvoConnect' %>
+<% const basePath = locals.basePath || (locals.user?.type === 'business' ? '/business' : (locals.user?.type === 'prime' ? '/prime' : (locals.user?.type === 'admin' ? '/admin' : '/labor'))) %>
+<% const inbox = locals.inbox || [] %>
+<% const sent = locals.sent || [] %>
+<% const recipients = locals.recipients || [] %>
+
+<%- include('../partials/flash') %>
+
+<section class="hero-section">
+    <div class="hero-content hero-welcome">
+        <h1>💬 Messages & Communications</h1>
+        <p>Communicate directly with prime contractors, subcontractors, and platform support.</p>
+    </div>
+</section>
+
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:var(--space-xl);">
+
+    <!-- Compose Message -->
+    <div class="recommendations-list" style="padding: var(--space-xl);">
+        <div class="section-header">
+            <h2>✉️ Send New Message</h2>
+        </div>
+        <form method="POST" action="<%= basePath %>/messages/send">
+            <div class="form-group" style="margin-bottom:1rem;">
+                <label style="display:block;font-weight:600;margin-bottom:.35rem;font-size:.9rem;">Recipient *</label>
+                <select name="recipient_key" class="form-control" required>
+                    <option value="">Select recipient...</option>
+                    <% recipients.forEach(function(r) { %>
+                        <option value="<%= r.type %>:<%= r.id %>:<%= r.name %>"><%= r.label %></option>
+                    <% }) %>
+                </select>
+            </div>
+            <div class="form-group" style="margin-bottom:1rem;">
+                <label style="display:block;font-weight:600;margin-bottom:.35rem;font-size:.9rem;">Subject *</label>
+                <input type="text" name="subject" class="form-control" required placeholder="e.g. Subcontracting Inquiry / RFQ Follow-up">
+            </div>
+            <div class="form-group" style="margin-bottom:1rem;">
+                <label style="display:block;font-weight:600;margin-bottom:.35rem;font-size:.9rem;">Message *</label>
+                <textarea name="body" rows="4" class="form-control" required placeholder="Write your message here..."></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary">Send Message</button>
+        </form>
+    </div>
+
+    <!-- Inbox & Sent -->
+    <div class="recommendations-list" style="padding: var(--space-xl);">
+        <div class="section-header">
+            <h2>📥 Inbox (<%= inbox.length %>)</h2>
+        </div>
+        <% if (inbox.length > 0) { %>
+            <div style="display:grid;gap:0.75rem;margin-bottom:2rem;">
+                <% inbox.forEach(function(msg) { %>
+                <div style="padding:1rem;border:1px solid var(--border-color);border-radius:var(--border-radius-md);background:<%= msg.is_read ? '#fff' : '#f0f9ff' %>;">
+                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.35rem;">
+                        <strong><%= msg.subject || '(No Subject)' %></strong>
+                        <span style="font-size:0.8rem;color:var(--text-muted);"><%= new Date(msg.created_at).toLocaleDateString() %></span>
+                    </div>
+                    <div style="font-size:0.85rem;color:var(--color-primary);margin-bottom:0.5rem;">
+                        From: <%= msg.sender_name || msg.sender_type %>
+                    </div>
+                    <p style="margin:0;font-size:0.92rem;color:var(--color-text-secondary);white-space:pre-line;"><%= msg.body %></p>
+                </div>
+                <% }) %>
+            </div>
+        <% } else { %>
+            <p style="color:var(--text-muted);padding:1rem 0 2rem;">Your inbox is empty.</p>
+        <% } %>
+
+        <div class="section-header">
+            <h2>📤 Sent Messages (<%= sent.length %>)</h2>
+        </div>
+        <% if (sent.length > 0) { %>
+            <div style="display:grid;gap:0.75rem;">
+                <% sent.forEach(function(msg) { %>
+                <div style="padding:0.85rem;border:1px solid var(--border-color);border-radius:var(--border-radius-md);">
+                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.25rem;">
+                        <strong><%= msg.subject || '(No Subject)' %></strong>
+                        <span style="font-size:0.8rem;color:var(--text-muted);"><%= new Date(msg.created_at).toLocaleDateString() %></span>
+                    </div>
+                    <div style="font-size:0.82rem;color:var(--text-muted);margin-bottom:0.35rem;">
+                        To: <%= msg.receiver_name || msg.receiver_type %>
+                    </div>
+                    <p style="margin:0;font-size:0.88rem;color:var(--color-text-secondary);"><%= msg.body %></p>
+                </div>
+                <% }) %>
+            </div>
+        <% } else { %>
+            <p style="color:var(--text-muted);padding:0.5rem 0;">No sent messages yet.</p>
+        <% } %>
+    </div>
+
+</div>

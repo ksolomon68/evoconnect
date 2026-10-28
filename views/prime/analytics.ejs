@@ -1,0 +1,53 @@
+<%- locals.layout = 'layouts/dashboard'; %>
+<% const title = locals.title || 'Prime Analytics | EvoConnect' %>
+<% const stats = locals.stats || {} %>
+
+<%- include('../partials/flash') %>
+
+<section class="hero-section">
+    <div class="hero-content hero-welcome">
+        <h1>📊 Outreach & Subcontracting Analytics</h1>
+        <p>Track your small business utilization outreach, opportunity engagement, and connection acceptance rates.</p>
+    </div>
+</section>
+
+<section class="quick-stats">
+    <div class="summary-grid">
+        <div class="summary-card primary">
+            <div class="summary-value"><%= stats.oppsCount || 0 %></div>
+            <div class="summary-label">Posted Opportunities</div>
+        </div>
+        <div class="summary-card success">
+            <div class="summary-value"><%= stats.appsCount || 0 %></div>
+            <div class="summary-label">Received Applications</div>
+        </div>
+        <div class="summary-card primary">
+            <div class="summary-value"><%= stats.connectionsSent || 0 %></div>
+            <div class="summary-label">Connections Sent</div>
+        </div>
+        <div class="summary-card success">
+            <div class="summary-value"><%= stats.connectionsAccepted || 0 %></div>
+            <div class="summary-label">Accepted Connections</div>
+        </div>
+    </div>
+</section>
+
+<div class="recommendations-list" style="padding: var(--space-xl);">
+    <div class="section-header">
+        <h2>Subscription & Monthly Usage</h2>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1rem;">
+        <div style="padding:1rem;border:1px solid var(--border-color);border-radius:var(--border-radius-md);">
+            <div style="font-size:0.85rem;color:var(--text-muted);">Current Plan</div>
+            <div style="font-size:1.35rem;font-weight:700;text-transform:capitalize;color:var(--color-primary);"><%= stats.tier || 'Enterprise' %></div>
+        </div>
+        <div style="padding:1rem;border:1px solid var(--border-color);border-radius:var(--border-radius-md);">
+            <div style="font-size:0.85rem;color:var(--text-muted);">Monthly Directory Views Used</div>
+            <div style="font-size:1.35rem;font-weight:700;"><%= stats.viewsUsed || 0 %></div>
+        </div>
+        <div style="padding:1rem;border:1px solid var(--border-color);border-radius:var(--border-radius-md);">
+            <div style="font-size:0.85rem;color:var(--text-muted);">Monthly Connection Requests Used</div>
+            <div style="font-size:1.35rem;font-weight:700;"><%= stats.contactsUsed || 0 %></div>
+        </div>
+    </div>
+</div>

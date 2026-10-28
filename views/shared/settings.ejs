@@ -1,0 +1,58 @@
+<% if (locals.user) { locals.layout = 'layouts/dashboard'; } %>
+<% const title = locals.title || 'Account Settings | EvoConnect' %>
+<% const basePath = locals.basePath || (locals.user?.type === 'business' ? '/business' : (locals.user?.type === 'prime' ? '/prime' : '/labor')) %>
+
+<%- include('../partials/flash') %>
+
+<section class="hero-section">
+    <div class="hero-content hero-welcome">
+        <h1>⚙️ Account Settings</h1>
+        <p>Manage your password, security credentials, and notification preferences.</p>
+    </div>
+</section>
+
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:var(--space-xl);">
+
+    <!-- Change Password -->
+    <div class="recommendations-list" style="padding: var(--space-xl);">
+        <div class="section-header">
+            <h2>🔒 Change Password</h2>
+        </div>
+        <form method="POST" action="<%= basePath %>/settings/password">
+            <div class="form-group" style="margin-bottom:1rem;">
+                <label style="display:block;font-weight:600;margin-bottom:.35rem;font-size:.9rem;">Current Password *</label>
+                <input type="password" name="current_password" class="form-control" required autocomplete="current-password">
+            </div>
+            <div class="form-group" style="margin-bottom:1rem;">
+                <label style="display:block;font-weight:600;margin-bottom:.35rem;font-size:.9rem;">New Password (min 8 characters) *</label>
+                <input type="password" name="new_password" class="form-control" required minlength="8" autocomplete="new-password">
+            </div>
+            <div class="form-group" style="margin-bottom:1rem;">
+                <label style="display:block;font-weight:600;margin-bottom:.35rem;font-size:.9rem;">Confirm New Password *</label>
+                <input type="password" name="confirm_password" class="form-control" required minlength="8" autocomplete="new-password">
+            </div>
+            <button type="submit" class="btn btn-primary">Update Password</button>
+        </form>
+    </div>
+
+    <!-- Account Info & Preferences -->
+    <div class="recommendations-list" style="padding: var(--space-xl);">
+        <div class="section-header">
+            <h2>👤 Account Summary</h2>
+        </div>
+        <div style="display:grid;gap:0.75rem;margin-bottom:1.5rem;">
+            <div><strong>Account Name:</strong> <%= locals.user?.name || '—' %></div>
+            <div><strong>Email Address:</strong> <%= locals.user?.email || '—' %></div>
+            <div><strong>Portal Role:</strong> <span class="status-badge badge-consulting" style="text-transform:capitalize;margin:0;"><%= locals.user?.type || 'user' %></span></div>
+        </div>
+        <div style="border-top:1px solid var(--border-color);padding-top:1.25rem;">
+            <h3 style="font-size:1rem;margin:0 0 0.75rem;">Quick Links</h3>
+            <div style="display:flex;gap:0.5rem;flex-wrap:wrap;">
+                <a href="<%= basePath %>/profile" class="btn btn-sm btn-secondary">Edit Profile</a>
+                <a href="<%= basePath %>/messages" class="btn btn-sm btn-secondary">Messages</a>
+                <a href="/logout" class="btn btn-sm btn-outline">Sign Out</a>
+            </div>
+        </div>
+    </div>
+
+</div>

@@ -1,83 +1,105 @@
 /**
- * WorkForce Connect Navigation Component (Refactored)
- * Dynamically renders sidebars and headers based on user roles.
- * Updated for WCAG 2.1 AA (44x44px targets), secure session management, and Express routing.
+ * EvoConnect Navigation Component (Caltrans Parity)
+ * Dynamically renders sidebars, top headers, and notifications for all 4 portal roles:
+ * worker (Labor), business (Small Business), prime (Prime Contractor), and admin (Admin Console).
  */
 
 const Navigation = {
-    // Role configurations — keys must match Navigation.init() call values
     config: {
-        small_business: {
-            title: 'Small Business Portal',
+        worker: {
+            title: 'Labor Portal',
+            dashboardHref: '/labor/dashboard',
+            messagesHref: '/labor/messages',
             items: [
                 { label: 'Dashboard',             href: '/labor/dashboard',       icon: '🏠' },
                 { label: 'Search Opportunities',  href: '/labor/search',          icon: '🔍' },
                 { label: 'My Applications',       href: '/labor/applications',    icon: '📋' },
-                { label: 'Saved Items',           href: '/labor/saved',           icon: '⭐' },
+                { label: 'Saved Opportunities',   href: '/labor/saved',           icon: '⭐' },
+                { label: 'Connection Requests',   href: '/labor/connections',     icon: '🤝' },
                 { label: 'Messages',              href: '/labor/messages',        icon: '✉️' },
                 { label: 'My Profile',            href: '/labor/profile',         icon: '👤' },
-                { label: 'Checklist',             href: '/labor/checklist',       icon: '✅' },
-                { label: 'Settings',              href: '/labor/settings',        icon: '⚙️' },
+                { label: 'Readiness Checklist',   href: '/labor/checklist',       icon: '✅' },
                 { label: 'Resources',             href: '/labor/resources',       icon: '📚' },
+                { label: 'Settings',              href: '/labor/settings',        icon: '⚙️' },
                 { label: 'Help & FAQ',            href: '/labor/faq',             icon: '❓' }
             ]
         },
-        agency: {
-            title: 'Prime Contractor Portal',
+        business: {
+            title: 'Small Business Portal',
+            dashboardHref: '/business/dashboard',
+            messagesHref: '/business/messages',
             items: [
-                { label: 'Dashboard',               href: '/prime/dashboard',         icon: '🏠' },
-                { label: 'Post Opportunity',        href: '/prime/post-opportunity',  icon: '➕' },
-                { label: 'Manage Postings',         href: '/prime/opportunities',     icon: '📂' },
-                { label: 'View Applications',       href: '/prime/applications',      icon: '📝' },
-                { label: 'Search Small Businesses', href: '/prime/search',            icon: '🔍' },
-                { label: 'Messages',                href: '/prime/messages',          icon: '📬' },
-                { label: 'Analytics',               href: '/prime/analytics',         icon: '📈' },
-                { label: 'My Profile',              href: '/prime/profile',           icon: '👤' },
-                { label: 'Settings',                href: '/prime/settings',          icon: '⚙️' },
-                { label: 'Help & FAQ',              href: '/prime/faq',               icon: '❓' }
+                { label: 'Dashboard',             href: '/business/dashboard',            icon: '🏠' },
+                { label: 'Search Opportunities',  href: '/business/search',               icon: '🔍' },
+                { label: 'My Applications',       href: '/business/applications',         icon: '📋' },
+                { label: 'Saved Opportunities',   href: '/business/saved',                icon: '⭐' },
+                { label: 'Connection Requests',   href: '/business/connections',          icon: '🤝' },
+                { label: 'Messages',              href: '/business/messages',             icon: '✉️' },
+                { label: 'Capability Statement',  href: '/business/capability-statement', icon: '📄' },
+                { label: 'My Profile',            href: '/business/profile',              icon: '👤' },
+                { label: 'Readiness Checklist',   href: '/business/checklist',            icon: '✅' },
+                { label: 'Resources',             href: '/business/resources',            icon: '📚' },
+                { label: 'Settings',              href: '/business/settings',             icon: '⚙️' },
+                { label: 'Help & FAQ',            href: '/business/faq',                  icon: '❓' }
+            ]
+        },
+        prime: {
+            title: 'Prime Contractor Portal',
+            dashboardHref: '/prime/dashboard',
+            messagesHref: '/prime/messages',
+            items: [
+                { label: 'Dashboard',               href: '/prime/dashboard',          icon: '🏠' },
+                { label: 'Post Opportunity',        href: '/prime/post-opportunity',   icon: '➕' },
+                { label: 'Manage Postings',         href: '/prime/opportunities',      icon: '📂' },
+                { label: 'View Applications',       href: '/prime/applications',       icon: '📝' },
+                { label: 'Subcontractor RFQs',      href: '/prime/rfq',                icon: '📋' },
+                { label: 'Search Small Businesses', href: '/prime/search/businesses',  icon: '🏢' },
+                { label: 'Search Labor Directory',  href: '/prime/search/workers',     icon: '👷' },
+                { label: 'Connections',             href: '/prime/connections',        icon: '🤝' },
+                { label: 'Messages',                href: '/prime/messages',           icon: '📬' },
+                { label: 'Analytics',               href: '/prime/analytics',          icon: '📈' },
+                { label: 'My Profile',              href: '/prime/profile/edit',       icon: '👤' },
+                { label: 'Settings',                href: '/prime/settings',           icon: '⚙️' },
+                { label: 'Help & FAQ',              href: '/prime/faq',                icon: '❓' }
             ]
         },
         admin: {
             title: 'Admin Console',
+            dashboardHref: '/admin/dashboard',
+            messagesHref: '/admin/messages',
             items: [
-                { label: 'Dashboard',            href: '/admin/dashboard',        icon: '🏠' },
-                { label: 'User Management',      href: '/admin/users',            icon: '👥' },
-                { label: 'Opportunity Approval', href: '/admin/opportunities',    icon: '✅' },
-                { label: 'Analytics',            href: '/admin/analytics',        icon: '📊' },
-                { label: 'Content Management',   href: '/admin/cms',              icon: '🖊️' },
-                { label: 'Report Issue',         href: '/admin/issues',           icon: '🚨' },
-                { label: 'Admin Guide',          href: '/admin/tutorial',         icon: '📖' },
-                { label: 'Help & FAQ',           href: '/admin/faq',              icon: '❓' }
-            ]
-        },
-        staff: {
-            title: 'Caltrans Staff Portal',
-            items: [
-                { label: 'Overview',                href: '/admin/dashboard',         icon: '🏠' },
-                { label: 'Manage Opportunities',    href: '/admin/opportunities',     icon: '📂' },
-                { label: 'Search Small Businesses', href: '/admin/search',            icon: '🔍' },
-                { label: 'Analytics',               href: '/admin/analytics',         icon: '📈' },
-                { label: 'Support Services',        href: '/admin/support',           icon: '🎧' },
-                { label: 'Content Management',      href: '/admin/cms',               icon: '🖊️' },
-                { label: 'Resources',               href: '/admin/resources',         icon: '📚' },
-                { label: 'Report Issue',            href: '/admin/issues',            icon: '🚨' },
-                { label: 'CMS Guide',               href: '/admin/tutorial',          icon: '📖' },
-                { label: 'Help & FAQ',              href: '/admin/faq',               icon: '❓' }
+                { label: 'Dashboard',            href: '/admin/dashboard',      icon: '🏠' },
+                { label: 'User Management',      href: '/admin/users',          icon: '👥' },
+                { label: 'Prime Approvals',      href: '/admin/approvals',      icon: '🛡️' },
+                { label: 'Opportunity Manager',  href: '/admin/opportunities',  icon: '💼' },
+                { label: 'NAICS Codes',          href: '/admin/naics',          icon: '🏷️' },
+                { label: 'Resource Library',     href: '/admin/resources',      icon: '📚' },
+                { label: 'Announcements',        href: '/admin/announcements',  icon: '📢' },
+                { label: 'Analytics',            href: '/admin/analytics',      icon: '📊' },
+                { label: 'Messages',             href: '/admin/messages',       icon: '📬' },
+                { label: 'Content Management',   href: '/admin-cms',            icon: '🖊️' },
+                { label: 'Reported Issues',      href: '/admin/issues',         icon: '🚨' },
+                { label: 'Admin Guide',          href: '/admin/tutorial',       icon: '📘' },
+                { label: 'CMS Guide',            href: '/admin/cms-tutorial',   icon: '📝' }
             ]
         }
     },
 
-    // Map legacy DB role values to config keys
     _normalizeRole(role) {
         const map = {
-            'worker': 'small_business',
-            'vendor': 'small_business',
-            'prime': 'agency',
-            'prime_contractor': 'agency',
-            'wfc_admin': 'staff',
-            'admin': 'admin'
+            'worker': 'worker',
+            'labor': 'worker',
+            'business': 'business',
+            'small_business': 'business',
+            'vendor': 'business',
+            'prime': 'prime',
+            'prime_contractor': 'prime',
+            'agency': 'prime',
+            'admin': 'admin',
+            'wfc_admin': 'admin',
+            'staff': 'admin'
         };
-        return map[role] || role;
+        return map[role] || 'worker';
     },
 
     _isMobile() {
@@ -85,33 +107,38 @@ const Navigation = {
     },
 
     init(role) {
-        // Fallback to localStorage if no role provided
         if (!role) {
-            const user = JSON.parse(localStorage.getItem('wfc_user'));
-            role = user ? user.type : 'worker';
+            try {
+                const user = JSON.parse(localStorage.getItem('wfc_user'));
+                role = user ? user.type : 'worker';
+            } catch {
+                role = 'worker';
+            }
         }
 
         role = this._normalizeRole(role);
+        this._currentRole = role;
 
         this.renderSidebar(role);
         this.renderHeader(role);
         this.setupMobileToggle();
-        this.initNotifications();
-        
+        this.initNotifications(role);
+
         window._navInitialized = true;
     },
 
-    // Handle logout: clear local storage and redirect to backend logout route
     handleLogout() {
         localStorage.removeItem('wfc_user');
-        window.location.href = '/auth/logout';
+        localStorage.removeItem('caltrans_user');
+        localStorage.removeItem('caltrans_token');
+        window.location.href = '/logout';
     },
 
     renderSidebar(role) {
         const sidebar = document.getElementById('sidebar') || document.querySelector('.sidebar');
         if (!sidebar) return;
 
-        const config = this.config[role] || this.config['small_business'];
+        const config = this.config[role] || this.config['worker'];
         const currentPath = window.location.pathname;
 
         let html = `
@@ -125,14 +152,16 @@ const Navigation = {
         `;
 
         config.items.forEach(item => {
-            const isActive = currentPath.includes(item.href) ? 'active' : '';
+            const isExact = currentPath === item.href;
+            const isSub = item.href !== config.dashboardHref && currentPath.startsWith(item.href);
+            const isActive = (isExact || isSub) ? 'active' : '';
             const ariaCurrent = isActive ? 'aria-current="page"' : '';
             html += `
                 <a href="${item.href}" class="nav-item ${isActive}" ${ariaCurrent} style="
                     display: flex;
                     align-items: center;
                     gap: 0.75rem;
-                    padding: 0.875rem 1.5rem;
+                    padding: 0.75rem 1.5rem;
                     min-height: 44px;
                     color: var(--color-text-primary);
                     text-decoration: none;
@@ -141,7 +170,7 @@ const Navigation = {
                     font-weight: ${isActive ? '600' : '500'};
                     transition: all 0.2s ease;
                 ">
-                    <span aria-hidden="true" style="font-size: 1.25rem;">${item.icon}</span>
+                    <span aria-hidden="true" style="font-size: 1.2rem;">${item.icon}</span>
                     <span>${item.label}</span>
                 </a>
             `;
@@ -151,11 +180,11 @@ const Navigation = {
             </nav>
             <div class="sidebar-footer">
                 <a href="/" class="sidebar-footer-link" style="min-height: 44px; display: flex; align-items: center; gap: 0.75rem; text-decoration: none; color: var(--color-text-secondary);">
-                    <span style="font-size: 1.25rem;">🌐</span> Back to Public Site
+                    <span style="font-size: 1.2rem;">🌐</span> Back to Public Site
                 </a>
                 <button onclick="Navigation.handleLogout()"
                     class="sidebar-footer-link sidebar-signout-btn" style="min-height: 44px; display: flex; align-items: center; gap: 0.75rem; width: 100%; background: none; border: none; cursor: pointer; color: var(--color-text-secondary); text-align: left; padding: 0;">
-                    <span style="font-size: 1.25rem;">🚪</span> Sign Out
+                    <span style="font-size: 1.2rem;">🚪</span> Sign Out
                 </button>
             </div>
         `;
@@ -163,7 +192,6 @@ const Navigation = {
         sidebar.innerHTML = html;
         sidebar.className = 'sidebar';
 
-        // Close button inside sidebar (mobile only)
         const closeBtn = sidebar.querySelector('.sidebar-close-btn');
         if (closeBtn) {
             closeBtn.addEventListener('click', () => this.closeSidebar());
@@ -174,9 +202,12 @@ const Navigation = {
         const header = document.getElementById('header-top') || document.querySelector('.header-top');
         if (!header) return;
 
-        const user = JSON.parse(localStorage.getItem('wfc_user')) || { name: 'Portal User' };
+        let user = { name: 'Portal User' };
+        try {
+            user = JSON.parse(localStorage.getItem('wfc_user')) || user;
+        } catch {}
         const userName = user.business_name || user.organization_name || user.contact_name || user.name || 'User';
-        const config = this.config[role] || this.config['small_business'];
+        const config = this.config[role] || this.config['worker'];
 
         header.innerHTML = `
             <div style="display: flex; align-items: center; gap: 1rem;">
@@ -188,32 +219,34 @@ const Navigation = {
                     </svg>
                 </button>
                 <div class="header-logo" style="display: flex; align-items: center;">
-                    <a href="/labor/dashboard" style="text-decoration: none; display: flex; align-items: center; min-height: 44px;" aria-label="WorkForce Connect Dashboard">
-                        <img src="/images/caltrans-logo.png" alt="Caltrans logo" style="height: 32px; width: auto; display: block;" onerror="this.src='/images/favicon.png';">
+                    <a href="${config.dashboardHref}" style="text-decoration: none; display: flex; align-items: center; min-height: 44px;" aria-label="EvoConnect Dashboard">
+                        <img src="/images/logo.png" alt="EvoConnect logo" style="height: 32px; width: auto; display: block;" onerror="this.src='/images/favicon.png';">
                         <span style="font-weight: 700; color: var(--color-primary); font-size: 1.1rem; letter-spacing: -0.01em; margin-left: 0.5rem; border-left: 1px solid var(--color-border); padding-left: 0.5rem;">EvoConnect</span>
                     </a>
                 </div>
                 <span class="header-portal-title" aria-hidden="true" style="font-size: 0.85rem; color: var(--color-text-secondary); margin-left: 0.5rem; display: none;">${config.title}</span>
             </div>
             <div style="display: flex; align-items: center; gap: 1rem;">
-                
                 <!-- Notification Bell -->
                 <div class="notification-container" style="position: relative; margin-right: 10px;">
                     <button id="notification-bell" class="btn btn-outline btn-small" style="position: relative; border-radius: 50%; width: 44px; height: 44px; padding: 0; display: flex; align-items: center; justify-content: center; background: transparent; border: 1px solid var(--color-border);" aria-label="Notifications" aria-expanded="false" aria-controls="notification-dropdown" aria-haspopup="true">
                         <span aria-hidden="true" style="font-size: 1.2rem;">🔔</span>
-                        <span id="notification-badge" role="status" aria-live="polite" class="badge" style="position: absolute; top: -5px; right: -5px; background: var(--color-error); color: white; display: none; padding: 2px 6px; border-radius: 10px; font-size: 0.7rem; min-width: 18px; text-align: center;">0</span>
+                        <span id="notification-badge" role="status" aria-live="polite" class="badge" style="position: absolute; top: -5px; right: -5px; background: var(--color-error, #DC2626); color: white; display: none; padding: 2px 6px; border-radius: 10px; font-size: 0.7rem; min-width: 18px; text-align: center;">0</span>
                     </button>
-                    <div id="notification-dropdown" role="menu" aria-label="Notifications" class="notification-dropdown" style="display: none; position: absolute; top: 100%; right: 0; width: 300px; background: var(--card-bg, #fff); border: 1px solid var(--color-border, #ddd); border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); z-index: 1000; max-height: 400px; overflow-y: auto; margin-top: 8px;">
-                        <div style="padding: 10px; border-bottom: 1px solid var(--color-border, #ddd); font-weight: bold;">Notifications</div>
+                    <div id="notification-dropdown" role="menu" aria-label="Notifications" class="notification-dropdown" style="display: none; position: absolute; top: 100%; right: 0; width: 320px; background: var(--card-bg, #fff); border: 1px solid var(--color-border, #ddd); border-radius: 8px; box-shadow: 0 10px 25px rgba(0,0,0,0.12); z-index: 1000; max-height: 400px; overflow-y: auto; margin-top: 8px;">
+                        <div style="padding: 12px 14px; border-bottom: 1px solid var(--color-border, #ddd); font-weight: 700; display: flex; justify-content: space-between; align-items: center;">
+                            <span>Notifications</span>
+                            <a href="${config.messagesHref}" style="font-size: 0.8rem; color: var(--color-primary); text-decoration: none; font-weight: 600;">View Messages</a>
+                        </div>
                         <div id="notification-list" aria-live="polite" style="padding: 10px;">Loading...</div>
                     </div>
                 </div>
 
                 <div class="header-user-info" style="display: none;">
                     <div style="font-weight: 600; font-size: 0.9rem; color: var(--color-text-primary);">${userName}</div>
-                    <div style="font-size: 0.75rem; color: var(--color-text-secondary); text-transform: capitalize;">${config.title}</div>
+                    <div style="font-size: 0.75rem; color: var(--color-text-secondary);">${config.title}</div>
                 </div>
-                <div class="header-avatar" style="width: 44px; height: 44px; border-radius: 50%; background: var(--color-primary-light); color: var(--color-primary); display: flex; align-items: center; justify-content: center; font-weight: bold;">
+                <div class="header-avatar" style="width: 44px; height: 44px; border-radius: 50%; background: var(--color-primary-light, #E0F2FE); color: var(--color-primary, #0284C7); display: flex; align-items: center; justify-content: center; font-weight: bold;">
                     ${userName.charAt(0).toUpperCase()}
                 </div>
                 <button class="mobile-signout-btn" onclick="Navigation.handleLogout()" aria-label="Sign Out" title="Sign Out" style="width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; background: transparent; border: none; cursor: pointer; font-size: 1.25rem;">
@@ -222,7 +255,6 @@ const Navigation = {
             </div>
         `;
 
-        // Update display logic for tablet/desktop
         if (!this._isMobile()) {
             const portalTitle = header.querySelector('.header-portal-title');
             const userInfo = header.querySelector('.header-user-info');
@@ -264,7 +296,6 @@ const Navigation = {
             });
         }
 
-        // Esc key closes the sidebar and restores focus
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape') {
                 const sidebar = document.querySelector('.sidebar');
@@ -280,7 +311,6 @@ const Navigation = {
             }
         });
 
-        // Create overlay for closing sidebar when clicked outside
         if (!document.getElementById('sidebar-overlay')) {
             const overlay = document.createElement('div');
             overlay.id = 'sidebar-overlay';
@@ -291,10 +321,11 @@ const Navigation = {
         }
     },
 
-    initNotifications() {
-        const user = JSON.parse(localStorage.getItem('wfc_user'));
+    initNotifications(role) {
+        let user = null;
+        try { user = JSON.parse(localStorage.getItem('wfc_user')); } catch {}
         if (!user || !user.id) return;
-        
+
         const bell = document.getElementById('notification-bell');
         const dropdown = document.getElementById('notification-dropdown');
         if (!bell || !dropdown) return;
@@ -306,7 +337,6 @@ const Navigation = {
             bell.setAttribute('aria-expanded', isOpen ? 'false' : 'true');
         });
 
-        // Close when clicking outside
         document.addEventListener('click', (e) => {
             if (!bell.contains(e.target) && !dropdown.contains(e.target)) {
                 dropdown.style.display = 'none';
@@ -314,7 +344,6 @@ const Navigation = {
             }
         });
 
-        // Esc key closes dropdown
         dropdown.addEventListener('keydown', (e) => {
             if (e.key === 'Escape') {
                 dropdown.style.display = 'none';
@@ -323,42 +352,38 @@ const Navigation = {
             }
         });
 
-        // Start recursive polling
-        this.pollNotifications(user.id);
+        this.pollNotifications(user.id, role);
     },
 
-    pollNotifications(userId) {
-        this.fetchNotifications(userId).finally(() => {
+    pollNotifications(userId, role) {
+        this.fetchNotifications(userId, role).finally(() => {
             this._pollingTimeout = setTimeout(() => {
-                this.pollNotifications(userId);
-            }, 30000); // 30 seconds
+                this.pollNotifications(userId, role);
+            }, 30000);
         });
     },
 
-    async fetchNotifications(userId) {
+    async fetchNotifications(userId, role) {
         try {
-            const url = window.APP_CONFIG ? window.APP_CONFIG.API_URL : '';
-            // Make request without Authorization header initially since it uses session cookies
-            const res = await fetch(`${url}/api/notifications`, {
-                headers: { 
-                    'x-user-id': userId
-                }
+            const res = await fetch('/api/notifications', {
+                credentials: 'include',
+                headers: { 'x-user-id': userId }
             });
-            
+
             const list = document.getElementById('notification-list');
-            
+
             if (!res.ok) {
-                if (list && list.innerHTML.includes('Loading')) {
+                if (list) {
                     list.innerHTML = '<div style="color: var(--text-muted); text-align: center; padding: 10px;">No new notifications</div>';
                 }
                 return;
             }
-            
+
             const notifications = await res.json();
             const badge = document.getElementById('notification-badge');
-            
+
             if (badge) {
-                if (notifications.length > 0) {
+                if (Array.isArray(notifications) && notifications.length > 0) {
                     badge.textContent = notifications.length;
                     badge.style.display = 'block';
                 } else {
@@ -367,49 +392,44 @@ const Navigation = {
             }
 
             if (list) {
-                if (notifications.length === 0) {
+                if (!Array.isArray(notifications) || notifications.length === 0) {
                     list.innerHTML = '<div style="color: var(--text-muted); text-align: center; padding: 10px;">No new notifications</div>';
                 } else {
                     list.innerHTML = notifications.map(n => `
-                        <div class="notification-item" style="padding: 10px; border-bottom: 1px solid var(--color-border); cursor: pointer;" onclick="Navigation.markNotificationRead('${n.id}', '${n.message_id || ''}', '${userId}')">
-                            <div style="font-size: 0.8rem; color: var(--color-primary); font-weight: bold;">${n.message_type ? n.message_type.toUpperCase() : 'NEW MESSAGE'}</div>
-                            <div style="font-size: 0.9rem;">From: ${n.sender_business_name || 'System'}</div>
-                            <div style="font-size: 0.8rem; color: var(--color-text-secondary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${n.subject || 'No subject'}</div>
-                            <div style="font-size: 0.7rem; color: var(--color-text-muted); margin-top: 4px;">${new Date(n.created_at).toLocaleString()}</div>
+                        <div class="notification-item" style="padding: 10px; border-bottom: 1px solid var(--color-border, #eee); cursor: pointer;" onclick="Navigation.markNotificationRead('${n.id}', '${n.message_id || ''}')">
+                            <div style="font-size: 0.75rem; color: var(--color-primary); font-weight: 700;">${n.message_type ? n.message_type.toUpperCase() : 'NEW NOTIFICATION'}</div>
+                            <div style="font-size: 0.9rem; font-weight: 600;">From: ${n.sender_business_name || 'EvoConnect'}</div>
+                            <div style="font-size: 0.85rem; color: var(--color-text-secondary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${n.subject || 'Platform update'}</div>
+                            <div style="font-size: 0.7rem; color: var(--color-text-muted); margin-top: 4px;">${n.created_at ? new Date(n.created_at).toLocaleString() : ''}</div>
                         </div>
                     `).join('');
                 }
             }
         } catch (e) {
-            console.error('Failed to fetch notifications', e);
             const list = document.getElementById('notification-list');
-            if (list && list.textContent === 'Loading...') {
+            if (list) {
                 list.innerHTML = '<div style="color: var(--text-muted); text-align: center; padding: 10px;">No new notifications</div>';
             }
         }
     },
 
-    async markNotificationRead(id, messageId, userId) {
+    async markNotificationRead(id, messageId) {
+        const config = this.config[this._currentRole] || this.config['worker'];
         try {
-            const url = window.APP_CONFIG ? window.APP_CONFIG.API_URL : '';
-            await fetch(`${url}/api/notifications/${id}/read`, {
+            await fetch(`/api/notifications/${id}/read`, {
                 method: 'POST',
-                headers: { 
-                    'x-user-id': userId
-                }
+                credentials: 'include'
             });
-            // Map legacy message URL if applicable
-            window.location.href = `/labor/messages${messageId ? '?id=' + messageId : ''}`;
-        } catch (e) {
-            console.error(e);
-        }
+        } catch (e) {}
+        window.location.href = `${config.messagesHref}${messageId ? '?id=' + messageId : ''}`;
     }
 };
 
-// Global init trigger — fires if page doesn't call Navigation.init() explicitly
 document.addEventListener('DOMContentLoaded', () => {
-    const user = JSON.parse(localStorage.getItem('wfc_user'));
-    if (user && user.type && !window._navInitialized) {
-        Navigation.init(user.type);
-    }
+    try {
+        const user = JSON.parse(localStorage.getItem('wfc_user'));
+        if (user && user.type && !window._navInitialized) {
+            Navigation.init(user.type);
+        }
+    } catch {}
 });

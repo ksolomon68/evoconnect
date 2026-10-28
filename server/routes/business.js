@@ -279,7 +279,9 @@ router.get('/dashboard', requireType('business'), async (req, res) => {
             ORDER BY sort_order ASC LIMIT 4
         `);
 
+        const [[{ openOppsCount }]] = await db.execute("SELECT COUNT(*) AS openOppsCount FROM opportunities WHERE status='published'");
         res.render('business/dashboard', {
+            openOppsCount,
             title: 'My Dashboard | EvoConnect Business',
             flash: getFlash(req),
             business,
@@ -758,6 +760,28 @@ router.get('/connections', requireType('business'), async (req, res) => {
     } catch (err) {
         console.error('EvoConnect [business/connections GET]:', err);
         flash(req, 'error', 'Failed to load connections.');
+        res.redirect('/business/dashboard');
+    }
+});
+
+
+const pf = require('./portalFeatures');
+
+router.get('/search', requireType('business'), (req, res) => pf.renderOpportunitiesSearch(req, res, 'business', '/business'));
+router.get('/saved', requireType('business'), (req, res) => pf.renderSavedOpportunities(req, res, 'business', '/business'));
+router.post('/saved/toggle', requireType('business'), (req, res) => pf.toggleSavedOpportunity(req, res, 'business', '/business'));
+router.get('/applications', requireType('business'), (req, res) => pf.renderApplicationsList(req, res, 'business', '/business'));
+router.post('/applications/apply', requireType('business'), (req, res) => pf.submitApplication(req, res, 'business', '/business'));
+router.get('/messages', requireType('business'), (req, res) => pf.renderMessages(req, res, 'business', '/business'));
+router.post('/messages/send', requireType('business'), (req, res) => pf.sendMessage(req, res, 'business', '/business'));
+router.get('/settings', requireType('business'), (req, res) => pf.renderSettings(req, res, '/business'));
+router.post('/settings/password', requireType('business'), (req, res) => pf.updatePassword(req, res, 'businesses', '/business'));
+router.get('/resources', requireType('business'), async (req, res) => {
+    try {
+        const db = getDb();
+        const [resources] = await db.execute("SELECT * FROM resources WHERE audience IN ('all','business') AND status='active' ORDER BY sort_order ASC");
+        res.render('labor/resources', { title: 'Resources | EvoConnect Business', flash: getFlash(req), resources });
+    } catch (err) {
         res.redirect('/business/dashboard');
     }
 });

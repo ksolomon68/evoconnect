@@ -1,0 +1,73 @@
+<%- locals.layout = 'layouts/dashboard'; %>
+<% const title = locals.title || 'Manage Opportunities | EvoConnect Prime' %>
+<% const oppList = locals.opportunities || [] %>
+<% const candidates = locals.candidates || [] %>
+
+<%- include('../partials/flash') %>
+
+<section class="hero-section">
+    <div class="hero-content hero-welcome">
+        <h1>📋 Manage Opportunities</h1>
+        <p>Manage your posted contracting opportunities, invite businesses or workers to apply, and review submissions.</p>
+    </div>
+</section>
+
+<div style="display:flex;justify-content:flex-end;margin-bottom:var(--space-lg);gap:0.75rem;">
+    <a href="/prime/post-opportunity" class="btn btn-primary">➕ Post New Opportunity</a>
+    <a href="/prime/applications" class="btn btn-secondary">📥 Review Applications</a>
+</div>
+
+<div style="display:grid;gap:var(--space-lg);">
+    <% if (oppList.length > 0) { %>
+        <% oppList.forEach(function(opp) { %>
+        <div class="recommendations-list" style="padding: var(--space-xl);">
+            <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:1rem;margin-bottom:0.75rem;">
+                <div>
+                    <div style="display:flex;align-items:center;gap:0.5rem;flex-wrap:wrap;margin-bottom:0.35rem;">
+                        <span class="status-badge <%= opp.status === 'published' ? 'badge-consulting' : 'badge-construction' %>" style="text-transform:capitalize;margin:0;"><%= opp.status %></span>
+                        <span class="status-badge badge-consulting" style="margin:0;"><%= opp.category || 'Contracting' %></span>
+                        <% if (opp.project_ref) { %><code><%= opp.project_ref %></code><% } %>
+                    </div>
+                    <h3 style="margin:0;font-size:1.25rem;"><%= opp.title %></h3>
+                    <div style="color:var(--text-muted);font-size:0.9rem;margin-top:0.25rem;">
+                        📍 <%= opp.location || 'Regional' %> • Value: <strong><%= opp.estimated_value || 'TBD' %></strong>
+                        <% if (opp.due_date) { %> • Due: <%= new Date(opp.due_date).toLocaleDateString() %><% } %>
+                    </div>
+                </div>
+                <div style="display:flex;gap:0.5rem;flex-wrap:wrap;">
+                    <form method="POST" action="/prime/opportunities/<%= opp.id %>/status" style="display:inline;">
+                        <input type="hidden" name="status" value="<%= opp.status === 'published' ? 'closed' : 'published' %>">
+                        <button type="submit" class="btn btn-sm btn-secondary"><%= opp.status === 'published' ? 'Close Posting' : 'Re-open' %></button>
+                    </form>
+                    <button type="button" class="btn btn-sm btn-primary" onclick="document.getElementById('invite-box-<%= opp.id %>').style.display = document.getElementById('invite-box-<%= opp.id %>').style.display === 'none' ? 'block' : 'none'">
+                        ✉️ Invite to Apply
+                    </button>
+                    <form method="POST" action="/prime/opportunities/<%= opp.id %>/delete" style="display:inline;" onsubmit="return confirm('Delete this opportunity?');">
+                        <button type="submit" class="btn btn-sm btn-outline">Delete</button>
+                    </form>
+                </div>
+            </div>
+
+            <p style="color:var(--color-text-secondary);margin:0.5rem 0 0;"><%= opp.scope_summary %></p>
+
+            <!-- Invite Form -->
+            <div id="invite-box-<%= opp.id %>" style="display:none;margin-top:1rem;padding:1rem;background:var(--color-bg-secondary);border-radius:var(--border-radius-md);">
+                <form method="POST" action="/prime/opportunities/<%= opp.id %>/invite" style="display:flex;gap:0.75rem;flex-wrap:wrap;align-items:center;">
+                    <select name="target_key" class="form-control" required style="flex:1;min-width:220px;">
+                        <option value="">Select Business or Worker to Invite...</option>
+                        <% candidates.forEach(function(c) { %>
+                            <option value="<%= c.type %>:<%= c.id %>:<%= c.name %>"><%= c.label %></option>
+                        <% }) %>
+                    </select>
+                    <button type="submit" class="btn btn-sm btn-primary">Send Invitation</button>
+                </form>
+            </div>
+        </div>
+        <% }) %>
+    <% } else { %>
+        <div class="recommendations-list" style="padding: var(--space-2xl); text-align:center; color:var(--text-muted);">
+            <p style="margin-bottom:1rem;">You haven't posted any contracting opportunities yet.</p>
+            <a href="/prime/post-opportunity" class="btn btn-primary">Post Your First Opportunity</a>
+        </div>
+    <% } %>
+</div>
