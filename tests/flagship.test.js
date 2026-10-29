@@ -175,7 +175,7 @@ test('Caltrans-equivalent role pages and shared services render without broken d
     for(const [role,portal,paths] of [
         ['worker','labor',['dashboard','profile','checklist','connections','messages','settings','resources','faq','saved','applications']],
         ['business','business',['dashboard','profile','checklist','connections','messages','settings','resources','faq','saved','applications','capability-statement']],
-        ['prime','prime',['dashboard','profile/edit','connections','messages','settings','faq','rfq']],
+        ['prime','prime',['dashboard','profile/edit','connections','messages','settings','faq','post-rfq','opportunities']],
         ['admin','admin',['dashboard','users','approvals','naics','resources','announcements','issues','tutorial','cms-tutorial','messages','settings','post-opportunity','applications']]
     ])for(const page of paths){const result=await clients[role].page(`/${portal}/${page}`);assert.equal(result.res.status,200,`${role} ${page}\n${serverLog}`);}
     for(const url of ['/','/login','/register','/labor','/business','/prime','/forgot-password','/api/cms/global','/api/cms/pages'])assert.equal((await fetch(base+url)).status,200,`${url}\n${serverLog}`);
@@ -219,7 +219,7 @@ test('production starts with JWT_SECRET and all demo roles use isolated read-onl
             assert.match(await page.text(),/Demo preview/);
             const own=await fetch(url+`/${portal}/analytics`,{headers:{cookie},redirect:'manual'});assert.equal(own.status,200);
             const denied=await fetch(url+`/${portal}/documents/delete`,{method:'POST',headers:{cookie}});assert.equal(denied.status,403);
-            const pages=role==='admin'?['users','opportunities','applications','messages','resources']:role==='prime'?['opportunities','applications','search/businesses','messages','rfq','settings']:['profile','matches','applications','messages','settings','resources','faq'];
+            const pages=role==='admin'?['users','opportunities','applications','messages','resources']:role==='prime'?['opportunities','applications','search/businesses','messages','post-rfq','settings']:['profile','matches','applications','messages','settings','resources','faq'];
             for(const path of pages){const response=await fetch(url+`/${portal}/${path}`,{headers:{cookie},redirect:'manual'});assert.equal(response.status,200,`${role} ${path}: ${await response.clone().text()}`);}
             if(role==='admin') {
                 const users=await fetch(url+'/admin/users',{headers:{cookie}});assert.equal(users.status,200);
@@ -447,7 +447,7 @@ test('labor ↔ business ↔ prime connections support both directions, acceptan
 test('prime opportunities accept businesses and business jobs accept labor, with correct owner notifications and reviews',async()=>{
     const data={title:'Role prime opportunity',scope_summary:'Subcontracting scope for a small business',category:'Construction',district_name:'Texas',naics_codes:'237130',due_date:'2099-12-01',status:'published'};
     await clients.prime.page('/prime/documents');await clients.business.page('/business/documents');await clients.worker.page('/labor/documents');await clients.admin.page('/admin/documents');
-    assert.equal((await clients.prime.post('/prime/post-opportunity',data)).status,302);
+    assert.equal((await clients.prime.post('/prime/post-rfq',data)).status,302);
     const [[opp]]=await db.execute('SELECT * FROM opportunities WHERE title=? ORDER BY posted_date DESC LIMIT 1',[data.title]);assert.equal(opp.listing_type,'opportunity');assert.equal(opp.posted_by_type,'prime');
     assert.equal((await clients.admin.post(`/admin/opportunities/${opp.id}/status`,{status:'published'})).status,302);
     assert.equal((await clients.worker.post('/labor/applications/apply',{opportunity_id:opp.id,notes:'Wrong role'})).status,403);
@@ -481,4 +481,23 @@ test('prime opportunities accept businesses and business jobs accept labor, with
     const workerBoard=await clients.worker.page('/labor/search'),businessBoard=await clients.business.page('/business/search');assert.match(workerBoard.text,/Role business labor job/);assert.doesNotMatch(workerBoard.text,/Role prime opportunity/);assert.match(businessBoard.text,/Role prime opportunity/);assert.doesNotMatch(businessBoard.text,/Role business labor job/);
     assert.equal((await clients.business.post(`/business/jobs/${job.id}/status`,{status:'closed'})).status,302);
     assert.equal((await clients.worker.post('/labor/applications/apply',{opportunity_id:job.id,notes:'Too late'})).status,404);
+});
+
+
+test('RFQs use the shared posting workflow and retain legacy records exactly once',async()=>{
+    const editor=await clients.prime.page('/prime/post-rfq');
+    assert.equal(editor.res.status,200);assert.match(editor.text,/Request for Qualifications \(RFQ\)/);
+    assert.match(editor.text,/action="\/prime\/post-rfq"/);assert.doesNotMatch(editor.text,/Subcontractor RFQs/);
+    const legacy=await clients.prime.request('/prime/rfq');assert.equal(legacy.status,302);assert.equal(legacy.headers.get('location'),'/prime/opportunities');
+    const stale=await clients.prime.post('/prime/rfq',{title:'Stale form'});assert.equal(stale.status,303);assert.equal(stale.headers.get('location'),'/prime/post-rfq');
+    const [row]=await db.execute("INSERT INTO subcontractor_requests (prime_id,title,trade_service,location,timeline,description,status) VALUES (?,'Retained legacy RFQ','Electrical','Texas','Three months','Legacy qualifications request','open')",[clients.primeId]);
+    const id=`legacy-rfq-${row.insertId}`;
+    try {
+        const migrate=require('../server/services/ecosystem-schema');await migrate(db);
+        const [[copy]]=await db.execute('SELECT * FROM opportunities WHERE id=?',[id]);
+        assert.equal(copy.title,'Retained legacy RFQ');assert.equal(copy.posted_by,clients.primeId);assert.equal(copy.posted_by_type,'prime');assert.equal(copy.status,'draft');assert.equal(copy.listing_type,'opportunity');
+        await db.execute("UPDATE opportunities SET title='Reviewed RFQ' WHERE id=?",[id]);await migrate(db);
+        const [[retained]]=await db.execute('SELECT title FROM opportunities WHERE id=?',[id]);assert.equal(retained.title,'Reviewed RFQ');
+        assert.match((await clients.prime.page('/prime/opportunities')).text,/Reviewed RFQ/);
+    }finally{await db.execute('DELETE FROM opportunities WHERE id=?',[id]);await db.execute('DELETE FROM subcontractor_requests WHERE id=?',[row.insertId]);}
 });

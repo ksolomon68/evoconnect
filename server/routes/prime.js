@@ -302,7 +302,7 @@ router.get('/dashboard', requireType('prime'), async (req, res) => {
 
         // RFQs by this prime
         const [rfqs] = await db.execute(
-            `SELECT * FROM subcontractor_requests WHERE prime_id = ? ORDER BY created_at DESC`,
+            `SELECT id,title,category AS trade_service,district_name AS location,duration AS timeline,status FROM opportunities WHERE posted_by_type='prime' AND posted_by=? ORDER BY posted_date DESC`,
             [userId]
         );
 
@@ -516,76 +516,11 @@ router.get('/search/businesses', requireType('prime'), async (req, res) => {
 // ── POST /prime/connect ────────────────────────────────────────────────────────
 
 
-// ── GET /prime/rfq ─────────────────────────────────────────────────────────────
-router.get('/rfq', requireType('prime'), async (req, res) => {
-    try {
-        const db = getDb();
-        const userId = req.user.id;
-
-        const [pRows] = await db.execute('SELECT * FROM primes WHERE id = ?', [userId]);
-        if (!pRows.length) return res.redirect('/prime/dashboard');
-
-        const prime = decoratePrime(pRows[0]);
-        if (prime.subscription_tier !== 'enterprise') {
-            flash(req, 'error', 'The RFQ system is available to Enterprise subscribers only.');
-            return res.redirect('/prime/dashboard');
-        }
-
-        const [rfqs] = await db.execute(
-            `SELECT * FROM subcontractor_requests WHERE prime_id = ? ORDER BY created_at DESC`,
-            [userId]
-        );
-
-        res.render('prime/rfq', {
-            title: 'My RFQs | EvoConnect Prime',
-            flash: getFlash(req),
-            prime,
-            rfqs
-        });
-
-    } catch (err) {
-        console.error('EvoConnect [prime/rfq GET]:', err);
-        flash(req, 'error', 'Failed to load RFQs.');
-        res.redirect('/prime/dashboard');
-    }
-});
-
-// ── POST /prime/rfq ────────────────────────────────────────────────────────────
-router.post('/rfq', requireType('prime'), async (req, res) => {
-    try {
-        const db = getDb();
-        const userId = req.user.id;
-
-        const [pRows] = await db.execute('SELECT * FROM primes WHERE id = ?', [userId]);
-        if (!pRows.length) return res.redirect('/prime/dashboard');
-
-        const prime = decoratePrime(pRows[0]);
-        if (prime.subscription_tier !== 'enterprise') {
-            flash(req, 'error', 'The RFQ system is available to Enterprise subscribers only.');
-            return res.redirect('/prime/dashboard');
-        }
-
-        const { title, trade_service, location, timeline, contract_vehicle, description } = req.body;
-
-        if (!title || !description) {
-            flash(req, 'error', 'Title and description are required.');
-            return res.redirect('/prime/rfq');
-        }
-
-        await db.execute(`
-            INSERT INTO subcontractor_requests
-                (prime_id, title, trade_service, location, timeline, contract_vehicle, description, status)
-            VALUES (?,?,?,?,?,?,?,'open')
-        `, [userId, title, trade_service || null, location || null, timeline || null, contract_vehicle || null, description]);
-
-        flash(req, 'success', 'RFQ posted successfully.');
-        res.redirect('/prime/rfq');
-
-    } catch (err) {
-        console.error('EvoConnect [prime/rfq POST]:', err);
-        flash(req, 'error', 'Failed to post RFQ.');
-        res.redirect('/prime/rfq');
-    }
+// Legacy RFQ URLs now lead to the unified posting workflow.
+router.get('/rfq', requireType('prime'), (req,res)=>res.redirect('/prime/opportunities'));
+router.post(['/rfq','/rfq/post'], requireType('prime'), (req,res)=>{
+    flash(req, 'info', 'Please complete the Request for Qualifications form to submit your RFQ.');
+    res.redirect(303,'/prime/post-rfq');
 });
 
 // ── GET /prime/faq ─────────────────────────────────────────────────────────────
@@ -605,37 +540,6 @@ router.get('/login', (req, res) => res.redirect('/login'));
 // ── Search aliases ─────────────────────────────────────────────────────────────
 router.get('/search/labor',    requireType('prime'), (req, res) => res.redirect('/prime/search/workers' + (Object.keys(req.query).length ? '?' + new URLSearchParams(req.query).toString() : '')));
 router.get('/search/business', requireType('prime'), (req, res) => res.redirect('/prime/search/businesses' + (Object.keys(req.query).length ? '?' + new URLSearchParams(req.query).toString() : '')));
-
-// ── POST /prime/rfq/post alias ─────────────────────────────────────────────────
-router.post('/rfq/post', requireType('prime'), async (req, res) => {
-    try {
-        const db = getDb();
-        const userId = req.user.id;
-        const [pRows] = await db.execute('SELECT * FROM primes WHERE id = ?', [userId]);
-        if (!pRows.length) return res.redirect('/prime/dashboard');
-        const prime = decoratePrime(pRows[0]);
-        if (prime.subscription_tier !== 'enterprise') {
-            flash(req, 'error', 'The RFQ system is available to Enterprise subscribers only.');
-            return res.redirect('/prime/rfq');
-        }
-        const { title, trade_service, location, timeline, contract_vehicle, description } = req.body;
-        if (!title || !description) {
-            flash(req, 'error', 'Title and description are required.');
-            return res.redirect('/prime/rfq');
-        }
-        await db.execute(`
-            INSERT INTO subcontractor_requests
-                (prime_id, title, trade_service, location, timeline, contract_vehicle, description, status)
-            VALUES (?,?,?,?,?,?,?,'open')
-        `, [userId, title, trade_service || null, location || null, timeline || null, contract_vehicle || null, description]);
-        flash(req, 'success', 'RFQ posted successfully.');
-        res.redirect('/prime/rfq');
-    } catch (err) {
-        console.error('EvoConnect [prime/rfq/post]:', err);
-        flash(req, 'error', 'Failed to post RFQ.');
-        res.redirect('/prime/rfq');
-    }
-});
 
 // ── GET /prime/connections ──────────────────────────────────────────────────────
 
@@ -726,7 +630,7 @@ router.get('/opportunities', requireType('prime'), async (req, res) => {
 
         ];
         res.render('prime/opportunities', {
-            title: 'Manage Opportunities | EvoConnect Prime',
+            title: 'Manage RFQs | EvoConnect Prime',
             flash: getFlash(req),
             opportunities,
             candidates

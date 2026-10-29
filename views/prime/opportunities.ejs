@@ -1,5 +1,5 @@
 <% if (locals.user) { locals.layout = 'layouts/dashboard'; } %>
-<% const title = locals.title || 'Manage Opportunities | EvoConnect Prime' %>
+<% const title = locals.title || 'Manage RFQs | EvoConnect Prime' %>
 <% const oppList = locals.opportunities || [] %>
 <% const candidates = locals.candidates || [] %>
 
@@ -7,13 +7,13 @@
 
 <section class="hero-section">
     <div class="hero-content hero-welcome">
-        <h1>📋 Manage Opportunities</h1>
-        <p>Manage your posted contracting opportunities, invite small businesses to apply, and review submissions.</p>
+        <h1>📋 Manage RFQs</h1>
+        <p>Manage your posted requests for qualifications, invite small businesses to apply, and review submissions.</p>
     </div>
 </section>
 
 <div style="display:flex;justify-content:flex-end;margin-bottom:var(--space-lg);gap:0.75rem;">
-    <a href="/prime/post-opportunity" class="btn btn-primary">➕ Post New Opportunity</a>
+    <a href="/prime/post-rfq" class="btn btn-primary">➕ Post Request for Qualifications</a>
     <a href="/prime/applications" class="btn btn-secondary">📥 Review Applications</a>
 </div>
 
@@ -44,7 +44,7 @@
                     <button type="button" class="btn btn-sm btn-primary" onclick="document.getElementById('invite-box-<%= opp.id %>').style.display = document.getElementById('invite-box-<%= opp.id %>').style.display === 'none' ? 'block' : 'none'">
                         ✉️ Invite to Apply
                     </button>
-                    <form method="POST" action="/prime/opportunities/<%= opp.id %>/delete" style="display:inline;" onsubmit="return confirm('Archive this opportunity? Application history will be retained.');">
+                    <form method="POST" action="/prime/opportunities/<%= opp.id %>/delete" style="display:inline;" onsubmit="return confirm('Archive this RFQ? Application history will be retained.');">
                         <button type="submit" class="btn btn-sm btn-outline">Archive</button>
                     <input type="hidden" name="_csrf" value="<%= csrfToken %>"></form>
                 </div>
@@ -68,8 +68,8 @@
         <% }) %>
     <% } else { %>
         <div class="recommendations-list" style="padding: var(--space-2xl); text-align:center; color:var(--text-muted);">
-            <p style="margin-bottom:1rem;">You haven't posted any contracting opportunities yet.</p>
-            <a href="/prime/post-opportunity" class="btn btn-primary">Post Your First Opportunity</a>
+            <p style="margin-bottom:1rem;">You haven't posted any RFQs yet.</p>
+            <a href="/prime/post-rfq" class="btn btn-primary">Post Your First RFQ</a>
         </div>
     <% } %>
 </div>

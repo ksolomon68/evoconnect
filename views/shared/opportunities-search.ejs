@@ -95,7 +95,7 @@
                                                         <h3
                                                             style="margin:0;font-size:1.25rem;color:var(--color-text-primary);">
                                                             <%= opp.title %>
-                                                        </h3><a href="/opportunities/<%= encodeURIComponent(opp.id) %>">View full details &amp; contractor</a>
+                                                        </h3><% if(opp.listing_type!=='job' && opp.posted_by_type==='prime') { %><p>Request for Qualifications (RFQ)</p><% } %><a href="/opportunities/<%= encodeURIComponent(opp.id) %>">View full details &amp; contractor</a>
                                                         <div
                                                             style="color:var(--text-muted);font-size:0.9rem;margin-top:0.25rem;">
                                                             <strong>

@@ -57,10 +57,9 @@ const Navigation = {
             messagesHref: '/prime/messages',
             items: [
                 { label: 'Dashboard',               href: '/prime/dashboard',          icon: '🏠' },
-                { label: 'Post Opportunity',        href: '/prime/post-opportunity',   icon: '➕' },
-                { label: 'Manage Postings',         href: '/prime/opportunities',      icon: '📂' },
+                { label: 'Post RFQ',                href: '/prime/post-rfq',   icon: '➕' },
+                { label: 'Manage RFQs',             href: '/prime/opportunities',      icon: '📂' },
                 { label: 'View Applications',       href: '/prime/applications',       icon: '📝' },
-                { label: 'Subcontractor RFQs',      href: '/prime/rfq',                icon: '📋' },
                 { label: 'Search Small Businesses', href: '/prime/search/businesses',  icon: '🏢' },
                 { label: 'Connections',             href: '/prime/connections',        icon: '🤝' },
                 { label: 'Messages',                href: '/prime/messages',           icon: '📬' },

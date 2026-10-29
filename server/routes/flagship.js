@@ -141,13 +141,13 @@ router.get(['/opportunities/:id','/jobs/:id'], requireAuth, wrap(async (req,res)
 }));
 
 // One validated editor serves both admin and prime owners.
-router.get('/:portal(prime|admin)/post-opportunity', ...portalAuth, publisher, (req,res) => {
-    res.render('shared/opportunity-editor',{title:'Create Opportunity',basePath:`/${req.params.portal}`,opp:{},error:null});
+router.get(['/:portal(prime|admin)/post-opportunity','/:portal(prime)/post-rfq'], ...portalAuth, publisher, (req,res) => {
+    res.render('shared/opportunity-editor',{title:req.user.type==='prime'?'Request for Qualifications':'Create Opportunity',basePath:`/${req.params.portal}`,opp:{},error:null});
 });
 router.get('/:portal(prime|admin)/opportunities/:id/edit', ...portalAuth, publisher, wrap(async (req,res) => {
     const opp=await opportunity(req);if(!opp || !managed(req,opp)) return notFound(res);
     const [attachments]=await getDb().execute('SELECT id,original_name,size_bytes FROM opportunity_attachments WHERE opportunity_id=?',[opp.id]);
-    res.render('shared/opportunity-editor',{title:'Edit Opportunity',basePath:`/${req.params.portal}`,opp,attachments,error:null});
+    res.render('shared/opportunity-editor',{title:req.user.type==='prime'?'Edit RFQ':'Edit Opportunity',basePath:`/${req.params.portal}`,opp,attachments,error:null});
 }));
 const validateOpportunity=require('../services/listing-validation');
 async function saveOpportunity(req,res) {
@@ -164,9 +164,9 @@ async function saveOpportunity(req,res) {
     else await db.execute(`INSERT INTO opportunities (id, ${keys.join(',')}, category_name, description, posted_by, posted_by_type, posted_by_name) VALUES (${Array(keys.length+6).fill('?').join(',')})`,[id,...Object.values(data),data.category,data.scope_summary,req.user.id,req.user.type,req.account.company_name || req.account.name || 'EvoConnect Admin']);
     if(existing) await lifecycle.statusChanged(db,existing,data.status,req.user);
     if(data.status === 'pending' && existing?.status !== 'pending')await lifecycle.submittedForReview(db,{id,title:data.title},req.user);
-    flash(req, existing ? 'Opportunity updated.' : 'Opportunity created.');res.redirect(`/${req.params.portal}/opportunities`);
+    flash(req, req.user.type==='prime' ? (existing?'RFQ updated.':'RFQ created.') : (existing?'Opportunity updated.':'Opportunity created.'));res.redirect(`/${req.params.portal}/opportunities`);
 }
-router.post('/:portal(prime|admin)/post-opportunity', ...portalAuth, publisher, csrf, wrap(saveOpportunity));
+router.post(['/:portal(prime|admin)/post-opportunity','/:portal(prime)/post-rfq'], ...portalAuth, publisher, csrf, wrap(saveOpportunity));
 router.post('/:portal(prime|admin)/opportunities/:id/edit', ...portalAuth, publisher, csrf, wrap(saveOpportunity));
 router.post('/:portal(prime|admin)/opportunities/:id/:action(status|delete)', ...portalAuth, publisher, csrf, wrap(async(req,res)=>{
     const opp=await opportunity(req);if(!opp || !managed(req,opp))return notFound(res);

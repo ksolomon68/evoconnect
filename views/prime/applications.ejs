@@ -14,7 +14,7 @@
 <div class="recommendations-list" style="padding: var(--space-xl);">
     <div class="section-header">
         <h2>Received Applications (<%= appList.length %>)</h2>
-        <a href="<%= locals.basePath || '/prime' %>/<%= user.type==='business'?'jobs':'opportunities' %>" class="btn btn-sm btn-secondary"><%= user.type==='business'?'Manage Jobs':'Manage Opportunities' %></a>
+        <a href="<%= locals.basePath || '/prime' %>/<%= user.type==='business'?'jobs':'opportunities' %>" class="btn btn-sm btn-secondary"><%= user.type==='business'?'Manage Jobs':'Manage RFQs' %></a>
     </div>
 
     <% if (appList.length > 0) { %>

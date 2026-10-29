@@ -33,7 +33,7 @@
         <a href="/logout" class="btn btn-sm btn-ghost">Log Out</a>
       <% } else if (locals.user.type === 'prime') { %>
         <a href="/prime/dashboard" class="<%= locals.activePage === 'dashboard' ? 'active' : '' %>">Dashboard</a>
-        <a href="/prime/post-opportunity">Post Opportunity</a>
+        <a href="/prime/post-rfq">Post RFQ</a>
         <a href="/prime/opportunities">Manage Postings</a>
         <a href="/prime/search/businesses" class="<%= locals.activePage === 'search-businesses' ? 'active' : '' %>">Businesses</a>
         <a href="/prime/messages">Messages</a>

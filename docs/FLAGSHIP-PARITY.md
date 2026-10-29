@@ -123,3 +123,9 @@ Demo tables receive the new listing column and role-connection schema, fictional
 Validation includes the full role-pair permission matrix, request/accept/decline/withdraw ownership, messaging before and after acceptance, recipient identity checks, both posting/application paths, duplicate prevention, wrong-role rejections and same-role cross-owner rejections. Browser checks also exercised job posting → labor application → business review and labor connection request → business acceptance → message delivery.
 
 Untrusted message subjects are escaped before appearing in the notification dropdown; a browser check verified that HTML in a message subject is displayed as text rather than executed.
+
+### Unified prime RFQs
+
+Prime posting is presented as Request for Qualifications (RFQ), using the existing shared listing, business application, review, NAICS matching, attachment, notification, and analytics services. `/prime/post-rfq` creates an RFQ; `/prime/opportunities` manages RFQs. Existing opportunity URLs remain supported. `/prime/rfq` redirects to the unified manager, and stale legacy form submissions redirect to the new form rather than creating disconnected records.
+
+Old `subcontractor_requests` records are copied once into the shared listings using stable `legacy-rfq-<id>` identifiers. Closed records remain closed; others start as drafts for owner review and the normal publication approval process. The original records remain intact, and subsequent startups preserve edits to the migrated copies.

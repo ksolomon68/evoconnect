@@ -16,7 +16,7 @@ const acceptedConns = connList.filter(c => c.status === 'accepted').length;
 <section class="hero-section">
     <div class="hero-content hero-welcome">
         <h1>🏢 Prime Contractor Dashboard</h1>
-        <p>Welcome, <%= prime.company_name || prime.contact_name || 'Prime Partner' %>! Manage opportunities, track small business engagement, and monitor performance.</p>
+        <p>Welcome, <%= prime.company_name || prime.contact_name || 'Prime Partner' %>! Manage RFQs, track small business engagement, and monitor performance.</p>
     </div>
 </section>
 
@@ -33,7 +33,7 @@ const acceptedConns = connList.filter(c => c.status === 'accepted').length;
         <% if (pendingApps > 0) { %>
             You have <strong><%= pendingApps %> pending connection/application<%= pendingApps > 1 ? 's' : '' %></strong> waiting for review.
         <% } else { %>
-            Get started by <a href="/prime/post-opportunity" style="color:var(--color-primary);font-weight:700;">posting a contracting opportunity</a> or searching the directory.
+            Get started by <a href="/prime/post-rfq" style="color:var(--color-primary);font-weight:700;">posting a Request for Qualifications</a> or searching the directory.
         <% } %>
     </div>
     <button onclick="this.parentElement.style.display='none'" style="background:none;border:none;cursor:pointer;color:var(--text-muted);font-size:1.2rem;padding:0 0.25rem;" aria-label="Dismiss">&times;</button>
@@ -49,7 +49,7 @@ const acceptedConns = connList.filter(c => c.status === 'accepted').length;
     <div class="summary-grid">
         <div class="summary-card primary">
             <div class="summary-value"><%= oppsCount %></div>
-            <div class="summary-label">My Active Postings</div>
+            <div class="summary-label">My RFQs</div>
         </div>
         <div class="summary-card success">
             <div class="summary-value"><%= totalSubcontractors %></div>
@@ -72,14 +72,14 @@ const acceptedConns = connList.filter(c => c.status === 'accepted').length;
         <h2>🚀 Quick Actions</h2>
     </div>
     <div class="action-grid">
-        <a href="/prime/post-opportunity" class="action-card">
+        <a href="/prime/post-rfq" class="action-card">
             <div class="icon-box" style="background:var(--color-bg-secondary);">📝</div>
-            <h3>Post New Opportunity</h3>
-            <p>Create and publish contracting opportunities for small businesses and subcontractors.</p>
+            <h3>Post Request for Qualifications</h3>
+            <p>Request qualifications for small businesses and subcontractors.</p>
         </a>
         <a href="/prime/opportunities" class="action-card">
             <div class="icon-box" style="background:var(--color-bg-secondary);">📋</div>
-            <h3>Manage Opportunities</h3>
+            <h3>Manage RFQs</h3>
             <p>Review applications, update status, and manage active postings.</p>
         </a>
         <a href="/prime/applications" class="action-card">
@@ -144,8 +144,8 @@ const acceptedConns = connList.filter(c => c.status === 'accepted').length;
     <!-- My RFQs -->
     <div class="dash-card dash-wide">
         <div class="dash-card-header">
-            <h2>Subcontractor RFQs</h2>
-            <a href="/prime/rfq" class="btn-sm btn-primary">Manage RFQs</a>
+            <h2>Requests for Qualifications</h2>
+            <a href="/prime/opportunities" class="btn-sm btn-primary">Manage RFQs</a>
         </div>
         <% if (rfqList.length > 0) { %>
             <table class="data-table">
@@ -172,7 +172,7 @@ const acceptedConns = connList.filter(c => c.status === 'accepted').length;
             </table>
         <% } else { %>
             <div class="empty-state">
-                <p>No RFQs posted yet. <a href="/prime/post-opportunity">Post a contracting opportunity</a> or <a href="/prime/rfq">create a direct RFQ</a>.</p>
+                <p>No RFQs posted yet. <a href="/prime/post-rfq">Post a Request for Qualifications</a>.</p>
             </div>
         <% } %>
     </div>
