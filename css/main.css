@@ -480,6 +480,14 @@ body {
     color: var(--color-primary-dark);
 }
 
+/* Marketing-page section headers (label/title/subtitle) must stack, even
+   though dashboard-new.css's bare .section-header is a flex row for panel
+   titles. This file loads after it on every layout, so this wins and
+   fixes every "How It Works" / "Benefits" / pathway-style header at once. */
+.section-header.text-center {
+    display: block;
+}
+
 /* Pathway Cards (Home Page) */
 .pathway-cards {
     display: grid;
@@ -545,16 +553,6 @@ body {
     width: 100%;
     height: 100%;
     object-fit: cover;
-}
-
-.pathway-icon-emoji {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 100%;
-    height: 100%;
-    font-size: 3rem;
-    background: var(--color-bg-secondary);
 }
 
 .pathway-title {
