@@ -127,8 +127,11 @@ const navCfg = NAV_CONFIG[currentRole] || NAV_CONFIG.worker;
     <aside class="sidebar" id="sidebar">
         <div class="sidebar-brand">
             <a href="<%= navCfg.dashboardHref %>" class="sidebar-brand-link">
-                <img src="/images/favicon.png" alt="EVOConnect">
-                <span>EVOConnect</span>
+                <img src="/images/favicon.png" alt="">
+                <span class="sidebar-brand-text">
+                    <span class="sidebar-brand-name">EVOConnect</span>
+                    <span class="sidebar-brand-tagline">by EVOBRAND Concepts</span>
+                </span>
             </a>
             <button class="sidebar-close-btn" aria-label="Close menu" onclick="Navigation.closeSidebar()">&times;</button>
         </div>
