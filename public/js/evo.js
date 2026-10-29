@@ -1,7 +1,161 @@
-/* EVOConnect — Client-side JS */
+/* EVOConnect — Client-side JS & GSAP Executive Motion Engine */
 
 (function() {
   'use strict';
+
+  // ── Sticky Header Scroll State ─────────────────────────────────
+  const siteHeader = document.querySelector('.site-header');
+  if (siteHeader) {
+    const onScroll = () => {
+      siteHeader.classList.toggle('is-scrolled', window.scrollY > 18);
+    };
+    window.addEventListener('scroll', onScroll, { passive: true });
+    onScroll();
+  }
+
+  // ── Mouse-Tracking Spotlight Glow on Cards ─────────────────────
+  document.querySelectorAll('.spotlight-card').forEach(card => {
+    card.addEventListener('mousemove', (e) => {
+      const rect = card.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+      card.style.setProperty('--mouse-x', `${x}px`);
+      card.style.setProperty('--mouse-y', `${y}px`);
+    });
+  });
+
+  // ── GSAP & ScrollTrigger Executive Animations ──────────────────
+  const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (!prefersReducedMotion && typeof window.gsap !== 'undefined') {
+    const gsap = window.gsap;
+    if (typeof window.ScrollTrigger !== 'undefined') {
+      gsap.registerPlugin(window.ScrollTrigger);
+    }
+
+    // 1. Hero Entrance Timeline
+    const heroSection = document.querySelector('.wfc-hero');
+    if (heroSection) {
+      const heroTl = gsap.timeline({ defaults: { ease: 'power3.out' } });
+      const eyebrow = heroSection.querySelector('[data-gsap="hero-eyebrow"]');
+      const title   = heroSection.querySelector('[data-gsap="hero-title"]');
+      const lead    = heroSection.querySelector('[data-gsap="hero-lead"]');
+      const cta     = heroSection.querySelector('[data-gsap="hero-cta"]');
+      const stats   = heroSection.querySelector('[data-gsap="hero-stats"]');
+      const consoleCard = heroSection.querySelector('[data-gsap="hero-console"]');
+      const telemetryRows = heroSection.querySelectorAll('[data-gsap="telemetry-row"]');
+
+      if (eyebrow) heroTl.from(eyebrow, { y: 18, opacity: 0, duration: 0.55 });
+      if (title)   heroTl.from(title,   { y: 26, opacity: 0, duration: 0.7 }, '-=0.35');
+      if (lead)    heroTl.from(lead,    { y: 20, opacity: 0, duration: 0.65 }, '-=0.45');
+      if (cta)     heroTl.from(cta,     { y: 18, opacity: 0, duration: 0.55 }, '-=0.4');
+      if (stats)   heroTl.from(stats.children, { y: 14, opacity: 0, duration: 0.5, stagger: 0.08 }, '-=0.35');
+      if (consoleCard) {
+        heroTl.from(consoleCard, { x: 32, y: 16, opacity: 0, scale: 0.97, duration: 0.85 }, '-=0.85');
+      }
+      if (telemetryRows.length) {
+        heroTl.from(telemetryRows, { x: 18, opacity: 0, duration: 0.5, stagger: 0.12 }, '-=0.5');
+      }
+    }
+
+    // 2. Animated Stat Counters
+    document.querySelectorAll('[data-count-to]').forEach(el => {
+      const target = parseInt(el.getAttribute('data-count-to'), 10);
+      const suffix = el.getAttribute('data-count-suffix') || '';
+      if (isNaN(target)) return;
+      const counter = { val: 0 };
+      gsap.to(counter, {
+        val: target,
+        duration: 1.6,
+        ease: 'power2.out',
+        scrollTrigger: window.ScrollTrigger ? {
+          trigger: el,
+          start: 'top 90%',
+          once: true
+        } : undefined,
+        onUpdate: () => {
+          el.textContent = Math.round(counter.val) + suffix;
+        }
+      });
+    });
+
+    // 3. ScrollTrigger Section Headers & Staggered Grids
+    if (typeof window.ScrollTrigger !== 'undefined') {
+      gsap.utils.toArray('[data-gsap="section-header"]').forEach(header => {
+        gsap.from(header.children, {
+          y: 24,
+          opacity: 0,
+          duration: 0.65,
+          stagger: 0.1,
+          ease: 'power3.out',
+          scrollTrigger: {
+            trigger: header,
+            start: 'top 86%',
+            once: true
+          }
+        });
+      });
+
+      const batchGroups = [
+        { selector: '[data-gsap="pathway-card"]', stagger: 0.12, y: 32 },
+        { selector: '[data-gsap="hiw-step"]',     stagger: 0.1,  y: 28 },
+        { selector: '[data-gsap="trade-card"]',   stagger: 0.05, y: 20 },
+        { selector: '[data-gsap="benefit-card"]', stagger: 0.1,  y: 28 },
+        { selector: '[data-gsap="cert-card"]',    stagger: 0.08, y: 24 },
+        { selector: '[data-gsap="pricing-card"]', stagger: 0.12, y: 30 },
+        { selector: '[data-gsap="faq-item"]',     stagger: 0.06, y: 18 }
+      ];
+
+      batchGroups.forEach(group => {
+        const items = gsap.utils.toArray(group.selector);
+        if (!items.length) return;
+        window.ScrollTrigger.batch(items, {
+          start: 'top 88%',
+          once: true,
+          onEnter: batch => {
+            gsap.from(batch, {
+              y: group.y,
+              opacity: 0,
+              duration: 0.65,
+              stagger: group.stagger,
+              ease: 'power3.out',
+              overwrite: true
+            });
+          }
+        });
+      });
+
+      // Checklist & Banner Reveals
+      ['[data-gsap="mandate-banner"]', '[data-gsap="checklist-left"]', '[data-gsap="checklist-right"]', '[data-gsap="cta-banner"]', '[data-gsap="auth-card"]'].forEach(sel => {
+        gsap.utils.toArray(sel).forEach(el => {
+          gsap.from(el, {
+            y: 28,
+            opacity: 0,
+            duration: 0.75,
+            ease: 'power3.out',
+            scrollTrigger: {
+              trigger: el,
+              start: 'top 88%',
+              once: true
+            }
+          });
+        });
+      });
+
+      // Subtle Ambient Orb Parallax
+      gsap.utils.toArray('.shape-1, .shape-2').forEach((orb, idx) => {
+        gsap.to(orb, {
+          yPercent: idx % 2 === 0 ? 18 : -18,
+          ease: 'none',
+          scrollTrigger: {
+            trigger: orb.parentElement || document.body,
+            start: 'top bottom',
+            end: 'bottom top',
+            scrub: true
+          }
+        });
+      });
+    }
+  }
 
   // ── Hamburger nav ──────────────────────────────────────────────
   const hamburger = document.querySelector('.hamburger');
@@ -254,7 +408,7 @@
         const data = res.headers.get('content-type')?.includes('application/json') ? await res.json() : {success:res.ok};
         if (data.success) {
           const card = btn.closest('.connection-card, .connection-item, .recommendation-item');
-          if(card) card.innerHTML = `<p class="text-muted text-sm">${action === 'accept' ? '✅ Connection accepted.' : '❌ Connection declined.'}</p>`;
+          if(card) card.innerHTML = `<p class="text-muted text-sm">${action === 'accept' ? '✓ Connection accepted.' : '× Connection declined.'}</p>`;
         }
       } catch {
         btn.disabled = false;
@@ -316,7 +470,7 @@
 
   // ── Password show/hide toggle ────────────────────────────────────
   document.querySelectorAll('.toggle-password').forEach(btn => {
-    const input = btn.closest('.input-with-toggle')?.querySelector('input');
+    const input = btn.closest('.input-with-toggle')?.querySelector('input') || btn.parentNode.querySelector('input');
     if (!input) return;
     btn.setAttribute('aria-pressed', 'false');
     btn.addEventListener('click', () => {
@@ -324,6 +478,7 @@
       input.type = shown ? 'password' : 'text';
       btn.setAttribute('aria-pressed', String(!shown));
       btn.setAttribute('aria-label', shown ? 'Show password' : 'Hide password');
+      btn.innerHTML = shown ? '&#128065;' : '&#128064;';
     });
   });
 
@@ -332,7 +487,7 @@
   const pwd        = document.getElementById('password');
   if (confirmPwd && pwd) {
     function checkMatch() {
-      const err = document.getElementById('confirm_password-error');
+      const err = document.getElementById('confirm_password-error') || document.getElementById('confirm-password-error');
       if (confirmPwd.value && confirmPwd.value !== pwd.value) {
         confirmPwd.classList.add('error');
         if (err) err.textContent = 'Passwords do not match.';
@@ -365,18 +520,6 @@
   document.querySelectorAll('[data-confirm]').forEach(btn => {
     btn.addEventListener('click', (e) => {
       if (!confirm(btn.dataset.confirm)) e.preventDefault();
-    });
-  });
-
-  // ── Password visibility toggle ─────────────────────────────────
-  document.querySelectorAll('.toggle-password').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const input = btn.parentNode.querySelector('input');
-      if (input) {
-        const isPwd = input.type === 'password';
-        input.type = isPwd ? 'text' : 'password';
-        btn.innerHTML = isPwd ? '&#128064;' : '&#128065;'; // 👀 or 👁
-      }
     });
   });
 

@@ -1,14 +1,36 @@
 <% const title = locals.title || 'Labor Portal' %>
 
-<!-- Hero -->
-<section class="wfc-hero">
+<!-- Executive Hero -->
+<section class="wfc-hero evo-role-hero">
+  <div class="evo-grid-backdrop" aria-hidden="true"></div>
+  <div class="shape shape-1" aria-hidden="true"></div>
+  <div class="shape shape-2" aria-hidden="true"></div>
   <div class="wfc-hero-inner">
-    <span class="wfc-eyebrow">Labor Portal</span>
-    <h1>Your Trade Is<br>Government Contract Ready.</h1>
-    <p>EVOConnect matches skilled tradespeople with small businesses working on government-funded projects. Build your profile, get vendor-ready, and get paid for what you know.</p>
-    <div class="wfc-hero-cta">
-      <a href="/labor/register" class="btn-primary">Register Free</a>
-      <a href="/login" class="btn-secondary-outline">Already a Member? Log In</a>
+    <div class="wfc-eyebrow" data-gsap="hero-eyebrow">
+      <span class="eyebrow-dot" aria-hidden="true"></span>
+      <span>DIVISION 01 // SKILLED LABOR &amp; FIELD OPERATORS</span>
+    </div>
+    <h1 data-gsap="hero-title">Your Trade Credentials Are<br><span>Government Contract Ready.</span></h1>
+    <p data-gsap="hero-lead">EVOConnect maps skilled tradespeople to federal and state NAICS codes, connects you directly with certified subcontractors and prime contractors, and positions you for prevailing-wage infrastructure projects.</p>
+    <div class="wfc-hero-cta" data-gsap="hero-cta">
+      <a href="/labor/register" class="btn-primary">Initialize Worker Profile &mdash; Free</a>
+      <a href="/login" class="btn-secondary-outline">Member Sign In</a>
+    </div>
+    <div class="wfc-hero-stats" data-gsap="hero-stats">
+      <div class="hero-stat">
+        <span class="num" data-count-to="13">13</span>
+        <span class="lbl">Eligible Trade Tracks</span>
+      </div>
+      <div class="hero-stat-divider" aria-hidden="true"></div>
+      <div class="hero-stat">
+        <span class="num">$0</span>
+        <span class="lbl">Registration Fee</span>
+      </div>
+      <div class="hero-stat-divider" aria-hidden="true"></div>
+      <div class="hero-stat">
+        <span class="num">Davis-Bacon</span>
+        <span class="lbl">Prevailing Wage Focus</span>
+      </div>
     </div>
   </div>
 </section>
@@ -16,56 +38,109 @@
 <!-- How It Works -->
 <section class="wfc-section">
   <div class="wfc-section-inner">
-    <div class="section-header text-center">
-      <h2 class="section-title">How It Works</h2>
-      <p class="section-subtitle">Four simple steps from sign-up to getting paid on government work.</p>
+    <div class="section-header text-center" data-gsap="section-header">
+      <p class="section-label">01 // ONBOARDING SEQUENCE</p>
+      <h2 class="section-title">Four Steps to Public Infrastructure Deployment</h2>
+      <p class="section-subtitle">A streamlined pathway from trade verification to active project mobilization.</p>
     </div>
-    <div class="hiw-grid">
-      <div class="hiw-card">
-        <div class="hiw-step">01</div>
-        <h3>Create Your Profile</h3>
-        <p>Sign up free. Enter your trade, skills, certifications, and location. Takes about 5 minutes.</p>
+    <div class="hiw-grid evo-pipeline-grid">
+      <div class="hiw-card spotlight-card" data-gsap="hiw-step">
+        <div class="hiw-card-head">
+          <div class="hiw-step">01</div>
+          <span class="hiw-phase">CREDENTIALS</span>
+        </div>
+        <h3>Build Your Trade Profile</h3>
+        <p>Log your primary trade, OSHA/CDL certifications, equipment experience, and deployment radius in under 5 minutes.</p>
       </div>
-      <div class="hiw-card">
-        <div class="hiw-step">02</div>
-        <h3>Get Vendor Ready</h3>
-        <p>Follow our step-by-step checklist to get SAM.gov registered, HUB certified, and fully qualified.</p>
+      <div class="hiw-card spotlight-card" data-gsap="hiw-step">
+        <div class="hiw-card-head">
+          <div class="hiw-step">02</div>
+          <span class="hiw-phase">COMPLIANCE</span>
+        </div>
+        <h3>Complete Vendor Readiness</h3>
+        <p>Use our interactive checklist to obtain your SAM.gov UEI, structure independent contractor compliance, or qualify for set-asides.</p>
       </div>
-      <div class="hiw-card">
-        <div class="hiw-step">03</div>
-        <h3>Get Discovered</h3>
-        <p>Small businesses search our directory by trade, location, and certifications. Your profile shows up when it matches.</p>
+      <div class="hiw-card spotlight-card" data-gsap="hiw-step">
+        <div class="hiw-card-head">
+          <div class="hiw-step">03</div>
+          <span class="hiw-phase">DISCOVERY</span>
+        </div>
+        <h3>Algorithmic Directory Match</h3>
+        <p>Certified small businesses and prime contractors filter our directory by trade, NAICS code, and ZIP radius to source field talent.</p>
       </div>
-      <div class="hiw-card">
-        <div class="hiw-step">04</div>
-        <h3>Connect &amp; Work</h3>
-        <p>Accept connection requests, discuss opportunities, and start earning on government contracts.</p>
+      <div class="hiw-card spotlight-card" data-gsap="hiw-step">
+        <div class="hiw-card-head">
+          <div class="hiw-step">04</div>
+          <span class="hiw-phase">MOBILIZATION</span>
+        </div>
+        <h3>Accept Direct Dispatches</h3>
+        <p>Approve connection requests, apply directly to small-business trade jobs, and mobilize on funded public projects.</p>
       </div>
     </div>
   </div>
 </section>
 
 <!-- Trade Categories -->
-<section class="wfc-section" style="background:#0B1220;">
+<section class="wfc-section evo-section-alt">
   <div class="wfc-section-inner">
-    <div class="section-header text-center">
-      <h2 class="section-title">Trades We Support</h2>
-      <p class="section-subtitle">Government contracts need workers across every skilled trade. If your work builds or maintains infrastructure, there's a place for you.</p>
+    <div class="section-header text-center" data-gsap="section-header">
+      <p class="section-label">02 // ELIGIBLE DISCIPLINES</p>
+      <h2 class="section-title">Supported Infrastructure &amp; Trade Classifications</h2>
+      <p class="section-subtitle">Every trade below is actively sourced for federal, state DOT, municipal, and broadband infrastructure contracts.</p>
     </div>
     <div class="trades-grid">
-      <div class="trade-card"><div class="trade-card-body"><h4>&#128241; Telecommunications &amp; Fiber</h4></div></div>
-      <div class="trade-card"><div class="trade-card-body"><h4>&#9889; Electrical</h4></div></div>
-      <div class="trade-card"><div class="trade-card-body"><h4>&#128295; Civil Construction</h4></div></div>
-      <div class="trade-card"><div class="trade-card-body"><h4>&#128260; IT / Network Infrastructure</h4></div></div>
-      <div class="trade-card"><div class="trade-card-body"><h4>&#128268; Underground Utilities</h4></div></div>
-      <div class="trade-card"><div class="trade-card-body"><h4>&#129521; Plumbing</h4></div></div>
-      <div class="trade-card"><div class="trade-card-body"><h4>&#10052; HVAC / Mechanical</h4></div></div>
-      <div class="trade-card"><div class="trade-card-body"><h4>&#128167; Concrete / Masonry</h4></div></div>
-      <div class="trade-card"><div class="trade-card-body"><h4>&#127959; Carpentry / Framing</h4></div></div>
-      <div class="trade-card"><div class="trade-card-body"><h4>&#127881; Roofing</h4></div></div>
-      <div class="trade-card"><div class="trade-card-body"><h4>&#127776; Painting / Finishing</h4></div></div>
-      <div class="trade-card"><div class="trade-card-body"><h4>&#128663; Equipment Operation</h4></div></div>
-      <div class="trade-card"><div class="trade-card-body"><h4>&#127959; General Laborer</h4></div></div>
+      <a href="/labor/register" class="trade-card spotlight-card" data-gsap="trade-card">
+        <span class="trade-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><path d="M2 12h4l3-9 4 18 3-9h6"/></svg></span>
+        <div class="trade-card-body"><h4>Telecommunications &amp; Fiber</h4><span class="mono-naics">NAICS 237130 &bull; 517311</span><div><span class="trade-demand">Priority Demand</span></div></div>
+      </a>
+      <a href="/labor/register" class="trade-card spotlight-card" data-gsap="trade-card">
+        <span class="trade-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></span>
+        <div class="trade-card-body"><h4>Electrical &amp; High-Voltage</h4><span class="mono-naics">NAICS 238210</span></div>
+      </a>
+      <a href="/labor/register" class="trade-card spotlight-card" data-gsap="trade-card">
+        <span class="trade-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><path d="M2 20h20"/><path d="M5 20V8l7-4 7 4v12"/></svg></span>
+        <div class="trade-card-body"><h4>Heavy Civil Construction</h4><span class="mono-naics">NAICS 237310 &bull; 238910</span></div>
+      </a>
+      <a href="/labor/register" class="trade-card spotlight-card" data-gsap="trade-card">
+        <span class="trade-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><rect x="2" y="2" width="20" height="8" rx="2"/><rect x="2" y="14" width="20" height="8" rx="2"/><line x1="6" y1="6" x2="6.01" y2="6"/><line x1="6" y1="18" x2="6.01" y2="18"/></svg></span>
+        <div class="trade-card-body"><h4>IT &amp; Network Infrastructure</h4><span class="mono-naics">NAICS 541512 &bull; 238210</span></div>
+      </a>
+      <a href="/labor/register" class="trade-card spotlight-card" data-gsap="trade-card">
+        <span class="trade-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><circle cx="12" cy="12" r="9"/><path d="M3.6 9h16.8"/><path d="M3.6 15h16.8"/></svg></span>
+        <div class="trade-card-body"><h4>Underground Utilities &amp; Boring</h4><span class="mono-naics">NAICS 237110 &bull; 237130</span><div><span class="trade-demand">Priority Demand</span></div></div>
+      </a>
+      <a href="/labor/register" class="trade-card spotlight-card" data-gsap="trade-card">
+        <span class="trade-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg></span>
+        <div class="trade-card-body"><h4>Commercial Plumbing &amp; Piping</h4><span class="mono-naics">NAICS 238220</span></div>
+      </a>
+      <a href="/labor/register" class="trade-card spotlight-card" data-gsap="trade-card">
+        <span class="trade-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><path d="M14 14.76V3.5a2.5 2.5 0 0 0-5 0v11.26a4.5 4.5 0 1 0 5 0z"/></svg></span>
+        <div class="trade-card-body"><h4>HVAC &amp; Mechanical Systems</h4><span class="mono-naics">NAICS 238220</span></div>
+      </a>
+      <a href="/labor/register" class="trade-card spotlight-card" data-gsap="trade-card">
+        <span class="trade-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/><path d="M3 15h18"/><path d="M9 3v6"/><path d="M15 9v6"/></svg></span>
+        <div class="trade-card-body"><h4>Structural Concrete &amp; Masonry</h4><span class="mono-naics">NAICS 238110 &bull; 238140</span></div>
+      </a>
+      <a href="/labor/register" class="trade-card spotlight-card" data-gsap="trade-card">
+        <span class="trade-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg></span>
+        <div class="trade-card-body"><h4>Commercial Carpentry &amp; Framing</h4><span class="mono-naics">NAICS 238130</span></div>
+      </a>
+      <a href="/labor/register" class="trade-card spotlight-card" data-gsap="trade-card">
+        <span class="trade-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/></svg></span>
+        <div class="trade-card-body"><h4>Industrial &amp; Commercial Roofing</h4><span class="mono-naics">NAICS 238160</span></div>
+      </a>
+      <a href="/labor/register" class="trade-card spotlight-card" data-gsap="trade-card">
+        <span class="trade-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><rect x="2" y="3" width="20" height="6" rx="2"/><path d="M12 9v12"/></svg></span>
+        <div class="trade-card-body"><h4>Industrial Coatings &amp; Painting</h4><span class="mono-naics">NAICS 238320</span></div>
+      </a>
+      <a href="/labor/register" class="trade-card spotlight-card" data-gsap="trade-card">
+        <span class="trade-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><rect x="1" y="3" width="15" height="13" rx="1"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg></span>
+        <div class="trade-card-body"><h4>CDL Logistics &amp; Heavy Equipment</h4><span class="mono-naics">NAICS 484110 &bull; 238910</span><div><span class="trade-demand">Priority Demand</span></div></div>
+      </a>
+      <a href="/labor/register" class="trade-card spotlight-card" data-gsap="trade-card">
+        <span class="trade-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg></span>
+        <div class="trade-card-body"><h4>General Site Support &amp; Labor</h4><span class="mono-naics">NAICS 238990 &bull; 561320</span></div>
+      </a>
     </div>
   </div>
 </section>
@@ -73,29 +148,34 @@
 <!-- Benefits -->
 <section class="wfc-section">
   <div class="wfc-section-inner">
-    <div class="section-header text-center">
-      <h2 class="section-title">Why Join EVOConnect?</h2>
+    <div class="section-header text-center" data-gsap="section-header">
+      <p class="section-label">03 // WORKER ADVANTAGES</p>
+      <h2 class="section-title">Why Skilled Operators Choose EVOConnect</h2>
     </div>
     <div class="benefits-grid">
-      <div class="benefit-card">
-        <div class="benefit-icon">&#127919;</div>
-        <h3>Matched Opportunities</h3>
-        <p>We map your trade to active NAICS codes and surface government contract opportunities relevant to your skills.</p>
+      <div class="benefit-card spotlight-card" data-gsap="benefit-card">
+        <div class="benefit-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg></div>
+        <div class="bento-tag">PRECISION MATCHING</div>
+        <h3>Automated NAICS Alignment</h3>
+        <p>We map your trade credentials to active federal NAICS codes and surface matching job opportunities posted by certified subcontractors.</p>
       </div>
-      <div class="benefit-card">
-        <div class="benefit-icon">&#9989;</div>
-        <h3>Vendor Readiness Guide</h3>
-        <p>Our built-in checklist walks you through every step to become fully eligible for government contract work.</p>
+      <div class="benefit-card spotlight-card" data-gsap="benefit-card">
+        <div class="benefit-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg></div>
+        <div class="bento-tag">GUIDED COMPLIANCE</div>
+        <h3>Vendor Readiness Blueprint</h3>
+        <p>Step-by-step milestones walk you through OSHA verification, SAM.gov registration, and transitioning into an independent sub-vendor.</p>
       </div>
-      <div class="benefit-card">
-        <div class="benefit-icon">&#128101;</div>
-        <h3>Real Connections</h3>
-        <p>Get direct connection requests from small businesses actively bidding on projects that need your trade.</p>
+      <div class="benefit-card spotlight-card" data-gsap="benefit-card">
+        <div class="benefit-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
+        <div class="bento-tag">DIRECT RECRUITMENT</div>
+        <h3>Verified Subcontractor Network</h3>
+        <p>Receive direct connection requests from certified small businesses actively mobilizing crews for awarded public contracts.</p>
       </div>
-      <div class="benefit-card">
-        <div class="benefit-icon">&#128176;</div>
-        <h3>Government Pay Rates</h3>
-        <p>Government contracts typically pay prevailing wages — often higher than private sector work in the same trade.</p>
+      <div class="benefit-card spotlight-card" data-gsap="benefit-card">
+        <div class="benefit-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div>
+        <div class="bento-tag">COMPENSATION STANDARDS</div>
+        <h3>Prevailing Wage &amp; Scale</h3>
+        <p>Federal and state infrastructure contracts typically mandate Davis-Bacon prevailing wage rates—maximizing compensation for your trade expertise.</p>
       </div>
     </div>
   </div>
@@ -103,9 +183,10 @@
 
 <!-- CTA -->
 <section class="wfc-cta-banner">
-  <div class="wfc-cta-banner-inner">
-    <h2 class="section-title">Your Next Contract Starts Here.</h2>
-    <p>Register free and be discoverable by small businesses in minutes.</p>
-    <a href="/labor/register" class="btn-white">Create Your Free Profile</a>
+  <div class="wfc-cta-banner-inner" data-gsap="cta-banner">
+    <p class="section-label" style="margin-bottom:0.75rem;">MOBILIZE YOUR TRADE</p>
+    <h2 class="section-title">Your Next Public Infrastructure Contract Starts Here.</h2>
+    <p>Register free in under 5 minutes and make your trade credentials discoverable by certified subcontractors.</p>
+    <a href="/labor/register" class="btn-white">Create Your Free Worker Profile</a>
   </div>
 </section>
