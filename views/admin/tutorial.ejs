@@ -1,43 +1,876 @@
-<%- locals.layout = 'layouts/dashboard'; %>
+<% if (locals.user) { locals.layout = 'layouts/dashboard'; } %>
 <% const title = locals.title || 'Admin Guide | EvoConnect' %>
 <% const guideType = locals.guideType || 'platform' %>
 
 <%- include('../partials/flash') %>
 
-<section class="hero-section">
-    <div class="hero-content hero-welcome">
-        <h1>📖 <%= guideType === 'cms' ? 'CMS Administrator Guide' : 'Platform Administrator Guide' %></h1>
-        <p><%= guideType === 'cms' ? 'Instructions for updating public website copy, FAQs, and portal content.' : 'Complete operating procedures for managing users, prime approvals, opportunities, and compliance reporting.' %></p>
-    </div>
-</section>
+<style>
+    .tut-banner {
+        background: linear-gradient(135deg, #003D5C 0%, #005A8C 100%);
+        padding: 40px 32px;
+        border-radius: 12px;
+        margin-bottom: 24px;
+    }
+    .tut-banner-inner { max-width: 960px; }
+    .tut-badge {
+        display: inline-block;
+        background: #FFCC00;
+        color: #000 !important;
+        border-radius: 100px;
+        padding: 4px 16px;
+        font-size: 11px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        margin-bottom: 12px;
+    }
+    .tut-banner h1 {
+        color: #fff !important;
+        font-size: 2rem !important;
+        margin: 0 0 10px 0 !important;
+        letter-spacing: -0.02em;
+        line-height: 1.2;
+    }
+    .tut-banner p {
+        color: rgba(255,255,255,0.9) !important;
+        font-size: 1.05rem;
+        margin: 0 0 8px 0;
+        line-height: 1.6;
+    }
+    .tut-banner .tut-meta {
+        color: rgba(255,255,255,0.75) !important;
+        font-size: 0.85rem;
+        margin-top: 12px;
+    }
+    .role-pill {
+        display: inline-block;
+        padding: 2px 10px;
+        border-radius: 100px;
+        font-size: 0.75rem;
+        font-weight: 700;
+        background: rgba(255,255,255,0.25);
+        color: #fff !important;
+    }
+    .tut-layout {
+        display: grid;
+        grid-template-columns: 240px 1fr;
+        gap: 28px;
+        align-items: start;
+    }
+    @media (max-width: 960px) {
+        .tut-layout { grid-template-columns: 1fr; }
+        .tut-toc { position: static !important; }
+    }
+    .tut-toc {
+        position: sticky;
+        top: 90px;
+        background: #fff;
+        border: 2px solid #005A8C;
+        border-radius: 10px;
+        padding: 20px;
+    }
+    .tut-toc h2 {
+        font-size: 11px !important;
+        font-weight: 700 !important;
+        color: #005A8C !important;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        margin: 0 0 12px 0 !important;
+        padding-bottom: 8px;
+        border-bottom: 2px solid #FFCC00;
+    }
+    .tut-toc ol {
+        margin: 0 !important;
+        padding: 0 !important;
+        list-style: none;
+    }
+    .tut-toc ol li {
+        margin: 0 0 6px 0 !important;
+        padding: 0 !important;
+        display: flex;
+        align-items: baseline;
+        gap: 6px;
+    }
+    .tut-toc-num {
+        color: #005A8C;
+        font-weight: 700;
+        font-size: 12px;
+        flex-shrink: 0;
+    }
+    .tut-toc a {
+        color: #005A8C;
+        text-decoration: none;
+        font-size: 13px;
+        line-height: 1.4;
+        font-weight: 500;
+    }
+    .tut-toc a:hover { text-decoration: underline; }
+    .tut-section { margin-bottom: 12px; }
+    .tut-section-head {
+        background: #005A8C;
+        border-radius: 10px 10px 0 0;
+        padding: 14px 24px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin: 32px 0 0 0;
+    }
+    .tut-section:first-child .tut-section-head { margin-top: 0; }
+    .tut-section-num {
+        background: #FFCC00;
+        color: #000 !important;
+        border-radius: 50%;
+        width: 34px;
+        height: 34px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 14px;
+        font-weight: 700;
+        flex-shrink: 0;
+    }
+    .tut-section-head h2 {
+        color: #fff !important;
+        font-size: 1.15rem !important;
+        margin: 0 !important;
+        font-weight: 700;
+        line-height: 1.2;
+    }
+    .tut-section-body {
+        background: #fff;
+        border: 1px solid #cbd5e1;
+        border-top: none;
+        border-radius: 0 0 10px 10px;
+        padding: 24px 28px 20px;
+        color: #0F172A;
+    }
+    .tut-section-body h3 {
+        color: #003D5C !important;
+        font-size: 1.05rem !important;
+        font-weight: 700;
+        margin: 24px 0 8px 0 !important;
+        padding-bottom: 6px;
+        border-bottom: 2px solid #FFCC00;
+    }
+    .tut-section-body h3:first-child { margin-top: 0 !important; }
+    .tut-section-body h4 {
+        color: #005A8C !important;
+        font-size: 0.95rem !important;
+        font-weight: 700;
+        margin: 18px 0 6px 0 !important;
+    }
+    .tut-section-body p {
+        line-height: 1.7;
+        margin: 0 0 12px 0;
+        color: #1E293B;
+    }
+    .tut-section-body ul {
+        margin: 8px 0 12px 0 !important;
+        padding-left: 24px !important;
+    }
+    .tut-section-body ul li {
+        margin-bottom: 6px !important;
+        line-height: 1.6;
+        color: #1E293B;
+    }
+    .tut-steps { margin: 12px 0 16px 0; }
+    .tut-step {
+        display: flex;
+        gap: 12px;
+        margin-bottom: 14px;
+        align-items: flex-start;
+    }
+    .tut-step-num {
+        background: #005A8C;
+        color: #fff !important;
+        border-radius: 50%;
+        min-width: 28px;
+        height: 28px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 13px;
+        font-weight: 700;
+        flex-shrink: 0;
+        margin-top: 1px;
+    }
+    .tut-step-body {
+        flex: 1;
+        line-height: 1.65;
+        padding-top: 2px;
+        color: #1E293B;
+    }
+    .tut-callout {
+        display: flex;
+        gap: 12px;
+        align-items: flex-start;
+        border-radius: 8px;
+        padding: 14px 18px;
+        margin: 14px 0;
+    }
+    .tut-callout-icon { font-size: 18px; flex-shrink: 0; margin-top: 1px; line-height: 1; }
+    .tut-callout-body { flex: 1; }
+    .tut-callout-body strong {
+        display: block;
+        margin-bottom: 4px;
+        font-size: 14px;
+        font-weight: 700;
+    }
+    .tut-callout-body p { margin: 0 !important; font-size: 14px; line-height: 1.6; }
+    .tut-callout.tip { background: #E1F5FE; border-left: 4px solid #0277BD; }
+    .tut-callout.tip .tut-callout-body strong { color: #01579B; }
+    .tut-callout.warning { background: #FFF9C4; border-left: 4px solid #F9A825; }
+    .tut-callout.warning .tut-callout-body strong { color: #6D4C00; }
+    .tut-callout.danger { background: #FFEBEE; border-left: 4px solid #C62828; }
+    .tut-callout.danger .tut-callout-body strong { color: #B71C1C; }
+    .tut-callout.success { background: #E8F5E9; border-left: 4px solid #2E7D32; }
+    .tut-callout.success .tut-callout-body strong { color: #1B5E20; }
+    .tut-table-wrap { overflow-x: auto; margin: 12px 0; }
+    .tut-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 13.5px;
+        min-width: 400px;
+    }
+    .tut-table th {
+        background: #005A8C !important;
+        color: #fff !important;
+        padding: 10px 14px;
+        text-align: left;
+        font-weight: 700;
+    }
+    .tut-table td {
+        padding: 9px 14px;
+        border-bottom: 1px solid #e2e8f0;
+        vertical-align: top;
+        line-height: 1.5;
+        color: #1E293B;
+    }
+    .tut-table tr:nth-child(even) td { background: #f8fafc; }
+    .tut-table td:first-child { font-weight: 600; white-space: nowrap; }
+    .lbl {
+        display: inline-block;
+        background: #005A8C;
+        color: #fff !important;
+        border-radius: 4px;
+        padding: 1px 8px;
+        font-size: 12px;
+        font-weight: 700;
+        vertical-align: middle;
+        line-height: 1.6;
+    }
+    .lbl-gold { background: #FFCC00; color: #000 !important; }
+    .lbl-green { background: #2E7D32; color: #fff !important; }
+    .lbl-red { background: #C62828; color: #fff !important; }
+    .comp-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+        gap: 12px;
+        margin: 14px 0;
+    }
+    .comp-card {
+        background: #f8fafc;
+        border: 1px solid #cbd5e1;
+        border-radius: 8px;
+        padding: 14px;
+    }
+    .comp-card h5 {
+        color: #005A8C !important;
+        font-size: 0.875rem !important;
+        font-weight: 700 !important;
+        margin: 0 0 6px 0 !important;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        flex-wrap: wrap;
+    }
+    .comp-card h5 code {
+        background: #005A8C;
+        color: #fff;
+        border: none;
+        font-size: 11px;
+        padding: 2px 6px;
+        border-radius: 3px;
+    }
+    .comp-card p { margin: 0 !important; font-size: 13px; line-height: 1.55; color: #334155; }
+    .cms-sidebar-diagram {
+        background: #003D5C;
+        color: #fff;
+        border-radius: 8px;
+        padding: 16px;
+        margin: 12px 0;
+        font-size: 13px;
+    }
+    .cms-sidebar-diagram .sdb-section { margin-bottom: 12px; }
+    .cms-sidebar-diagram .sdb-label {
+        font-size: 10px;
+        text-transform: uppercase;
+        letter-spacing: 0.12em;
+        color: rgba(255,255,255,0.65);
+        margin-bottom: 4px;
+    }
+    .cms-sidebar-diagram .sdb-item {
+        background: rgba(255,255,255,0.12);
+        border-radius: 4px;
+        padding: 5px 12px;
+        margin-bottom: 3px;
+        color: #fff;
+    }
+    .cms-sidebar-diagram .sdb-item.active { background: #FFCC00; color: #000; font-weight: 700; }
+    .cms-sidebar-diagram .sdb-divider {
+        border-top: 1px solid rgba(255,255,255,0.2);
+        margin: 10px 0 8px;
+    }
+    .cms-sidebar-diagram .sdb-item.logout { background: #C62828; }
+    .tut-rule { border: none; border-top: 1px solid #e2e8f0; margin: 20px 0; }
+    .tut-back { display: block; text-align: right; margin-top: 12px; font-size: 12px; color: #005A8C; text-decoration: none; font-weight: 600; }
+    .tut-back:hover { text-decoration: underline; }
+    .tut-flow {
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+        border-radius: 8px;
+        padding: 14px 18px;
+        font-family: 'Consolas', 'Courier New', monospace;
+        font-size: 0.875rem;
+        color: #003D5C;
+        margin: 8px 0 14px 0;
+        line-height: 1.8;
+    }
+</style>
 
-<div class="recommendations-list" style="padding: var(--space-xl); display:grid; gap:1.5rem;">
-    <% if (guideType === 'cms') { %>
-        <div>
-            <h3>1. Accessing the Content Management System (CMS)</h3>
-            <p style="color:var(--color-text-secondary);">Click <strong>Content Management (CMS)</strong> in the left sidebar (or visit <a href="/admin-cms">/admin-cms</a>) and sign in with your CMS administrator password.</p>
-        </div>
-        <div>
-            <h3>2. Editing Homepage & Portal Copy</h3>
-            <p style="color:var(--color-text-secondary);">Use the section editor to modify hero headlines, calls to action, and feature descriptions. Changes are saved immediately and reflected on the public site.</p>
-        </div>
-        <div>
-            <h3>3. Managing Resources & Announcements</h3>
-            <p style="color:var(--color-text-secondary);">Use <a href="/admin/resources">Resource Library</a> to publish downloadable templates and guides, and <a href="/admin/announcements">Announcements</a> to post site-wide banners.</p>
-        </div>
-    <% } else { %>
-        <div>
-            <h3>1. Approving Prime Contractors</h3>
-            <p style="color:var(--color-text-secondary);">New prime contractors register with their SAM.gov UEI. Visit <a href="/admin/approvals">Prime Approvals</a> to verify their UEI and click <strong>Approve</strong> to grant directory search and opportunity posting access.</p>
-        </div>
-        <div>
-            <h3>2. Managing Contracting Opportunities</h3>
-            <p style="color:var(--color-text-secondary);">Visit <a href="/admin/opportunities">Opportunity Manager</a> to review, publish, close, or remove solicitations posted by prime contractors.</p>
-        </div>
-        <div>
-            <h3>3. NAICS Codes & Compliance Exports</h3>
-            <p style="color:var(--color-text-secondary);">Maintain target NAICS classifications in <a href="/admin/naics">NAICS Codes</a> and export complete registration and readiness data anytime via <a href="/admin/export/csv">Export CSV</a>.</p>
-        </div>
-    <% } %>
+<% if (guideType === 'cms') { %>
+
+<div class="tut-banner">
+    <div class="tut-banner-inner">
+        <span class="tut-badge">Internal Documentation</span>
+        <h1>EvoConnect CMS Admin Guide</h1>
+        <p>A complete reference for content administrators managing pages, FAQs, media, and site settings through the EvoConnect content management system.</p>
+        <p class="tut-meta">
+            Access: <a href="/admin-cms" style="color:#FFCC00;font-weight:700;text-decoration:underline;">/admin-cms</a>
+            &ensp;&bull;&ensp; <a href="/admin/tutorial" style="color:#fff;text-decoration:underline;">Switch to Platform Admin Guide &rarr;</a>
+        </p>
+    </div>
 </div>
 
+<div class="tut-layout">
+    <!-- Sidebar TOC -->
+    <aside class="tut-toc" aria-label="Table of contents">
+        <h2>Contents</h2>
+        <ol>
+            <li><span class="tut-toc-num">1.</span><a href="#sec-intro">Introduction</a></li>
+            <li><span class="tut-toc-num">2.</span><a href="#sec-login">Logging In</a></li>
+            <li><span class="tut-toc-num">3.</span><a href="#sec-dashboard">Dashboard Overview</a></li>
+            <li><span class="tut-toc-num">4.</span><a href="#sec-pages">Pages Management</a></li>
+            <li><span class="tut-toc-num">5.</span><a href="#sec-sections">Section Types Reference</a></li>
+            <li><span class="tut-toc-num">6.</span><a href="#sec-editor">Rich Text Editor</a></li>
+            <li><span class="tut-toc-num">7.</span><a href="#sec-faq">FAQ Manager</a></li>
+            <li><span class="tut-toc-num">8.</span><a href="#sec-global">Global Settings</a></li>
+            <li><span class="tut-toc-num">9.</span><a href="#sec-media">Media Library</a></li>
+            <li><span class="tut-toc-num">10.</span><a href="#sec-password">Changing Your Password</a></li>
+            <li><span class="tut-toc-num">11.</span><a href="#sec-bestpractices">Best Practices</a></li>
+            <li><span class="tut-toc-num">12.</span><a href="#sec-troubleshooting">Troubleshooting</a></li>
+        </ol>
+    </aside>
+
+    <!-- Main Content -->
+    <div class="tut-main">
+
+        <!-- SECTION 1 -->
+        <div class="tut-section">
+            <div class="tut-section-head" id="sec-intro">
+                <div class="tut-section-num" aria-hidden="true">1</div>
+                <h2>Introduction &amp; What the CMS Controls</h2>
+            </div>
+            <div class="tut-section-body">
+                <p>The EvoConnect Content Management System (CMS) is a web-based editor at <a href="/admin-cms"><code>/admin-cms</code></a>. It lets authorized administrators update the text, images, and structured content shown on the public-facing website — without touching any code.</p>
+
+                <h3>What Can You Edit with the CMS?</h3>
+                <div class="tut-table-wrap">
+                    <table class="tut-table">
+                        <thead><tr><th>Module</th><th>What It Controls</th></tr></thead>
+                        <tbody>
+                            <tr><td>Pages</td><td>Hero text, page sections, component content, page title, and meta description</td></tr>
+                            <tr><td>FAQ Manager</td><td>All questions and answers on the FAQ page and FAQ accordion sections</td></tr>
+                            <tr><td>Global Settings</td><td>Site-wide values: site title, contact email, phone number, social links, logo URL</td></tr>
+                            <tr><td>Media Library</td><td>All images used in CMS-editable sections; upload, manage, and delete</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h3>What the CMS Does NOT Control</h3>
+                <ul>
+                    <li>User account dashboard pages</li>
+                    <li>Form functionality and validation</li>
+                    <li>The live opportunities listing (managed in <a href="/admin/opportunities">Opportunity Manager</a>)</li>
+                    <li>Application processing workflows</li>
+                </ul>
+
+                <div class="tut-callout tip">
+                    <span class="tut-callout-icon" aria-hidden="true">ℹ️</span>
+                    <div class="tut-callout-body">
+                        <strong>Platform administration is separate</strong>
+                        <p>To manage user accounts, approve prime contractors, manage opportunities, or view analytics, see the <a href="/admin/tutorial"><strong>Platform Admin Guide</strong></a>.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <a href="#main-content" class="tut-back">Back to top &uarr;</a>
+
+        <!-- SECTION 2 -->
+        <div class="tut-section">
+            <div class="tut-section-head" id="sec-login">
+                <div class="tut-section-num" aria-hidden="true">2</div>
+                <h2>Logging In</h2>
+            </div>
+            <div class="tut-section-body">
+                <h3>How to Access the CMS</h3>
+                <div class="tut-steps">
+                    <div class="tut-step">
+                        <div class="tut-step-num" aria-hidden="true">1</div>
+                        <div class="tut-step-body">Click <strong>Content Management</strong> in the Admin Console sidebar or navigate to <a href="/admin-cms"><code>/admin-cms</code></a>.</div>
+                    </div>
+                    <div class="tut-step">
+                        <div class="tut-step-num" aria-hidden="true">2</div>
+                        <div class="tut-step-body">The CMS login screen loads with two fields: <strong>Email</strong> and <strong>Password</strong>.</div>
+                    </div>
+                    <div class="tut-step">
+                        <div class="tut-step-num" aria-hidden="true">3</div>
+                        <div class="tut-step-body">Enter your admin email address (e.g., <code>ks@evobrand.net</code>) and your CMS admin password (configured via <code>CMS_ADMIN_PASSWORD</code>).</div>
+                    </div>
+                    <div class="tut-step">
+                        <div class="tut-step-num" aria-hidden="true">4</div>
+                        <div class="tut-step-body">Click <span class="lbl">Sign In</span>. If your credentials are correct, the CMS dashboard loads immediately.</div>
+                    </div>
+                </div>
+
+                <div class="tut-callout warning">
+                    <span class="tut-callout-icon" aria-hidden="true">⚠️</span>
+                    <div class="tut-callout-body">
+                        <strong>Session duration is 24 hours</strong>
+                        <p>After 24 hours, your CMS session expires and you must sign in again. Always save your work before leaving the CMS — unsaved changes are lost when your session expires.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <a href="#main-content" class="tut-back">Back to top &uarr;</a>
+
+        <!-- SECTION 3 -->
+        <div class="tut-section">
+            <div class="tut-section-head" id="sec-dashboard">
+                <div class="tut-section-num" aria-hidden="true">3</div>
+                <h2>CMS Dashboard Overview</h2>
+            </div>
+            <div class="tut-section-body">
+                <p>After login you see the CMS dashboard — a two-panel interface. The left side is the navigation sidebar; the right side is the content area that changes based on your selection.</p>
+
+                <h3>Sidebar Navigation</h3>
+                <div class="cms-sidebar-diagram" role="img" aria-label="CMS sidebar navigation structure">
+                    <div class="sdb-section">
+                        <div class="sdb-label">Pages</div>
+                        <div class="sdb-item active">All Pages</div>
+                    </div>
+                    <div class="sdb-section">
+                        <div class="sdb-label">Site</div>
+                        <div class="sdb-item">FAQ Manager</div>
+                        <div class="sdb-item">Global Settings</div>
+                        <div class="sdb-item">Media Library</div>
+                        <div class="sdb-item">New Page</div>
+                    </div>
+                    <div class="sdb-divider"></div>
+                    <div class="sdb-item">Change Password</div>
+                    <div class="sdb-item logout">Log out</div>
+                </div>
+            </div>
+        </div>
+        <a href="#main-content" class="tut-back">Back to top &uarr;</a>
+
+        <!-- SECTION 4 -->
+        <div class="tut-section">
+            <div class="tut-section-head" id="sec-pages">
+                <div class="tut-section-num" aria-hidden="true">4</div>
+                <h2>Pages Management</h2>
+            </div>
+            <div class="tut-section-body">
+                <p>The <strong>Pages</strong> module is where you edit the content of all public-facing website pages. Click <strong>All Pages</strong> in the sidebar to open it.</p>
+
+                <h3>How to Edit a Page</h3>
+                <div class="tut-steps">
+                    <div class="tut-step">
+                        <div class="tut-step-num" aria-hidden="true">1</div>
+                        <div class="tut-step-body">In the Pages list, find the page you want and click its <span class="lbl">Edit</span> button.</div>
+                    </div>
+                    <div class="tut-step">
+                        <div class="tut-step-num" aria-hidden="true">2</div>
+                        <div class="tut-step-body">The Page Editor opens with <strong>Page Metadata</strong> at the top (Title, Meta Description) and <strong>Page Sections</strong> below.</div>
+                    </div>
+                    <div class="tut-step">
+                        <div class="tut-step-num" aria-hidden="true">3</div>
+                        <div class="tut-step-body">Click the <span class="lbl">Edit</span> button on any section row to open its fields inline.</div>
+                    </div>
+                    <div class="tut-step">
+                        <div class="tut-step-num" aria-hidden="true">4</div>
+                        <div class="tut-step-body">Make your changes and click <span class="lbl lbl-green">Save Page</span> at the top of the editor.</div>
+                    </div>
+                </div>
+
+                <div class="tut-callout danger">
+                    <span class="tut-callout-icon" aria-hidden="true">🚫</span>
+                    <div class="tut-callout-body">
+                        <strong>No auto-save</strong>
+                        <p>The CMS does <strong>not</strong> auto-save. If you navigate away without clicking Save, all your changes will be lost.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <a href="#main-content" class="tut-back">Back to top &uarr;</a>
+
+        <!-- SECTION 5 -->
+        <div class="tut-section">
+            <div class="tut-section-head" id="sec-sections">
+                <div class="tut-section-num" aria-hidden="true">5</div>
+                <h2>Section Types Reference</h2>
+            </div>
+            <div class="tut-section-body">
+                <p>When you add or edit a page section, the editing interface changes based on the component type:</p>
+                <div class="comp-grid">
+                    <div class="comp-card">
+                        <h5><code>text</code> Single-line Text</h5>
+                        <p>A plain text input for short content like titles, names, or captions.</p>
+                    </div>
+                    <div class="comp-card">
+                        <h5><code>textarea</code> Multi-line Text</h5>
+                        <p>A larger text area for paragraphs and descriptions.</p>
+                    </div>
+                    <div class="comp-card">
+                        <h5><code>url</code> URL Field</h5>
+                        <p>A validated text input for web addresses and button links.</p>
+                    </div>
+                    <div class="comp-card">
+                        <h5><code>media</code> Image Picker</h5>
+                        <p>Opens the Media Library to select an uploaded image with required alt text.</p>
+                    </div>
+                    <div class="comp-card">
+                        <h5><code>button</code> CTA Button</h5>
+                        <p>Configures a call-to-action button: label, destination URL, and style.</p>
+                    </div>
+                    <div class="comp-card">
+                        <h5><code>card-list</code> Card Grid</h5>
+                        <p>A repeating list of cards, each with a title, body text, optional image, and button.</p>
+                    </div>
+                    <div class="comp-card">
+                        <h5><code>steps-list</code> Numbered Steps</h5>
+                        <p>A numbered process list where each step has a short label and detail text.</p>
+                    </div>
+                    <div class="comp-card">
+                        <h5><code>accordion-list</code> Expandable FAQ</h5>
+                        <p>Collapsible question/answer pairs for inline FAQs or help sections.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <a href="#main-content" class="tut-back">Back to top &uarr;</a>
+
+        <!-- SECTION 6 -->
+        <div class="tut-section">
+            <div class="tut-section-head" id="sec-editor">
+                <div class="tut-section-num" aria-hidden="true">6</div>
+                <h2>Rich Text Editor</h2>
+            </div>
+            <div class="tut-section-body">
+                <p>Long text answers in FAQs and description fields display a formatting toolbar above the text area:</p>
+                <div class="tut-table-wrap">
+                    <table class="tut-table">
+                        <thead><tr><th>Button</th><th>What It Does</th><th>When to Use</th></tr></thead>
+                        <tbody>
+                            <tr><td><strong>B</strong> Bold</td><td>Wraps selected text in <code>&lt;strong&gt;</code> tags.</td><td>Highlight key terms, requirements, or important phrases.</td></tr>
+                            <tr><td><em>I</em> Italic</td><td>Wraps selected text in <code>&lt;em&gt;</code> tags.</td><td>Document titles, technical terms, or gentle emphasis.</td></tr>
+                            <tr><td>&#8226; List</td><td>Inserts an unordered (bullet) list at the cursor position.</td><td>Eligibility criteria, document checklists, feature lists.</td></tr>
+                            <tr><td>&#128279; Link</td><td>Inserts a hyperlink at the cursor position.</td><td>References to external resources or downloadable forms.</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <a href="#main-content" class="tut-back">Back to top &uarr;</a>
+
+        <!-- SECTION 7 -->
+        <div class="tut-section">
+            <div class="tut-section-head" id="sec-faq">
+                <div class="tut-section-num" aria-hidden="true">7</div>
+                <h2>FAQ Manager</h2>
+            </div>
+            <div class="tut-section-body">
+                <p>The FAQ Manager controls all questions and answers displayed on the FAQ pages. Click <strong>FAQ Manager</strong> in the CMS sidebar to open it.</p>
+                <div class="tut-steps">
+                    <div class="tut-step">
+                        <div class="tut-step-num" aria-hidden="true">1</div>
+                        <div class="tut-step-body">Click <span class="lbl lbl-green">+ New FAQ</span> above the table to add a question and answer.</div>
+                    </div>
+                    <div class="tut-step">
+                        <div class="tut-step-num" aria-hidden="true">2</div>
+                        <div class="tut-step-body">Drag rows by the handle (&#9776;) to reorder FAQs, then click <span class="lbl lbl-green">Save Order</span>.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <a href="#main-content" class="tut-back">Back to top &uarr;</a>
+
+        <!-- SECTION 8 -->
+        <div class="tut-section">
+            <div class="tut-section-head" id="sec-global">
+                <div class="tut-section-num" aria-hidden="true">8</div>
+                <h2>Global Settings</h2>
+            </div>
+            <div class="tut-section-body">
+                <p>Global Settings control site-wide values (navigation links, footer text, contact email, phone number, and external links) across all pages. Click <strong>Global Settings</strong> in the CMS sidebar, update the needed fields, and click <span class="lbl lbl-green">Save Global Settings</span>.</p>
+            </div>
+        </div>
+        <a href="#main-content" class="tut-back">Back to top &uarr;</a>
+
+        <!-- SECTION 9 -->
+        <div class="tut-section">
+            <div class="tut-section-head" id="sec-media">
+                <div class="tut-section-num" aria-hidden="true">9</div>
+                <h2>Media Library</h2>
+            </div>
+            <div class="tut-section-body">
+                <p>The Media Library stores all uploaded images used in CMS sections (JPEG, PNG, GIF, WebP, SVG up to 10 MB). Always provide descriptive <strong>Alt Text</strong> when uploading images for accessibility compliance.</p>
+            </div>
+        </div>
+        <a href="#main-content" class="tut-back">Back to top &uarr;</a>
+
+        <!-- SECTION 10 -->
+        <div class="tut-section">
+            <div class="tut-section-head" id="sec-password">
+                <div class="tut-section-num" aria-hidden="true">10</div>
+                <h2>Changing Your Password</h2>
+            </div>
+            <div class="tut-section-body">
+                <p>Click <strong>Change Password</strong> in the top bar of `/admin-cms`, enter your current password and new password (minimum 8 characters), and click <span class="lbl lbl-green">Update Password</span>.</p>
+            </div>
+        </div>
+        <a href="#main-content" class="tut-back">Back to top &uarr;</a>
+
+        <!-- SECTION 11 -->
+        <div class="tut-section">
+            <div class="tut-section-head" id="sec-bestpractices">
+                <div class="tut-section-num" aria-hidden="true">11</div>
+                <h2>Best Practices</h2>
+            </div>
+            <div class="tut-section-body">
+                <ul>
+                    <li><strong>Write in plain language:</strong> Keep sentences concise and accessible.</li>
+                    <li><strong>Always provide alt text for images:</strong> Screen reader users rely on descriptive alt text.</li>
+                    <li><strong>Preview after saving:</strong> Open the public site in a new tab and hard-refresh (<code>Ctrl+Shift+R</code>) to verify changes.</li>
+                </ul>
+            </div>
+        </div>
+        <a href="#main-content" class="tut-back">Back to top &uarr;</a>
+
+        <!-- SECTION 12 -->
+        <div class="tut-section">
+            <div class="tut-section-head" id="sec-troubleshooting">
+                <div class="tut-section-num" aria-hidden="true">12</div>
+                <h2>Troubleshooting</h2>
+            </div>
+            <div class="tut-section-body">
+                <h3>I saved a page but my changes are not showing on the live site</h3>
+                <ul>
+                    <li>Hard-refresh the live page: press <strong>Ctrl+Shift+R</strong> (Windows) or <strong>Cmd+Shift+R</strong> (Mac) to bypass the browser cache.</li>
+                    <li>Verify that the green confirmation toast appeared when clicking Save.</li>
+                </ul>
+                <h3>Getting Help</h3>
+                <ul>
+                    <li><strong>Platform Admin Guide:</strong> <a href="/admin/tutorial">View Platform Admin Guide</a></li>
+                    <li><strong>CMS Editor:</strong> <a href="/admin-cms">Open CMS Admin</a></li>
+                </ul>
+            </div>
+        </div>
+        <a href="#main-content" class="tut-back">Back to top &uarr;</a>
+
+    </div>
+</div>
+
+<% } else { %>
+
+<div class="tut-banner">
+    <div class="tut-banner-inner">
+        <span class="tut-badge">Internal Documentation</span>
+        <h1>EvoConnect Platform Admin Guide</h1>
+        <p>A complete reference for platform administrators managing users, prime approvals, NAICS codes, and contracting opportunities on EvoConnect.</p>
+        <p class="tut-meta">
+            Role: <span class="role-pill">admin</span>
+            &ensp;&bull;&ensp; <a href="/admin/cms-tutorial" style="color:#FFCC00;font-weight:700;text-decoration:underline;">Switch to CMS Admin Guide &rarr;</a>
+        </p>
+    </div>
+</div>
+
+<div class="tut-layout">
+    <!-- Sidebar TOC -->
+    <aside class="tut-toc" aria-label="Table of contents">
+        <h2>Contents</h2>
+        <ol>
+            <li><span class="tut-toc-num">1.</span><a href="#sec-intro">Introduction &amp; Access</a></li>
+            <li><span class="tut-toc-num">2.</span><a href="#sec-analytics">Analytics Dashboard</a></li>
+            <li><span class="tut-toc-num">3.</span><a href="#sec-users">User &amp; Prime Approvals</a></li>
+            <li><span class="tut-toc-num">4.</span><a href="#sec-opportunities">Opportunity Management</a></li>
+            <li><span class="tut-toc-num">5.</span><a href="#sec-naics">NAICS &amp; Resources</a></li>
+            <li><span class="tut-toc-num">6.</span><a href="#sec-security">Security Best Practices</a></li>
+            <li><span class="tut-toc-num">7.</span><a href="#sec-troubleshooting">Troubleshooting</a></li>
+        </ol>
+    </aside>
+
+    <!-- Main Content -->
+    <div class="tut-main">
+
+        <!-- SECTION 1 -->
+        <div class="tut-section">
+            <div class="tut-section-head" id="sec-intro">
+                <div class="tut-section-num" aria-hidden="true">1</div>
+                <h2>Introduction &amp; Access</h2>
+            </div>
+            <div class="tut-section-body">
+                <p>This guide covers every administrative action available in the EvoConnect Admin Console: user account oversight, prime contractor UEI verification and approval, opportunity management, NAICS classifications, resource library publishing, and platform analytics.</p>
+
+                <div class="tut-callout tip">
+                    <span class="tut-callout-icon" aria-hidden="true">ℹ️</span>
+                    <div class="tut-callout-body">
+                        <strong>Who this guide is for</strong>
+                        <p>Platform admins manage <em>accounts and operations</em>. If you manage <em>website content</em> (page text, FAQs, images), see the <a href="/admin/cms-tutorial"><strong>CMS Admin Guide</strong></a>.</p>
+                    </div>
+                </div>
+
+                <h3>Your Admin Pages</h3>
+                <div class="tut-table-wrap">
+                    <table class="tut-table">
+                        <thead><tr><th>Page</th><th>URL</th><th>Purpose</th></tr></thead>
+                        <tbody>
+                            <tr><td>Dashboard</td><td><a href="/admin/dashboard"><code>/admin/dashboard</code></a></td><td>Executive summary, quick actions, and pending prime approvals</td></tr>
+                            <tr><td>User Management</td><td><a href="/admin/users"><code>/admin/users</code></a></td><td>Search, filter, and export registered workers, businesses, and primes</td></tr>
+                            <tr><td>Prime Approvals</td><td><a href="/admin/approvals"><code>/admin/approvals</code></a></td><td>Verify SAM.gov UEIs and approve or deny prime contractor accounts</td></tr>
+                            <tr><td>Opportunity Manager</td><td><a href="/admin/opportunities"><code>/admin/opportunities</code></a></td><td>Review, publish, close, or delete contracting solicitations</td></tr>
+                            <tr><td>NAICS Codes</td><td><a href="/admin/naics"><code>/admin/naics</code></a></td><td>Manage target NAICS codes, trade categories, and set-aside eligibility</td></tr>
+                            <tr><td>Resource Library</td><td><a href="/admin/resources"><code>/admin/resources</code></a></td><td>Publish guides, templates, and links for workers and small businesses</td></tr>
+                            <tr><td>Announcements</td><td><a href="/admin/announcements"><code>/admin/announcements</code></a></td><td>Post platform-wide or role-targeted announcements</td></tr>
+                            <tr><td>Analytics</td><td><a href="/admin/analytics"><code>/admin/analytics</code></a></td><td>Track ecosystem growth, active opportunities, and connections</td></tr>
+                            <tr><td>CMS (Content)</td><td><a href="/admin-cms"><code>/admin-cms</code></a></td><td>Edit public page content, FAQs, media, and global site settings</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <a href="#main-content" class="tut-back">Back to top &uarr;</a>
+
+        <!-- SECTION 2 -->
+        <div class="tut-section">
+            <div class="tut-section-head" id="sec-analytics">
+                <div class="tut-section-num" aria-hidden="true">2</div>
+                <h2>Analytics Dashboard</h2>
+            </div>
+            <div class="tut-section-body">
+                <p>The <a href="/admin/analytics">Analytics Dashboard</a> and <a href="/admin/dashboard">Admin Dashboard</a> give you a real-time view of platform health:</p>
+                <div class="tut-table-wrap">
+                    <table class="tut-table">
+                        <thead><tr><th>Metric</th><th>What It Counts</th><th>When to Act</th></tr></thead>
+                        <tbody>
+                            <tr><td>Total Workers &amp; Businesses</td><td>All registered labor and small business profiles</td><td>Monitor readiness scores and certification completion</td></tr>
+                            <tr><td>Pending Prime Approvals</td><td>Prime contractors awaiting SAM.gov UEI verification</td><td>Review promptly in <a href="/admin/approvals">Prime Approvals</a></td></tr>
+                            <tr><td>Published Opportunities</td><td>Active solicitations accepting bids/applications</td><td>Follow up with prime contractors when open solicitations are low</td></tr>
+                            <tr><td>Applications &amp; Connections</td><td>Total bids submitted and direct connection requests</td><td>Measures matchmaking engagement across portals</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <a href="#main-content" class="tut-back">Back to top &uarr;</a>
+
+        <!-- SECTION 3 -->
+        <div class="tut-section">
+            <div class="tut-section-head" id="sec-users">
+                <div class="tut-section-num" aria-hidden="true">3</div>
+                <h2>User Management &amp; Prime Approvals</h2>
+            </div>
+            <div class="tut-section-body">
+                <h3>Approving Prime Contractors</h3>
+                <p>When a Prime Contractor registers, their account is placed in <span class="lbl lbl-gold">Pending</span> status until an administrator verifies their organization and SAM.gov Unique Entity ID (UEI).</p>
+                <div class="tut-steps">
+                    <div class="tut-step">
+                        <div class="tut-step-num" aria-hidden="true">1</div>
+                        <div class="tut-step-body">Open <a href="/admin/approvals">Prime Approvals</a> from the left sidebar.</div>
+                    </div>
+                    <div class="tut-step">
+                        <div class="tut-step-num" aria-hidden="true">2</div>
+                        <div class="tut-step-body">Verify the company's 12-character SAM.gov UEI, contact email, and agency/contracting history.</div>
+                    </div>
+                    <div class="tut-step">
+                        <div class="tut-step-num" aria-hidden="true">3</div>
+                        <div class="tut-step-body">Click <span class="lbl lbl-green">Approve</span> to grant full access to post opportunities and search the Small Business and Labor directories, or <span class="lbl lbl-red">Deny</span> to reject.</div>
+                    </div>
+                </div>
+
+                <h3>Searching and Exporting Users</h3>
+                <p>In <a href="/admin/users">User Management</a>, filter by account type (Workers, Businesses, Prime Contractors) or keyword, and click <span class="lbl">Export CSV</span> to download a spreadsheet of all users for compliance reporting.</p>
+            </div>
+        </div>
+        <a href="#main-content" class="tut-back">Back to top &uarr;</a>
+
+        <!-- SECTION 4 -->
+        <div class="tut-section">
+            <div class="tut-section-head" id="sec-opportunities">
+                <div class="tut-section-num" aria-hidden="true">4</div>
+                <h2>Opportunity Management</h2>
+            </div>
+            <div class="tut-section-body">
+                <div class="tut-flow">
+                    Prime posts &rarr; <strong>published / open</strong> &rarr; Bids submitted &rarr; <strong>closed</strong> &rarr; Subcontractor selected &rarr; <strong>awarded</strong>
+                </div>
+                <p>In <a href="/admin/opportunities">Opportunity Manager</a>, administrators can review all posted opportunities across prime contractors, toggle their status between published and closed, or remove inappropriate listings.</p>
+            </div>
+        </div>
+        <a href="#main-content" class="tut-back">Back to top &uarr;</a>
+
+        <!-- SECTION 5 -->
+        <div class="tut-section">
+            <div class="tut-section-head" id="sec-naics">
+                <div class="tut-section-num" aria-hidden="true">5</div>
+                <h2>NAICS Codes &amp; Resource Library</h2>
+            </div>
+            <div class="tut-section-body">
+                <p>Maintain target NAICS classifications in <a href="/admin/naics">NAICS Codes</a> so workers, small businesses, and prime contractors can match by industry code. Use <a href="/admin/resources">Resource Library</a> to publish downloadable readiness guides and federal contracting templates.</p>
+            </div>
+        </div>
+        <a href="#main-content" class="tut-back">Back to top &uarr;</a>
+
+        <!-- SECTION 6 -->
+        <div class="tut-section">
+            <div class="tut-section-head" id="sec-security">
+                <div class="tut-section-num" aria-hidden="true">6</div>
+                <h2>Security Best Practices</h2>
+            </div>
+            <div class="tut-section-body">
+                <ul>
+                    <li><strong>Use strong, unique passwords:</strong> Rotate admin and CMS passwords every 90 days via <a href="/admin/settings">Settings</a> and <a href="/admin-cms">CMS Admin</a>.</li>
+                    <li><strong>Verify Prime UEIs carefully:</strong> Only approve prime contractors with valid SAM.gov registrations.</li>
+                    <li><strong>Sign out when finished:</strong> Always click <span class="lbl lbl-red">Sign Out</span> when leaving a shared workstation.</li>
+                </ul>
+            </div>
+        </div>
+        <a href="#main-content" class="tut-back">Back to top &uarr;</a>
+
+        <!-- SECTION 7 -->
+        <div class="tut-section">
+            <div class="tut-section-head" id="sec-troubleshooting">
+                <div class="tut-section-num" aria-hidden="true">7</div>
+                <h2>Troubleshooting</h2>
+            </div>
+            <div class="tut-section-body">
+                <h3>Reported Site Issues</h3>
+                <p>Check <a href="/admin/issues">Reported Issues</a> in the sidebar to view inquiries or bug reports submitted via the public Contact form, and click <strong>Resolve</strong> once addressed.</p>
+            </div>
+        </div>
+        <a href="#main-content" class="tut-back">Back to top &uarr;</a>
+
+    </div>
+</div>
+
+<% } %>

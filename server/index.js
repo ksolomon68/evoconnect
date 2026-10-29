@@ -195,8 +195,16 @@ async function startServer() {
         });
 
         // CMS admin SPA (file-based content management, JWT auth)
-        app.get('/admin-cms', (req, res) => {
+        app.get(['/admin-cms', '/admin-cms.html'], (req, res) => {
             res.sendFile(path.join(__dirname, '../admin-cms.html'));
+        });
+
+        // CMS & Admin tutorial routes (both clean URLs and legacy .html URLs)
+        app.get(['/cms-tutorial', '/cms-tutorial.html'], (req, res) => {
+            res.render('admin/tutorial', { title: 'CMS Admin Guide | EvoConnect', guideType: 'cms', layout: req.user ? 'layouts/dashboard' : 'layouts/default' });
+        });
+        app.get(['/admin-tutorial', '/admin-tutorial.html'], (req, res) => {
+            res.render('admin/tutorial', { title: 'Platform Admin Guide | EvoConnect', guideType: 'platform', layout: req.user ? 'layouts/dashboard' : 'layouts/default' });
         });
 
         // Public home

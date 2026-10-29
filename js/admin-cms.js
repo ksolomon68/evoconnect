@@ -134,7 +134,7 @@ async function showShell() {
                   style="background:rgba(255,255,255,.15);color:#fff;border-color:transparent">
             Change Password
           </button>
-          <a href="cms-tutorial.html" target="_blank" rel="noopener" class="cms-btn cms-btn-sm"
+          <a href="/cms-tutorial.html" target="_blank" rel="noopener" class="cms-btn cms-btn-sm"
                   style="background:rgba(255,255,255,.15);color:#fff;border-color:transparent;text-decoration:none;display:inline-flex;align-items:center;gap:4px">
             <span aria-hidden="true">❔</span> Help
           </a>
