@@ -1,18 +1,18 @@
 {
   "updatedAt": "2026-10-29T01:30:00.000Z",
   "site": {
-    "name": "EVOConnect",
+    "name": "EVOConnected",
     "tagline": "Connect the Contract. Build the Future.",
     "logoImage": "/images/favicon.png",
-    "logoAlt": "EVOConnect Logo",
+    "logoAlt": "EVOConnected Logo",
     "faviconPath": "/images/favicon.png",
     "contactEmail": "info@evoconnect.evobrand.net",
     "contactPhone": "214-531-4427",
     "contactPhoneHours": "Monday – Friday, 8:00 AM – 6:00 PM CST",
-    "copyrightText": "© 2026 EVOConnect. Engineered by EVOBRAND Concepts. All rights reserved.",
+    "copyrightText": "© 2026 EVOConnected. Engineered by EVOBRAND Concepts. All rights reserved.",
     "programName": "Institutional government contract workforce & subcontractor intelligence ecosystem engineered by EVOBRAND Concepts.",
     "mailingAddress": {
-      "org": "EVOConnect — EVOBRAND Concepts",
+      "org": "EVOConnected — EVOBRAND Concepts",
       "dept": "Executive Support & Compliance Desk",
       "street": "",
       "cityStateZip": "Dallas, TX"
@@ -70,7 +70,7 @@
   "announcement": {
     "enabled": false,
     "version": "v2",
-    "message": "EVOConnect is actively onboarding verified skilled trade workers, certified small businesses, and prime contractors for FY2026 federal and state infrastructure programs.",
+    "message": "EVOConnected is actively onboarding verified skilled trade workers, certified small businesses, and prime contractors for FY2026 federal and state infrastructure programs.",
     "linkText": "Initialize Free Profile",
     "linkUrl": "/register"
   },

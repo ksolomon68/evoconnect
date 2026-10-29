@@ -52,7 +52,7 @@ function safeJson(val, fallback) {
 // ── GET /business ──────────────────────────────────────────────────────────────
 router.get('/', (req, res) => {
     res.render('business/index', {
-        title: 'Business Portal | EVOConnect',
+        title: 'Business Portal | EVOConnected',
         flash: getFlash(req)
     });
 });
@@ -60,7 +60,7 @@ router.get('/', (req, res) => {
 // ── GET /business/register ─────────────────────────────────────────────────────
 router.get('/register', (req, res) => {
     res.render('business/register', {
-        title: 'Register Your Business | EVOConnect',
+        title: 'Register Your Business | EVOConnected',
         flash: getFlash(req),
         states: US_STATES,
         stateNames: STATE_NAMES,
@@ -98,7 +98,7 @@ router.post('/register', regLimiter, async (req, res) => {
 
     if (errors.length) {
         return res.render('business/register', {
-            title: 'Register Your Business | EVOConnect',
+            title: 'Register Your Business | EVOConnected',
             flash: null,
             states: US_STATES,
             stateNames: STATE_NAMES,
@@ -114,7 +114,7 @@ router.post('/register', regLimiter, async (req, res) => {
         const [existing] = await db.execute('SELECT id FROM businesses WHERE email = ?', [email]);
         if (existing.length) {
             return res.render('business/register', {
-                title: 'Register Your Business | EVOConnect',
+                title: 'Register Your Business | EVOConnected',
                 flash: null,
                 states: US_STATES,
                 stateNames: STATE_NAMES,
@@ -157,9 +157,9 @@ router.post('/register', regLimiter, async (req, res) => {
 
         // Send confirmation email (non-blocking)
         const confirmHtml = `
-            <h2 style="color:#1a56db;">Welcome to EVOConnect, ${company_name}!</h2>
+            <h2 style="color:#1a56db;">Welcome to EVOConnected, ${company_name}!</h2>
             <p>Hi ${contact_name},</p>
-            <p>Your business profile is now live on EVOConnect and visible to approved prime contractors seeking subcontractors in your area.</p>
+            <p>Your business profile is now live on EVOConnected and visible to approved prime contractors seeking subcontractors in your area.</p>
             <h3 style="color:#374151;">Recommended next steps:</h3>
             <ol>
                 <li><strong>Complete the Vendor Readiness Checklist</strong> — Ensures your profile is fully visible and ready for subcontract opportunities.</li>
@@ -167,14 +167,14 @@ router.post('/register', regLimiter, async (req, res) => {
                 <li><strong>Add your NAICS codes</strong> — Primes search by NAICS code. The more accurate your codes, the better your match rate.</li>
                 <li><strong>Obtain set-aside certifications</strong> — 8(a), HUBZone, WOSB, and SDVOSB certifications significantly increase your opportunities.</li>
             </ol>
-            <p><a href="${process.env.APP_URL || 'https://evoconnect.evobrand.net'}/business/dashboard" style="display:inline-block;background:#1a56db;color:#fff;padding:12px 28px;border-radius:6px;text-decoration:none;font-weight:700;">Go to My Dashboard</a></p>
+            <p><a href="${require('../agency.config').baseUrl}/business/dashboard" style="display:inline-block;background:#1a56db;color:#fff;padding:12px 28px;border-radius:6px;text-decoration:none;font-weight:700;">Go to My Dashboard</a></p>
         `;
         sendEmail({
             to: email,
-            subject: 'Welcome to EVOConnect — your business profile is live',
+            subject: 'Welcome to EVOConnected — your business profile is live',
             html: confirmHtml,
-            text: `Welcome to EVOConnect, ${company_name}!\n\nYour profile is live. Log in: ${process.env.APP_URL || 'https://evoconnect.evobrand.net'}/business/dashboard`
-        }).catch(e => console.error('EVOConnect [business/register] email error:', e));
+            text: `Welcome to EVOConnected, ${company_name}!\n\nYour profile is live. Log in: ${require('../agency.config').baseUrl}/business/dashboard`
+        }).catch(e => console.error('EVOConnected [business/register] email error:', e));
 
         // Sign in
         const token = signToken({ id: bizId, email, type: 'business', name: company_name });
@@ -184,9 +184,9 @@ router.post('/register', regLimiter, async (req, res) => {
         res.redirect('/business/dashboard');
 
     } catch (err) {
-        console.error('EVOConnect [business/register]:', err);
+        console.error('EVOConnected [business/register]:', err);
         res.render('business/register', {
-            title: 'Register Your Business | EVOConnect',
+            title: 'Register Your Business | EVOConnected',
             flash: null,
             states: US_STATES,
             stateNames: STATE_NAMES,
@@ -250,7 +250,7 @@ router.get('/dashboard', requireType('business'), async (req, res) => {
         res.render('business/dashboard', {
             autoMatches,
             openOppsCount,
-            title: 'My Dashboard | EVOConnect Business',
+            title: 'My Dashboard | EVOConnected Business',
             flash: getFlash(req),
             business,
             naicsDetails,
@@ -260,7 +260,7 @@ router.get('/dashboard', requireType('business'), async (req, res) => {
         });
 
     } catch (err) {
-        console.error('EVOConnect [business/dashboard]:', err);
+        console.error('EVOConnected [business/dashboard]:', err);
         flash(req, 'error', 'Failed to load dashboard.');
         res.redirect('/login');
     }
@@ -280,7 +280,7 @@ router.get('/profile', requireType('business'), async (req, res) => {
         const [documents] = await db.execute('SELECT * FROM capability_documents WHERE owner_type = ? AND owner_id = ?', ['business', req.user.id]);
         res.render('business/profile', {
             capabilityDocument: documents[0],
-            title: 'My Profile | EVOConnect Business',
+            title: 'My Profile | EVOConnected Business',
             flash: getFlash(req),
             business,
             states: US_STATES,
@@ -288,7 +288,7 @@ router.get('/profile', requireType('business'), async (req, res) => {
         });
 
     } catch (err) {
-        console.error('EVOConnect [business/profile GET]:', err);
+        console.error('EVOConnected [business/profile GET]:', err);
         flash(req, 'error', 'Failed to load profile.');
         res.redirect('/business/dashboard');
     }
@@ -336,7 +336,7 @@ router.post('/profile', requireType('business'), async (req, res) => {
         res.redirect('/business/profile');
 
     } catch (err) {
-        console.error('EVOConnect [business/profile POST]:', err);
+        console.error('EVOConnected [business/profile POST]:', err);
         flash(req, 'error', 'Failed to update profile.');
         res.redirect('/business/profile');
     }
@@ -389,16 +389,16 @@ router.post('/checklist', requireType('business'), async (req, res) => {
                     const milestoneHtml = `
                         <h2 style="color:#1a56db;">${company_name} has hit ${milestone}% on the ${track} checklist!</h2>
                         <p>Hi ${contact_name},</p>
-                        <p>Congratulations — your business has completed <strong>${milestone}%</strong> of the <strong>${track.charAt(0).toUpperCase() + track.slice(1)} Contracting</strong> readiness track on EVOConnect.</p>
+                        <p>Congratulations — your business has completed <strong>${milestone}%</strong> of the <strong>${track.charAt(0).toUpperCase() + track.slice(1)} Contracting</strong> readiness track on EVOConnected.</p>
                         ${milestone === 100 ? '<p><strong>Your business is fully ready in this track!</strong> Prime contractors see your completed readiness score when searching for subcontractors.</p>' : '<p>Keep going — each completed item increases your visibility to prime contractors searching in your area.</p>'}
-                        <p><a href="${process.env.APP_URL || 'https://evoconnect.evobrand.net'}/business/dashboard" style="display:inline-block;background:#1a56db;color:#fff;padding:12px 28px;border-radius:6px;text-decoration:none;font-weight:700;">Continue Checklist</a></p>
+                        <p><a href="${require('../agency.config').baseUrl}/business/dashboard" style="display:inline-block;background:#1a56db;color:#fff;padding:12px 28px;border-radius:6px;text-decoration:none;font-weight:700;">Continue Checklist</a></p>
                     `;
                     sendEmail({
                         to: email,
-                        subject: `EVOConnect: ${company_name} hit ${milestone}% on the ${track} checklist!`,
+                        subject: `EVOConnected: ${company_name} hit ${milestone}% on the ${track} checklist!`,
                         html: milestoneHtml,
-                        text: `Congratulations! ${company_name} has completed ${milestone}% of the ${track} checklist on EVOConnect.`
-                    }).catch(e => console.error('EVOConnect [business/checklist] milestone email error:', e));
+                        text: `Congratulations! ${company_name} has completed ${milestone}% of the ${track} checklist on EVOConnected.`
+                    }).catch(e => console.error('EVOConnected [business/checklist] milestone email error:', e));
                 }
                 break;
             }
@@ -407,7 +407,7 @@ router.post('/checklist', requireType('business'), async (req, res) => {
         res.json({ success: true, pct });
 
     } catch (err) {
-        console.error('EVOConnect [business/checklist]:', err);
+        console.error('EVOConnected [business/checklist]:', err);
         res.status(500).json({ success: false, error: 'Server error.' });
     }
 });
@@ -446,7 +446,7 @@ router.get('/capability-statement', requireType('business'), async (req, res) =>
         });
 
     } catch (err) {
-        console.error('EVOConnect [business/capability-statement GET]:', err);
+        console.error('EVOConnected [business/capability-statement GET]:', err);
         flash(req, 'error', 'Failed to generate capability statement.');
         res.redirect('/business/dashboard');
     }
@@ -462,7 +462,7 @@ router.post('/capability-statement/generate', requireType('business'), async (re
         );
         res.redirect('/business/capability-statement');
     } catch (err) {
-        console.error('EVOConnect [business/capability-statement/generate]:', err);
+        console.error('EVOConnected [business/capability-statement/generate]:', err);
         flash(req, 'error', 'Failed to generate capability statement.');
         res.redirect('/business/dashboard');
     }
@@ -472,7 +472,7 @@ router.post('/capability-statement/generate', requireType('business'), async (re
 router.get('/faq', async (req, res, next) => {
     try {
         res.render('business/faq', {
-            title: 'FAQ | EVOConnect Business',
+            title: 'FAQ | EVOConnected Business',
             flash: getFlash(req),
             faqs: await require('../services/faqs').list(getDb(),'business')
         });
@@ -537,7 +537,7 @@ router.post('/profile/section', requireType('business'), async (req, res) => {
         res.redirect('/business/profile/edit');
 
     } catch (err) {
-        console.error('EVOConnect [business/profile/section]:', err);
+        console.error('EVOConnected [business/profile/section]:', err);
         const wantsJson = req.headers.accept && req.headers.accept.includes('application/json');
         if (wantsJson) return res.status(500).json({ success: false, error: 'Server error.' });
         flash(req, 'error', 'Failed to save section.');
@@ -562,7 +562,7 @@ router.get('/profile/edit', requireType('business'), async (req, res) => {
         const [documents] = await db.execute('SELECT * FROM capability_documents WHERE owner_type = ? AND owner_id = ?', ['business', req.user.id]);
         res.render('business/profile', {
             capabilityDocument: documents[0],
-            title: 'Edit Profile | EVOConnect Business',
+            title: 'Edit Profile | EVOConnected Business',
             flash: getFlash(req),
             business,
             states: US_STATES,
@@ -570,7 +570,7 @@ router.get('/profile/edit', requireType('business'), async (req, res) => {
         });
 
     } catch (err) {
-        console.error('EVOConnect [business/profile/edit GET]:', err);
+        console.error('EVOConnected [business/profile/edit GET]:', err);
         flash(req, 'error', 'Failed to load profile.');
         res.redirect('/business/dashboard');
     }
@@ -617,7 +617,7 @@ router.post('/profile/update', requireType('business'), async (req, res) => {
         res.redirect('/business/profile/edit');
 
     } catch (err) {
-        console.error('EVOConnect [business/profile/update POST]:', err);
+        console.error('EVOConnected [business/profile/update POST]:', err);
         flash(req, 'error', 'Failed to update profile.');
         res.redirect('/business/profile/edit');
     }
@@ -641,14 +641,14 @@ router.get('/checklist', requireType('business'), async (req, res) => {
         }
 
         res.render('business/checklist', {
-            title: 'Vendor Readiness Checklist | EVOConnect Business',
+            title: 'Vendor Readiness Checklist | EVOConnected Business',
             flash: getFlash(req),
             business,
             checklistByTrack
         });
 
     } catch (err) {
-        console.error('EVOConnect [business/checklist GET]:', err);
+        console.error('EVOConnected [business/checklist GET]:', err);
         flash(req, 'error', 'Failed to load checklist.');
         res.redirect('/business/dashboard');
     }
@@ -673,7 +673,7 @@ router.get('/resources', requireType('business'), async (req, res) => {
     try {
         const db = getDb();
         const [resources] = await db.execute("SELECT * FROM resources WHERE audience IN ('all','business') AND status='active' ORDER BY sort_order ASC");
-        res.render('labor/resources', { title: 'Resources | EVOConnect Business', flash: getFlash(req), resources });
+        res.render('labor/resources', { title: 'Resources | EVOConnected Business', flash: getFlash(req), resources });
     } catch (err) {
         res.redirect('/business/dashboard');
     }

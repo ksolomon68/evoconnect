@@ -1,4 +1,4 @@
--- EVOConnect — Full Schema + Demo Accounts
+-- EVOConnected — Full Schema + Demo Accounts
 -- Database: u579331817_evoconnect
 -- Password for all demo accounts: DemoPass1!
 -- Run this in phpMyAdmin — safe to run multiple times

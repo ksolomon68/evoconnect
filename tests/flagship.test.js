@@ -522,3 +522,22 @@ test('Hostinger keeps CMS edits in MySQL and accepts PDFs larger than the server
         const download=await clients.business.request('/capabilities/'+document.id);assert.equal(download.status,200);assert.equal(Buffer.from(await download.arrayBuffer()).compare(largePdf),0);
     }finally{await clients.admin.request('/api/cms/pages/'+slug,{method:'DELETE'});}
 });
+
+test('EVOConnected CMS branding migration retains custom content, IDs, and active Hostinger links',async()=>{
+    const migrationDb={getConnection:async()=>({execute:db.execute.bind(db),beginTransaction:db.beginTransaction.bind(db),commit:db.commit.bind(db),rollback:db.rollback.bind(db),release(){}})};
+    const contentKey='pages/rebrand-fixture.json';
+    const source={slug:'rebrand-fixture',meta:{title:'EVOConnect custom title'},sections:[{id:'custom-section',fields:{body:'Welcome to EvoConnect. Custom qualifications content.',url:'https://darkslategrey-partridge-695960.hostingersite.com/login'}}]};
+    const [faq]=await db.execute("INSERT INTO cms_faqs (category,question,answer,status) VALUES ('Brand test','Is EVOConnect available?','<p>EvoConnect custom answer.</p>','active')");
+    try{
+        await db.execute('INSERT INTO cms_content (content_key,data) VALUES (?,?) ON DUPLICATE KEY UPDATE data=VALUES(data),deleted=FALSE',[contentKey,JSON.stringify(source)]);
+        await db.execute("DELETE FROM app_migrations WHERE name='evoconnected-display-brand-v1'");
+        const migrate=require('../server/services/branding-migration');await migrate(migrationDb);
+        const [[saved]]=await db.execute('SELECT data FROM cms_content WHERE content_key=?',[contentKey]);const page=JSON.parse(saved.data);
+        assert.equal(page.meta.title,'EVOConnected custom title');assert.equal(page.sections[0].id,'custom-section');assert.equal(page.sections[0].fields.url,source.sections[0].fields.url);assert.match(page.sections[0].fields.body,/Custom qualifications content/);
+        await db.execute('UPDATE cms_faqs SET question=? WHERE id=?',['Custom owner edit',faq.insertId]);await migrate(migrationDb);
+        const [[edited]]=await db.execute('SELECT question,answer FROM cms_faqs WHERE id=?',[faq.insertId]);assert.equal(edited.question,'Custom owner edit');assert.match(edited.answer,/EVOConnected custom answer/);
+        const home=await fetch(base+'/?public=1');assert.equal(home.status,200);assert.match(await home.text(),/EVOConnected/);
+        const manifest=await (await fetch(base+'/manifest.json')).json();assert.equal(manifest.name,'EVOConnected');assert.equal(manifest.id,'io.workforceconnect.app');
+        const robots=await (await fetch(base+'/robots.txt')).text();assert.match(robots,/hostingersite.com/);assert.doesNotMatch(robots,/evoconnected.com/);
+    }finally{await db.execute('DELETE FROM cms_content WHERE content_key=?',[contentKey]);await db.execute('DELETE FROM cms_faqs WHERE id=?',[faq.insertId]);}
+});

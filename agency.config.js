@@ -1,6 +1,6 @@
 /**
  * ============================================================
- *  WORKFORCE CONNECT — CLIENT-SIDE AGENCY CONFIG
+ *  EVOConnected — CLIENT-SIDE AGENCY CONFIG
  * ============================================================
  *  All brand values live here. Do not hard-code platform names,
  *  colors, or emails anywhere else in the codebase.
@@ -9,12 +9,13 @@
 
 window.AGENCY = {
 
-  name:      'EVOConnect',
-  shortName: 'EVOConnect',
+  name:      'EVOConnected',
+  shortName: 'EVOConnected',
+  intendedDomain: 'evoconnected.com',
   appId:     'net.evobrand.evoconnect',
-  domain:    (typeof window !== 'undefined' ? window.location.hostname : 'evoconnect.evobrand.net'),
+  domain:    (typeof window !== 'undefined' ? window.location.hostname : 'darkslategrey-partridge-695960.hostingersite.com'),
   logoPath:  '/images/logo-light.png',
-  logoAlt:   'EVOConnect Logo',
+  logoAlt:   'EVOConnected Logo',
 
   colors: {
     primary:        '#0F172A', // Background base
@@ -37,9 +38,9 @@ window.AGENCY = {
   programTypes:  ['SAM', 'HUBZone', 'WOSB', 'SDVOSB', '8a'],
 
   links: {
-    agencyHome:        'https://workforceconnect.io',
+    agencyHome:        '/',
     contractingPortal: { url: 'https://sam.gov', label: 'SAM.gov Federal Contracts' },
-    resources:         'https://workforceconnect.io/resources',
+    resources:         '/resources',
     owner:             'https://evobrand.net'
   },
 

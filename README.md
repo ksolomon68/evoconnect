@@ -1,4 +1,4 @@
-# EVOConnect Platform
+# EVOConnected Platform
 
 Production runs on Hostinger as a Node.js/Express application. See [Hostinger deployment settings](docs/HOSTINGER-DEPLOYMENT.md).
 
@@ -6,7 +6,7 @@ A mission-critical digital platform connecting Small Businesses (Small Businesse
 
 ## Overview
 
-CaltransBizConnect serves as the central hub for the Small Business Supportive Services Business Development Program (Small Business/BDP). The platform streamlines the contracting process by providing:
+EVOConnected serves as the central hub for the Small Business Supportive Services Business Development Program (Small Business/BDP). The platform streamlines the contracting process by providing:
 
 - **For Small Businesses/Small Businesses**: Opportunity discovery, profile management, capability statement uploads, and application tracking
 - **For Prime Contractors**: Structured opportunity posting, small business search, and submission management
@@ -85,7 +85,7 @@ Antig2/
 
 ## Getting Started
 
-EVOConnect uses Node.js and MySQL for its role-based portals. See [feature coverage and development instructions](docs/FLAGSHIP-PARITY.md) for capability uploads, opportunity management, analytics, database setup, and integration tests.
+EVOConnected uses Node.js and MySQL for its role-based portals. See [feature coverage and development instructions](docs/FLAGSHIP-PARITY.md) for capability uploads, opportunity management, analytics, database setup, and integration tests.
 
 ### For Development
 1. Run `npm ci` and configure the local database using `.env.example`.
@@ -136,3 +136,5 @@ For questions or support:
 
 
 -- Last deployed: 03/09/2026 18:39:40
+
+The intended custom domain is **evoconnected.com** (ownership and configuration pending). The current Hostinger hostname remains active until DNS, SSL, and the custom domain are verified.

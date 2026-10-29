@@ -1,7 +1,7 @@
 'use strict';
 const bcrypt = require('bcryptjs');
 
-module.exports = async function provisionAdmin(db, {email,password,name='EVOConnect Admin',resetPassword=false}) {
+module.exports = async function provisionAdmin(db, {email,password,name='EVOConnected Admin',resetPassword=false}) {
     email = typeof email === 'string' ? email.trim().toLowerCase() : '';
     if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))throw new Error('A valid administrator email is required.');
     if(typeof password!=='string' || password.length<12)throw new Error('Administrator password must contain at least 12 characters.');

@@ -13,4 +13,4 @@ Allow: /js/
 Allow: /images/
 Allow: /uploads/
 
-Sitemap: https://workforceconnect.io/sitemap.xml
+Sitemap: https://darkslategrey-partridge-695960.hostingersite.com/sitemap.xml

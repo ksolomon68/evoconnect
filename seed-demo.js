@@ -1,6 +1,6 @@
 'use strict';
 /**
- * EVOConnect — Demo Data Seed Script
+ * EVOConnected — Demo Data Seed Script
  * ====================================
  * Creates one demo account for each portal role.
  * Safe to run multiple times — skips existing emails.
@@ -25,7 +25,7 @@ dotenv.config({ path: path.join(__dirname, '.env') });
 const DEMO_PASSWORD = 'DemoPass1!';
 
 async function seed() {
-    console.log('\n🌱 EVOConnect Demo Seed — Starting...\n');
+    console.log('\n🌱 EVOConnected Demo Seed — Starting...\n');
 
     const db = await mysql.createConnection({
         host:     process.env.DB_HOST     || 'localhost',

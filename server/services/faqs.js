@@ -13,7 +13,7 @@ function audience(category) {
 }
 async function list(db,role) {
     const [rows]=await db.execute("SELECT * FROM cms_faqs WHERE status='active' ORDER BY category,sort_order,id");
-    return rows.filter(row=>!role || audience(row.category)==='all' || audience(row.category)===role)
+    return rows.map(row=>require('./branding').display(row)).filter(row=>!role || audience(row.category)==='all' || audience(row.category)===role)
         .map(row=>{const html=answer(row.answer);return {...row,answer:html,q:row.question,a:html};});
 }
 async function groups(db) {

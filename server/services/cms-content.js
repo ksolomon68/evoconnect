@@ -13,7 +13,7 @@ async function read(file){
     if(path.dirname(file)===path.join(root,'schemas'))return JSON.parse(await fs.readFile(file,'utf8'));
     const contentKey=key(file);
     const [rows]=await execute('SELECT data,deleted FROM cms_content WHERE content_key=?',[contentKey]);
-    if(rows.length)return rows[0].deleted?null:JSON.parse(rows[0].data);
+    if(rows.length)return rows[0].deleted?null:require('./branding').display(JSON.parse(rows[0].data));
     let data;
     try{data=JSON.parse(await fs.readFile(file,'utf8'));}catch(err){if(err.code==='ENOENT')return null;throw err;}
     await execute('INSERT IGNORE INTO cms_content (content_key,data) VALUES (?,?)',[contentKey,JSON.stringify(data)]);

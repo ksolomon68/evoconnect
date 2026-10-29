@@ -3,13 +3,13 @@
   "isSystem": true,
   "updatedAt": "2026-10-29T01:30:00.000Z",
   "meta": {
-    "title": "Prime Contractor & Enterprise Sourcing Console | EVOConnect",
-    "description": "EVOConnect gives prime contractors, estimators, and compliance executives instant access to a searchable directory of pre-profiled, SAM-aligned, and socioeconomic-certified subcontractors built for government contract execution."
+    "title": "Prime Contractor & Enterprise Sourcing Console | EVOConnected",
+    "description": "EVOConnected gives prime contractors, estimators, and compliance executives instant access to a searchable directory of pre-profiled, SAM-aligned, and socioeconomic-certified subcontractors built for government contract execution."
   },
   "header": {
     "backgroundImage": "",
     "logoImage": "/images/favicon.png",
-    "logoAlt": "EVOConnect Logo"
+    "logoAlt": "EVOConnected Logo"
   },
   "sections": [
     {
@@ -18,7 +18,7 @@
       "fields": {
         "eyebrow": "DIVISION 03 // PRIME CONTRACTORS & GENERAL CONTRACTORS",
         "title": "Audit-Ready Subcontractor & Diversity Compliance Pipeline.",
-        "subtitle": "EVOConnect gives prime contractors, estimators, and compliance executives instant access to a searchable directory of pre-profiled, SAM-aligned, and socioeconomic-certified subcontractors built for government contract execution.",
+        "subtitle": "EVOConnected gives prime contractors, estimators, and compliance executives instant access to a searchable directory of pre-profiled, SAM-aligned, and socioeconomic-certified subcontractors built for government contract execution.",
         "primaryButton": {
           "label": "Initialize Prime Console",
           "href": "/prime/register"
@@ -34,7 +34,7 @@
       "type": "card-grid",
       "fields": {
         "heading": "Engineered for Primes Operating on Compressed Bid Timelines",
-        "intro": "Federal and state solicitations mandate strict DBE/HUB/8(a) participation goals and verified trade capacity. EVOConnect delivers an actionable subcontractor pipeline searchable in seconds.",
+        "intro": "Federal and state solicitations mandate strict DBE/HUB/8(a) participation goals and verified trade capacity. EVOConnected delivers an actionable subcontractor pipeline searchable in seconds.",
         "cards": [
           {
             "id": "prime-search",
@@ -95,7 +95,7 @@
       "type": "cta-banner",
       "fields": {
         "heading": "Ready to Mobilize Your Certified Subcontractor Pipeline?",
-        "text": "Join EVOConnect and start sourcing qualified, SAM-aligned, and diversity-certified subcontractors today.",
+        "text": "Join EVOConnected and start sourcing qualified, SAM-aligned, and diversity-certified subcontractors today.",
         "columns": [
           {
             "buttonLabel": "Register as Prime Contractor",

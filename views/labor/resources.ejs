@@ -1,4 +1,4 @@
-<% const title = locals.title || 'Resources | EVOConnect' %>
+<% const title = locals.title || 'Resources | EVOConnected' %>
 <% const role = locals.user?.type || 'worker' %>
 <% const basePath = role === 'business' ? '/business' : (role === 'prime' ? '/prime' : (role === 'admin' ? '/admin' : '/labor')) %>
 
@@ -21,8 +21,8 @@ const BUILTIN_RESOURCES = [
   { title: 'Set-Aside & Certification Programs', description: 'Learn how 8(a), HUBZone, WOSB, and SDVOSB set-aside contracts work and how to qualify.', url: 'https://www.sba.gov/federal-contracting/contracting-assistance-programs', icon: '🏷️', category: 'Certifications' },
   { title: 'Subcontracting & Prompt Pay Rules', description: 'Understand prime-to-subcontractor payment terms, milestone billing, and federal prompt payment protections.', url: 'https://www.sba.gov/federal-contracting/contracting-guide/prime-subcontracting', icon: '🤝', category: 'Subcontracting' },
   { title: 'Texas HUB Certification Portal', description: 'Apply for Texas Historically Underutilized Business (HUB) certification for state contracts.', url: 'https://comptroller.texas.gov/purchasing/vendor/hub/', icon: '🎯', category: 'State Contracting' },
-  { title: 'Vendor Readiness Checklist', description: 'Interactive step-by-step checklist tracking Federal, State, and Subcontractor readiness milestones.', url: basePath + '/checklist', icon: '✅', category: 'EVOConnect Tool' },
-  { title: 'Portal Help & FAQ', description: 'Answers to common questions about profiles, NAICS matching, capability statements, and bidding.', url: basePath + '/faq', icon: '❓', category: 'EVOConnect Tool' }
+  { title: 'Vendor Readiness Checklist', description: 'Interactive step-by-step checklist tracking Federal, State, and Subcontractor readiness milestones.', url: basePath + '/checklist', icon: '✅', category: 'EVOConnected Tool' },
+  { title: 'Portal Help & FAQ', description: 'Answers to common questions about profiles, NAICS matching, capability statements, and bidding.', url: basePath + '/faq', icon: '❓', category: 'EVOConnected Tool' }
 ];
 
 if (role === 'business') {
@@ -31,7 +31,7 @@ if (role === 'business') {
     description: 'Generate and print your formatted one-page business capability statement directly from your profile.',
     url: '/business/capability-statement',
     icon: '📄',
-    category: 'EVOConnect Tool'
+    category: 'EVOConnected Tool'
   });
 }
 

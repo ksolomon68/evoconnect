@@ -1,9 +1,11 @@
 module.exports = {
-    name:            'EVOConnect',
-    shortName:       'EVOConnect',
+    name:            'EVOConnected',
+    shortName:       'EVOConnected',
     tagline:         'Connect the Contract. Build the Future.',
     domain:          process.env.DOMAIN || 'darkslategrey-partridge-695960.hostingersite.com',
+    intendedDomain:  'evoconnected.com',
     appId:           'net.evobrand.evoconnect',
+    baseUrl:         (process.env.APP_URL || `https://${process.env.DOMAIN || 'darkslategrey-partridge-695960.hostingersite.com'}`).replace(/\/$/, ''),
     description:     'Government contract workforce ecosystem for skilled workers, small businesses, and prime contractors.',
     themeColor:      '#0F172A',
     backgroundColor: '#0F172A',

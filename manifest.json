@@ -1,17 +1,25 @@
 {
-  "name": "WorkForce Connect",
-  "short_name": "WFC",
+  "name": "EVOConnected",
+  "short_name": "EVOConnected",
   "id": "io.workforceconnect.app",
   "description": "Turn your trade skills into a government contract. Free registration for skilled workers.",
-  "start_url": "/index.html",
+  "start_url": "/",
   "scope": "/",
   "display": "standalone",
-  "display_override": ["window-controls-overlay", "standalone", "minimal-ui"],
+  "display_override": [
+    "window-controls-overlay",
+    "standalone",
+    "minimal-ui"
+  ],
   "orientation": "any",
   "background_color": "#0B1220",
   "theme_color": "#0B1220",
   "lang": "en-US",
-  "categories": ["business", "government", "productivity"],
+  "categories": [
+    "business",
+    "government",
+    "productivity"
+  ],
   "icons": [
     {
       "src": "images/favicon.png",
@@ -36,23 +44,38 @@
     {
       "name": "Register as Worker",
       "short_name": "Register",
-      "url": "/register-worker.html",
+      "url": "/labor/register",
       "description": "Sign up and get matched to federal contracts",
-      "icons": [{ "src": "images/favicon.png", "sizes": "192x192" }]
+      "icons": [
+        {
+          "src": "images/favicon.png",
+          "sizes": "192x192"
+        }
+      ]
     },
     {
       "name": "My Dashboard",
       "short_name": "Dashboard",
-      "url": "/login.html",
+      "url": "/login",
       "description": "Access your worker dashboard",
-      "icons": [{ "src": "images/favicon.png", "sizes": "192x192" }]
+      "icons": [
+        {
+          "src": "images/favicon.png",
+          "sizes": "192x192"
+        }
+      ]
     },
     {
       "name": "How It Works",
       "short_name": "How It Works",
-      "url": "/how-it-works.html",
+      "url": "/how-it-works",
       "description": "Learn the 4-step path to a government contract",
-      "icons": [{ "src": "images/favicon.png", "sizes": "192x192" }]
+      "icons": [
+        {
+          "src": "images/favicon.png",
+          "sizes": "192x192"
+        }
+      ]
     }
   ],
   "screenshots": [],

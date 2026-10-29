@@ -5,7 +5,7 @@
             <span><%= opp.listing_type === 'job' ? 'Trade Job Opportunity' : (opp.posted_by_type === 'prime' ? 'Prime RFQ Solicitation' : 'Procurement Opportunity') %></span>
         </div>
         <h1><%= opp.title %></h1>
-        <p><%= opp.listing_type !== 'job' && opp.posted_by_type === 'prime' ? 'Request for Qualifications (RFQ) · ' : '' %><%= opp.posted_by_name || 'EVOConnect' %> · Status: <strong><%= opp.status %></strong></p>
+        <p><%= opp.listing_type !== 'job' && opp.posted_by_type === 'prime' ? 'Request for Qualifications (RFQ) · ' : '' %><%= opp.posted_by_name || 'EVOConnected' %> · Status: <strong><%= opp.status %></strong></p>
     </div>
 </section>
 <section class="recommendations-list" style="padding:var(--space-xl)"><dl><dt>Category</dt><dd><%= opp.category_name %></dd><dt>Location</dt><dd><%= opp.district_name %></dd><dt>Estimated value</dt><dd><%= opp.estimated_value || 'Not specified' %></dd><dt>Deadline (UTC)</dt><dd><%= opp.due_date || 'Open until filled' %> <%= opp.due_time || '' %></dd></dl>

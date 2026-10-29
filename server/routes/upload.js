@@ -9,18 +9,18 @@ const router = express.Router();
 // UPLOADS_DIR env var lets production point to a path outside the git repo
 // so files survive redeployments (e.g. /home/u579331817/uploads)
 const uploadsDir = process.env.UPLOADS_DIR || path.join(__dirname, '../../uploads');
-console.log('WorkForce Connect Upload: uploads dir =', uploadsDir);
+console.log('EVOConnected Upload: uploads dir =', uploadsDir);
 if (!fs.existsSync(uploadsDir)) {
-    console.log('WorkForce Connect Upload: Creating uploads directory...');
+    console.log('EVOConnected Upload: Creating uploads directory...');
     fs.mkdirSync(uploadsDir, { recursive: true });
 }
 try {
     const testFile = path.join(uploadsDir, '.write-test');
     fs.writeFileSync(testFile, 'ok');
     fs.unlinkSync(testFile);
-    console.log('WorkForce Connect Upload: Directory is writable.');
+    console.log('EVOConnected Upload: Directory is writable.');
 } catch (e) {
-    console.error('WorkForce Connect Upload: NOT writable -', e.message);
+    console.error('EVOConnected Upload: NOT writable -', e.message);
 }
 
 // Multer storage config
@@ -55,7 +55,7 @@ const upload = multer({
 router.post('/', requireRole('small_business'), (req, res) => {
     upload.single('file')(req, res, (err) => {
         if (err) {
-            console.error('WorkForce Connect Upload: Multer error -', err);
+            console.error('EVOConnected Upload: Multer error -', err);
             return res.status(400).json({ error: err.message || 'Upload failed' });
         }
         if (!req.file) {

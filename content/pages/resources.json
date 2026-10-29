@@ -3,13 +3,13 @@
   "isSystem": true,
   "updatedAt": "2026-10-29T01:30:00.000Z",
   "meta": {
-    "title": "Compliance & Readiness Resources | EVOConnect",
-    "description": "Access federal and state contracting guides, SAM.gov UEI checklists, capability statement templates, and NAICS classification directories on EVOConnect."
+    "title": "Compliance & Readiness Resources | EVOConnected",
+    "description": "Access federal and state contracting guides, SAM.gov UEI checklists, capability statement templates, and NAICS classification directories on EVOConnected."
   },
   "header": {
     "backgroundImage": "",
     "logoImage": "/images/favicon.png",
-    "logoAlt": "EVOConnect Logo"
+    "logoAlt": "EVOConnected Logo"
   },
   "sections": [
     {
@@ -96,7 +96,7 @@
           {
             "id": "prime-faq",
             "title": "Prime Diversity Spend FAQ",
-            "body": "Learn how EVOConnect streamlines DBE, HUB, SDVOSB, and 8(a) subcontractor discovery and compliance reporting.",
+            "body": "Learn how EVOConnected streamlines DBE, HUB, SDVOSB, and 8(a) subcontractor discovery and compliance reporting.",
             "buttonLabel": "Read Prime FAQ",
             "buttonHref": "/prime/faq"
           }
