@@ -12,20 +12,22 @@
     --accent-blue: var(--color-primary);
     --accent-blue-light: var(--color-info-light);
     --border-color: var(--color-border-light);
-    --shadow-premium: var(--shadow-md);
-    --shadow-hover: var(--shadow-lg);
+    --shadow-premium: var(--shadow-card);
+    --shadow-hover: var(--shadow-card-hover);
     --header-height: 70px;
 }
 
 /* Standardized Dashboard Hero Section */
 .hero-section {
-    background: linear-gradient(135deg, var(--brand-blue) 0%, var(--color-primary-light) 100%);
+    background: linear-gradient(135deg, var(--color-primary-dark) 0%, var(--brand-blue) 55%, var(--color-primary-light) 100%);
     color: white;
     padding: var(--space-2xl) var(--space-xl);
     border-radius: var(--border-radius-lg);
     margin-bottom: var(--space-xl);
     position: relative;
     overflow: hidden;
+    box-shadow: var(--shadow-card), 0 0 48px -20px color-mix(in srgb, var(--color-primary) 55%, transparent);
+    border: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 .hero-section::before {
@@ -172,7 +174,8 @@ body.dashboard-v2 {
     background: var(--color-bg-primary);
     padding: var(--space-md) var(--space-lg);
     border-radius: var(--border-radius-lg);
-    box-shadow: var(--shadow-sm);
+    box-shadow: var(--shadow-card);
+    border: 1px solid var(--color-border-light);
 }
 
 .search-bar {
@@ -285,8 +288,8 @@ body.dashboard-v2 {
     flex-direction: column;
     align-items: flex-start;
     gap: 0.75rem;
-    box-shadow: var(--shadow-sm);
-    transition: box-shadow var(--transition-base);
+    box-shadow: var(--shadow-card);
+    transition: transform var(--transition-base), box-shadow var(--transition-base), border-color var(--transition-base);
     position: relative;
     overflow: hidden;
 }
@@ -297,11 +300,11 @@ body.dashboard-v2 {
     top: 0;
     left: 0;
     right: 0;
-    height: 4px;
-    background: linear-gradient(90deg, var(--brand-blue), #60a5fa);
+    height: 3px;
+    background: linear-gradient(90deg, var(--brand-blue), var(--color-primary-light));
     transform: scaleX(0);
     transform-origin: left;
-    transition: transform 0.3s ease;
+    transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .summary-card:hover::before {
@@ -310,8 +313,14 @@ body.dashboard-v2 {
 
 .summary-card:hover {
     transform: translateY(-4px);
-    box-shadow: var(--shadow-hover);
+    box-shadow: var(--shadow-card-hover), var(--glow-primary);
     border-color: var(--color-primary);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .summary-card:hover {
+        transform: none;
+    }
 }
 
 .summary-value {
@@ -446,19 +455,44 @@ body.dashboard-v2 {
     padding: var(--space-lg);
     text-decoration: none;
     color: var(--text-main);
-    transition: all var(--transition-base);
-    box-shadow: var(--shadow-sm);
+    transition: transform var(--transition-base), box-shadow var(--transition-base), border-color var(--transition-base);
+    box-shadow: var(--shadow-card);
+    position: relative;
+    overflow: hidden;
+}
+
+.action-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--brand-blue), var(--color-primary-light));
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.action-card:hover::before {
+    transform: scaleX(1);
 }
 
 .action-card:hover {
     transform: translateY(-4px);
-    box-shadow: var(--shadow-hover);
+    box-shadow: var(--shadow-hover), var(--glow-primary);
     border-color: var(--color-primary);
 }
 
-.action-card:focus {
+.action-card:focus-visible {
     outline: 2px solid var(--color-primary);
     outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .action-card:hover {
+        transform: none;
+    }
 }
 
 .icon-box {
@@ -470,11 +504,13 @@ body.dashboard-v2 {
     justify-content: center;
     font-size: 1.5rem;
     margin-bottom: var(--space-lg);
-    transition: transform var(--transition-base);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.25), 0 4px 10px -4px color-mix(in srgb, var(--color-primary) 45%, transparent);
+    transition: transform var(--transition-base), box-shadow var(--transition-base);
 }
 
 .action-card:hover .icon-box {
-    transform: rotate(5deg);
+    transform: rotate(5deg) scale(1.06);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.3), 0 6px 16px -4px color-mix(in srgb, var(--color-primary) 55%, transparent);
 }
 
 .action-card h3 {
@@ -515,10 +551,11 @@ body.dashboard-v2 {
 .recommendation-item {
     padding: var(--space-lg) var(--space-xl);
     border-bottom: var(--border-width) solid var(--border-color);
+    border-left: 3px solid transparent;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    transition: background-color var(--transition-fast);
+    transition: background-color var(--transition-fast), border-color var(--transition-fast), padding-left var(--transition-base);
 }
 
 .recommendation-item:last-child {
@@ -527,6 +564,8 @@ body.dashboard-v2 {
 
 .recommendation-item:hover {
     background: var(--color-bg-secondary);
+    border-left-color: var(--color-primary);
+    padding-left: calc(var(--space-xl) - 3px);
 }
 
 .rec-info h4 {

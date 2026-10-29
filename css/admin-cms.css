@@ -19,6 +19,12 @@
     --cms-shadow:        0 1px 4px rgba(0,0,0,.10);
     --cms-shadow-md:     0 2px 8px rgba(0,0,0,.12);
 
+    /* Elevated "sophisticated card" treatment — layered ambient depth
+       plus a glow that tracks --cms-primary via color-mix. */
+    --cms-shadow-card:       0 1px 1px rgba(0,0,0,.05), 0 10px 24px -10px rgba(0,0,0,.18);
+    --cms-shadow-card-hover: 0 1px 1px rgba(0,0,0,.06), 0 20px 36px -14px rgba(0,0,0,.22);
+    --cms-glow: 0 0 0 1px color-mix(in srgb, var(--cms-primary) 20%, transparent), 0 0 24px -8px color-mix(in srgb, var(--cms-primary) 40%, transparent);
+
     /* Typography (Caltrans style guide) */
     --cms-font:          Arial, Calibri, sans-serif;
     --cms-font-size:     20px;   /* 14pt body per style guide */
@@ -151,8 +157,9 @@ html, body {
     background:    var(--cms-surface);
     border:        1px solid var(--cms-border);
     border-radius: var(--cms-radius-lg);
-    box-shadow:    var(--cms-shadow);
+    box-shadow:    var(--cms-shadow-card);
     margin-bottom: 1.25rem;
+    transition: box-shadow .25s ease, border-color .25s ease;
 }
 .cms-panel-header {
     display:         flex;
@@ -380,10 +387,14 @@ html, body {
     border:        1px solid var(--cms-border);
     border-radius: var(--cms-radius);
     cursor:        pointer;
-    transition:    border-color .15s, box-shadow .15s;
+    transition:    border-color .15s, box-shadow .15s, transform .15s ease;
 }
-.cms-section-item:hover  { border-color: var(--cms-primary); }
-.cms-section-item.active { border-color: var(--cms-primary); box-shadow: 0 0 0 2px rgba(0,90,140,.2); background: var(--cms-info-bg); }
+.cms-section-item:hover  { border-color: var(--cms-primary); box-shadow: var(--cms-shadow); transform: translateX(2px); }
+.cms-section-item.active { border-color: var(--cms-primary); box-shadow: var(--cms-glow); background: var(--cms-info-bg); }
+
+@media (prefers-reduced-motion: reduce) {
+    .cms-section-item:hover { transform: none; }
+}
 
 .cms-section-badge {
     font-size:     var(--cms-font-size-sm);
@@ -472,8 +483,8 @@ html, body {
 /* Same lift-on-hover language as the dashboard's .action-card/.resource-card,
    so a clickable tile reads the same way whether you're in the CMS or a
    dashboard. */
-.cms-media-card:hover  { border-color: var(--cms-primary); box-shadow: var(--cms-shadow-md); transform: translateY(-3px); }
-.cms-media-card.selected { border-color: var(--cms-primary); box-shadow: 0 0 0 3px rgba(0,90,140,.3); }
+.cms-media-card:hover  { border-color: var(--cms-primary); box-shadow: var(--cms-shadow-card-hover); transform: translateY(-3px); }
+.cms-media-card.selected { border-color: var(--cms-primary); box-shadow: var(--cms-glow); }
 
 .cms-media-thumb-wrap {
     position: relative;
@@ -578,10 +589,14 @@ html, body {
     border-radius: var(--cms-radius);
     padding:       .85rem;
     cursor:        pointer;
-    transition:    border-color .15s, box-shadow .15s;
+    transition:    border-color .2s, box-shadow .2s, transform .2s ease;
     background:    var(--cms-surface);
 }
-.cms-component-card:hover { border-color: var(--cms-primary); box-shadow: var(--cms-shadow-md); }
+.cms-component-card:hover { border-color: var(--cms-primary); box-shadow: var(--cms-shadow-card-hover); transform: translateY(-2px); }
+
+@media (prefers-reduced-motion: reduce) {
+    .cms-component-card:hover { transform: none; }
+}
 .cms-component-type {
     font-size:   var(--cms-font-size-sm);
     color:       var(--cms-primary);
@@ -603,8 +618,9 @@ html, body {
 }
 .cms-modal {
     background:    var(--cms-surface);
+    border: 1px solid var(--cms-border-light);
     border-radius: var(--cms-radius-lg);
-    box-shadow:    var(--cms-shadow-md);
+    box-shadow:    var(--cms-shadow-card-hover);
     width:         100%;
     max-width:     640px;
     max-height:    90vh;
@@ -629,11 +645,12 @@ html, body {
 }
 .cms-login-card {
     background:    var(--cms-surface);
+    border: 1px solid var(--cms-border-light);
     border-radius: var(--cms-radius-lg);
     padding:       2.5rem 2rem;
     width:         100%;
     max-width:     420px;
-    box-shadow:    var(--cms-shadow-md);
+    box-shadow:    var(--cms-shadow-card-hover);
     text-align:    center;
 }
 .cms-login-card img  { height: 48px; margin-bottom: 1rem; }

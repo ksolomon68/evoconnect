@@ -157,6 +157,16 @@
   --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
   --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
 
+  /* Elevated "sophisticated card" shadows — layered ambient depth.
+     Pure dark-rgba layers read correctly on both the dark public theme
+     and the light [data-theme="dashboard"] theme, so these need no
+     per-theme override. The glow uses color-mix so it tracks whichever
+     --color-primary is active (cyan in dark, blue in the dashboard theme). */
+  --shadow-card: 0 1px 1px rgba(0, 0, 0, 0.06), 0 10px 24px -10px rgba(0, 0, 0, 0.28);
+  --shadow-card-hover: 0 1px 1px rgba(0, 0, 0, 0.08), 0 22px 40px -14px rgba(0, 0, 0, 0.32);
+  --glow-primary: 0 0 0 1px color-mix(in srgb, var(--color-primary) 22%, transparent), 0 0 28px -8px color-mix(in srgb, var(--color-primary) 45%, transparent);
+  --card-border-glass: linear-gradient(145deg, rgba(255, 255, 255, 0.14), rgba(255, 255, 255, 0) 40%);
+
   /* Transitions */
   --transition-fast: 150ms ease-in-out;
   --transition-base: 250ms ease-in-out;
@@ -571,16 +581,39 @@ input[type="radio"] {
    ============================================ */
 
 .card {
+  position: relative;
   background-color: var(--color-bg-primary);
   border: var(--border-width) solid var(--color-border-light);
   border-radius: var(--border-radius-lg);
   padding: var(--space-lg);
-  box-shadow: var(--shadow-sm);
-  transition: box-shadow var(--transition-base);
+  box-shadow: var(--shadow-card);
+  transition: transform var(--transition-base), box-shadow var(--transition-base), border-color var(--transition-base);
+}
+
+.card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+  background: var(--card-border-glass);
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+  opacity: 0.6;
 }
 
 .card:hover {
-  box-shadow: var(--shadow-md);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-card-hover), var(--glow-primary);
+  border-color: color-mix(in srgb, var(--color-primary) 35%, var(--color-border-light));
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .card:hover {
+    transform: none;
+  }
 }
 
 /* Premium Standardized Hero Section */
@@ -629,17 +662,25 @@ input[type="radio"] {
   background: var(--color-bg-secondary);
   border-radius: var(--border-radius-lg);
   padding: var(--space-xl);
-  box-shadow: var(--shadow-sm);
+  box-shadow: var(--shadow-card);
   border: 1px solid var(--color-border);
   margin-bottom: var(--space-lg);
   color: var(--color-text-primary);
+  transition: transform var(--transition-base), box-shadow var(--transition-base), border-color var(--transition-base);
 }
 
 .standard-card.hoverable:hover {
   background: var(--color-bg-tertiary);
   cursor: pointer;
   transform: translateY(-3px);
-  transition: all 0.2s ease;
+  box-shadow: var(--shadow-card-hover), var(--glow-primary);
+  border-color: color-mix(in srgb, var(--color-primary) 35%, var(--color-border));
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .standard-card.hoverable:hover {
+    transform: none;
+  }
 }
 
 /* Title Hierarchy Utilities */
