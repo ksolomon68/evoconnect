@@ -1,4 +1,5 @@
 'use strict';
+const bcrypt = require('bcryptjs');
 const context = require('./demo-context');
 const { getDb } = require('../database');
 const ensureAccount = require('./demo-accounts');
@@ -10,8 +11,9 @@ async function initialize() {
         for(const table of context.tables)await db.execute(`CREATE TABLE IF NOT EXISTS demo_${table} LIKE ${table}`);
         const [columns]=await db.execute("SELECT COLUMN_NAME FROM information_schema.COLUMNS WHERE TABLE_SCHEMA=DATABASE() AND TABLE_NAME='demo_opportunities' AND COLUMN_NAME='listing_type'");
         if(!columns.length)await db.execute("ALTER TABLE demo_opportunities ADD COLUMN listing_type ENUM('opportunity','job') NOT NULL DEFAULT 'opportunity'");
-        // Only the public NAICS reference is copied; no live member data is copied.
+        // Only public reference content is copied in; no live member data is copied.
         await db.execute('INSERT IGNORE INTO demo_naics_codes SELECT * FROM naics_codes');
+        await db.execute('INSERT IGNORE INTO demo_resources SELECT * FROM resources');
         await context.run(async()=>{
             for(const email of emails)await ensureAccount(db,email);
             await require('./faqs').seed(db);
@@ -49,6 +51,23 @@ async function initialize() {
 
             const [[existingSave]]=await db.execute("SELECT id FROM saved_opportunities WHERE opportunity_id='demo-electrical' AND user_type='business' AND user_id=?",[business.id]);
             if(!existingSave)await db.execute("INSERT INTO saved_opportunities (user_type,user_id,opportunity_id) VALUES ('business',?,'demo-electrical')",[business.id]);
+
+            // A second prime, left pending, so the admin demo has something to
+            // review in Prime Approvals — the real demo-prime account is
+            // pre-approved, so that queue would otherwise always read empty.
+            const [[existingPendingPrime]]=await db.execute("SELECT id FROM primes WHERE email='demo-pending-prime@evoconnect.io'");
+            if(!existingPendingPrime){
+                const pendingHash=await bcrypt.hash('not-a-real-login',10);
+                await db.execute("INSERT INTO primes (company_name,contact_name,email,password_hash,phone,sam_uei,contract_vehicles,naics_codes,city,state,zip,subscription_tier,active) VALUES ('Summit Infrastructure Partners','Dana Reyes','demo-pending-prime@evoconnect.io',?,'512-555-0177','SMMTIP4567890','GSA MAS','[\"237130\",\"238210\"]','Fort Worth','TX','76102','pro',0)",[pendingHash]);
+            }
+
+            // A couple of reported issues so Reported Issues isn't an empty
+            // page either — one open, one already resolved.
+            const [[existingIssue]]=await db.execute("SELECT id FROM site_issues WHERE description='Capability statement PDF would not download on mobile Safari.'");
+            if(!existingIssue){
+                await db.execute("INSERT INTO site_issues (user_type,user_id,name,email,issue_type,page_url,description,status) VALUES ('worker',?,'James Okafor','demo-labor@evoconnect.io','bug','/labor/documents','Capability statement PDF would not download on mobile Safari.','open')",[worker.id]);
+                await db.execute("INSERT INTO site_issues (user_type,user_id,name,email,issue_type,page_url,description,status) VALUES ('business',?,'Tanya Williams','demo-business@evoconnect.io','question','/business/matches','Asked how NAICS match scoring works — answered and documented in the FAQ.','resolved')",[business.id]);
+            }
         });
     }).catch(err=>{initialized=null;throw err;});
     return initialized;
