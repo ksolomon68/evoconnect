@@ -1,5 +1,5 @@
 /**
- * Admin CMS JavaScript — WorkForce Connect
+ * Admin CMS JavaScript — EVOConnect
  *
  * Provides the full single-page admin interface for:
  *  • Editing page content (sections, fields, images)
@@ -84,7 +84,7 @@ function showLoginScreen() {
           </button>
         </form>
         <div style="margin-top:1.25rem;padding-top:1rem;border-top:1px solid #E2E8F0;display:flex;justify-content:space-between;font-size:0.9rem;">
-          <a href="/admin/dashboard" style="color:#005A8C;text-decoration:none;font-weight:600;">← Admin Dashboard</a>
+          <a href="/admin/dashboard" style="color:#0284C7;text-decoration:none;font-weight:600;">← Admin Dashboard</a>
           <a href="/?public=1" style="color:#5a6472;text-decoration:none;">Public Site</a>
         </div>
       </div>
@@ -396,7 +396,7 @@ function renderTutorialsTab(container) {
     </div>
     <div class="cms-panel">
       <div class="cms-panel-body">
-        <p class="cms-text-muted mb-md">Watch these tutorial videos to learn how to manage content, pages, and administration in the WorkForce Connect CMS.</p>
+        <p class="cms-text-muted mb-md">Watch these tutorial videos to learn how to manage content, pages, and administration in the EVOConnect CMS.</p>
         
         <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(320px, 1fr));gap:2rem;">
           
@@ -423,7 +423,7 @@ function renderTutorialsTab(container) {
               <iframe src="https://www.youtube.com/embed/eXEldHlPpZQ" title="Tutorial Video 3" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen style="position:absolute;top:0;left:0;width:100%;height:100%;"></iframe>
             </div>
             <div style="padding:1rem;">
-              <h3 style="font-size:1.05rem;margin:0;color:var(--color-primary)">Scaling WorkForce Connect</h3>
+              <h3 style="font-size:1.05rem;margin:0;color:var(--color-primary)">Scaling EVOConnect</h3>
             </div>
           </div>
 
@@ -1224,7 +1224,7 @@ async function renderMediaLibrary(container, onSelect) {
           <div class="cms-panel-header"><h3 class="cms-panel-title">Upload Image</h3></div>
           <div class="cms-panel-body">
             <div class="cms-alert cms-alert-warning cms-mb">
-              ⚠️ Caltrans Accessibility Policy: Alt text is <strong>required</strong> for every uploaded image.
+              ⚠️ Section 508 Accessibility Policy: Alt text is <strong>required</strong> for every uploaded image.
             </div>
             <label class="cms-upload-zone" id="upload-zone" for="media-file-input" tabindex="0"
                    role="button" aria-label="Upload image — click or drag & drop">
