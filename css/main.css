@@ -1692,9 +1692,9 @@ body {
   gap: 1rem !important;
   flex-wrap: wrap !important;
   font-size: .82rem !important;
-  color: #64748B !important;
+  color: var(--slate-500) !important;
 }
-.footer-bottom a { color: #64748B !important; text-decoration: none !important; }
+.footer-bottom a { color: var(--slate-500) !important; text-decoration: none !important; }
 .footer-bottom a:hover { color: var(--cyan) !important; }
 
 @media (max-width: 768px) {
