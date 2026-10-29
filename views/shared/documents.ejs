@@ -1,5 +1,20 @@
 <%- include('../partials/flash') %>
-<section class="hero-section"><div class="hero-content"><h1>Capability statement</h1><p>Share your qualifications with potential contracting partners.</p></div></section>
-<section class="recommendations-list" style="padding:var(--space-xl)">
+<% const isWorker = locals.user && locals.user.type === 'worker'; %>
+<section class="hero-section">
+    <div class="hero-content hero-welcome">
+        <div class="wfc-eyebrow">
+            <span class="eyebrow-dot" aria-hidden="true"></span>
+            <span><%= isWorker ? 'Career & Trade Credentials' : 'Contractor Qualifications' %></span>
+        </div>
+        <h1><%= isWorker ? 'Professional' : 'Capability' %> <span><%= isWorker ? 'Resume' : 'Statement' %></span></h1>
+        <p><%= isWorker ? 'Upload and manage your verified PDF resume so prime contractors and hiring businesses can review your trade experience, certifications, and availability.' : 'Share your capabilities, past performance, and core competencies with potential contracting partners across Texas.' %></p>
+        <div class="hero-telemetry-chips">
+            <span class="telemetry-chip"><span class="chip-dot chip-success"></span> <%= isWorker ? 'Resume Sync: Live' : 'Capability Engine: Active' %></span>
+            <span class="telemetry-chip"><span class="chip-dot chip-cyan"></span> PDF Secure Storage: Encrypted</span>
+            <span class="telemetry-chip"><span class="chip-dot chip-info"></span> Directory Integration: Public</span>
+        </div>
+    </div>
+</section>
+<section class="dash-card recommendations-list" style="padding:var(--space-xl)">
 <%- include('capability-upload') %>
 </section>

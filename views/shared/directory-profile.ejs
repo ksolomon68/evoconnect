@@ -1,6 +1,50 @@
-<section class="hero-section"><div class="hero-content"><h1><%= profile.name %></h1><p><%= profile.type === 'worker' ? 'Labor' : profile.type === 'prime' ? 'Prime contractor' : 'Small business' %> · <%= [profile.city,profile.state].filter(Boolean).join(', ') || 'Location not provided' %></p></div></section>
-<section class="recommendations-list" style="padding:var(--space-xl)"><h2>Qualifications</h2><p style="white-space:pre-wrap"><%= profile.description || 'This member has not added a description yet.' %></p>
-<% for(const field of ['naics','certifications']) { let list=[]; try {list=typeof profile[field]==='string'?JSON.parse(profile[field]):profile[field];} catch {} %>
-<% if(Array.isArray(list) && list.length) { %><h3><%= field === 'naics' ? 'NAICS codes' : 'Certifications' %></h3><p><%= list.join(', ') %></p><% } %><% } %>
-<h2>Capability statement</h2><% if(document) { %><p><a class="btn btn-primary" href="/capabilities/<%= document.id %>">View PDF</a> <a class="btn btn-secondary" href="/capabilities/<%= document.id %>?download=1">Download PDF</a></p><% } else { %><p>No uploaded capability statement.</p><% } %>
-<p>Contact details are shared through EVOConnect connections and messages.</p></section>
+<% const isWorker = profile.type === 'worker'; %>
+<section class="hero-section">
+    <div class="hero-content hero-welcome">
+        <div class="wfc-eyebrow">
+            <span class="eyebrow-dot" aria-hidden="true"></span>
+            <span><%= isWorker ? 'Verified Trade Workforce' : profile.type === 'prime' ? 'Prime Contractor Profile' : 'Certified Small Business' %></span>
+        </div>
+        <h1><%= profile.name %></h1>
+        <p><%= isWorker ? 'Skilled Labor & Subcontractor' : profile.type === 'prime' ? 'Prime General Contractor' : 'Small Business Enterprise' %> · <%= [profile.city, profile.state].filter(Boolean).join(', ') || 'Texas' %> · Directory Member</p>
+    </div>
+</section>
+
+<section class="dash-card recommendations-list" style="padding:var(--space-xl)">
+    <div class="dash-card-header">
+        <h2><%= isWorker ? 'Professional Background & Qualifications' : 'Company Overview & Capabilities' %></h2>
+    </div>
+    <p style="white-space:pre-wrap;line-height:1.7;color:var(--color-text-secondary);margin-bottom:1.75rem;"><%= profile.description || 'This member has not added a detailed description yet.' %></p>
+
+    <% for(const field of ['naics','certifications']) { 
+        let list=[]; 
+        try { list = typeof profile[field] === 'string' ? JSON.parse(profile[field]) : profile[field]; } catch {} 
+        if(Array.isArray(list) && list.length) { 
+    %>
+        <div style="margin-bottom:1.5rem;">
+            <h3 style="font-size:1.05rem;font-weight:700;margin-bottom:0.6rem;color:#0F172A;"><%= field === 'naics' ? 'Registered NAICS Codes' : 'Active Licenses & Certifications' %></h3>
+            <div style="display:flex;flex-wrap:wrap;gap:0.5rem;">
+                <% list.forEach(function(item) { %>
+                    <span class="status-badge <%= field === 'naics' ? 'badge-cyan' : 'badge-success' %>"><%= item %></span>
+                <% }) %>
+            </div>
+        </div>
+    <% } } %>
+
+    <div class="dash-card-header" style="margin-top:2rem;">
+        <h2><%= isWorker ? 'Professional Resume' : 'Capability Statement' %></h2>
+    </div>
+    <% if(document) { %>
+        <p style="margin-bottom:1rem;color:var(--color-text-secondary);">Verified PDF document uploaded to EVOConnect member profile.</p>
+        <div style="display:flex;gap:0.75rem;flex-wrap:wrap;margin-bottom:1.5rem;">
+            <a class="btn btn-primary" href="/capabilities/<%= document.id %>" target="_blank" rel="noopener noreferrer">View <%= isWorker ? 'Resume' : 'Statement' %> PDF</a>
+            <a class="btn btn-secondary" href="/capabilities/<%= document.id %>?download=1">Download PDF</a>
+        </div>
+    <% } else { %>
+        <p style="color:var(--color-text-muted);font-style:italic;">No <%= isWorker ? 'resume' : 'capability statement' %> has been uploaded yet.</p>
+    <% } %>
+
+    <div style="margin-top:2rem;padding-top:1.25rem;border-top:1px solid #E2E8F0;font-size:0.88rem;color:#64748B;">
+        🔒 Direct contact details and messaging become available when you connect with this member on EVOConnect.
+    </div>
+</section>

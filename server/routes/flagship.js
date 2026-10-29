@@ -74,7 +74,8 @@ router.post('/:portal(labor)/matches/codes', ...portalAuth, csrf, wrap(async(req
 // Private PDF storage: filenames and owners never come from a submitted user ID.
 router.get('/:portal(labor|business|prime|admin)/documents', ...portalAuth, wrap(async (req,res) => {
     const [docs] = await getDb().execute('SELECT * FROM capability_documents WHERE owner_type = ? AND owner_id = ?', [req.user.type, req.user.id]);
-    res.render('shared/documents', { title: 'Capability Statement | EVOConnect', basePath: `/${req.params.portal}`, document: docs[0], flash: req.session.flash || null });
+    const isWorker = req.params.portal === 'labor' || req.user.type === 'worker';
+    res.render('shared/documents', { title: isWorker ? 'Upload Resume | EVOConnect' : 'Capability Statement | EVOConnect', basePath: `/${req.params.portal}`, document: docs[0], flash: req.session.flash || null });
     delete req.session.flash;
 }));
 router.post('/:portal(labor|business|prime|admin)/documents', ...portalAuth, (req,res,next) => {
@@ -96,7 +97,8 @@ router.post('/:portal(labor|business|prime|admin)/documents', ...portalAuth, (re
         [id, req.user.type, req.user.id, storage, path.basename(file.originalname).slice(0,255), file.size]);
     } catch (err) { await fs.promises.unlink(path.join(privateDir,storage)); throw err; }
     for(const doc of old) await fs.promises.unlink(path.join(privateDir,doc.storage_name)).catch(err => { if(err.code !== 'ENOENT') console.error('Old capability cleanup failed:', err.code); });
-    flash(req, 'Capability statement uploaded. Your profile now links to this PDF.');
+    const isWorker = req.params.portal === 'labor' || req.user.type === 'worker';
+    flash(req, isWorker ? 'Resume uploaded. Your profile now links to this PDF.' : 'Capability statement uploaded. Your profile now links to this PDF.');
     res.redirect(req.params.portal === 'business' ? '/business/profile#capability-statement' : `/${req.params.portal}/documents`);
 }));
 router.post('/:portal(labor|business|prime|admin)/documents/delete', ...portalAuth, csrf, wrap(async (req,res) => {
@@ -105,7 +107,8 @@ router.post('/:portal(labor|business|prime|admin)/documents/delete', ...portalAu
         await getDb().execute('DELETE FROM capability_documents WHERE id = ? AND owner_type = ? AND owner_id = ?', [docs[0].id,req.user.type,req.user.id]);
         await fs.promises.unlink(path.join(privateDir,docs[0].storage_name)).catch(err => { if(err.code !== 'ENOENT') throw err; });
     }
-    flash(req, 'Uploaded statement removed.');res.redirect(req.params.portal === 'business' ? '/business/profile#capability-statement' : `/${req.params.portal}/documents`);
+    const isWorker = req.params.portal === 'labor' || req.user.type === 'worker';
+    flash(req, isWorker ? 'Uploaded resume removed.' : 'Uploaded statement removed.');res.redirect(req.params.portal === 'business' ? '/business/profile#capability-statement' : `/${req.params.portal}/documents`);
 }));
 router.get('/capabilities/:id', requireAuth, wrap(async (req,res,next) => {
     const [docs] = await getDb().execute('SELECT * FROM capability_documents WHERE id = ?', [req.params.id]);

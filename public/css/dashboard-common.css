@@ -1396,7 +1396,16 @@ body.dashboard-v2 h4 {
     pointer-events: none !important;
 }
 
-.hero-welcome h1 {
+/* Universal High-Contrast Typography for Hero Sections & Page Title Cards */
+.hero-section h1,
+.hero-section h2,
+.hero-section h3,
+.hero-section h4,
+.hero-content h1,
+.hero-content h2,
+.hero-content h3,
+.hero-welcome h1,
+.hero-welcome h2 {
     font-family: 'Plus Jakarta Sans', sans-serif !important;
     font-size: 2rem !important;
     font-weight: 800 !important;
@@ -1406,18 +1415,29 @@ body.dashboard-v2 h4 {
     line-height: 1.2 !important;
 }
 
+.hero-section h1 span,
+.hero-content h1 span,
 .hero-welcome h1 span {
     background: linear-gradient(135deg, #38BDF8 0%, #06B6D4 100%) !important;
     -webkit-background-clip: text !important;
     -webkit-text-fill-color: transparent !important;
 }
 
-.hero-welcome p {
+.hero-section p,
+.hero-content p,
+.hero-welcome p,
+.hero-section .hero-sub,
+.hero-content .hero-sub {
     font-size: 1rem !important;
     color: #94A3B8 !important;
-    max-width: 680px !important;
+    max-width: 720px !important;
     line-height: 1.6 !important;
     margin-bottom: 1.25rem !important;
+}
+
+.hero-section .hero-content > p:last-child,
+.hero-section .hero-welcome > p:last-child {
+    margin-bottom: 0 !important;
 }
 
 .hero-telemetry-chips {
@@ -1840,3 +1860,257 @@ table.data-table tbody tr:last-child td {
     align-items: center !important;
     gap: 1rem !important;
 }
+
+/* ── Consistent Page Title Cards & Headers Across Dashboard Views ── */
+.profile-header,
+.admin-header,
+.page-title-card,
+.dashboard-header {
+    background: #FFFFFF !important;
+    border: 1px solid #E2E8F0 !important;
+    border-radius: 16px !important;
+    padding: 1.75rem 2rem !important;
+    margin-bottom: 2rem !important;
+    box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04), 0 2px 6px -1px rgba(15, 23, 42, 0.02) !important;
+}
+
+.profile-header h1,
+.admin-header h1,
+.page-title-card h1,
+.dashboard-header h1 {
+    font-family: 'Plus Jakarta Sans', sans-serif !important;
+    font-size: 1.75rem !important;
+    font-weight: 800 !important;
+    color: #0F172A !important;
+    margin: 0 0 0.4rem 0 !important;
+    letter-spacing: -0.025em !important;
+    line-height: 1.2 !important;
+}
+
+.profile-header .section-sub,
+.admin-header p,
+.page-title-card p,
+.dashboard-header .section-sub,
+.dashboard-header p {
+    font-size: 0.95rem !important;
+    color: #64748B !important;
+    margin: 0 !important;
+    line-height: 1.55 !important;
+}
+
+/* ── Mobile Responsiveness & Compatibility Suite ── */
+@media (max-width: 1024px) {
+    .main-content {
+        padding: 1.75rem !important;
+    }
+
+    .hero-section {
+        padding: 2rem 2.25rem !important;
+    }
+
+    .summary-grid {
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 1rem !important;
+    }
+}
+
+@media (max-width: 768px) {
+    /* Prevent any horizontal screen blowout */
+    html, body {
+        overflow-x: hidden !important;
+        width: 100% !important;
+    }
+
+    .dashboard-v2 {
+        flex-direction: column !important;
+        overflow-x: hidden !important;
+    }
+
+    .dashboard-container {
+        width: 100% !important;
+        min-width: 0 !important;
+        overflow-x: hidden !important;
+    }
+
+    /* Streamlined Main Content Padding */
+    .main-content {
+        padding: 1.25rem 1rem !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        box-sizing: border-box !important;
+    }
+
+    /* Hero Section Mobile Optimization */
+    .hero-section {
+        padding: 1.6rem 1.25rem !important;
+        border-radius: 16px !important;
+        margin-bottom: 1.25rem !important;
+    }
+
+    .hero-section h1,
+    .hero-content h1,
+    .hero-welcome h1 {
+        font-size: 1.55rem !important;
+        line-height: 1.25 !important;
+        margin-bottom: 0.5rem !important;
+    }
+
+    .hero-section p,
+    .hero-content p,
+    .hero-welcome p {
+        font-size: 0.9rem !important;
+        line-height: 1.5 !important;
+    }
+
+    .hero-telemetry-chips {
+        gap: 0.45rem !important;
+        margin-top: 0.85rem !important;
+    }
+
+    .telemetry-chip {
+        font-size: 0.7rem !important;
+        padding: 0.25rem 0.65rem !important;
+    }
+
+    /* Sticky Header on Mobile */
+    .header-top {
+        height: 60px !important;
+        padding: 0 1rem !important;
+    }
+
+    .header-top-left,
+    .header-top-right {
+        gap: 0.5rem !important;
+    }
+
+    .header-user-info .user-name {
+        font-size: 0.82rem !important;
+        max-width: 130px !important;
+        white-space: nowrap !important;
+        overflow: hidden !important;
+        text-overflow: ellipsis !important;
+    }
+
+    .header-user-info .user-role {
+        font-size: 0.68rem !important;
+    }
+
+    /* Cards & Containers on Mobile */
+    .dash-card,
+    .recommendations-list,
+    .profile-header,
+    .admin-header,
+    .page-title-card {
+        padding: 1.25rem 1rem !important;
+        border-radius: 14px !important;
+        margin-bottom: 1.25rem !important;
+    }
+
+    .dash-card-header h2,
+    .section-header h2 {
+        font-size: 1.15rem !important;
+    }
+
+    /* Action Grid & Bento Cards */
+    .action-grid {
+        grid-template-columns: 1fr !important;
+        gap: 0.85rem !important;
+        margin-bottom: 1.75rem !important;
+    }
+
+    .action-card {
+        min-height: auto !important;
+        padding: 1.25rem 1.15rem !important;
+    }
+
+    /* Summary Grid */
+    .summary-grid {
+        grid-template-columns: 1fr 1fr !important;
+        gap: 0.75rem !important;
+        margin-bottom: 1.5rem !important;
+    }
+
+    .summary-card {
+        padding: 1.15rem 1rem !important;
+        min-height: auto !important;
+    }
+
+    .summary-value {
+        font-size: 1.65rem !important;
+    }
+
+    .summary-label {
+        font-size: 0.72rem !important;
+    }
+
+    /* Tables Must Never Blow Out Screen Width */
+    .table-responsive,
+    div:has(> table) {
+        overflow-x: auto !important;
+        -webkit-overflow-scrolling: touch !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        margin-bottom: 1rem !important;
+    }
+
+    table.data-table {
+        min-width: 480px !important;
+    }
+
+    table.data-table th,
+    table.data-table td {
+        padding: 0.75rem 0.85rem !important;
+        font-size: 0.82rem !important;
+    }
+
+    /* Forms, Buttons & Controls */
+    .form-control,
+    input,
+    select,
+    textarea {
+        max-width: 100% !important;
+        box-sizing: border-box !important;
+        font-size: 16px !important; /* Prevents auto-zoom on iOS */
+    }
+
+    .btn {
+        min-height: 42px !important;
+    }
+}
+
+@media (max-width: 480px) {
+    .main-content {
+        padding: 1rem 0.75rem !important;
+    }
+
+    .hero-section {
+        padding: 1.35rem 1rem !important;
+        border-radius: 14px !important;
+    }
+
+    .hero-section h1,
+    .hero-content h1,
+    .hero-welcome h1 {
+        font-size: 1.35rem !important;
+    }
+
+    .summary-grid {
+        grid-template-columns: 1fr !important;
+        gap: 0.75rem !important;
+    }
+
+    .profile-header h1,
+    .admin-header h1 {
+        font-size: 1.35rem !important;
+    }
+
+    /* Buttons stack gracefully on very small screens */
+    .dash-card-header,
+    .profile-header,
+    .admin-header {
+        flex-direction: column !important;
+        align-items: flex-start !important;
+        gap: 0.75rem !important;
+    }
+}
+

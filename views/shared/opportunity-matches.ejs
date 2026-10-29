@@ -1,3 +1,62 @@
-<section class="hero-section"><div class="hero-content"><h1>Suggested partners</h1><p><%= opp.title %></p></div></section>
-<section class="recommendations-list" style="padding:var(--space-xl)"><p>Matches update automatically from current NAICS codes. The percentage shows how many of the opportunity’s codes match the partner. Review qualifications, certifications, and availability before selecting a partner.</p><% if(!matches.length) { %><div class="empty-state-inline"><p>No matching active businesses or workers yet. Add NAICS codes to the opportunity or search the business directory.</p></div><% } %>
-<% for(const partner of matches) { %><article class="card" style="padding:1rem;margin:1rem 0"><h2><a href="/directory/<%= partner.type %>/<%= partner.id %>"><%= partner.name %></a></h2><p><%= [partner.city,partner.state].filter(Boolean).join(', ') %> · <%= partner.type === 'worker' ? 'Worker' : 'Business' %> · <%= partner.score %>% code coverage · Matching NAICS: <%= partner.matched.join(', ') %></p><form method="post" action="<%= basePath %>/opportunities/<%= encodeURIComponent(opp.id) %>/invite"><input type="hidden" name="_csrf" value="<%= csrfToken %>"><input type="hidden" name="target_key" value="<%= partner.type %>:<%= partner.id %>"><button class="btn btn-primary">Invite to apply</button></form></article><% } %><a href="<%= basePath %>/<%= user.type==='business'?'jobs':'opportunities' %>">Back to opportunities</a></section>
+<section class="hero-section">
+    <div class="hero-content hero-welcome">
+        <div class="wfc-eyebrow">
+            <span class="eyebrow-dot" aria-hidden="true"></span>
+            <span>Procurement Matching Intelligence</span>
+        </div>
+        <h1>Suggested <span>Partner Matches</span></h1>
+        <p>Matched partners for <strong><%= opp.title %></strong> based on overlapping NAICS classifications.</p>
+        <div class="hero-telemetry-chips">
+            <span class="telemetry-chip"><span class="chip-dot chip-success"></span> Opportunity: <%= opp.status || 'Active' %></span>
+            <span class="telemetry-chip"><span class="chip-dot chip-cyan"></span> Matched Candidates: <%= matches.length %></span>
+        </div>
+    </div>
+</section>
+
+<section class="dash-card recommendations-list" style="padding:var(--space-xl)">
+    <div style="background:#F8FAFC;border:1px solid #E2E8F0;border-radius:12px;padding:1.25rem 1.5rem;margin-bottom:1.5rem;">
+        <p style="margin:0;color:#64748B;font-size:0.88rem;line-height:1.6;">Matches update automatically from registered NAICS codes. The coverage score shows how many of the opportunity’s required codes match the partner. Review past performance, certifications, and availability before inviting.</p>
+    </div>
+
+    <% if(!matches.length) { %>
+        <div class="empty-state-inline" style="padding:2.5rem;text-align:center;background:#F8FAFC;border:1px dashed #CBD5E1;border-radius:14px;margin-bottom:1.5rem;">
+            <p style="margin:0;color:#64748B;">No matching active businesses or workers found for this code combination yet.</p>
+        </div>
+    <% } %>
+
+    <div style="display:grid;gap:1.25rem;margin-bottom:2rem;">
+        <% for(const partner of matches) { %>
+            <article class="dash-card" style="padding:1.5rem;margin:0;border:1px solid #E2E8F0;border-radius:14px;">
+                <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:1rem;margin-bottom:0.75rem;">
+                    <div>
+                        <h2 style="font-size:1.2rem;font-weight:700;margin:0 0 0.25rem 0;">
+                            <a href="/directory/<%= partner.type %>/<%= partner.id %>" style="color:#0F172A;text-decoration:none;"><%= partner.name %></a>
+                        </h2>
+                        <div style="display:flex;gap:0.5rem;align-items:center;font-size:0.82rem;color:#64748B;">
+                            <span>📍 <%= [partner.city, partner.state].filter(Boolean).join(', ') || 'Texas' %></span>
+                            <span>•</span>
+                            <span><%= partner.type === 'worker' ? '👷 Skilled Worker' : '🏢 Small Business' %></span>
+                        </div>
+                    </div>
+                    <span class="status-badge badge-cyan">
+                        <%= partner.score %>% Code Match
+                    </span>
+                </div>
+                <div style="font-size:0.85rem;color:#0369A1;background:#F0F9FF;padding:0.4rem 0.75rem;border-radius:8px;margin-bottom:1rem;display:inline-block;">
+                    Matching NAICS: <strong><%= partner.matched.join(', ') %></strong>
+                </div>
+                <div>
+                    <form method="post" action="<%= basePath %>/opportunities/<%= encodeURIComponent(opp.id) %>/invite" style="display:inline-block;margin:0;">
+                        <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                        <input type="hidden" name="target_key" value="<%= partner.type %>:<%= partner.id %>">
+                        <button class="btn btn-primary btn-sm">Invite to Apply &rarr;</button>
+                    </form>
+                </div>
+            </article>
+        <% } %>
+    </div>
+
+    <div style="padding-top:1.25rem;border-top:1px solid #E2E8F0;">
+        <a href="<%= basePath %>/<%= user.type === 'business' ? 'jobs' : 'opportunities' %>" class="btn btn-secondary btn-sm">&larr; Back to Listings</a>
+    </div>
+</section>

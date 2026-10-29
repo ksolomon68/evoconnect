@@ -1,13 +1,162 @@
-<% locals.layout='layouts/dashboard'; const count=(entity,event)=>totals.filter(r=>r.entity_type===entity && r.event_type===event).reduce((sum,r)=>sum+Number(r.total),0); %>
-<section class="hero-section"><div class="hero-content"><h1><%= platform ? 'Platform analytics' : 'My analytics' %></h1><p>See how your visibility turns into interest and applications.</p></div></section>
-<section class="recommendations-list" style="padding:var(--space-xl)">
-<form method="get"><label for="days">Reporting period</label><select name="days" id="days"><% for(const n of [7,30,90]) { %><option value="<%= n %>" <%= days===n ? 'selected' : '' %>>Last <%= n %> days</option><% } %></select> <button class="btn btn-secondary">Update</button></form>
-<p>All dates use UTC. Views and downloads count each signed-in viewer once per item per day. Your own visits are excluded. Tracking starts when this feature is enabled; earlier activity is unavailable. <%= platform ? 'These totals cover all members.' : 'Only your own profile, documents, and postings are included.' %></p>
-<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1rem;margin:1.5rem 0">
-<% for(const [label,value] of [['Profile views',count('profile','view')],['Statement views',count('capability','view')],['Statement downloads',count('capability','download')],['Opportunity views',count('opportunity','view')]]) { %><div class="stat-card"><h2><%= value %></h2><p><%= label %></p></div><% } %></div>
-<% if(user.type!=='admin') { const type=user.type; %><p><a href="/directory/<%= type %>/<%= user.id %>" <%= type==='admin' ? 'hidden' : '' %>>View my directory profile</a> · <a href="<%= basePath %>/documents">Manage capability statement</a></p><% } %>
-<h2>Capability statements</h2><% if(!documents.length) { %><div class="empty-state-inline"><p>No current uploaded statements. Views of removed or replaced statements remain included in the totals above.</p></div><% } else { %><div style="overflow:auto"><table class="data-table"><thead><tr><th>Document</th><th>Views</th><th>Downloads</th></tr></thead><tbody><% for(const doc of documents) { %><tr><td><a href="/capabilities/<%= doc.id %>"><%= doc.original_name %></a></td><td><%= doc.views %></td><td><%= doc.downloads %></td></tr><% } %></tbody></table></div><% } %>
-<h2><%= user.type==='business'?'Job performance':(user.type==='prime'?'RFQ performance':'Opportunity performance') %></h2><% if(!opps.length) { %><div class="empty-state-inline"><p>No owned opportunity postings. Applicant accounts track their submissions below.</p></div><% } else { %><div style="overflow:auto"><table class="data-table"><thead><tr><th>Opportunity</th><th>Status</th><th>Views</th><th>Saves</th><th>Applications</th><th>Applications / views</th></tr></thead><tbody><% for(const opp of opps) { %><tr><td><a href="/opportunities/<%= encodeURIComponent(opp.id) %>"><%= opp.title %></a></td><td><%= opp.status %></td><td><%= opp.views %></td><td><%= opp.saves %></td><td><%= opp.applications %></td><td><%= Number(opp.views)>0 ? (100*Number(opp.applications)/Number(opp.views)).toFixed(1)+'%' : '—' %></td></tr><% } %></tbody></table></div><p>Applications and saves reflect records created in this period. Applications / views is a ratio of those totals, not a count of unique converting visitors.</p><% } %>
-<h2><%= platform ? 'Platform applications' : 'My application outcomes' %></h2><% if(!applications.length) { %><div class="empty-state-inline"><p>No applications submitted in this period.</p></div><% } else { %><ul><% for(const row of applications) { %><li><%= row.status.replaceAll('_',' ') %>: <%= row.total %></li><% } %></ul><% } %>
-<h2>Daily activity</h2><% if(!daily.length) { %><div class="empty-state-inline"><p>No external views or downloads recorded in this period. Share your profile and publish opportunities to start measuring interest.</p></div><% } else { %><div style="overflow:auto"><table class="data-table"><thead><tr><th>Date (UTC)</th><th>Item</th><th>Action</th><th>Count</th></tr></thead><tbody><% for(const row of daily) { %><tr><td><%= row.day %></td><td><%= row.entity_type %></td><td><%= row.event_type %></td><td><%= row.total %></td></tr><% } %></tbody></table></div><% } %>
+<% 
+locals.layout = 'layouts/dashboard'; 
+const isWorker = locals.user && locals.user.type === 'worker';
+const count = (entity, event) => totals.filter(r => r.entity_type === entity && r.event_type === event).reduce((sum, r) => sum + Number(r.total), 0); 
+%>
+<section class="hero-section">
+    <div class="hero-content hero-welcome">
+        <div class="wfc-eyebrow">
+            <span class="eyebrow-dot" aria-hidden="true"></span>
+            <span><%= platform ? 'Platform System Metrics' : 'Account Performance Metrics' %></span>
+        </div>
+        <h1><%= platform ? 'Platform' : 'Engagement' %> <span>Analytics</span></h1>
+        <p>Monitor real-time profile exposure, <%= isWorker ? 'resume downloads, and job applications' : 'capability statement views, and opportunity responses' %>.</p>
+        <div class="hero-telemetry-chips">
+            <span class="telemetry-chip"><span class="chip-dot chip-success"></span> Analytics Tracking: UTC Active</span>
+            <span class="telemetry-chip"><span class="chip-dot chip-cyan"></span> Reporting: Deduplicated</span>
+            <span class="telemetry-chip"><span class="chip-dot chip-info"></span> Privacy: Compliant</span>
+        </div>
+    </div>
+</section>
+
+<section class="dash-card recommendations-list" style="padding:var(--space-xl)">
+    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem;margin-bottom:1.5rem;padding-bottom:1.25rem;border-bottom:1px solid #F1F5F9;">
+        <form method="get" style="display:flex;align-items:center;gap:0.75rem;flex-wrap:wrap;margin:0;">
+            <label for="days" style="font-weight:700;font-size:0.9rem;color:#0F172A;margin:0;">Reporting Period:</label>
+            <select name="days" id="days" class="form-control" style="width:auto;padding:0.45rem 1rem;">
+                <% for(const n of [7, 30, 90]) { %>
+                    <option value="<%= n %>" <%= days === n ? 'selected' : '' %>>Last <%= n %> days</option>
+                <% } %>
+            </select>
+            <button class="btn btn-secondary" style="padding:0.45rem 1rem;">Update Range</button>
+        </form>
+        <% if(user.type !== 'admin') { const type = user.type; %>
+            <div style="display:flex;gap:0.75rem;font-size:0.9rem;">
+                <a href="/directory/<%= type %>/<%= user.id %>" class="btn btn-sm btn-secondary">View My Public Profile</a>
+                <a href="<%= basePath %>/documents" class="btn btn-sm btn-primary">Manage <%= isWorker ? 'Resume' : 'Statement' %></a>
+            </div>
+        <% } %>
+    </div>
+
+    <!-- Summary Metrics -->
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:1.25rem;margin:1.5rem 0 2rem;">
+        <% 
+        const statLabels = [
+            ['Profile Views', count('profile', 'view'), '👤'],
+            [isWorker ? 'Resume Views' : 'Statement Views', count('capability', 'view'), '📄'],
+            [isWorker ? 'Resume Downloads' : 'Statement Downloads', count('capability', 'download'), '📥'],
+            ['Opportunity Views', count('opportunity', 'view'), '💼']
+        ];
+        for(const [label, val, icon] of statLabels) { 
+        %>
+            <div class="summary-card" style="min-height:auto;padding:1.25rem;">
+                <div class="summary-card-top">
+                    <span class="summary-label"><%= label %></span>
+                    <span class="summary-icon"><%= icon %></span>
+                </div>
+                <div class="summary-value" style="font-size:1.85rem;margin-bottom:0;"><%= val %></div>
+            </div>
+        <% } %>
+    </div>
+
+    <!-- Documents Table -->
+    <div class="dash-card-header">
+        <h2><%= isWorker ? 'Resume Engagement' : 'Capability Statement Activity' %></h2>
+    </div>
+    <% if(!documents.length) { %>
+        <div class="empty-state-inline" style="padding:1.25rem;background:#F8FAFC;border:1px dashed #CBD5E1;border-radius:12px;margin-bottom:2rem;">
+            <p style="margin:0;color:#64748B;">No uploaded <%= isWorker ? 'resumes' : 'capability statements' %> on file for this period.</p>
+        </div>
+    <% } else { %>
+        <div style="overflow-x:auto;-webkit-overflow-scrolling:touch;margin-bottom:2rem;">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Document</th>
+                        <th>Views</th>
+                        <th>Downloads</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% for(const doc of documents) { %>
+                        <tr>
+                            <td><a href="/capabilities/<%= doc.id %>" style="color:#0284C7;font-weight:600;"><%= doc.original_name %></a></td>
+                            <td><strong><%= doc.views %></strong></td>
+                            <td><strong><%= doc.downloads %></strong></td>
+                        </tr>
+                    <% } %>
+                </tbody>
+            </table>
+        </div>
+    <% } %>
+
+    <!-- Opportunities Performance -->
+    <div class="dash-card-header">
+        <h2><%= user.type === 'business' ? 'Job Performance' : (user.type === 'prime' ? 'RFQ Solicitation Performance' : 'Opportunity Performance') %></h2>
+    </div>
+    <% if(!opps.length) { %>
+        <div class="empty-state-inline" style="padding:1.25rem;background:#F8FAFC;border:1px dashed #CBD5E1;border-radius:12px;margin-bottom:2rem;">
+            <p style="margin:0;color:#64748B;">No active opportunity postings owned by your account.</p>
+        </div>
+    <% } else { %>
+        <div style="overflow-x:auto;-webkit-overflow-scrolling:touch;margin-bottom:2rem;">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Opportunity</th>
+                        <th>Status</th>
+                        <th>Views</th>
+                        <th>Saves</th>
+                        <th>Applications</th>
+                        <th>Conversion Rate</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% for(const opp of opps) { %>
+                        <tr>
+                            <td><a href="/opportunities/<%= encodeURIComponent(opp.id) %>" style="color:#0284C7;font-weight:600;"><%= opp.title %></a></td>
+                            <td><span class="status-badge <%= opp.status === 'published' ? 'badge-success' : 'badge-amber' %>"><%= opp.status %></span></td>
+                            <td><%= opp.views %></td>
+                            <td><%= opp.saves %></td>
+                            <td><strong><%= opp.applications %></strong></td>
+                            <td><%= Number(opp.views) > 0 ? (100 * Number(opp.applications) / Number(opp.views)).toFixed(1) + '%' : '—' %></td>
+                        </tr>
+                    <% } %>
+                </tbody>
+            </table>
+        </div>
+    <% } %>
+
+    <!-- Daily Log -->
+    <div class="dash-card-header">
+        <h2>Daily Activity Breakdown</h2>
+    </div>
+    <% if(!daily.length) { %>
+        <div class="empty-state-inline" style="padding:1.25rem;background:#F8FAFC;border:1px dashed #CBD5E1;border-radius:12px;">
+            <p style="margin:0;color:#64748B;">No activity recorded in this time range.</p>
+        </div>
+    <% } else { %>
+        <div style="overflow-x:auto;-webkit-overflow-scrolling:touch;">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Date (UTC)</th>
+                        <th>Target</th>
+                        <th>Interaction</th>
+                        <th>Count</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% for(const row of daily) { %>
+                        <tr>
+                            <td><%= row.day %></td>
+                            <td><code><%= row.entity_type %></code></td>
+                            <td><span class="status-badge badge-cyan"><%= row.event_type %></span></td>
+                            <td><strong><%= row.total %></strong></td>
+                        </tr>
+                    <% } %>
+                </tbody>
+            </table>
+        </div>
+    <% } %>
 </section>

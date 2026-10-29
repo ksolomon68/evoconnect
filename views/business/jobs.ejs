@@ -1,5 +1,69 @@
 <%- include('../partials/flash') %>
-<section class="hero-section"><div class="hero-content"><h1>Manage jobs</h1><p>Hire labor workers for your projects. Published jobs appear in the labor job board and automatic matches.</p></div></section>
-<p><a class="btn btn-primary" href="/business/post-job">Post a job</a> <a class="btn btn-secondary" href="/business/job-applications">Review job applications</a></p>
-<% if(!jobs.length) { %><p>You have not posted any jobs yet.</p><% } %>
-<% for(const job of jobs) { %><article class="recommendations-list" style="padding:1.5rem;margin-top:1rem"><h2><a href="/jobs/<%= job.id %>"><%= job.title %></a></h2><p><%= job.status %> · <%= job.applications_count %> applications · <%= job.district_name %></p><p><%= job.scope_summary %></p><div style="display:flex;flex-wrap:wrap;gap:.5rem"><a class="btn btn-secondary" href="/business/jobs/<%= job.id %>/edit">Edit job</a><a class="btn btn-secondary" href="/business/opportunities/<%= job.id %>/matches">Find matching labor</a><a class="btn btn-secondary" href="/business/job-applications">Review applications</a><form method="post" action="/business/jobs/<%= job.id %>/status"><input type="hidden" name="_csrf" value="<%= csrfToken %>"><input type="hidden" name="status" value="<%= job.status==='published'?'closed':'published' %>"><button class="btn btn-secondary"><%= job.status==='published'?'Close job':'Publish job' %></button></form><form method="post" action="/business/jobs/<%= job.id %>/delete"><input type="hidden" name="_csrf" value="<%= csrfToken %>"><button class="btn btn-secondary">Archive</button></form></div></article><% } %>
+<section class="hero-section">
+    <div class="hero-content hero-welcome">
+        <div class="wfc-eyebrow">
+            <span class="eyebrow-dot" aria-hidden="true"></span>
+            <span>Subcontractor Workforce Dispatch</span>
+        </div>
+        <h1>Manage <span>Trade Jobs</span></h1>
+        <p>Recruit and dispatch skilled trade workers for your projects. Published requisitions appear in the labor marketplace and automatic match engine.</p>
+        <div class="hero-telemetry-chips">
+            <span class="telemetry-chip"><span class="chip-dot chip-success"></span> Total Jobs: <%= jobs.length %></span>
+            <span class="telemetry-chip"><span class="chip-dot chip-cyan"></span> Direct Applications: Live</span>
+        </div>
+    </div>
+</section>
+
+<div style="display:flex;gap:0.75rem;margin-bottom:1.5rem;flex-wrap:wrap;">
+    <a class="btn btn-primary" href="/business/post-job" style="display:inline-flex;align-items:center;gap:0.4rem;padding:0.6rem 1.25rem;border-radius:10px;font-weight:700;">➕ Post New Trade Job</a>
+    <a class="btn btn-secondary" href="/business/job-applications" style="display:inline-flex;align-items:center;gap:0.4rem;padding:0.6rem 1.25rem;border-radius:10px;font-weight:600;">📝 Review Applications</a>
+</div>
+
+<% if(!jobs.length) { %>
+    <div class="dash-card" style="padding:2.5rem;text-align:center;background:#FFFFFF;border:1px dashed #CBD5E1;border-radius:14px;">
+        <p style="margin:0 0 0.75rem 0;font-size:1.1rem;font-weight:600;color:#334155;">No trade jobs posted yet</p>
+        <p style="margin:0 0 1.25rem 0;color:#64748B;font-size:0.9rem;">Post your first trade job to connect with pre-screened labor and automated NAICS matches.</p>
+        <a class="btn btn-primary" href="/business/post-job">Post a Job Now</a>
+    </div>
+<% } %>
+
+<div style="display:grid;gap:1.25rem;">
+    <% for(const job of jobs) { %>
+        <article class="dash-card" style="padding:1.6rem 1.75rem;background:#FFFFFF;border:1px solid #E2E8F0;border-radius:16px;box-shadow:0 1px 3px rgba(15,23,42,0.03);">
+            <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:1rem;margin-bottom:0.75rem;">
+                <div>
+                    <h2 style="font-size:1.25rem;font-weight:800;margin:0 0 0.35rem 0;">
+                        <a href="/jobs/<%= job.id %>" style="color:#0F172A;text-decoration:none;"><%= job.title %></a>
+                    </h2>
+                    <div style="display:flex;gap:0.5rem;flex-wrap:wrap;align-items:center;font-size:0.82rem;color:#64748B;">
+                        <span>📍 <%= job.district_name || 'Texas' %></span>
+                        <span>•</span>
+                        <span>📋 <%= job.applications_count %> Applications</span>
+                    </div>
+                </div>
+                <span class="status-badge <%= job.status === 'published' ? 'badge-success' : 'badge-amber' %>" style="text-transform:capitalize;">
+                    ● <%= job.status %>
+                </span>
+            </div>
+
+            <p style="color:#475569;font-size:0.92rem;line-height:1.6;margin:0 0 1.25rem 0;">
+                <%= job.scope_summary %>
+            </p>
+
+            <div style="display:flex;flex-wrap:wrap;gap:0.5rem;align-items:center;">
+                <a class="btn btn-secondary btn-sm" href="/business/jobs/<%= job.id %>/edit">Edit Job</a>
+                <a class="btn btn-secondary btn-sm" href="/business/opportunities/<%= job.id %>/matches">Find Matching Labor</a>
+                <a class="btn btn-secondary btn-sm" href="/business/job-applications">Applications (<%= job.applications_count %>)</a>
+                <form method="post" action="/business/jobs/<%= job.id %>/status" style="display:inline-block;margin:0;">
+                    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                    <input type="hidden" name="status" value="<%= job.status === 'published' ? 'closed' : 'published' %>">
+                    <button class="btn btn-secondary btn-sm"><%= job.status === 'published' ? 'Close Job' : 'Publish Job' %></button>
+                </form>
+                <form method="post" action="/business/jobs/<%= job.id %>/delete" style="display:inline-block;margin:0;">
+                    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                    <button class="btn btn-danger btn-sm" onclick="return confirm('Archive this job?')">Archive</button>
+                </form>
+            </div>
+        </article>
+    <% } %>
+</div>
