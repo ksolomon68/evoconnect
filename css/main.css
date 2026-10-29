@@ -88,25 +88,49 @@ body {
 .site-logo {
     display: flex;
     align-items: center;
-    height: 50px;
-    transition: all 0.3s ease;
+    gap: 0.6rem;
+    text-decoration: none;
+    transition: opacity 0.3s ease;
     position: relative;
     z-index: 1001;
 }
 
-.site-logo img {
-    height: 100%;
-    width: auto;
-    max-width: 300px;
+.site-logo-icon {
+    height: 36px;
+    width: 36px;
+    flex-shrink: 0;
+    border-radius: 50%;
     filter: brightness(1.1);
     transition: filter 0.3s ease;
 }
 
-.site-logo:hover img {
+.site-logo:hover .site-logo-icon {
     filter: brightness(1.2) drop-shadow(0 0 8px rgba(255, 255, 255, 0.3));
 }
 
-.site-logo:focus {
+.site-logo-text {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.15;
+}
+
+.site-logo-name {
+    font-size: 1.2rem;
+    font-weight: 800;
+    letter-spacing: -0.01em;
+    color: var(--color-text-primary);
+}
+
+.site-logo-tagline {
+    margin-top: 2px;
+    font-size: 0.62rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--color-text-muted);
+}
+
+.site-logo:focus-visible {
     outline: 2px solid var(--color-secondary);
     outline-offset: 4px;
     border-radius: 4px;
