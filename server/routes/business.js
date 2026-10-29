@@ -13,32 +13,7 @@ const US_STATES = ['AL','AK','AZ','AR','CA','CO','CT','DE','FL','GA','HI','ID','
 const STATE_NAMES = { AL:'Alabama',AK:'Alaska',AZ:'Arizona',AR:'Arkansas',CA:'California',CO:'Colorado',CT:'Connecticut',DE:'Delaware',FL:'Florida',GA:'Georgia',HI:'Hawaii',ID:'Idaho',IL:'Illinois',IN:'Indiana',IA:'Iowa',KS:'Kansas',KY:'Kentucky',LA:'Louisiana',ME:'Maine',MD:'Maryland',MA:'Massachusetts',MI:'Michigan',MN:'Minnesota',MS:'Mississippi',MO:'Missouri',MT:'Montana',NE:'Nebraska',NV:'Nevada',NH:'New Hampshire',NJ:'New Jersey',NM:'New Mexico',NY:'New York',NC:'North Carolina',ND:'North Dakota',OH:'Ohio',OK:'Oklahoma',OR:'Oregon',PA:'Pennsylvania',RI:'Rhode Island',SC:'South Carolina',SD:'South Dakota',TN:'Tennessee',TX:'Texas',UT:'Utah',VT:'Vermont',VA:'Virginia',WA:'Washington',WV:'West Virginia',WI:'Wisconsin',WY:'Wyoming',DC:'District of Columbia' };
 
 // ── FAQ Data ──────────────────────────────────────────────────────────────────
-const BUSINESS_FAQS = [
-    {
-        q: 'How is a business different from a worker on EvoConnect?',
-        a: 'Workers are individual tradespeople; businesses are companies (LLCs, S-corps, sole proprietors operating under a DBA, etc.) that hold contracts and hire labor. The business portal is designed for entities that want to compete for subcontracts as a company, generate a capability statement, and maintain a full company profile with NAICS codes and certifications.'
-    },
-    {
-        q: 'What is a capability statement and why do I need one?',
-        a: 'A capability statement is a one-page business summary required by most federal and state prime contractors before they will engage you as a subcontractor. It includes your company overview, core competencies, differentiators, past performance highlights, NAICS codes, and contact information. EvoConnect generates a formatted capability statement automatically from your profile data, which you can download and customize.'
-    },
-    {
-        q: 'What certifications matter most for small businesses seeking government subcontracts?',
-        a: 'The most valuable certifications are SBA 8(a) Business Development, HUBZone, Women-Owned Small Business (WOSB/EDWOSB), Service-Disabled Veteran-Owned Small Business (SDVOSB), and for Texas contractors, the HUB (Historically Underutilized Business) certification. These designations allow prime contractors to use your firm on set-aside contract vehicles and satisfy their small business subcontracting plans.'
-    },
-    {
-        q: 'Do I need a SAM.gov registration?',
-        a: 'Yes, SAM.gov registration is required to receive payments from any federal contract, including subcontracts. Registration is free at sam.gov and must be renewed annually. You will also receive a UEI (Unique Entity Identifier) which is required on all federal contract documentation. Our checklist walks through the SAM registration process step by step.'
-    },
-    {
-        q: 'How does the NAICS code system work?',
-        a: 'NAICS (North American Industry Classification System) codes identify what industry your business operates in. Every government contract is tagged with one or more NAICS codes, and prime contractors look for subcontractors with matching codes. EvoConnect automatically suggests NAICS codes based on your registered services, and prime contractors can search for businesses by specific NAICS code. Having the right codes significantly improves your match rate.'
-    },
-    {
-        q: 'How do prime contractors contact my business?',
-        a: 'Prime contractors on EvoConnect can search businesses by certifications, NAICS codes, state, and service radius. When they find your business, they send a connection request through the platform. You\'ll receive an email notification and can review the prime\'s information before accepting. Your contact details are only shared after you accept the connection.'
-    }
-];
+const { BUSINESS_FAQS } = require('../services/faq-content');
 
 // ── Profile Completion Calculator ─────────────────────────────────────────────
 function calcBusinessPct(b) {
@@ -280,7 +255,9 @@ router.get('/dashboard', requireType('business'), async (req, res) => {
         `);
 
         const [[{ openOppsCount }]] = await db.execute("SELECT COUNT(*) AS openOppsCount FROM opportunities WHERE status='published'");
+        const autoMatches = await require('../services/naics-matching').opportunities(db,req.user.type,userId);
         res.render('business/dashboard', {
+            autoMatches,
             openOppsCount,
             title: 'My Dashboard | EvoConnect Business',
             flash: getFlash(req),

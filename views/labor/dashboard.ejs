@@ -48,6 +48,7 @@ const checklistPct = Math.round((totalDone / totalItems) * 100) || 0;
 %>
 
 <%- include('../partials/flash') %>
+<%- include('../shared/match-preview', { result: autoMatches, basePath: '/labor' }) %>
 
 <!-- Hero Section -->
 <section class="hero-section">

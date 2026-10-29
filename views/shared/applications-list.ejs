@@ -46,7 +46,8 @@
                                 <%= (app.status || 'submitted').replace('_', ' ') %>
                             </span>
                         </td>
-                        <td style="max-width:260px;font-size:0.85rem;color:var(--text-muted);"><%= app.notes || '—' %></td>
+                        <td style="max-width:260px;font-size:0.85rem;color:var(--text-muted);"><%= app.notes || '—' %>
+<% if(['pending','submitted','under_review'].includes(app.status)) { %><form method="post" action="<%= basePath %>/applications/<%= app.id %>/withdraw"><input type="hidden" name="_csrf" value="<%= csrfToken %>"><button class="btn btn-sm btn-secondary">Withdraw application</button></form><% } %></td>
                     </tr>
                     <% }) %>
                 </tbody>

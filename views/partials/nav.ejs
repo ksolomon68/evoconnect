@@ -10,6 +10,7 @@
       <% if (!locals.user) { %>
         <a href="/" class="<%= locals.activePage === 'home' ? 'active' : '' %>">Home</a>
         <a href="/opportunities">Opportunities</a>
+        <a href="/faq" class="<%= locals.activePage === 'faq' ? 'active' : '' %>">FAQ</a>
         <a href="/labor" class="<%= locals.activePage === 'labor' ? 'active' : '' %>">For Labor</a>
         <a href="/business" class="<%= locals.activePage === 'business' ? 'active' : '' %>">For Business</a>
         <a href="/prime" class="<%= locals.activePage === 'prime' ? 'active' : '' %>">For Primes</a>
@@ -20,7 +21,7 @@
         <a href="/labor/search">Opportunities</a>
         <a href="/labor/messages">Messages</a>
         <a href="/labor/profile" class="<%= locals.activePage === 'profile' ? 'active' : '' %>">My Profile</a>
-        <a href="/labor/faq" class="<%= locals.activePage === 'faq' ? 'active' : '' %>">FAQ</a>
+        <a href="/faq" class="<%= locals.activePage === 'faq' ? 'active' : '' %>">FAQ</a>
         <a href="/logout" class="btn btn-sm btn-ghost">Log Out</a>
       <% } else if (locals.user.type === 'business') { %>
         <a href="/business/dashboard" class="<%= locals.activePage === 'dashboard' ? 'active' : '' %>">Dashboard</a>

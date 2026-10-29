@@ -2,6 +2,7 @@
 
 const bcrypt = require('bcryptjs');
 const { getDb } = require('../database');
+const { openSql } = require('../services/opportunity-lifecycle');
 
 function flash(req, type, message) {
     req.session.flash = { type, message };
@@ -19,7 +20,7 @@ async function renderOpportunitiesSearch(req, res, roleType, basePath) {
         const db = getDb();
         const { q, category, naics } = req.query;
 
-        const conditions = ["status = 'published'"];
+        const conditions = [openSql];
         const params = [];
 
         if (q && q.trim()) {
@@ -78,8 +79,10 @@ async function toggleSavedOpportunity(req, res, roleType, basePath) {
     try {
         const db = getDb();
         const oppId = String(req.body.opportunity_id || '').trim();
-        const redirectTo = req.body.redirect_to || `${basePath}/search`;
+        const redirectTo = `${basePath}/search`;
         if (!oppId) return res.redirect(redirectTo);
+        const [available] = await db.execute(`SELECT id FROM opportunities WHERE id = ? AND ${openSql}`, [oppId]);
+        if (!available.length) return res.status(404).send('Opportunity unavailable.');
 
         const [existing] = await db.execute(
             'SELECT id FROM saved_opportunities WHERE user_type = ? AND user_id = ? AND opportunity_id = ?',
@@ -149,6 +152,8 @@ async function submitApplication(req, res, roleType, basePath) {
             return res.redirect(`${basePath}/search`);
         }
 
+        const [available] = await db.execute(`SELECT id FROM opportunities WHERE id = ? AND ${openSql}`, [oppId]);
+        if (!available.length) return res.status(404).send('Opportunity unavailable.');
         const [existing] = await db.execute(
             'SELECT id FROM applications WHERE opportunity_id = ? AND applicant_type = ? AND applicant_id = ?',
             [oppId, roleType, req.user.id]
@@ -167,15 +172,16 @@ async function submitApplication(req, res, roleType, basePath) {
         }
 
         // Send internal message & notification to prime contractor
-        const [opps] = await db.execute('SELECT title, posted_by, posted_by_name FROM opportunities WHERE id = ?', [oppId]);
+        const [opps] = await db.execute('SELECT title, posted_by, posted_by_type, posted_by_name FROM opportunities WHERE id = ?', [oppId]);
         if (opps.length && opps[0].posted_by) {
             const [msgRes] = await db.execute(`
                 INSERT INTO messages (sender_type, sender_id, sender_business_name, receiver_type, receiver_id, receiver_business_name, opportunity_id, message_type, subject, body)
-                VALUES (?, ?, ?, 'prime', ?, ?, ?, 'application', ?, ?)
+                VALUES (?, ?, ?, ?, ?, ?, ?, 'application', ?, ?)
             `, [
                 roleType,
                 req.user.id,
                 req.user.name || req.user.email,
+                opps[0].posted_by_type,
                 opps[0].posted_by,
                 opps[0].posted_by_name || 'Prime Contractor',
                 oppId,
@@ -184,7 +190,7 @@ async function submitApplication(req, res, roleType, basePath) {
             ]);
             await db.execute(
                 'INSERT INTO notifications (user_type, user_id, message_id) VALUES (?, ?, ?)',
-                ['prime', opps[0].posted_by, msgRes.insertId]
+                [opps[0].posted_by_type, opps[0].posted_by, msgRes.insertId]
             );
         }
 

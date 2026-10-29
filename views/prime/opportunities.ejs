@@ -35,16 +35,18 @@
                     </div>
                 </div>
                 <div style="display:flex;gap:0.5rem;flex-wrap:wrap;">
-                    <form method="POST" action="/prime/opportunities/<%= opp.id %>/status" style="display:inline;">
+                    <a class="btn btn-sm btn-secondary" href="/prime/opportunities/<%= encodeURIComponent(opp.id) %>/matches">Suggested partners</a>
+<a class="btn btn-sm btn-secondary" href="/prime/opportunities/<%= encodeURIComponent(opp.id) %>/edit">Edit</a>
+                            <form method="POST" action="/prime/opportunities/<%= opp.id %>/status" style="display:inline;">
                         <input type="hidden" name="status" value="<%= opp.status === 'published' ? 'closed' : 'published' %>">
                         <button type="submit" class="btn btn-sm btn-secondary"><%= opp.status === 'published' ? 'Close Posting' : 'Re-open' %></button>
-                    </form>
+                    <input type="hidden" name="_csrf" value="<%= csrfToken %>"></form>
                     <button type="button" class="btn btn-sm btn-primary" onclick="document.getElementById('invite-box-<%= opp.id %>').style.display = document.getElementById('invite-box-<%= opp.id %>').style.display === 'none' ? 'block' : 'none'">
                         ✉️ Invite to Apply
                     </button>
-                    <form method="POST" action="/prime/opportunities/<%= opp.id %>/delete" style="display:inline;" onsubmit="return confirm('Delete this opportunity?');">
-                        <button type="submit" class="btn btn-sm btn-outline">Delete</button>
-                    </form>
+                    <form method="POST" action="/prime/opportunities/<%= opp.id %>/delete" style="display:inline;" onsubmit="return confirm('Archive this opportunity? Application history will be retained.');">
+                        <button type="submit" class="btn btn-sm btn-outline">Archive</button>
+                    <input type="hidden" name="_csrf" value="<%= csrfToken %>"></form>
                 </div>
             </div>
 
@@ -60,7 +62,7 @@
                         <% }) %>
                     </select>
                     <button type="submit" class="btn btn-sm btn-primary">Send Invitation</button>
-                </form>
+                <input type="hidden" name="_csrf" value="<%= csrfToken %>"></form>
             </div>
         </div>
         <% }) %>

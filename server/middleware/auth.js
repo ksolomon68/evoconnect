@@ -56,7 +56,7 @@ function getTokenFromRequest(req) {
 }
 
 // Middleware: require auth, redirect to login if missing
-function requireAuth(req, res, next) {
+async function requireAuth(req, res, next) {
     const token = getTokenFromRequest(req);
     if (!token) {
         req.session.flash = { type: 'error', message: 'Please log in to access your dashboard.' };
@@ -65,6 +65,13 @@ function requireAuth(req, res, next) {
     try {
         const decoded = jwt.verify(token, JWT_SECRET);
         decoded.type = normalizeUserType(decoded.type);
+        const tables = { worker: 'workers', business: 'businesses', prime: 'primes', admin: 'admins' };
+        if (!tables[decoded.type]) return res.status(403).send('Access denied.');
+        const [accounts] = await require('../database').getDb().execute(`SELECT * FROM ${tables[decoded.type]} WHERE id = ?`, [decoded.id]);
+        if (!accounts.length || (decoded.type === 'prime' ? accounts[0].active !== 1 : accounts[0].status && accounts[0].status !== 'active')) {
+            clearAuthCookie(res);
+            return res.status(403).send('Your account is inactive or awaiting approval.');
+        }
         req.user = decoded;
         res.locals.user = decoded;
         next();

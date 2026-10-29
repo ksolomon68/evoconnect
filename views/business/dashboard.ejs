@@ -41,6 +41,7 @@ const appsCount = locals.appsCount ?? 0;
 %>
 
 <%- include('../partials/flash') %>
+<%- include('../shared/match-preview', { result: autoMatches, basePath: '/business' }) %>
 
 <!-- Hero Section -->
 <section class="hero-section">

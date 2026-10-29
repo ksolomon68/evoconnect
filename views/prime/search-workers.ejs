@@ -135,7 +135,7 @@
                 <% certs.slice(0,3).forEach(function(c) { %><span class="badge badge-muted"><%= c.toUpperCase() %></span><% }) %>
               </div>
               <% if (!isLocked) { %>
-                <div class="result-actions">
+                <div class="result-actions"><a class="btn btn-secondary" href="/directory/worker/<%= worker.id %>">View profile &amp; statement</a>
                   <form method="POST" action="/prime/connect/worker/<%= worker.id %>">
                     <button type="submit" class="btn-primary btn-sm">Request Contact</button>
                   </form>

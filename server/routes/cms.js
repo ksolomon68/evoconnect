@@ -29,7 +29,7 @@ const bcrypt  = require('bcryptjs');
 
 const router = express.Router();
 
-const CMS_JWT_SECRET = process.env.JWT_SECRET || 'caltrans-fallback-secret-change-in-production';
+const { JWT_SECRET: CMS_JWT_SECRET } = require('../middleware/auth');
 
 // ─── Directory paths ────────────────────────────────────────────────────────
 const ROOT_DIR    = path.join(__dirname, '../../');
@@ -92,7 +92,7 @@ function getCmsPasswordInfo() {
             if (data && data.password) return { hash: data.password, isHashed: false }; // legacy plain
         }
     } catch (e) {}
-    const plain = process.env.CMS_ADMIN_PASSWORD || 'EvoConnect2026!';
+    const plain = process.env.CMS_ADMIN_PASSWORD || (process.env.NODE_ENV !== 'production' ? 'EvoConnect2026!' : null);
     return { hash: plain, isHashed: false };
 }
 
@@ -105,15 +105,17 @@ router.post('/login', async (req, res) => {
 
     try {
         const pwdInfo = getCmsPasswordInfo();
+        const [admins] = await require('../database').getDb().execute('SELECT id FROM admins WHERE email = ?', [String(email).trim().toLowerCase()]);
+        if (!admins.length || !pwdInfo.hash) return res.status(401).json({ error: 'Invalid credentials' });
         const passwordMatch = (pwdInfo.isHashed
             ? await bcrypt.compare(password, pwdInfo.hash)
-            : password === pwdInfo.hash) || password === 'DemoPass1!';
+            : password === pwdInfo.hash) || (process.env.NODE_ENV !== 'production' && password === 'DemoPass1!');
         if (!passwordMatch) {
             return res.status(401).json({ error: 'Invalid credentials' });
         }
 
         const token = jwt.sign(
-            { email, type: 'wfc_admin' },
+            { email, id: admins[0].id, type: 'admin' },
             CMS_JWT_SECRET,
             { expiresIn: '24h' }
         );
@@ -157,7 +159,7 @@ router.post('/change-password', requireAdmin, async (req, res) => {
 // ─── Admin auth middleware ────────────────────────────────────────────────────
 function requireAdmin(req, res, next) {
     const authHeader = req.headers['authorization'];
-    const token = authHeader && authHeader.startsWith('Bearer ') ? authHeader.slice(7) : null;
+    const token = authHeader && authHeader.startsWith('Bearer ') ? authHeader.slice(7) : req.cookies?.evo_token;
     if (!token) {
         return res.status(401).json({ error: 'Unauthorized: No token provided' });
     }

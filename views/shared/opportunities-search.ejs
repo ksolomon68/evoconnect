@@ -59,7 +59,7 @@
                                                 style="flex:1;">Filter</button>
                                             <a href="<%= basePath %>/search" class="btn btn-secondary">Reset</a>
                                         </div>
-                                    </form>
+                                    <input type="hidden" name="_csrf" value="<%= csrfToken %>"></form>
                                 </div>
 
                                 <!-- Opportunities List -->
@@ -96,7 +96,7 @@
                                                         <h3
                                                             style="margin:0;font-size:1.25rem;color:var(--color-text-primary);">
                                                             <%= opp.title %>
-                                                        </h3>
+                                                        </h3><a href="/opportunities/<%= encodeURIComponent(opp.id) %>">View full details &amp; contractor</a>
                                                         <div
                                                             style="color:var(--text-muted);font-size:0.9rem;margin-top:0.25rem;">
                                                             <strong>
@@ -141,7 +141,7 @@
                                                                     class="btn btn-sm <%= isSaved ? 'btn-primary' : 'btn-outline' %>">
                                                                     <%= isSaved ? '⭐ Saved' : '☆ Save Opportunity' %>
                                                                 </button>
-                                                            </form>
+                                                            <input type="hidden" name="_csrf" value="<%= csrfToken %>"></form>
                                                             <% if (opp.submission_method) { %>
                                                                 <span
                                                                     style="font-size:0.8rem;color:var(--text-muted);">Submission:
@@ -197,7 +197,7 @@
                                                                         class="btn btn-sm btn-secondary"
                                                                         onclick="document.getElementById('apply-form-<%= oppIdStr %>').style.display='none'">Cancel</button>
                                                                 </div>
-                                                            </form>
+                                                            <input type="hidden" name="_csrf" value="<%= csrfToken %>"></form>
                                                         </div>
                                                         <% } %>
                                                             <% } else if (!locals.user) { %>

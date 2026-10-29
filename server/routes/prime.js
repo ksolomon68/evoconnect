@@ -53,28 +53,7 @@ const SUBSCRIPTION_TIERS = [
 ];
 
 // ── FAQ Data ──────────────────────────────────────────────────────────────────
-const PRIME_FAQS = [
-    {
-        q: 'How does the prime contractor approval process work?',
-        a: 'After registering, your account is reviewed by an EvoConnect administrator within 1–2 business days. We verify your SAM.gov UEI, confirm your company is an active prime contractor, and review your stated subcontracting needs. Once approved, you gain full search access. This process ensures all prime contractors on the platform are verified and legitimate, which protects the workers and businesses you\'ll be contacting.'
-    },
-    {
-        q: 'What are the subscription tiers and what do they include?',
-        a: 'EvoConnect offers three tiers. Basic (Free): 5 profile views and 5 connection requests per month, standard search filters. Pro ($49/month): Unlimited profile views, 20 connection requests per month, advanced filters for certifications and travel willingness, and the ability to download contact cards. Enterprise ($99/month): Everything in Pro, unlimited connection requests, the RFQ system to post subcontracting requests directly to qualified candidates, dedicated account manager, and bulk export. All limits reset on the 1st of each calendar month.'
-    },
-    {
-        q: 'How does the RFQ (Request for Quote) system work?',
-        a: 'Enterprise tier subscribers can post detailed Requests for Quote directly to the platform. RFQs include trade/service type, location, timeline, contract vehicle, and project description. Qualified workers and businesses matching your criteria receive notification emails and can respond directly through the platform. This is ideal for primes with active contract vehicles who need to fill specific subcontracting roles quickly.'
-    },
-    {
-        q: 'How do I search for workers and businesses?',
-        a: 'Approved prime contractors can search the Labor Directory for individual workers or the Business Directory for subcontracting companies. You can filter by trade category, state, travel willingness, SAM.gov registration status, and certifications. Results are sorted by profile completeness, which correlates with readiness to work. Connection requests are sent through the platform — the worker or business is notified by email and must accept before any contact information is shared.'
-    },
-    {
-        q: 'What should I do if my application is denied?',
-        a: 'If your prime contractor application is denied, you will receive an email explaining the reason. Common reasons include an unverifiable SAM.gov UEI, an inactive SAM.gov registration, or a company that does not meet our prime contractor criteria. You can reapply with corrected information by emailing admin@evoconnect.evobrand.net. Active SAM.gov registration and a verifiable UEI are required for all prime contractor accounts.'
-    }
-];
+const { PRIME_FAQS } = require('../services/faq-content');
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 function flash(req, type, message) {
@@ -345,7 +324,7 @@ router.get('/dashboard', requireType('prime'), async (req, res) => {
             [userId]
         );
 
-        const [[{ myOppsCount }]] = await db.execute("SELECT COUNT(*) AS myOppsCount FROM opportunities WHERE posted_by = ? OR status = 'published'", [userId]);
+        const [[{ myOppsCount }]] = await db.execute("SELECT COUNT(*) AS myOppsCount FROM opportunities WHERE posted_by = ? AND posted_by_type = 'prime'", [userId]);
         const [[{ wCnt }]] = await db.execute("SELECT COUNT(*) AS wCnt FROM workers WHERE status='active'");
         const [[{ bCnt }]] = await db.execute("SELECT COUNT(*) AS bCnt FROM businesses WHERE status='active'");
         res.render('prime/dashboard', {
@@ -413,7 +392,7 @@ router.get('/search/workers', requireType('prime'), async (req, res) => {
             `SELECT id, full_name, trade_category, skills, certifications,
                     years_experience, sam_registered, business_entity,
                     city, state, zip, travel_willingness, profile_pct
-             FROM workers WHERE ${where}
+             FROM workers w WHERE ${where}
              ORDER BY profile_pct DESC LIMIT 50`,
             params
         );
@@ -488,11 +467,11 @@ router.get('/search/businesses', requireType('prime'), async (req, res) => {
         const { state, service_radius, naics_code } = req.query;
         const certFilter = req.query.certifications;
 
-        const conditions = ['b.status = ?'];
+        const conditions = ['status = ?'];
         const params = ['active'];
 
-        if (state)          { conditions.push('b.state = ?');          params.push(state); }
-        if (service_radius) { conditions.push('b.service_radius = ?'); params.push(service_radius); }
+        if (state)          { conditions.push('state = ?');          params.push(state); }
+        if (service_radius) { conditions.push('service_radius = ?'); params.push(service_radius); }
 
         const where = conditions.join(' AND ');
         const [results] = await db.execute(
@@ -850,44 +829,12 @@ const pf = require('./portalFeatures');
 router.get('/profile', requireType('prime'), (req, res) => res.redirect('/prime/profile/edit'));
 router.get('/search', requireType('prime'), (req, res) => res.redirect('/prime/search/businesses'));
 
-// Post Opportunity
-router.get('/post-opportunity', requireType('prime'), async (req, res) => {
-    res.render('prime/post-opportunity', { title: 'Post Opportunity | EvoConnect Prime', flash: getFlash(req) });
-});
-
-router.post('/post-opportunity', requireType('prime'), async (req, res) => {
-    try {
-        const db = getDb();
-        const { title, project_ref, category, estimated_value, location, naics_codes, certifications_required, due_date, scope_summary } = req.body;
-        if (!title || !scope_summary) {
-            flash(req, 'error', 'Title and scope of work are required.');
-            return res.redirect('/prime/post-opportunity');
-        }
-        const [pRows] = await db.execute('SELECT company_name FROM primes WHERE id = ?', [req.user.id]);
-        const companyName = pRows[0]?.company_name || req.user.name || 'Prime Contractor';
-        const ref = (project_ref || '').trim() || ('OPP-' + Date.now().toString().slice(-6));
-
-        await db.execute(`
-            INSERT INTO opportunities
-                (id, title, scope_summary, description, district_name, category, category_name, estimated_value, naics_codes, certifications, due_date, status, posted_by, posted_by_name)
-            VALUES (?,?,?,?,?,?,?,?,?,?,?,'published',?,?)
-        `, [ref, title.trim(), scope_summary.trim(), scope_summary.trim(), location || 'Statewide', category || 'general', category || 'General Contracting', estimated_value || 'TBD', naics_codes || null, certifications_required || null, due_date || null, req.user.id, companyName]);
-
-        flash(req, 'success', 'Contracting opportunity published!');
-        res.redirect('/prime/opportunities');
-    } catch (err) {
-        console.error('EvoConnect [prime/post-opportunity POST]:', err);
-        flash(req, 'error', 'Failed to publish opportunity.');
-        res.redirect('/prime/post-opportunity');
-    }
-});
-
 // Manage Opportunities
 router.get('/opportunities', requireType('prime'), async (req, res) => {
     try {
         const db = getDb();
         const [opportunities] = await db.execute(
-            "SELECT * FROM opportunities WHERE posted_by = ? OR posted_by IS NULL OR status = 'published' ORDER BY posted_date DESC",
+            "SELECT * FROM opportunities WHERE posted_by = ? AND posted_by_type = 'prime' ORDER BY posted_date DESC",
             [req.user.id]
         );
         const [businesses] = await db.execute("SELECT id, company_name FROM businesses WHERE status='active' ORDER BY company_name ASC LIMIT 50");
@@ -905,60 +852,6 @@ router.get('/opportunities', requireType('prime'), async (req, res) => {
     } catch (err) {
         console.error('EvoConnect [prime/opportunities]:', err);
         res.redirect('/prime/dashboard');
-    }
-});
-
-router.post('/opportunities/:id/status', requireType('prime'), async (req, res) => {
-    try {
-        const db = getDb();
-        const status = ['published', 'closed', 'awarded'].includes(req.body.status) ? req.body.status : 'published';
-        await db.execute('UPDATE opportunities SET status = ? WHERE id = ?', [status, req.params.id]);
-        flash(req, 'success', 'Opportunity status updated.');
-        res.redirect('/prime/opportunities');
-    } catch (err) {
-        res.redirect('/prime/opportunities');
-    }
-});
-
-router.post('/opportunities/:id/delete', requireType('prime'), async (req, res) => {
-    try {
-        const db = getDb();
-        await db.execute('DELETE FROM opportunities WHERE id = ?', [req.params.id]);
-        flash(req, 'success', 'Opportunity deleted.');
-        res.redirect('/prime/opportunities');
-    } catch (err) {
-        res.redirect('/prime/opportunities');
-    }
-});
-
-router.post('/opportunities/:id/invite', requireType('prime'), async (req, res) => {
-    try {
-        const db = getDb();
-        const [opps] = await db.execute('SELECT * FROM opportunities WHERE id = ?', [req.params.id]);
-        if (!opps.length || !req.body.target_key) return res.redirect('/prime/opportunities');
-        const opp = opps[0];
-        const parts = req.body.target_key.split(':');
-        const targetType = parts[0];
-        const targetId = parseInt(parts[1]);
-        const targetName = parts.slice(2).join(':');
-
-        const subject = `Invitation to Bid: ${opp.title}`;
-        const body = `Hello ${targetName},\n\nYou are invited by ${req.user.name} to review and submit an application for "${opp.title}" (Ref: ${opp.project_ref || opp.id}, Value: ${opp.estimated_value || 'TBD'}).\n\nVisit your Search Opportunities board to apply.`;
-
-        const [msgRes] = await db.execute(
-            "INSERT INTO messages (sender_type, sender_id, sender_business_name, receiver_type, receiver_id, receiver_business_name, opportunity_id, message_type, subject, body) VALUES ('prime',?,?,?,?,?,?,'invite',?,?)",
-            [req.user.id, req.user.name, targetType, targetId, targetName, opp.id, subject, body]
-        );
-        await db.execute(
-            'INSERT INTO notifications (user_type, user_id, message_id) VALUES (?,?,?)',
-            [targetType, targetId, msgRes.insertId]
-        );
-
-        flash(req, 'success', `Invitation sent to ${targetName}.`);
-        res.redirect('/prime/opportunities');
-    } catch (err) {
-        console.error('EvoConnect [prime/opportunities/invite]:', err);
-        res.redirect('/prime/opportunities');
     }
 });
 
@@ -980,8 +873,9 @@ router.get('/applications', requireType('prime'), async (req, res) => {
             JOIN opportunities o ON a.opportunity_id = o.id
             LEFT JOIN workers w ON a.applicant_type = 'worker' AND a.applicant_id = w.id
             LEFT JOIN businesses b ON a.applicant_type = 'business' AND a.applicant_id = b.id
+            WHERE o.posted_by = ? AND o.posted_by_type = 'prime'
             ORDER BY a.applied_date DESC
-        `);
+        `, [req.user.id]);
         res.render('prime/applications', {
             title: 'Review Applications | EvoConnect Prime',
             flash: getFlash(req),
@@ -989,48 +883,6 @@ router.get('/applications', requireType('prime'), async (req, res) => {
         });
     } catch (err) {
         console.error('EvoConnect [prime/applications]:', err);
-        res.redirect('/prime/dashboard');
-    }
-});
-
-router.post('/applications/:id/status', requireType('prime'), async (req, res) => {
-    try {
-        const db = getDb();
-        const status = ['submitted', 'under_review', 'awarded', 'declined'].includes(req.body.status) ? req.body.status : 'under_review';
-        await db.execute('UPDATE applications SET status = ? WHERE id = ?', [status, req.params.id]);
-        flash(req, 'success', 'Application status updated.');
-        res.redirect('/prime/applications');
-    } catch (err) {
-        res.redirect('/prime/applications');
-    }
-});
-
-// Analytics
-router.get('/analytics', requireType('prime'), async (req, res) => {
-    try {
-        const db = getDb();
-        const userId = req.user.id;
-        const [pRows] = await db.execute('SELECT * FROM primes WHERE id = ?', [userId]);
-        const prime = pRows[0] || {};
-        const [[{ oppsCount }]] = await db.execute('SELECT COUNT(*) AS oppsCount FROM opportunities WHERE posted_by = ? OR status = "published"', [userId]);
-        const [[{ appsCount }]] = await db.execute('SELECT COUNT(*) AS appsCount FROM applications');
-        const [[{ connectionsSent }]] = await db.execute('SELECT COUNT(*) AS connectionsSent FROM connections WHERE prime_id = ?', [userId]);
-        const [[{ connectionsAccepted }]] = await db.execute("SELECT COUNT(*) AS connectionsAccepted FROM connections WHERE prime_id = ? AND status = 'accepted'", [userId]);
-
-        res.render('prime/analytics', {
-            title: 'Analytics | EvoConnect Prime',
-            flash: getFlash(req),
-            stats: {
-                oppsCount,
-                appsCount,
-                connectionsSent,
-                connectionsAccepted,
-                tier: prime.subscription_tier || 'enterprise',
-                viewsUsed: prime.monthly_views_used || 0,
-                contactsUsed: prime.monthly_contacts_used || 0
-            }
-        });
-    } catch (err) {
         res.redirect('/prime/dashboard');
     }
 });

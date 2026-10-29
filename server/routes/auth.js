@@ -47,6 +47,7 @@ async function findUserByEmail(db, email, userType) {
 
 // Ensure a demo account exists and return { row, userType }
 async function ensureDemoAccount(db, email) {
+    if (process.env.NODE_ENV === 'production') return null;
     const demoEmails = {
         'demo-labor@evoconnect.io':    'worker',
         'demo-business@evoconnect.io': 'business',
@@ -140,6 +141,7 @@ router.get('/login', (req, res) => {
 
 // ── GET /auth/demo/:role (1-click Demo Login) ──────────────────────────────────
 router.get('/auth/demo/:role', async (req, res) => {
+    if (process.env.NODE_ENV === 'production') return res.status(404).send('Demo login unavailable.');
     const roleMap = {
         worker:   'demo-labor@evoconnect.io',
         labor:    'demo-labor@evoconnect.io',
@@ -194,6 +196,7 @@ router.post('/login', authLimiter, async (req, res) => {
             'demo-admin@evoconnect.io'
         ].includes(email);
 
+        if (isDemoEmail && process.env.NODE_ENV === 'production') return res.status(403).render('login', { title: 'Login', flash: { type: 'error', message: 'Demo accounts are unavailable in production.' } });
         if (isDemoEmail && password === 'DemoPass1!') {
             found = await ensureDemoAccount(db, email);
         } else {

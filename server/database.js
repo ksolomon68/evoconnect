@@ -551,7 +551,8 @@ async function initDatabase() {
         const [[{ ac }]] = await db.execute('SELECT COUNT(*) AS ac FROM admins');
         if (ac === 0) {
             const bcrypt = require('bcryptjs');
-            const adminPassword = process.env.ADMIN_DEFAULT_PASSWORD || 'EvoConnect2026!';
+            const adminPassword = process.env.ADMIN_DEFAULT_PASSWORD || (process.env.NODE_ENV !== 'production' ? 'EvoConnect2026!' : null);
+            if (!adminPassword) throw new Error('Set ADMIN_DEFAULT_PASSWORD to provision the first production administrator.');
             const hash = await bcrypt.hash(adminPassword, 12);
             await db.execute(
                 `INSERT INTO admins (email, password_hash, name) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE password_hash = VALUES(password_hash), name = VALUES(name)`,
@@ -560,6 +561,7 @@ async function initDatabase() {
             console.log('EvoConnect DB: Default admin created.');
         }
 
+        if (process.env.NODE_ENV !== 'production') {
         // ── Auto-Seed Demo Accounts for All 4 Roles (Password: DemoPass1!) ──
         const bcryptDemo = require('bcryptjs');
         const demoHash = await bcryptDemo.hash('DemoPass1!', 10);
@@ -761,7 +763,12 @@ async function initDatabase() {
             console.log('EvoConnect DB: Seeded 4 sample contracting opportunities.');
         }
 
-        console.log('EvoConnect DB: All tables and demo data initialized successfully.');
+        } // Development-only demo accounts and sample opportunities.
+        console.log('EvoConnect DB: All tables initialized successfully.');
+
+        await require('./services/flagship-schema')(db);
+        await require('./services/opportunity-lifecycle').archiveExpired(db);
+        setInterval(() => require('./services/opportunity-lifecycle').archiveExpired(db).catch(err => console.error('Opportunity expiry:', err)), 60 * 1000).unref();
 
         // Cleanup expired tokens hourly
         setInterval(async () => {
@@ -773,6 +780,7 @@ async function initDatabase() {
 
     } catch (err) {
         console.error('EvoConnect DB CRITICAL ERROR:', err);
+        throw err;
     }
 }
 

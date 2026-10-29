@@ -115,7 +115,7 @@
                 <% bizCerts.slice(0,4).forEach(function(c) { %><span class="badge badge-cyan"><%= c.toUpperCase() %></span><% }) %>
               </div>
               <% if (!isLocked) { %>
-                <div class="result-actions">
+                <div class="result-actions"><a class="btn btn-secondary" href="/directory/business/<%= biz.id %>">View profile &amp; statement</a>
                   <form method="POST" action="/prime/connect/business/<%= biz.id %>">
                     <button type="submit" class="btn-primary btn-sm">Request Contact</button>
                   </form>

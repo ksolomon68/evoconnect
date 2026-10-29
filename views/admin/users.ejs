@@ -15,6 +15,7 @@
         </p>
       </div>
       <div style="display:flex;gap:.75rem">
+        <a href="/admin/users/new" class="btn btn-primary">Add member</a>
         <a href="/admin/dashboard" class="btn btn-ghost">← Dashboard</a>
         <a href="/admin/export/csv" class="btn btn-secondary">Export CSV</a>
       </div>
@@ -52,7 +53,7 @@
             <tbody>
               <% users.forEach(function(u) { %>
               <tr>
-                <td><strong><%= u.name || '—' %></strong></td>
+                <td><strong><%= u.name || '—' %></strong><p><a href="/admin/users/<%= u.type %>/<%= u.id %>/edit">Edit account / status</a> · <a href="/directory/<%= u.type %>/<%= u.id %>">Profile &amp; statement</a></p></td>
                 <td><a href="mailto:<%= u.email %>" style="color:#06B6D4"><%= u.email %></a></td>
                 <td>
                   <% const typeColor = u.type === 'worker' ? '#E0F2FE;color:#0369A1' : (u.type === 'prime' ? '#FEF3C7;color:#92400E' : '#F0FDF4;color:#166534') %>

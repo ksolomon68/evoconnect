@@ -7,7 +7,7 @@
     "start": "node server/index.js",
     "dev": "nodemon server/index.js",
     "init-db": "node -e \"require('./server/database.js').initDatabase()\"",
-    "test": "echo \"No tests configured\" && exit 0"
+    "test": "node --test tests/*.test.js"
   },
   "keywords": ["government-contracting", "workforce", "naics", "small-business", "evobrand"],
   "author": "EVOBRAND Concepts — Keisha Solomon",

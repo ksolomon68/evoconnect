@@ -8,6 +8,9 @@ const NAV_CONFIG = {
         dashboardHref: '/labor/dashboard',
         messagesHref: '/labor/messages',
         items: [
+            { label: 'Automatic Matches', href: '/labor/matches', icon: '🎯' },
+            { label: 'Analytics', href: '/labor/analytics', icon: '📈' },
+            { label: 'Upload Capability Statement', href: '/labor/documents', icon: '📄' },
             { label: 'Dashboard',             href: '/labor/dashboard',       icon: '🏠' },
             { label: 'Search Opportunities',  href: '/labor/search',          icon: '🔍' },
             { label: 'My Applications',       href: '/labor/applications',    icon: '📋' },
@@ -26,6 +29,9 @@ const NAV_CONFIG = {
         dashboardHref: '/business/dashboard',
         messagesHref: '/business/messages',
         items: [
+            { label: 'Automatic Matches', href: '/business/matches', icon: '🎯' },
+            { label: 'Analytics', href: '/business/analytics', icon: '📈' },
+            { label: 'Upload Capability Statement', href: '/business/documents', icon: '📄' },
             { label: 'Dashboard',             href: '/business/dashboard',            icon: '🏠' },
             { label: 'Search Opportunities',  href: '/business/search',               icon: '🔍' },
             { label: 'My Applications',       href: '/business/applications',         icon: '📋' },
@@ -45,6 +51,7 @@ const NAV_CONFIG = {
         dashboardHref: '/prime/dashboard',
         messagesHref: '/prime/messages',
         items: [
+            { label: 'Capability Statement', href: '/prime/documents', icon: '📄' },
             { label: 'Dashboard',               href: '/prime/dashboard',          icon: '🏠' },
             { label: 'Post Opportunity',        href: '/prime/post-opportunity',   icon: '➕' },
             { label: 'Manage Postings',         href: '/prime/opportunities',      icon: '📂' },
@@ -65,6 +72,10 @@ const NAV_CONFIG = {
         dashboardHref: '/admin/dashboard',
         messagesHref: '/admin/messages',
         items: [
+            { label: 'Help & FAQ', href: '/faq', icon: '❓' },
+            { label: 'Post Opportunity', href: '/admin/post-opportunity', icon: '➕' },
+            { label: 'Review Applications', href: '/admin/applications', icon: '📝' },
+            { label: 'Capability Statement', href: '/admin/documents', icon: '📄' },
             { label: 'Dashboard',            href: '/admin/dashboard',      icon: '🏠' },
             { label: 'User Management',      href: '/admin/users',          icon: '👥' },
             { label: 'Prime Approvals',      href: '/admin/approvals',      icon: '🛡️' },
@@ -461,6 +472,7 @@ const navCfg = NAV_CONFIG[currentRole] || NAV_CONFIG.worker;
             }
         }
     </style>
+  <link rel="stylesheet" href="/css/faq.css?v=1">
 </head>
 <body class="dashboard-v2">
     <a href="#main-content" class="skip-link">Skip to main content</a>

@@ -1,4 +1,4 @@
-# CaltransBizConnect Platform
+# EvoConnect Platform
 
 A mission-critical digital platform connecting Small Businesses (Small Businesses) with contracting opportunities and Prime Contractors/Prime Contractors with qualified partners.
 
@@ -83,10 +83,12 @@ Antig2/
 
 ## Getting Started
 
+EvoConnect uses Node.js and MySQL for its role-based portals. See [feature coverage and development instructions](docs/FLAGSHIP-PARITY.md) for capability uploads, opportunity management, analytics, database setup, and integration tests.
+
 ### For Development
-1. Open `index.html` in a modern web browser
-2. The platform uses client-side JavaScript for demonstration purposes
-3. No build process required for basic functionality
+1. Run `npm ci` and configure the local database using `.env.example`.
+2. Run `npm start` and open the application through its server.
+3. No compilation step is required. Use a separate test database for `npm test`.
 
 ### For Production
 - Implement server-side authentication

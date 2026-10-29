@@ -13,7 +13,7 @@
 
 <div class="recommendations-list" style="padding: var(--space-xl);">
     <div class="section-header">
-        <h2>All Platform Opportunities (<%= oppList.length %>)</h2>
+        <a class="btn btn-primary" href="/admin/post-opportunity">Create opportunity</a><h2>All Platform Opportunities (<%= oppList.length %>)</h2>
     </div>
 
     <% if (oppList.length > 0) { %>
@@ -35,7 +35,7 @@
                     <% oppList.forEach(function(opp) { %>
                     <tr>
                         <td><code><%= opp.project_ref || ('OPP-' + opp.id) %></code></td>
-                        <td><strong><%= opp.title %></strong></td>
+                        <td><a href="/opportunities/<%= encodeURIComponent(opp.id) %>"><strong><%= opp.title %></strong></a></td>
                         <td><%= opp.posted_by_name || 'Prime Contractor' %></td>
                         <td><%= opp.category || 'General' %></td>
                         <td><%= opp.estimated_value || 'TBD' %></td>
@@ -46,13 +46,15 @@
                             </span>
                         </td>
                         <td style="white-space:nowrap;">
+                            <a class="btn btn-sm btn-secondary" href="/admin/opportunities/<%= encodeURIComponent(opp.id) %>/matches">Suggested partners</a>
+<a class="btn btn-sm btn-secondary" href="/admin/opportunities/<%= encodeURIComponent(opp.id) %>/edit">Edit</a>
                             <form method="POST" action="/admin/opportunities/<%= opp.id %>/status" style="display:inline;">
                                 <input type="hidden" name="status" value="<%= opp.status === 'published' ? 'closed' : 'published' %>">
                                 <button type="submit" class="btn btn-sm btn-primary"><%= opp.status === 'published' ? 'Close' : 'Publish' %></button>
-                            </form>
-                            <form method="POST" action="/admin/opportunities/<%= opp.id %>/delete" style="display:inline;margin-left:0.35rem;" onsubmit="return confirm('Delete this opportunity?');">
-                                <button type="submit" class="btn btn-sm btn-secondary">Delete</button>
-                            </form>
+                            <input type="hidden" name="_csrf" value="<%= csrfToken %>"></form>
+                            <form method="POST" action="/admin/opportunities/<%= opp.id %>/delete" style="display:inline;margin-left:0.35rem;" onsubmit="return confirm('Archive this opportunity? Application history will be retained.');">
+                                <button type="submit" class="btn btn-sm btn-secondary">Archive</button>
+                            <input type="hidden" name="_csrf" value="<%= csrfToken %>"></form>
                         </td>
                     </tr>
                     <% }) %>

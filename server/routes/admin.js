@@ -667,49 +667,6 @@ router.get('/opportunities', requireAdmin, async (req, res) => {
     }
 });
 
-router.post('/opportunities/:id/status', requireAdmin, async (req, res) => {
-    try {
-        const db = getDb();
-        const status = ['published', 'closed', 'awarded', 'draft'].includes(req.body.status) ? req.body.status : 'published';
-        await db.execute('UPDATE opportunities SET status = ? WHERE id = ?', [status, req.params.id]);
-        flash(req, 'success', 'Opportunity status updated.');
-        res.redirect('/admin/opportunities');
-    } catch (err) {
-        res.redirect('/admin/opportunities');
-    }
-});
-
-router.post('/opportunities/:id/delete', requireAdmin, async (req, res) => {
-    try {
-        const db = getDb();
-        await db.execute('DELETE FROM opportunities WHERE id = ?', [req.params.id]);
-        flash(req, 'success', 'Opportunity deleted.');
-        res.redirect('/admin/opportunities');
-    } catch (err) {
-        res.redirect('/admin/opportunities');
-    }
-});
-
-router.get('/analytics', requireAdmin, async (req, res) => {
-    try {
-        const db = getDb();
-        const [[{ workerCount }]] = await db.execute('SELECT COUNT(*) AS workerCount FROM workers');
-        const [[{ bizCount }]] = await db.execute('SELECT COUNT(*) AS bizCount FROM businesses');
-        const [[{ primeCount }]] = await db.execute('SELECT COUNT(*) AS primeCount FROM primes');
-        const [[{ oppsCount }]] = await db.execute("SELECT COUNT(*) AS oppsCount FROM opportunities WHERE status='published'");
-        const [[{ appsCount }]] = await db.execute('SELECT COUNT(*) AS appsCount FROM applications');
-        const [[{ connectionCount }]] = await db.execute('SELECT COUNT(*) AS connectionCount FROM connections');
-
-        res.render('admin/analytics', {
-            title: 'Platform Analytics | EvoConnect Admin',
-            flash: getFlash(req),
-            stats: { workerCount, bizCount, primeCount, oppsCount, appsCount, connectionCount }
-        });
-    } catch (err) {
-        res.redirect('/admin/dashboard');
-    }
-});
-
 router.get('/issues', requireAdmin, async (req, res) => {
     try {
         const db = getDb();
@@ -745,7 +702,7 @@ router.get('/cms-tutorial', requireAdmin, (req, res) => {
 });
 
 router.get('/cms', requireAdmin, (req, res) => res.redirect('/admin-cms'));
-router.get('/faq', requireAdmin, (req, res) => res.redirect('/labor/faq'));
+router.get('/faq', requireAdmin, (req, res) => res.redirect('/faq'));
 router.get('/messages', requireAdmin, (req, res) => pf.renderMessages(req, res, 'admin', '/admin'));
 router.post('/messages/send', requireAdmin, (req, res) => pf.sendMessage(req, res, 'admin', '/admin'));
 router.get('/settings', requireAdmin, (req, res) => pf.renderSettings(req, res, '/admin'));

@@ -1,0 +1,7 @@
+<section class="recommendations-list" style="padding:var(--space-xl);margin-bottom:1.5rem" aria-labelledby="auto-match-heading">
+<h2 id="auto-match-heading">Automatic NAICS matches</h2>
+<% if(!result.codes.length) { %><p>Add NAICS codes to your profile to find relevant opportunities automatically.</p><a href="<%= basePath %>/profile">Update my profile</a>
+<% } else if(!result.matches.length) { %><p>No open opportunities match your current codes yet. Matches update automatically as opportunities are published.</p>
+<% } else { %><p><%= result.matches.length %> matching open opportunities based on your NAICS codes.</p><ul><% for(const match of result.matches.slice(0,3)) { %><li><a href="/opportunities/<%= encodeURIComponent(match.id) %>"><%= match.title %></a> · <%= match.score %>% code coverage · <%= match.matched.join(', ') %></li><% } %></ul><% } %>
+<a class="btn btn-secondary" href="<%= basePath %>/matches">View automatic matches</a>
+</section>

@@ -1,0 +1,67 @@
+/* Explicit FAQ colors keep both public and dashboard themes readable. */
+.faq-section {
+  background: #f8fafc;
+  color: #0f172a;
+  padding: clamp(1.5rem, 4vw, 4rem) 0;
+}
+.faq-section .section-header h1,
+.faq-section h2 { color: #0f172a !important; }
+.faq-section .section-sub,
+.faq-section .faq-cta p { color: #334155 !important; }
+.faq-section .faq-list { width: 100%; max-width: 860px; margin: 1.5rem auto; }
+.faq-section .faq-item,
+.faq-section .faq-item:hover,
+.faq-section .faq-item[open] {
+  background: #fff;
+  color: #0f172a;
+  border: 1px solid #cbd5e1;
+  box-shadow: 0 2px 6px rgb(15 23 42 / 6%);
+  transform: none;
+}
+.faq-section .faq-item[open] { border-color: #0369a1; }
+.faq-section .faq-item > .faq-question,
+.faq-section .faq-item:hover > .faq-question,
+.faq-section .faq-item[open] > .faq-question {
+  color: #0f172a !important;
+  background: #fff;
+  padding: 1.25rem;
+  line-height: 1.5;
+}
+.faq-section .faq-item > .faq-question::after { color: #0369a1; }
+.faq-section .faq-item[open] > .faq-question { border-bottom: 1px solid #cbd5e1; }
+.faq-section .faq-question:focus-visible {
+  outline: 3px solid #0369a1;
+  outline-offset: -4px;
+  border-radius: 12px;
+}
+.faq-section .faq-answer {
+  color: #334155 !important;
+  background: #f8fafc;
+  padding: 1.25rem;
+  animation: none;
+}
+.faq-section .faq-answer p,
+.faq-section .faq-answer strong { color: #334155 !important; }
+.faq-section .faq-answer a,
+.faq-section .faq-browse a,
+.faq-section .faq-topics a { color: #075985; text-decoration: underline; }
+.faq-section .faq-topics { display: flex; flex-wrap: wrap; gap: 1rem; margin: 1.5rem 0; }
+.faq-section .faq-group { scroll-margin-top: 6rem; margin-top: 2rem; }
+@media (max-width: 600px) {
+  .faq-section .container { padding-inline: 1rem; }
+  .faq-section .faq-question { gap: 0.75rem; font-size: 1rem; }
+}
+/* Dashboard section headers normally arrange controls in a row; FAQs need a stack. */
+.faq-section .section-header {
+  display: block;
+  text-align: center;
+  max-width: 860px;
+  margin-inline: auto;
+}
+.faq-section .section-header h1,
+.faq-section .section-header .section-sub {
+  max-width: 100%;
+  overflow-wrap: anywhere;
+  margin: 0.75rem 0;
+}
+.faq-section .section-header .hero-badge { display: inline-block; }

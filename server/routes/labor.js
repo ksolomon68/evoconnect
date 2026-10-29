@@ -33,48 +33,7 @@ const US_STATES = ['AL','AK','AZ','AR','CA','CO','CT','DE','FL','GA','HI','ID','
 const STATE_NAMES = { AL:'Alabama',AK:'Alaska',AZ:'Arizona',AR:'Arkansas',CA:'California',CO:'Colorado',CT:'Connecticut',DE:'Delaware',FL:'Florida',GA:'Georgia',HI:'Hawaii',ID:'Idaho',IL:'Illinois',IN:'Indiana',IA:'Iowa',KS:'Kansas',KY:'Kentucky',LA:'Louisiana',ME:'Maine',MD:'Maryland',MA:'Massachusetts',MI:'Michigan',MN:'Minnesota',MS:'Mississippi',MO:'Missouri',MT:'Montana',NE:'Nebraska',NV:'Nevada',NH:'New Hampshire',NJ:'New Jersey',NM:'New Mexico',NY:'New York',NC:'North Carolina',ND:'North Dakota',OH:'Ohio',OK:'Oklahoma',OR:'Oregon',PA:'Pennsylvania',RI:'Rhode Island',SC:'South Carolina',SD:'South Dakota',TN:'Tennessee',TX:'Texas',UT:'Utah',VT:'Vermont',VA:'Virginia',WA:'Washington',WV:'West Virginia',WI:'Wisconsin',WY:'Wyoming',DC:'District of Columbia' };
 
 // ── FAQ Data ──────────────────────────────────────────────────────────────────
-const LABOR_FAQS = [
-    {
-        q: 'Is EvoConnect free to join?',
-        a: 'Yes. Registering your skills profile and using the vendor readiness checklist is completely free. EvoConnect is funded through prime contractor subscriptions, not worker fees.'
-    },
-    {
-        q: 'What is SAM.gov and do I need it?',
-        a: 'SAM.gov (System for Award Management) is the federal government\'s official vendor database. Any individual or company seeking to work on federal contracts — either directly or as a subcontractor — must be registered. Registration is free and takes about 10–15 minutes. Our checklist walks you through every step. If you already have a DUNS/UEI number, have it ready. Registration must be renewed annually.'
-    },
-    {
-        q: 'What kinds of workers does EvoConnect serve?',
-        a: 'EvoConnect serves skilled tradespeople, technical specialists, and service professionals across a wide range of fields — including fiber/broadband installation, CDL trucking, electrical, concrete and civil construction, IT and cloud infrastructure, welding, HVAC/plumbing, landscaping, and administrative roles. If your skill is relevant to government infrastructure or services, you belong here.'
-    },
-    {
-        q: 'How do prime contractors find me?',
-        a: 'Once you complete your profile, prime contractors subscribed to EvoConnect can search for workers by trade, certifications, location, and availability. When a prime is interested, they send a connection request through the platform. You can review the request, see the prime\'s company information, and accept or decline. Your contact information is only shared after you accept.'
-    },
-    {
-        q: 'Do I need to form a business to use this platform?',
-        a: 'No — you can register as an individual worker. However, many federal and state contracts require subcontractors to operate as a legal business entity (LLC, sole proprietorship, or corporation). Our checklist covers how to form a basic business entity if you choose to, and explains the difference between working as an employee of a sub versus running your own firm.'
-    },
-    {
-        q: 'What certifications help me get more work?',
-        a: 'For government contracting, the most valuable certifications are those tied to set-aside programs: SBA 8(a), HUBZone, Service-Disabled Veteran-Owned Small Business (SDVOSB), Women-Owned Small Business (WOSB), and state-level equivalents like Texas HUB or California DVBE. Trade-specific certifications (OSHA-10/30, BICSI, CompTIA, CDL Class A/B, AWS Welding, NABCEP solar) also significantly improve your visibility on the platform.'
-    },
-    {
-        q: 'How does the Vendor Readiness Checklist work?',
-        a: 'The checklist is organized into three tracks: Federal Contracting, State & Local Contracting, and Subcontracting Readiness. Each track contains 8–12 action items. As you complete items, your readiness score updates in real time. When you hit 25%, 50%, and 100%, you\'ll receive milestone emails with next steps. Prime contractors can see your readiness score, so a higher score improves your chances of being contacted.'
-    },
-    {
-        q: 'Is my profile information kept private?',
-        a: 'Your profile is visible only to verified, approved prime contractors on the platform. Your full contact information (phone and email) is not shown to primes until you accept a connection request. You can deactivate your profile at any time from your profile settings page.'
-    },
-    {
-        q: 'Can I upload a resume or portfolio?',
-        a: 'Yes. During registration and from your profile page, you can upload a resume in PDF or Word format (up to 5 MB). This document is visible to prime contractors who have connected with you. We recommend keeping your resume focused on relevant experience and including any certifications or licenses prominently on the first page.'
-    },
-    {
-        q: 'What happens after I register?',
-        a: 'After registering, you\'ll receive a confirmation email with a summary of next steps. Your profile is immediately searchable by prime contractors. We recommend completing the Vendor Readiness Checklist as your first task — it walks you through SAM registration, business entity setup, and certification pathways, and increases your visibility in search results.'
-    }
-];
+const { LABOR_FAQS } = require('../services/faq-content');
 
 // ── Profile Completion Calculator ─────────────────────────────────────────────
 function calcWorkerPct(w) {
@@ -387,7 +346,9 @@ router.get('/dashboard', requireType('worker'), async (req, res) => {
             ORDER BY sort_order ASC LIMIT 4
         `);
 
+        const autoMatches = await require('../services/naics-matching').opportunities(db,req.user.type,userId);
         res.render('labor/dashboard', {
+            autoMatches,
             title: 'My Dashboard | EvoConnect Labor',
             flash: getFlash(req),
             worker,

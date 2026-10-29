@@ -22,6 +22,9 @@ const { attachUser }   = require('./middleware/auth');
 const app  = express();
 app.set('trust proxy', 1);
 const PORT = process.env.PORT || 3001;
+if (process.env.NODE_ENV === 'production' && (!process.env.JWT_SECRET || !process.env.SESSION_SECRET)) {
+    throw new Error('Production requires JWT_SECRET and SESSION_SECRET.');
+}
 
 // ── Security ──────────────────────────────────────────────────────
 app.use(helmet({
@@ -146,6 +149,8 @@ async function startServer() {
     try {
         await initDatabase();
 
+        app.use(require('./routes/flagship'));
+
         // Auth
         app.use('/', require('./routes/auth'));
 
@@ -160,9 +165,9 @@ async function startServer() {
         app.get('/api/notifications', async (req, res) => {
             try {
                 const db = getDb();
-                const userId = req.user?.id || req.query.userId;
-                const userType = req.user?.type || req.query.userType || 'worker';
-                if (!userId) return res.json([]);
+                const userId = req.user?.id;
+                const userType = req.user?.type;
+                if (!userId) return res.status(401).json({ error: 'Please log in.' });
                 const [rows] = await db.execute(`
                     SELECT n.*, m.subject, m.message_type, m.sender_business_name
                     FROM notifications n
@@ -179,7 +184,8 @@ async function startServer() {
         app.post('/api/notifications/:id/read', async (req, res) => {
             try {
                 const db = getDb();
-                await db.execute('UPDATE notifications SET is_read = 1 WHERE id = ?', [req.params.id]);
+                if (!req.user) return res.status(401).json({ error: 'Please log in.' });
+                await db.execute('UPDATE notifications SET is_read = 1 WHERE id = ? AND user_type = ? AND user_id = ?', [req.params.id, req.user.type, req.user.id]);
                 res.json({ success: true });
             } catch (err) {
                 res.json({ success: false });
@@ -260,7 +266,14 @@ async function startServer() {
         // Utility redirects that are linked from marketing copy
         app.get('/checklist',    (req, res) => res.redirect('/labor/checklist'));
         app.get('/how-it-works', (req, res) => res.redirect('/#how-it-works'));
-        app.get('/faq',          (req, res) => res.redirect('/labor/faq'));
+        app.get(['/faq', '/faq.html'], (req, res) => {
+            const faqs = require('./services/faq-content');
+            res.render('shared/faq-index', { title: 'Frequently Asked Questions', activePage: 'faq', layout: req.user ? 'layouts/dashboard' : 'layouts/default', groups: [
+                { id: 'labor', title: 'For workers', items: faqs.LABOR_FAQS },
+                { id: 'business', title: 'For small businesses', items: faqs.BUSINESS_FAQS },
+                { id: 'prime', title: 'For prime contractors', items: faqs.PRIME_FAQS }
+            ] });
+        });
 
         // Sitemap
         app.get('/sitemap.xml', (req, res) => {
@@ -268,7 +281,7 @@ async function startServer() {
             const urls = [
                 '/', '/labor', '/business', '/prime', 
                 '/register', '/labor/register', '/business/register', '/prime/register', 
-                '/login', '/labor/faq', '/business/faq', '/prime/faq',
+                '/login', '/faq', '/labor/faq', '/business/faq', '/prime/faq',
                 '/accessibility-statement', '/privacy-policy', '/terms-of-service'
             ];
             const xml  = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls.map(u => `  <url><loc>${base}${u}</loc></url>`).join('\n')}\n</urlset>`;
