@@ -34,12 +34,23 @@ let schemaData  = null;
 let activeSection = null;
 
 // ── Bootstrap ──────────────────────────────────────────────────────────────
-document.addEventListener('DOMContentLoaded', () => {
-    const saved = sessionStorage.getItem('cms_admin');
-    if (saved) {
-        currentAdmin = JSON.parse(saved);
+document.addEventListener('DOMContentLoaded', async () => {
+    let saved=null;
+    try { saved=JSON.parse(sessionStorage.getItem('cms_admin') || 'null'); } catch {}
+    try {
+        // The dashboard's HTTP-only cookie is sufficient; a CMS-specific login is unnecessary.
+        const restore=header=>fetch(`${API}/cms/session`,{method:'POST',headers:header,credentials:'same-origin'});
+        let response=await restore(saved?.token ? {Authorization:`Bearer ${saved.token}`} : {});
+        // A stale token in this tab must not override a valid dashboard session.
+        if(!response.ok && saved?.token)response=await restore({});
+        if(!response.ok)throw new Error('Admin session required');
+        const data=await response.json();
+        currentAdmin={email:data.email,token:data.token};
+        sessionStorage.setItem('cms_admin',JSON.stringify(currentAdmin));
         showShell();
-    } else {
+    }catch {
+        currentAdmin=null;
+        sessionStorage.removeItem('cms_admin');
         showLoginScreen();
     }
 });
@@ -219,7 +230,14 @@ function setActiveNavLink(activeLink) {
     activeLink.classList.add('active');
 }
 
-function handleLogout() {
+async function handleLogout() {
+    try {
+        const response=await fetch('/logout',{method:'POST',credentials:'same-origin'});
+        if(!response.ok)throw new Error('Sign out failed');
+    }catch {
+        alert('Unable to sign out. Please check your connection and try again.');
+        return;
+    }
     sessionStorage.removeItem('cms_admin');
     currentAdmin = null;
     showLoginScreen();

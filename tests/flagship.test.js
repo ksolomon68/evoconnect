@@ -32,7 +32,7 @@ const pdf=Buffer.from('%PDF-1.4\n1 0 obj<</Type/Catalog>>endobj\ntrailer<</Root 
 before(async()=>{
     const database=process.env.TEST_DB_NAME || 'evoconnect_test';
     assert.match(database,/_test$/);
-    server=spawn(process.execPath,['server/index.js'],{cwd:require('node:path').join(__dirname,'..'),env:{...process.env,NODE_ENV:'development',PORT:String(port),DB_HOST:process.env.DB_HOST || '127.0.0.1',DB_USER:process.env.DB_USER || 'dev',DB_NAME:database,CAPABILITY_STORAGE_DIR:`/tmp/evo-capabilities-${port}`,EMAIL_USER:'',EMAIL_PASSWORD:''},stdio:['ignore','pipe','pipe']});
+    server=spawn(process.execPath,['server/index.js'],{cwd:require('node:path').join(__dirname,'..'),env:{...process.env,NODE_ENV:'development',PORT:String(port),DB_HOST:process.env.DB_HOST || '127.0.0.1',DB_USER:process.env.DB_USER || 'dev',DB_NAME:database,CAPABILITY_STORAGE_DIR:`/tmp/evo-capabilities-${port}`,CMS_ADMIN_PASSWORD:'Legacy-cms-fixture-secret',EMAIL_USER:'',EMAIL_PASSWORD:''},stdio:['ignore','pipe','pipe']});
     server.stdout.on('data',data=>{serverLog+=data;});server.stderr.on('data',data=>{serverLog+=data;});
     let ready=false;
     for(let i=0;i<100;i++){try{const r=await fetch(base+'/api/health');if((await r.json()).status==='ok'){ready=true;break;}}catch{}await new Promise(r=>setTimeout(r,100));}
@@ -297,4 +297,36 @@ test('configured real admins are created alongside existing admins and use the s
     const old=await fetch(base+'/api/cms/login',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({email,password})});assert.equal(old.status,401);
     await provision(db,{email,password,resetPassword:true});
     assert.equal((await portalLogin(password)).headers.get('location'),'/admin/dashboard');
+});
+test('legacy CMS password and account password both reach the admin dashboard, even with a duplicate role email',async()=>{
+    const email=`shared-admin-${Date.now()}@example.invalid`;
+    const accountPassword='Real-admin-account-test-password',workerPassword='Separate-worker-test-password';
+    const hash=await require('bcryptjs').hash(accountPassword,10);
+    const [admin]=await db.execute('INSERT INTO admins (email,password_hash,name) VALUES (?,?,?)',[email,hash,'Unified sign-in admin']);
+    await db.execute("INSERT INTO workers (full_name,email,password_hash,phone,trade_category,status) VALUES ('Duplicate worker',?,?,'123','general','active')",[email,await require('bcryptjs').hash(workerPassword,10)]);
+    const post=async(password)=>fetch(base+'/login',{method:'POST',redirect:'manual',headers:{'content-type':'application/x-www-form-urlencoded'},body:new URLSearchParams({email,password})});
+    for(const password of [accountPassword,'Legacy-cms-fixture-secret']) {
+        const login=await post(password);assert.equal(login.headers.get('location'),'/admin/dashboard');
+        const cookie=login.headers.getSetCookie().find(c=>c.startsWith('evo_token=')).split(';')[0];
+        const dashboard=await fetch(base+'/admin/dashboard',{headers:{cookie},redirect:'manual'});assert.equal(dashboard.status,200);
+        const cms=await fetch(base+'/api/cms/login',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({email,password})});assert.equal(cms.status,200);
+        const cmsCookie=cms.headers.getSetCookie().find(c=>c.startsWith('evo_token='));assert.ok(cmsCookie);
+        assert.equal((await fetch(base+'/admin/dashboard',{headers:{cookie:cmsCookie.split(';')[0]},redirect:'manual'})).status,200);
+        const {token}=await cms.json();
+        const restored=await fetch(base+'/api/cms/session',{method:'POST',headers:{authorization:`Bearer ${token}`}});assert.equal(restored.status,200);assert.ok(restored.headers.getSetCookie().some(c=>c.startsWith('evo_token=')));
+    }
+    assert.equal((await post(workerPassword)).headers.get('location'),'/labor/dashboard');
+    const bad=await post('incorrect-password');assert.equal(bad.headers.get('location'),'/login');assert.ok(!bad.headers.getSetCookie().some(c=>c.startsWith('evo_token=')));
+    const missing=signToken({id:admin.insertId+100000,email,type:'admin'});
+    const orphan=await fetch(base+'/api/cms/session',{method:'POST',headers:{authorization:`Bearer ${missing}`}});assert.equal(orphan.status,401);
+});
+
+test('dashboard admin sessions open CMS without a separate login; other roles cannot',async()=>{
+    const [[admin]]=await db.execute('SELECT id,email FROM admins WHERE id=?',[clients.adminId]);
+    const cookie=`evo_token=${signToken({...admin,type:'admin'})}`;
+    const response=await fetch(base+'/api/cms/session',{method:'POST',headers:{cookie}});assert.equal(response.status,200);
+    const session=await response.json();assert.ok(session.token);assert.equal(session.success,true);assert.ok(session.email);
+    assert.equal((await fetch(base+'/api/cms/stats',{headers:{authorization:`Bearer ${session.token}`}})).status,200);
+    assert.equal((await clients.business.request('/api/cms/session',{method:'POST'})).status,403);
+    assert.equal((await fetch(base+'/api/cms/session',{method:'POST'})).status,401);
 });

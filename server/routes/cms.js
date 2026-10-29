@@ -25,11 +25,11 @@ const fs      = require('fs');
 const multer  = require('multer');
 const jwt     = require('jsonwebtoken');
 const bcrypt  = require('bcryptjs');
-// DB not needed — CMS uses file-based storage + env-var auth
+// Content is file-based; real administrator authentication uses the database.
 
 const router = express.Router();
 
-const { JWT_SECRET: CMS_JWT_SECRET } = require('../middleware/auth');
+const { JWT_SECRET: CMS_JWT_SECRET, setAuthCookie, signToken } = require('../middleware/auth');
 
 // ─── Directory paths ────────────────────────────────────────────────────────
 const ROOT_DIR    = path.join(__dirname, '../../');
@@ -77,20 +77,6 @@ const upload = multer({
  * The administrator's stored password works in both the portal and CMS.
  * An explicitly configured legacy CMS password remains supported.
  */
-// Helper: get active CMS password info from file (bcrypt hash) or env var (plain)
-const CMS_AUTH_FILE = path.join(ROOT_DIR, 'content', 'cms-auth.json');
-function getCmsPasswordInfo() {
-    try {
-        if (fs.existsSync(CMS_AUTH_FILE)) {
-            const data = JSON.parse(fs.readFileSync(CMS_AUTH_FILE, 'utf8'));
-            if (data && data.passwordHash) return { hash: data.passwordHash, isHashed: true };
-            if (data && data.password) return { hash: data.password, isHashed: false }; // legacy plain
-        }
-    } catch (e) {}
-    const plain = process.env.CMS_ADMIN_PASSWORD || (process.env.NODE_ENV !== 'production' ? 'EvoConnect2026!' : null);
-    return { hash: plain, isHashed: false };
-}
-
 router.post('/login', async (req, res) => {
     const { email, password } = req.body || {};
 
@@ -99,11 +85,9 @@ router.post('/login', async (req, res) => {
     }
 
     try {
-        const pwdInfo = getCmsPasswordInfo();
         const [admins] = await require('../database').getDb().execute('SELECT id,password_hash FROM admins WHERE email = ?', [String(email).trim().toLowerCase()]);
         if (!admins.length) return res.status(401).json({ error: 'Invalid credentials' });
-        const passwordMatch = await bcrypt.compare(password, admins[0].password_hash) ||
-            (pwdInfo.hash && (pwdInfo.isHashed ? await bcrypt.compare(password,pwdInfo.hash) : password === pwdInfo.hash));
+        const passwordMatch = await require('../services/admin-authentication').matches(admins[0],password);
         if (!passwordMatch) {
             return res.status(401).json({ error: 'Invalid credentials' });
         }
@@ -113,11 +97,24 @@ router.post('/login', async (req, res) => {
             CMS_JWT_SECRET,
             { expiresIn: '24h' }
         );
+        setAuthCookie(res,token);
         res.json({ success: true, token, email, message: 'CMS login successful' });
     } catch (err) {
         console.error('CMS login error:', err.message);
         res.status(500).json({ error: 'Login failed due to server error' });
     }
+});
+
+// Restore dashboard access for a CMS session already saved in this browser tab.
+router.post('/session', requireAdmin, async(req,res)=>{
+    try {
+        const [admins]=await require('../database').getDb().execute('SELECT id,email,name FROM admins WHERE id=? AND email=?',[req.user.id,req.user.email]);
+        if(!admins.length)return res.status(401).json({error:'Administrator account unavailable.'});
+        const admin=admins[0];
+        const token=signToken({id:admin.id,email:admin.email,name:admin.name,type:'admin'});
+        setAuthCookie(res,token);
+        res.json({success:true,email:admin.email,token});
+    }catch(err){console.error('CMS session restore:',err.code || err.message);res.status(500).json({error:'Unable to restore admin session.'});}
 });
 
 /** POST /api/cms/change-password — change the CMS admin password (admin only) */

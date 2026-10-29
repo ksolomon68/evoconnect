@@ -31,14 +31,18 @@ function tableFor(type) {
 }
 
 // Look up a user by email across all tables. Returns { row, userType } or null.
-async function findUserByEmail(db, email, userType) {
+async function findUserByEmail(db, email, userType, password) {
     const tables = userType
         ? [tableFor(userType)]
-        : ['workers', 'businesses', 'primes', 'admins'];
+        : ['admins', 'workers', 'businesses', 'primes'];
 
     for (const table of tables) {
         const [rows] = await db.execute(`SELECT * FROM ${table} WHERE email = ?`, [email]);
         if (rows.length) {
+            if(password !== undefined) {
+                const valid=table==='admins' ? await require('../services/admin-authentication').matches(rows[0],password) : await bcrypt.compare(password,rows[0].password_hash);
+                if(!valid)continue;
+            }
             return { row: rows[0], userType: TYPE_BY_TABLE[table] || 'worker' };
         }
     }
@@ -122,7 +126,7 @@ router.post('/login', authLimiter, demo.passwordContext, async (req, res) => {
         if (isDemoEmail && password === 'DemoPass1!') {
             found = await ensureDemoAccount(db, email);
         } else {
-            found = await findUserByEmail(db, email, userType);
+            found = await findUserByEmail(db, email, userType, password);
         }
 
         if (!found || !found.row) {
@@ -133,7 +137,7 @@ router.post('/login', authLimiter, demo.passwordContext, async (req, res) => {
         const { row, userType: foundType } = found;
         const match = (isDemoEmail && password === 'DemoPass1!')
             ? true
-            : await bcrypt.compare(password, row.password_hash);
+            : foundType==='admin' ? await require('../services/admin-authentication').matches(row,password) : await bcrypt.compare(password, row.password_hash);
 
         if (!match) {
             flash(req, 'error', 'Invalid email or password.');

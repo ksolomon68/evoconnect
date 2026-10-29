@@ -80,3 +80,10 @@ The same email and account password now work at `/login` and the CMS login (`/ad
 An operator with access to the live application's terminal can run `npm run create-admin` using those environment settings. If the account already exists and the password should be replaced, run `npm run create-admin -- --reset-password` once. Remove the bootstrap password from the hosting settings after confirming successful sign-in. The command never prints the password or its hash.
 
 Creating or testing an account in the cloud workspace does not create it in Hostinger's live database. The live database operation must run in the hosting environment, using its database bindings.
+
+
+## Shared CMS and dashboard authentication
+
+CMS and dashboard sign-in now validate real administrators with the same password rules, including existing legacy CMS password configuration. Where one email belongs to more than one role, sign-in checks the submitted password against the matching records instead of stopping at the first email match. Confirmed administrator credentials take precedence when no role is specified.
+
+CMS sign-in also sets the HTTP-only dashboard cookie. Opening CMS recognizes an existing dashboard admin cookie automatically; no separate CMS login is required. Reopening a saved CMS session also exchanges its valid admin token for that cookie through `/api/cms/session`, after checking that the administrator still exists. CMS sign-out clears the dashboard cookie as well. Refreshing the CMS after deployment restores access through its Admin Dashboard link without another account setup step.
