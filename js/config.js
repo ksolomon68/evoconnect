@@ -19,9 +19,9 @@
       window.location.hostname !== 'localhost' &&
       window.location.hostname !== '127.0.0.1');
 
-  // Prefer relative path if served by the same Node process (works both locally
-  // and in production without hard-coding the domain).
-  const baseApiUrl = isProduction ? 'https://' + prodDomain + '/api' : '/api';
+  // Always use relative '/api' path when served by the same Node process (works locally,
+  // on Hostinger temporary domains, and on custom production domains without CORS/fetch failures).
+  const baseApiUrl = '/api';
 
   window.APP_CONFIG = {
     API_URL:     baseApiUrl,
