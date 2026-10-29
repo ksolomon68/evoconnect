@@ -548,18 +548,19 @@ async function initDatabase() {
         await db.execute(`UPDATE resources SET url = 'https://www.sba.gov/federal-contracting/contracting-guide/types-contracts' WHERE title = 'Set-Aside Contract Explainer' AND (url IS NULL OR url = '' OR url = '#')`);
         await db.execute(`UPDATE resources SET url = 'https://www.sba.gov/federal-contracting/contracting-guide/prime-subcontracting' WHERE title = 'How Prime Contractors Pay Subs' AND (url IS NULL OR url = '' OR url = '#')`);
 
-        // ── Seed default admin ─────────────────────────────────────
+        // Provision the explicitly configured real administrator even if other admins exist.
         const [[{ ac }]] = await db.execute('SELECT COUNT(*) AS ac FROM admins');
-        if (ac === 0) {
-            const bcrypt = require('bcryptjs');
-            const adminPassword = process.env.ADMIN_DEFAULT_PASSWORD || (process.env.NODE_ENV !== 'production' ? 'EvoConnect2026!' : null);
-            if (!adminPassword) throw new Error('Set ADMIN_DEFAULT_PASSWORD to provision the first production administrator.');
-            const hash = await bcrypt.hash(adminPassword, 12);
-            await db.execute(
-                `INSERT INTO admins (email, password_hash, name) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE password_hash = VALUES(password_hash), name = VALUES(name)`,
-                [process.env.ADMIN_EMAIL || 'admin@evoconnect.evobrand.net', hash, 'EvoConnect Admin']
-            );
-            console.log('EvoConnect DB: Default admin created.');
+        if (process.env.ADMIN_DEFAULT_PASSWORD) {
+            await require('./services/provision-admin')(db, {
+                email: process.env.ADMIN_EMAIL || 'admin@evoconnect.evobrand.net',
+                password: process.env.ADMIN_DEFAULT_PASSWORD
+            });
+        } else if (ac === 0) {
+            if (process.env.NODE_ENV === 'production') throw new Error('Set ADMIN_EMAIL and ADMIN_DEFAULT_PASSWORD to provision the first administrator.');
+            await require('./services/provision-admin')(db, {
+                email: process.env.ADMIN_EMAIL || 'admin@evoconnect.evobrand.net',
+                password: 'EvoConnect2026!'
+            });
         }
 
         if (process.env.NODE_ENV !== 'production') {

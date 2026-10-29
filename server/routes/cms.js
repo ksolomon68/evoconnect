@@ -71,16 +71,11 @@ const upload = multer({
     }
 });
 
-// ─── CMS Login (no MySQL required) ───────────────────────────────────────────
+// ─── CMS Login (real administrator account) ───────────────────────────────────────────
 /**
- * POST /api/cms/login
- * Authenticates a CMS admin without hitting the database.
- * Checks:
- *   1. Email matches admin pattern (contains "admin" or is the known admin address)
- *   2. Password matches CMS_ADMIN_PASSWORD env var (if set), otherwise any password
- *      is accepted for local dev convenience.
- *
- * Body: { email: string, password: string }
+ * POST /api/cms/login authenticates an existing real administrator.
+ * The administrator's stored password works in both the portal and CMS.
+ * An explicitly configured legacy CMS password remains supported.
  */
 // Helper: get active CMS password info from file (bcrypt hash) or env var (plain)
 const CMS_AUTH_FILE = path.join(ROOT_DIR, 'content', 'cms-auth.json');
@@ -105,11 +100,10 @@ router.post('/login', async (req, res) => {
 
     try {
         const pwdInfo = getCmsPasswordInfo();
-        const [admins] = await require('../database').getDb().execute('SELECT id FROM admins WHERE email = ?', [String(email).trim().toLowerCase()]);
-        if (!admins.length || !pwdInfo.hash) return res.status(401).json({ error: 'Invalid credentials' });
-        const passwordMatch = (pwdInfo.isHashed
-            ? await bcrypt.compare(password, pwdInfo.hash)
-            : password === pwdInfo.hash) || (process.env.NODE_ENV !== 'production' && password === 'DemoPass1!');
+        const [admins] = await require('../database').getDb().execute('SELECT id,password_hash FROM admins WHERE email = ?', [String(email).trim().toLowerCase()]);
+        if (!admins.length) return res.status(401).json({ error: 'Invalid credentials' });
+        const passwordMatch = await bcrypt.compare(password, admins[0].password_hash) ||
+            (pwdInfo.hash && (pwdInfo.isHashed ? await bcrypt.compare(password,pwdInfo.hash) : password === pwdInfo.hash));
         if (!passwordMatch) {
             return res.status(401).json({ error: 'Invalid credentials' });
         }
@@ -133,22 +127,18 @@ router.post('/change-password', requireAdmin, async (req, res) => {
     if (!currentPassword || !newPassword) {
         return res.status(400).json({ error: 'currentPassword and newPassword are required' });
     }
-    if (newPassword.length < 8) {
-        return res.status(400).json({ error: 'New password must be at least 8 characters' });
+    if (typeof newPassword !== 'string' || newPassword.length < 12) {
+        return res.status(400).json({ error: 'New password must be at least 12 characters' });
     }
 
     try {
-        const pwdInfo = getCmsPasswordInfo();
-        const currentMatch = pwdInfo
-            ? (pwdInfo.isHashed ? await bcrypt.compare(currentPassword, pwdInfo.hash) : currentPassword === pwdInfo.hash)
-            : false;
-        if (!currentMatch) {
+        const db = require('../database').getDb();
+        const [admins] = await db.execute('SELECT id,password_hash FROM admins WHERE id=? AND email=?', [req.user.id,req.user.email]);
+        if (!admins.length || !await bcrypt.compare(currentPassword,admins[0].password_hash)) {
             return res.status(401).json({ error: 'Current password is incorrect' });
         }
-        const newHash = await bcrypt.hash(newPassword, 12);
-        const dir = path.dirname(CMS_AUTH_FILE);
-        if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
-        fs.writeFileSync(CMS_AUTH_FILE, JSON.stringify({ passwordHash: newHash, updatedAt: new Date().toISOString() }, null, 2), 'utf8');
+        const newHash = await bcrypt.hash(newPassword,12);
+        await db.execute('UPDATE admins SET password_hash=? WHERE id=?',[newHash,admins[0].id]);
         res.json({ success: true, message: 'Password updated successfully' });
     } catch (err) {
         console.error('CMS: Failed to change password:', err.message);

@@ -69,3 +69,14 @@ The four login-page demo buttons work in production as well as development. Both
 Demo requests use separate `demo_` tables in the configured database, created lazily with the same schema as the app tables. Only public NAICS reference data is copied. Sample members and sample opportunities are fictional fixtures; live user records, applications and messages are never copied. The database account needs CREATE and INSERT privileges, which the app's schema initialization also uses. These tables are shared read-only preview data, not a separate writable account per visitor.
 
 A visible preview banner identifies demo sessions. Changes and live CMS access are blocked for those sessions; signing out returns to normal login. The SQL adapter scopes demo queries (including transactions) without changing live queries. Production HTTP tests exercise every demo role, preview pages, both sign-in methods, denied writes, no live users in the admin preview, and a normal account sign-in.
+
+
+## Creating a real administrator and CMS administrator
+
+Set `ADMIN_EMAIL` to the intended real email and `ADMIN_DEFAULT_PASSWORD` to the password in the hosting provider's secure environment settings. Never add the password to Git or command arguments. On startup the application creates that real administrator even when other administrators already exist. It stores a bcrypt hash and preserves an existing account's password on subsequent restarts.
+
+The same email and account password now work at `/login` and the CMS login (`/admin-cms`). A signed-in admin can also use the portal session for CMS APIs. CMS account-password changes update the actual administrator record, so the portal and CMS remain in sync.
+
+An operator with access to the live application's terminal can run `npm run create-admin` using those environment settings. If the account already exists and the password should be replaced, run `npm run create-admin -- --reset-password` once. Remove the bootstrap password from the hosting settings after confirming successful sign-in. The command never prints the password or its hash.
+
+Creating or testing an account in the cloud workspace does not create it in Hostinger's live database. The live database operation must run in the hosting environment, using its database bindings.

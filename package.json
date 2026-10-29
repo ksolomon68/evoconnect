@@ -5,6 +5,7 @@
   "main": "server/index.js",
   "scripts": {
     "start": "node server/index.js",
+    "create-admin": "node scripts/create-admin.js",
     "dev": "nodemon server/index.js",
     "init-db": "node -e \"require('./server/database.js').initDatabase()\"",
     "test": "node --test tests/*.test.js"

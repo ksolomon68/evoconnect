@@ -281,3 +281,20 @@ test('FAQs are public, discoverable, and readable through every dashboard route'
     }
     const admin=await clients.admin.page('/faq');assert.equal(admin.res.status,200);assert.match(admin.text,/Help &amp; FAQ/);
 });
+test('configured real admins are created alongside existing admins and use the same portal/CMS password',async()=>{
+    const provision=require('../server/services/provision-admin');
+    const email=`provisioned-${Date.now()}@example.invalid`, password='Provisioning-test-password';
+    const result=await provision(db,{email,password});assert.equal(result.created,true);
+    const rerun=await provision(db,{email,password:'Different-bootstrap-password'});assert.equal(rerun.created,false);assert.equal(rerun.id,result.id);
+    const portalLogin=async pwd=>fetch(base+'/login',{method:'POST',redirect:'manual',headers:{'content-type':'application/x-www-form-urlencoded'},body:new URLSearchParams({email,password:pwd})});
+    const portal=await portalLogin(password);assert.equal(portal.headers.get('location'),'/admin/dashboard');
+    const cms=await fetch(base+'/api/cms/login',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({email,password})});assert.equal(cms.status,200);
+    const {token}=await cms.json();assert.ok(token);
+    assert.equal((await fetch(base+'/api/cms/stats',{headers:{authorization:`Bearer ${token}`}})).status,200);
+    const changedPassword='New-administrator-test-password';
+    const changed=await fetch(base+'/api/cms/change-password',{method:'POST',headers:{'content-type':'application/json',authorization:`Bearer ${token}`},body:JSON.stringify({currentPassword:password,newPassword:changedPassword})});assert.equal(changed.status,200);
+    assert.equal((await portalLogin(changedPassword)).headers.get('location'),'/admin/dashboard');
+    const old=await fetch(base+'/api/cms/login',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({email,password})});assert.equal(old.status,401);
+    await provision(db,{email,password,resetPassword:true});
+    assert.equal((await portalLogin(password)).headers.get('location'),'/admin/dashboard');
+});
