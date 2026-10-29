@@ -108,422 +108,63 @@ const navCfg = NAV_CONFIG[currentRole] || NAV_CONFIG.worker;
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     
-    <link rel="stylesheet" href="/css/design-system.css?v=3.3.0">
-    <link rel="stylesheet" href="/css/main.css?v=3.3.1">
-    <link rel="stylesheet" href="/css/dashboard-new.css?v=3.3.0">
-    <link rel="stylesheet" href="/css/dashboard-common.css?v=3.3.1">
-    <link rel="stylesheet" href="/css/accessibility-widget.css?v=3.3.0">
-    <style>
-        html, body.dashboard-v2 {
-            --color-primary: #0284C7 !important;
-            --color-primary-dark: #0369A1 !important;
-            --color-primary-light: #0EA5E9 !important;
-            --color-secondary: #0F172A !important;
-            --color-secondary-dark: #1E293B !important;
-            --color-secondary-light: #64748B !important;
-            --color-bg-primary: #FFFFFF !important;
-            --color-bg-secondary: #F8FAFC !important;
-            --color-bg-tertiary: #E0F2FE !important;
-            --color-bg-dark: #0F172A !important;
-            --color-text-primary: #0F172A !important;
-            --color-text-secondary: #334155 !important;
-            --color-text-muted: #64748B !important;
-            --color-text-inverse: #FFFFFF !important;
-            --text-primary: #0F172A !important;
-            --text-secondary: #334155 !important;
-            --text-muted: #64748B !important;
-            --text-main: #0F172A !important;
-            --text-inverse: #FFFFFF !important;
-            --bg-white: #FFFFFF !important;
-            --bg-gray-50: #F8FAFC !important;
-            --bg-gray-100: #F1F5F9 !important;
-            --card-bg: #FFFFFF !important;
-            --dashboard-bg: #F8FAFC !important;
-            --brand-blue: #0284C7 !important;
-            --brand-blue-soft: #E0F2FE !important;
-            --color-border: #CBD5E1 !important;
-            --color-border-light: #E2E8F0 !important;
-            --border-color: #E2E8F0 !important;
-        }
-        body.dashboard-v2 {
-            display: flex !important;
-            min-height: 100vh;
-            background-color: #F8FAFC !important;
-            color: #0F172A !important;
-            margin: 0;
-        }
-        aside.sidebar {
-            width: 280px;
-            min-width: 280px;
-            background: #FFFFFF !important;
-            border-right: 1px solid #E2E8F0 !important;
-            display: flex;
-            flex-direction: column;
-            position: sticky;
-            top: 0;
-            height: 100vh;
-            padding: 0;
-            z-index: 100;
-        }
-        aside.sidebar .sidebar-nav {
-            scrollbar-width: none;
-            -ms-overflow-style: none;
-        }
-        aside.sidebar .sidebar-nav::-webkit-scrollbar {
-            display: none;
-            width: 0;
-            height: 0;
-        }
-        aside.sidebar .nav-item {
-            color: #1E293B !important;
-            background: transparent !important;
-            border-left: 4px solid transparent !important;
-            display: flex !important;
-            flex-direction: row !important;
-            align-items: center !important;
-            min-height: 36px !important;
-            padding: 0.45rem 1.25rem !important;
-            font-size: 0.88rem !important;
-        }
-        aside.sidebar .nav-item:hover {
-            background: #F1F5F9 !important;
-            color: #0284C7 !important;
-        }
-        aside.sidebar .nav-item.active {
-            background: #E0F2FE !important;
-            color: #0284C7 !important;
-            border-left: 4px solid #0284C7 !important;
-            font-weight: 700 !important;
-        }
-        aside.sidebar .sidebar-footer {
-            position: relative !important;
-            margin-top: auto;
-            border-top: 1px solid #E2E8F0;
-            padding: 0.5rem 0;
-            background: #FFFFFF;
-        }
-        .dashboard-container {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            min-width: 0;
-            background: #F8FAFC;
-        }
-        body.dashboard-v2 .main-content {
-            background: #F8FAFC !important;
-            color: #0F172A !important;
-            padding: 1.5rem 2rem 3rem;
-            flex: 1;
-        }
-        body.dashboard-v2 .card,
-        body.dashboard-v2 .content-card,
-        body.dashboard-v2 .standard-card,
-        body.dashboard-v2 .enhanced-card,
-        body.dashboard-v2 .summary-card,
-        body.dashboard-v2 .action-card,
-        body.dashboard-v2 .stat-card,
-        body.dashboard-v2 .dash-card,
-        body.dashboard-v2 .recommendations-list {
-            background-color: #FFFFFF !important;
-            color: #0F172A !important;
-            border: 1px solid #E2E8F0 !important;
-            border-radius: 12px !important;
-        }
-        body.dashboard-v2 .dash-card {
-            padding: 1.5rem;
-            box-shadow: 0 1px 3px rgba(15, 23, 42, 0.06);
-        }
-        body.dashboard-v2 .dash-card-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 1.25rem;
-            padding-bottom: 0.75rem;
-            border-bottom: 1px solid #E2E8F0;
-        }
-        body.dashboard-v2 .dash-card-header h2 {
-            margin: 0 !important;
-            font-size: 1.15rem !important;
-        }
-        body.dashboard-v2 .action-grid {
-            display: grid !important;
-            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)) !important;
-            gap: 1.25rem !important;
-            margin-bottom: 2rem !important;
-        }
-        body.dashboard-v2 .action-card {
-            display: flex !important;
-            flex-direction: column !important;
-            align-items: flex-start !important;
-            justify-content: flex-start !important;
-            padding: 1.35rem !important;
-            text-decoration: none !important;
-            height: 100%;
-            box-shadow: 0 1px 3px rgba(15, 23, 42, 0.06) !important;
-            transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease !important;
-        }
-        body.dashboard-v2 .action-card:hover {
-            transform: translateY(-3px) !important;
-            box-shadow: 0 8px 20px rgba(2, 132, 199, 0.12) !important;
-            border-color: #0284C7 !important;
-        }
-        body.dashboard-v2 .action-card .icon-box {
-            width: 44px !important;
-            height: 44px !important;
-            min-width: 44px !important;
-            border-radius: 10px !important;
-            background: #E0F2FE !important;
-            display: flex !important;
-            align-items: center !important;
-            justify-content: center !important;
-            font-size: 1.35rem !important;
-            margin-bottom: 0.85rem !important;
-        }
-        body.dashboard-v2 .action-card h3 {
-            font-size: 1.02rem !important;
-            font-weight: 700 !important;
-            color: #0F172A !important;
-            margin: 0 0 0.4rem 0 !important;
-            line-height: 1.3 !important;
-        }
-        body.dashboard-v2 .action-card p {
-            font-size: 0.86rem !important;
-            color: #475569 !important;
-            line-height: 1.5 !important;
-            margin: 0 !important;
-        }
-        body.dashboard-v2 .resource-grid {
-            display: grid !important;
-            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)) !important;
-            gap: 1.25rem !important;
-        }
-        body.dashboard-v2 .resource-card {
-            display: flex !important;
-            flex-direction: column !important;
-            align-items: flex-start !important;
-            padding: 1.35rem !important;
-            background: #FFFFFF !important;
-            border: 1px solid #E2E8F0 !important;
-            border-radius: 12px !important;
-            text-decoration: none !important;
-            color: #0F172A !important;
-            box-shadow: 0 1px 3px rgba(15, 23, 42, 0.05) !important;
-            transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease !important;
-            cursor: pointer !important;
-        }
-        body.dashboard-v2 .resource-card:hover {
-            transform: translateY(-3px) !important;
-            box-shadow: 0 8px 20px rgba(2, 132, 199, 0.12) !important;
-            border-color: #0284C7 !important;
-        }
-        body.dashboard-v2 .resource-card .resource-icon {
-            width: 42px;
-            height: 42px;
-            border-radius: 10px;
-            background: #E0F2FE;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.3rem;
-            margin-bottom: 0.75rem;
-        }
-        body.dashboard-v2 .resource-card h4 {
-            font-size: 1rem !important;
-            font-weight: 700 !important;
-            color: #0284C7 !important;
-            margin: 0 0 0.4rem 0 !important;
-        }
-        body.dashboard-v2 .resource-card p {
-            font-size: 0.86rem !important;
-            color: #475569 !important;
-            line-height: 1.5 !important;
-            margin: 0 0 0.75rem 0 !important;
-            flex: 1;
-        }
-        body.dashboard-v2 .resource-card .resource-cta {
-            font-size: 0.82rem;
-            font-weight: 600;
-            color: #0284C7;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.25rem;
-            margin-top: auto;
-        }
-        body.dashboard-v2 h1,
-        body.dashboard-v2 h2,
-        body.dashboard-v2 h3,
-        body.dashboard-v2 h4,
-        body.dashboard-v2 h5,
-        body.dashboard-v2 h6,
-        body.dashboard-v2 label,
-        body.dashboard-v2 .form-label {
-            color: #0F172A;
-        }
-        body.dashboard-v2 .hero-section h1,
-        body.dashboard-v2 .hero-section h2,
-        body.dashboard-v2 .hero-section p {
-            color: #FFFFFF !important;
-        }
-        body.dashboard-v2 .form-control,
-        body.dashboard-v2 input[type="text"],
-        body.dashboard-v2 input[type="email"],
-        body.dashboard-v2 input[type="password"],
-        body.dashboard-v2 input[type="tel"],
-        body.dashboard-v2 input[type="url"],
-        body.dashboard-v2 input[type="date"],
-        body.dashboard-v2 input[type="number"],
-        body.dashboard-v2 select,
-        body.dashboard-v2 textarea {
-            background-color: #FFFFFF !important;
-            color: #0F172A !important;
-            border: 1px solid #CBD5E1 !important;
-        }
-        body.dashboard-v2 .form-control::placeholder,
-        body.dashboard-v2 input::placeholder,
-        body.dashboard-v2 textarea::placeholder {
-            color: #94A3B8 !important;
-        }
-        body.dashboard-v2 .btn-secondary,
-        body.dashboard-v2 .btn-ghost {
-            background-color: #F1F5F9 !important;
-            color: #1E293B !important;
-            border: 1px solid #CBD5E1 !important;
-            font-weight: 600;
-            text-decoration: none;
-        }
-        body.dashboard-v2 .btn-secondary:hover,
-        body.dashboard-v2 .btn-ghost:hover {
-            background-color: #E2E8F0 !important;
-            color: #0F172A !important;
-        }
-        body.dashboard-v2 .btn-primary {
-            background-color: #0284C7 !important;
-            border-color: #0284C7 !important;
-            color: #FFFFFF !important;
-        }
-        body.dashboard-v2 .btn-primary:hover {
-            background-color: #0369A1 !important;
-            border-color: #0369A1 !important;
-            color: #FFFFFF !important;
-        }
-        body.dashboard-v2 .btn-danger {
-            background-color: #FEE2E2 !important;
-            color: #B91C1C !important;
-            border: 1px solid #FECACA !important;
-            font-weight: 600;
-        }
-        body.dashboard-v2 .btn-danger:hover {
-            background-color: #FECACA !important;
-            color: #991B1B !important;
-        }
-        body.dashboard-v2 .dashboard-section,
-        body.dashboard-v2 .admin-section,
-        body.dashboard-v2 .portal-section,
-        body.dashboard-v2 .profile-section {
-            padding-top: 0;
-        }
-        body.dashboard-v2 .dashboard-section > .container,
-        body.dashboard-v2 .admin-section > .container,
-        body.dashboard-v2 .portal-section > .container,
-        body.dashboard-v2 .profile-section > .container {
-            max-width: 100%;
-            padding-left: 0;
-            padding-right: 0;
-        }
-        .data-table {
-            width: 100%;
-            border-collapse: collapse;
-            background: #FFFFFF !important;
-        }
-        .data-table th, .data-table td {
-            padding: 0.75rem 1rem;
-            text-align: left;
-            border-bottom: 1px solid #E2E8F0 !important;
-            color: #0F172A;
-        }
-        .data-table td strong {
-            color: #0F172A !important;
-        }
-        .data-table tr:hover {
-            background: #F8FAFC !important;
-        }
-        .data-table th {
-            background: #F8FAFC !important;
-            font-weight: 600;
-            font-size: 0.85rem;
-            color: #475569 !important;
-            text-transform: uppercase;
-        }
-        @media (max-width: 1024px) {
-            body.dashboard-v2 {
-                display: block !important;
-            }
-            aside.sidebar {
-                display: none;
-                position: fixed;
-                top: 0;
-                left: -280px;
-                bottom: 0;
-                z-index: 1100;
-            }
-            aside.sidebar.active {
-                display: flex !important;
-                left: 0;
-            }
-        }
-    </style>
-  <link rel="stylesheet" href="/css/faq.css?v=1">
+    <link rel="stylesheet" href="/css/design-system.css?v=3.4.0">
+    <link rel="stylesheet" href="/css/main.css?v=3.4.0">
+    <link rel="stylesheet" href="/css/dashboard-new.css?v=3.4.0">
+    <link rel="stylesheet" href="/css/dashboard-common.css?v=3.4.0">
+    <link rel="stylesheet" href="/css/accessibility-widget.css?v=3.4.0">
+    <link rel="stylesheet" href="/css/faq.css?v=3.4.0">
 </head>
-<body class="dashboard-v2">
+<body class="dashboard-v2" data-theme="dashboard">
     <a href="#main-content" class="skip-link">Skip to main content</a>
-    
+
     <!-- Server-Rendered Caltrans Sidebar -->
     <aside class="sidebar" id="sidebar">
-        <div class="sidebar-brand" style="display:flex;align-items:center;justify-content:space-between;padding:0.85rem 1.25rem;border-bottom:1px solid #E2E8F0;">
-            <a href="<%= navCfg.dashboardHref %>" style="text-decoration:none;display:flex;align-items:center;gap:0.5rem;font-weight:800;font-size:1.15rem;color:var(--color-primary, #005A8C);">
-                <img src="/images/favicon.png" alt="EvoConnect" style="height:26px;width:auto;">
+        <div class="sidebar-brand">
+            <a href="<%= navCfg.dashboardHref %>" class="sidebar-brand-link">
+                <img src="/images/favicon.png" alt="EvoConnect">
                 <span>EvoConnect</span>
             </a>
             <button class="sidebar-close-btn" aria-label="Close menu" onclick="Navigation.closeSidebar()">&times;</button>
         </div>
 
-        <nav class="sidebar-nav" style="padding:0.6rem 0;flex:1;overflow-y:auto;">
-            <div style="padding:0 1.25rem 0.35rem;font-size:0.72rem;text-transform:uppercase;color:#64748B;font-weight:700;letter-spacing:0.04em;">
+        <nav class="sidebar-nav">
+            <div class="sidebar-nav-section-title">
                 <%= navCfg.title %>
             </div>
             <% navCfg.items.forEach(function(item) { %>
-                <a href="<%= item.href %>" class="nav-item" style="display:flex;align-items:center;gap:0.65rem;padding:0.45rem 1.25rem;min-height:36px;color:#1E293B;text-decoration:none;font-weight:500;font-size:0.88rem;border-radius:0;margin:0;">
-                    <span aria-hidden="true" style="font-size:1.05rem;width:22px;text-align:center;"><%= item.icon %></span>
+                <a href="<%= item.href %>" class="nav-item">
+                    <span aria-hidden="true" class="nav-item-icon"><%= item.icon %></span>
                     <span><%= item.label %></span>
                 </a>
             <% }) %>
 
             <!-- Quick Role / Demo Switcher -->
-            <div style="padding:0.65rem 1.25rem 0.25rem;font-size:0.68rem;text-transform:uppercase;color:#94A3B8;font-weight:700;letter-spacing:0.04em;border-top:1px solid #F1F5F9;margin-top:0.5rem;">
+            <div class="demo-switch-label">
                 Switch Demo Portal
             </div>
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.3rem;padding:0.2rem 1.1rem;">
-                <a href="/auth/demo/worker" style="font-size:0.75rem;padding:0.28rem 0.4rem;border:1px solid #E2E8F0;border-radius:6px;text-decoration:none;color:<%= currentRole === 'worker' ? '#0284C7' : '#475569' %>;background:<%= currentRole === 'worker' ? '#E0F2FE' : '#F8FAFC' %>;font-weight:600;text-align:center;">👷 Labor</a>
-                <a href="/auth/demo/business" style="font-size:0.75rem;padding:0.28rem 0.4rem;border:1px solid #E2E8F0;border-radius:6px;text-decoration:none;color:<%= currentRole === 'business' ? '#0284C7' : '#475569' %>;background:<%= currentRole === 'business' ? '#E0F2FE' : '#F8FAFC' %>;font-weight:600;text-align:center;">🏢 Business</a>
-                <a href="/auth/demo/prime" style="font-size:0.75rem;padding:0.28rem 0.4rem;border:1px solid #E2E8F0;border-radius:6px;text-decoration:none;color:<%= currentRole === 'prime' ? '#0284C7' : '#475569' %>;background:<%= currentRole === 'prime' ? '#E0F2FE' : '#F8FAFC' %>;font-weight:600;text-align:center;">🏗️ Prime</a>
-                <a href="/auth/demo/admin" style="font-size:0.75rem;padding:0.28rem 0.4rem;border:1px solid #E2E8F0;border-radius:6px;text-decoration:none;color:<%= currentRole === 'admin' ? '#0284C7' : '#475569' %>;background:<%= currentRole === 'admin' ? '#E0F2FE' : '#F8FAFC' %>;font-weight:600;text-align:center;">🛡️ Admin</a>
+            <div class="demo-switch-grid">
+                <a href="/auth/demo/worker" class="demo-switch-link<%= currentRole === 'worker' ? ' active' : '' %>">👷 Labor</a>
+                <a href="/auth/demo/business" class="demo-switch-link<%= currentRole === 'business' ? ' active' : '' %>">🏢 Business</a>
+                <a href="/auth/demo/prime" class="demo-switch-link<%= currentRole === 'prime' ? ' active' : '' %>">🏗️ Prime</a>
+                <a href="/auth/demo/admin" class="demo-switch-link<%= currentRole === 'admin' ? ' active' : '' %>">🛡️ Admin</a>
             </div>
         </nav>
 
         <div class="sidebar-footer">
-            <a href="/?public=1" class="sidebar-footer-link" style="min-height:34px;display:flex;align-items:center;gap:0.65rem;padding:0.35rem 1.25rem;text-decoration:none;color:#475569;font-size:0.86rem;">
-                <span style="font-size:1rem;">🌐</span> Back to Public Site
+            <a href="/?public=1" class="sidebar-footer-link">
+                <span class="sidebar-footer-link-icon">🌐</span> Back to Public Site
             </a>
-            <a href="/logout" onclick="localStorage.removeItem('wfc_user');" class="sidebar-footer-link sidebar-signout-btn" style="min-height:34px;display:flex;align-items:center;gap:0.65rem;padding:0.35rem 1.25rem;text-decoration:none;color:#DC2626;font-weight:600;font-size:0.86rem;">
-                <span style="font-size:1rem;">🚪</span> Sign Out
+            <a href="/logout" onclick="localStorage.removeItem('wfc_user');" class="sidebar-footer-link sidebar-signout-btn">
+                <span class="sidebar-footer-link-icon">🚪</span> Sign Out
             </a>
         </div>
     </aside>
 
     <div class="dashboard-container">
         <!-- Server-Rendered Caltrans Top Header -->
-        <header class="header-top" id="header-top" style="background:#FFFFFF;border-bottom:1px solid #E2E8F0;padding:0 1.75rem;height:70px;display:flex;align-items:center;justify-content:space-between;">
-            <div style="display:flex;align-items:center;gap:1rem;">
+        <header class="header-top" id="header-top">
+            <div class="header-top-left">
                 <button id="mobile-toggle" class="mobile-toggle-btn" aria-label="Open navigation menu" aria-expanded="false" aria-controls="sidebar">
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <line x1="4" y1="12" x2="20" y2="12"></line>
@@ -531,46 +172,46 @@ const navCfg = NAV_CONFIG[currentRole] || NAV_CONFIG.worker;
                         <line x1="4" y1="18" x2="20" y2="18"></line>
                     </svg>
                 </button>
-                <span class="header-portal-title" style="font-size:1rem;font-weight:700;color:#0F172A;"><%= navCfg.title %></span>
+                <span class="header-portal-title"><%= navCfg.title %></span>
             </div>
 
-            <div style="display:flex;align-items:center;gap:1rem;">
+            <div class="header-top-right">
                 <!-- Messages Shortcut -->
-                <a href="<%= navCfg.messagesHref %>" class="btn btn-sm btn-outline" style="padding:0.4rem 0.85rem;font-size:0.85rem;text-decoration:none;display:inline-flex;align-items:center;gap:0.35rem;">
+                <a href="<%= navCfg.messagesHref %>" class="btn btn-sm btn-outline messages-shortcut-btn">
                     💬 Messages
                 </a>
 
                 <!-- Notification Bell -->
-                <div class="notification-container" style="position:relative;">
-                    <button id="notification-bell" class="btn btn-outline btn-small" style="position:relative;border-radius:50%;width:40px;height:40px;padding:0;display:flex;align-items:center;justify-content:center;background:transparent;border:1px solid #CBD5E1;cursor:pointer;" aria-label="Notifications">
-                        <span aria-hidden="true" style="font-size:1.1rem;">🔔</span>
-                        <span id="notification-badge" class="badge" style="position:absolute;top:-5px;right:-5px;background:#DC2626;color:white;display:none;padding:2px 6px;border-radius:10px;font-size:0.7rem;min-width:18px;text-align:center;">0</span>
+                <div class="notification-container">
+                    <button id="notification-bell" class="notification-bell" aria-label="Notifications">
+                        <span aria-hidden="true">🔔</span>
+                        <span id="notification-badge" class="badge notification-badge">0</span>
                     </button>
-                    <div id="notification-dropdown" class="notification-dropdown" style="display:none;position:absolute;top:100%;right:0;width:320px;background:#FFFFFF;border:1px solid #E2E8F0;border-radius:8px;box-shadow:0 10px 25px rgba(0,0,0,0.12);z-index:1000;max-height:400px;overflow-y:auto;margin-top:8px;">
-                        <div style="padding:12px 14px;border-bottom:1px solid #E2E8F0;font-weight:700;display:flex;justify-content:space-between;align-items:center;">
+                    <div id="notification-dropdown" class="notification-dropdown">
+                        <div class="notification-dropdown-header">
                             <span>Notifications</span>
-                            <a href="<%= navCfg.messagesHref %>" style="font-size:0.8rem;color:#0284C7;text-decoration:none;font-weight:600;">View Messages</a>
+                            <a href="<%= navCfg.messagesHref %>">View Messages</a>
                         </div>
-                        <div id="notification-list" style="padding:10px;font-size:0.85rem;color:#64748B;">No new notifications</div>
+                        <div id="notification-list" class="notification-list">No new notifications</div>
                     </div>
                 </div>
 
                 <!-- User Info -->
-                <div class="header-user-info" style="text-align:right;">
-                    <div style="font-weight:600;font-size:0.9rem;color:#0F172A;"><%= userName %></div>
-                    <div style="font-size:0.75rem;color:#64748B;"><%= navCfg.title %></div>
+                <div class="header-user-info">
+                    <div class="user-name"><%= userName %></div>
+                    <div class="user-role"><%= navCfg.title %></div>
                 </div>
-                <div class="header-avatar" style="width:38px;height:38px;border-radius:50%;background:#E0F2FE;color:#0284C7;display:flex;align-items:center;justify-content:center;font-weight:700;">
+                <div class="header-avatar">
                     <%= String(userName).charAt(0).toUpperCase() %>
                 </div>
 
                 <!-- Always-Visible Sign Out Button -->
-                <a href="/logout" onclick="localStorage.removeItem('wfc_user');" class="btn btn-sm" style="padding:0.4rem 0.85rem;font-size:0.85rem;text-decoration:none;color:#B91C1C !important;border:1px solid #FECACA !important;background:#FEE2E2 !important;font-weight:600;border-radius:6px;">
+                <a href="/logout" onclick="localStorage.removeItem('wfc_user');" class="btn btn-sm sign-out-btn">
                     🚪 Sign Out
                 </a>
             </div>
         </header>
-        
+
         <!-- Main Content -->
         <main id="main-content" class="main-content">
             <%- body %>

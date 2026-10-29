@@ -54,8 +54,8 @@
             </table>
         </div>
     <% } else { %>
-        <div style="padding:2.5rem;text-align:center;color:var(--text-muted);">
-            <p style="margin-bottom:1rem;">You haven't submitted any applications yet.</p>
+        <div class="empty-state">
+            <p>You haven't submitted any applications yet.</p>
             <a href="<%= basePath %>/search" class="btn btn-primary">Search Open Opportunities</a>
         </div>
     <% } %>

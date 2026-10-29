@@ -7,29 +7,9 @@
 *, *::before, *::after { box-sizing: border-box; }
 
 :root {
-    /* Brand */
-    --cms-primary:       #005A8C;
-    --cms-primary-dark:  #003F63;
-    --cms-accent:        #FFCC00;
-    --cms-accent-text:   #000000;
-
-    /* Neutrals */
-    --cms-bg:            #f4f6f8;
-    --cms-surface:       #ffffff;
-    --cms-border:        #d1d9e0;
-    --cms-border-light:  #e8edf1;
-    --cms-text:          #1a1a1a;
-    --cms-text-muted:    #5a6472;
-    --cms-text-inv:      #ffffff;
-
-    /* Status */
-    --cms-success:       #1b7a4a;
-    --cms-success-bg:    #d4edda;
-    --cms-error:         #C62828;
-    --cms-error-bg:      #fde8e8;
-    --cms-warning:       #7c5c00;
-    --cms-warning-bg:    #fff3cd;
-    --cms-info-bg:       #e3f0fa;
+    /* Brand, Neutrals, and Status tokens now live in css/design-system.css
+       (--cms-primary, --cms-accent, --cms-error, etc.) so the CMS admin
+       and the rest of the app share one rebrandable source of truth. */
 
     /* Layout */
     --cms-sidebar-w:     280px;

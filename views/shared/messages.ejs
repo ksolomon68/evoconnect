@@ -64,7 +64,7 @@
                 <% }) %>
             </div>
         <% } else { %>
-            <p style="color:var(--text-muted);padding:1rem 0 2rem;">Your inbox is empty.</p>
+            <div class="empty-state-inline"><p>Your inbox is empty.</p></div>
         <% } %>
 
         <div class="section-header">
@@ -86,7 +86,7 @@
                 <% }) %>
             </div>
         <% } else { %>
-            <p style="color:var(--text-muted);padding:0.5rem 0;">No sent messages yet.</p>
+            <div class="empty-state-inline"><p>No sent messages yet.</p></div>
         <% } %>
     </div>
 

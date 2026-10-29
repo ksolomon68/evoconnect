@@ -168,6 +168,72 @@
 }
 
 /* ============================================
+   DASHBOARD THEME
+   Logged-in portals (labor/business/prime/admin) use a light theme
+   while the public marketing site stays dark. Applied via
+   <body data-theme="dashboard">; every component elsewhere in the
+   system keeps referencing the same --color-* tokens, so this block
+   is the single place the light palette is defined.
+   ============================================ */
+
+[data-theme="dashboard"] {
+  --color-primary: #0284C7;
+  --color-primary-dark: #0369A1;
+  --color-primary-light: #0EA5E9;
+
+  --color-secondary: #0F172A;
+  --color-secondary-dark: #1E293B;
+  --color-secondary-light: #64748B;
+
+  --color-bg-primary: #FFFFFF;
+  --color-bg-secondary: #F8FAFC;
+  --color-bg-tertiary: #E0F2FE;
+  --color-bg-dark: #0F172A;
+
+  --color-text-primary: #0F172A;
+  --color-text-secondary: #334155;
+  --color-text-muted: #64748B;
+  --color-text-inverse: #FFFFFF;
+
+  --color-border: #CBD5E1;
+  --color-border-light: #E2E8F0;
+  --color-border-dark: #CBD5E1;
+}
+
+/* ============================================
+   CMS ADMIN BRAND TOKENS
+   The CMS admin UI (admin-cms.html / css/admin-cms.css) previously
+   defined its own copy of these values in a separate :root block with
+   no connection to this file. They now live here as the single source
+   of truth; css/admin-cms.css references them via var() so a rebrand
+   only has to happen in one place. Values unchanged from the CMS's
+   prior defaults — this is a consolidation, not a visual change.
+   ============================================ */
+
+:root {
+  --cms-primary: #005A8C;
+  --cms-primary-dark: #003F63;
+  --cms-accent: #FFCC00;
+  --cms-accent-text: #000000;
+
+  --cms-bg: #f4f6f8;
+  --cms-surface: #ffffff;
+  --cms-border: #d1d9e0;
+  --cms-border-light: #e8edf1;
+  --cms-text: #1a1a1a;
+  --cms-text-muted: #5a6472;
+  --cms-text-inv: #ffffff;
+
+  --cms-success: #1b7a4a;
+  --cms-success-bg: #d4edda;
+  --cms-error: #C62828;
+  --cms-error-bg: #fde8e8;
+  --cms-warning: #7c5c00;
+  --cms-warning-bg: #fff3cd;
+  --cms-info-bg: #e3f0fa;
+}
+
+/* ============================================
    GLOBAL RESET & BASE STYLES
    ============================================ */
 
@@ -850,6 +916,40 @@ textarea:focus-visible,
     transform: none !important;
     pointer-events: auto !important;
   }
+}
+
+/* ============================================
+   EMPTY STATES
+   One shared pattern for "this list has nothing in it yet," used
+   across every views/shared/*.ejs list/table view instead of each
+   screen inventing its own ad hoc message.
+   ============================================ */
+
+.empty-state {
+  padding: var(--space-2xl) var(--space-lg);
+  text-align: center;
+  color: var(--color-text-muted);
+}
+
+.empty-state p {
+  font-size: var(--font-size-md);
+  margin-bottom: var(--space-md);
+}
+
+.empty-state p:last-child {
+  margin-bottom: 0;
+}
+
+/* Compact variant for a short empty notice inside a denser panel
+   (e.g. an inbox list, a stats table) where a full centered block
+   with a CTA would be too heavy. */
+.empty-state-inline {
+  padding: var(--space-md) 0;
+  color: var(--color-text-muted);
+}
+
+.empty-state-inline p {
+  margin-bottom: 0;
 }
 
 /* ============================================

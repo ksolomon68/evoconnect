@@ -16,11 +16,18 @@
   <meta name="apple-mobile-web-app-title" content="WFC">
   <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
 
-  <!-- CMS-specific styles only (no site main.css — isolated admin UI) -->
+  <!-- Shared design tokens (brand colors, focus states, reduced-motion),
+       then CMS-specific layout/component styles on top. No site main.css —
+       the CMS stays a focused admin shell, not the public marketing page. -->
+  <link rel="stylesheet" href="css/design-system.css?v=3.4.0">
   <link rel="stylesheet" href="css/admin-cms.css?v=3.4.0">
 </head>
 
-<body>
+<body data-theme="dashboard">
+  <!-- data-theme="dashboard": the CMS is a logged-in admin surface like the
+       role dashboards, so it inherits the same light design-system.css
+       token values (dark text on white) rather than the public site's
+       dark-theme defaults — see css/design-system.css [data-theme="dashboard"]. -->
   <!-- Application mount point — content injected by admin-cms.js -->
   <div id="cms-app" role="application" aria-label="WorkForce Connect CMS">
     <!-- Login screen or shell will be rendered here -->

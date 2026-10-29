@@ -462,3 +462,342 @@ textarea {
         word-break: break-word;
     }
 }
+
+/* ============================================
+   Dashboard Chrome — Sidebar & Header Components
+   Promoted from an inline <style> block that lived in
+   layouts/dashboard.ejs, so every dashboard view shares one
+   class-based source of truth instead of repeating inline styles.
+   ============================================ */
+
+.sidebar-brand {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: var(--color-bg-primary);
+}
+
+.sidebar-brand-link {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    font-weight: var(--font-weight-bold);
+    font-size: var(--font-size-lg);
+    color: var(--color-primary);
+    text-decoration: none;
+}
+
+.sidebar-brand-link img {
+    height: 26px;
+    width: auto;
+}
+
+.sidebar-nav-section-title {
+    padding: 0 var(--space-lg) var(--space-xs);
+    font-size: var(--font-size-xs);
+    text-transform: uppercase;
+    color: var(--text-muted);
+    font-weight: var(--font-weight-bold);
+    letter-spacing: 0.04em;
+}
+
+.nav-item-icon {
+    font-size: 1.05rem;
+    width: 22px;
+    text-align: center;
+}
+
+.demo-switch-label {
+    padding: var(--space-sm) var(--space-lg) var(--space-xs);
+    font-size: 0.68rem;
+    text-transform: uppercase;
+    color: var(--color-text-muted);
+    font-weight: var(--font-weight-bold);
+    letter-spacing: 0.04em;
+    border-top: var(--border-width) solid var(--color-bg-tertiary);
+    margin-top: var(--space-sm);
+}
+
+.demo-switch-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-xs);
+    padding: var(--space-xs) var(--space-lg);
+}
+
+.demo-switch-link {
+    font-size: var(--font-size-xs);
+    padding: 0.28rem 0.4rem;
+    border: var(--border-width) solid var(--color-border-light);
+    border-radius: var(--border-radius-sm);
+    text-decoration: none;
+    color: var(--color-text-secondary);
+    background: var(--color-bg-secondary);
+    font-weight: var(--font-weight-semibold);
+    text-align: center;
+}
+
+.demo-switch-link.active {
+    color: var(--color-primary);
+    background: var(--color-bg-tertiary);
+}
+
+.sidebar-signout-btn {
+    color: var(--color-error);
+}
+
+/* Top header */
+.header-top-left,
+.header-top-right {
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+}
+
+.messages-shortcut-btn {
+    padding: 0.4rem 0.85rem;
+    font-size: var(--font-size-sm);
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-xs);
+}
+
+.notification-container {
+    position: relative;
+}
+
+.notification-bell {
+    position: relative;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    border: var(--border-width) solid var(--color-border);
+    cursor: pointer;
+}
+
+.notification-bell .notification-badge {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    background: var(--color-error);
+    color: var(--color-text-inverse);
+    display: none;
+    padding: 2px 6px;
+    border-radius: 10px;
+    font-size: 0.7rem;
+    min-width: 18px;
+    text-align: center;
+}
+
+.notification-dropdown {
+    display: none;
+    position: absolute;
+    top: 100%;
+    right: 0;
+    width: 320px;
+    background: var(--color-bg-primary);
+    border: var(--border-width) solid var(--color-border-light);
+    border-radius: var(--border-radius-md);
+    box-shadow: var(--shadow-lg);
+    z-index: var(--z-dropdown);
+    max-height: 400px;
+    overflow-y: auto;
+    margin-top: var(--space-sm);
+}
+
+.notification-dropdown-header {
+    padding: var(--space-sm) var(--space-md);
+    border-bottom: var(--border-width) solid var(--color-border-light);
+    font-weight: var(--font-weight-bold);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.notification-dropdown-header a {
+    font-size: var(--font-size-sm);
+    color: var(--color-primary);
+    text-decoration: none;
+    font-weight: var(--font-weight-semibold);
+}
+
+.notification-list {
+    padding: var(--space-sm);
+    font-size: var(--font-size-sm);
+    color: var(--color-text-muted);
+}
+
+.header-user-info {
+    text-align: right;
+}
+
+.header-user-info .user-name {
+    font-weight: var(--font-weight-semibold);
+    font-size: var(--font-size-sm);
+    color: var(--color-text-primary);
+}
+
+.header-user-info .user-role {
+    font-size: var(--font-size-xs);
+    color: var(--color-text-muted);
+}
+
+.sign-out-btn {
+    padding: 0.4rem 0.85rem;
+    font-size: var(--font-size-sm);
+    text-decoration: none;
+    font-weight: var(--font-weight-semibold);
+    border-radius: var(--border-radius-sm);
+    color: var(--color-error);
+    border: var(--border-width) solid var(--color-error-light);
+    background: var(--color-error-light);
+}
+
+/* Dashboard-specific button variant adjustments for the light theme —
+   design-system.css's .btn-secondary is tuned for the dark public site
+   (white text on a transparent/dark surface), which reads as invisible
+   on the dashboard's white background. */
+[data-theme="dashboard"] .btn-secondary {
+    background-color: var(--color-bg-secondary);
+    color: var(--color-text-secondary) !important;
+    border-color: var(--color-border);
+    text-shadow: none;
+}
+
+[data-theme="dashboard"] .btn-secondary:hover {
+    background-color: var(--color-border-light);
+    color: var(--color-text-primary) !important;
+}
+
+.btn-ghost {
+    background: transparent;
+    color: var(--color-text-secondary);
+    border-color: var(--color-border);
+    font-weight: var(--font-weight-semibold);
+}
+
+.btn-ghost:hover {
+    background: var(--color-bg-secondary);
+}
+
+.btn-danger {
+    background-color: var(--color-error-light);
+    color: var(--color-error);
+    border-color: var(--color-error-light);
+    font-weight: var(--font-weight-semibold);
+}
+
+.btn-danger:hover {
+    background-color: var(--color-error);
+    color: var(--color-text-inverse);
+}
+
+/* Dashboard content cards not already covered by dashboard-new.css */
+.dash-card {
+    background-color: var(--color-bg-primary);
+    border: var(--border-width) solid var(--color-border-light);
+    border-radius: var(--border-radius-lg);
+    padding: var(--space-lg);
+    box-shadow: var(--shadow-sm);
+}
+
+.dash-card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: var(--space-lg);
+    padding-bottom: var(--space-sm);
+    border-bottom: var(--border-width) solid var(--color-border-light);
+}
+
+.dash-card-header h2 {
+    margin: 0;
+    font-size: 1.15rem;
+}
+
+.resource-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: var(--space-lg);
+}
+
+.resource-card {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 1.35rem;
+    background: var(--color-bg-primary);
+    border: var(--border-width) solid var(--color-border-light);
+    border-radius: var(--border-radius-lg);
+    text-decoration: none;
+    color: var(--color-text-primary);
+    box-shadow: var(--shadow-sm);
+    transition: transform var(--transition-base), box-shadow var(--transition-base), border-color var(--transition-base);
+    cursor: pointer;
+}
+
+.resource-card:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-lg);
+    border-color: var(--color-primary);
+}
+
+.resource-card .resource-icon {
+    width: 42px;
+    height: 42px;
+    border-radius: var(--border-radius-md);
+    background: var(--color-bg-tertiary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.3rem;
+    margin-bottom: var(--space-sm);
+}
+
+.resource-card h4 {
+    font-size: var(--font-size-md);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-primary);
+    margin: 0 0 var(--space-xs) 0;
+}
+
+.resource-card p {
+    font-size: var(--font-size-sm);
+    color: var(--color-text-secondary);
+    line-height: var(--line-height-normal);
+    margin: 0 0 var(--space-sm) 0;
+    flex: 1;
+}
+
+.resource-card .resource-cta {
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-primary);
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-xs);
+    margin-top: auto;
+}
+
+/* Section wrappers go full-bleed inside the dashboard main content */
+.dashboard-section,
+.admin-section,
+.portal-section,
+.profile-section {
+    padding-top: 0;
+}
+
+.dashboard-section > .container,
+.admin-section > .container,
+.portal-section > .container,
+.profile-section > .container {
+    max-width: 100%;
+    padding-left: 0;
+    padding-right: 0;
+}
