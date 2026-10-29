@@ -122,7 +122,10 @@ html, body {
 .cms-nav a:focus {
     background:  rgba(255,255,255,.1);
     color:       #fff;
-    outline:     none;
+}
+.cms-nav a:focus-visible {
+    outline:        3px solid var(--cms-accent);
+    outline-offset: -3px;
 }
 .cms-nav a.active {
     background:  rgba(255,255,255,.15);

@@ -358,6 +358,16 @@ const Navigation = {
                 }
             }
 
+            // Announce only when unread count goes up, so screen reader users
+            // aren't told "no new notifications" on every 30s poll.
+            const announcer = document.getElementById('notification-announcer');
+            if (announcer && typeof this._lastUnreadCount === 'number' && unread.length > this._lastUnreadCount) {
+                announcer.textContent = unread.length === 1
+                    ? '1 new notification'
+                    : `${unread.length} new notifications`;
+            }
+            this._lastUnreadCount = unread.length;
+
             if (list) {
                 if (!Array.isArray(notifications) || notifications.length === 0) {
                     list.innerHTML = '<div style="color: var(--text-muted); text-align: center; padding: 10px;">No new notifications</div>';

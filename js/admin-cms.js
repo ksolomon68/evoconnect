@@ -249,10 +249,13 @@ function showChangePasswordModal() {
 
     const modal = document.createElement('div');
     modal.id = 'cms-change-pw-modal';
+    modal.setAttribute('role', 'dialog');
+    modal.setAttribute('aria-modal', 'true');
+    modal.setAttribute('aria-labelledby', 'cp-modal-title');
     modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:9999;display:flex;align-items:center;justify-content:center;';
     modal.innerHTML = `
         <div style="background:#fff;border-radius:8px;padding:2rem;width:360px;max-width:90vw;box-shadow:0 8px 32px rgba(0,0,0,.2);">
-            <h2 style="margin:0 0 1.5rem;font-size:1.2rem;">Change CMS Password</h2>
+            <h2 id="cp-modal-title" style="margin:0 0 1.5rem;font-size:1.2rem;">Change CMS Password</h2>
             <div style="margin-bottom:1rem;">
                 <label style="display:block;font-size:.85rem;font-weight:600;margin-bottom:.25rem;">Current Password</label>
                 <input type="password" id="cp-current" class="cms-input" style="width:100%;box-sizing:border-box;" autocomplete="current-password">
@@ -274,8 +277,11 @@ function showChangePasswordModal() {
     `;
     document.body.appendChild(modal);
 
-    document.getElementById('cp-cancel').onclick = () => modal.remove();
-    modal.addEventListener('click', e => { if (e.target === modal) modal.remove(); });
+    const closeModal = () => { ModalTrap.close(modal); modal.remove(); };
+    ModalTrap.open(modal);
+
+    document.getElementById('cp-cancel').onclick = closeModal;
+    modal.addEventListener('click', e => { if (e.target === modal) closeModal(); });
 
     document.getElementById('cp-submit').onclick = async () => {
         const current = document.getElementById('cp-current').value;
@@ -299,7 +305,7 @@ function showChangePasswordModal() {
 
         try {
             await apiFetch('POST', '/cms/change-password', { currentPassword: current, newPassword: newPw });
-            modal.remove();
+            closeModal();
             showToast('Password updated successfully.', 'success');
         } catch (err) {
             errorEl.textContent = err.message; errorEl.style.display = 'block';
@@ -1335,8 +1341,10 @@ function openMediaPicker(fieldKey, sectionId) {
     </div>`;
 
     document.body.appendChild(backdrop);
-    document.getElementById('close-media-picker').addEventListener('click', () => backdrop.remove());
-    backdrop.addEventListener('click', e => { if (e.target === backdrop) backdrop.remove(); });
+    const closeMediaPicker = () => { ModalTrap.close(backdrop); backdrop.remove(); };
+    ModalTrap.open(backdrop);
+    document.getElementById('close-media-picker').addEventListener('click', closeMediaPicker);
+    backdrop.addEventListener('click', e => { if (e.target === backdrop) closeMediaPicker(); });
 
     renderMediaLibrary(document.getElementById('media-picker-body'), (url) => {
         // Escape fieldKey for CSS selector (handles brackets like cards[0].image)
@@ -1364,7 +1372,7 @@ function openMediaPicker(fieldKey, sectionId) {
             activePage.header[fieldKey.slice(7)] = url;
         }
 
-        backdrop.remove();
+        closeMediaPicker();
         showToast('Image selected. Remember to Save All Changes.', 'info');
     });
 }
@@ -1742,6 +1750,7 @@ function openFAQModal(faq) {
         .join('');
 
     // Remove any existing modal
+    ModalTrap.close();
     document.querySelectorAll('.cms-modal-backdrop').forEach(el => el.remove());
 
     const backdrop = document.createElement('div');
@@ -1799,6 +1808,7 @@ function openFAQModal(faq) {
     </div>`;
 
     document.body.appendChild(backdrop);
+    ModalTrap.open(backdrop);
 
     // Focus first field
     setTimeout(() => {
@@ -1807,7 +1817,7 @@ function openFAQModal(faq) {
     }, 50);
 
     // Close handlers
-    const closeFn = () => backdrop.remove();
+    const closeFn = () => { ModalTrap.close(backdrop); backdrop.remove(); };
     document.getElementById('faq-modal-close').addEventListener('click', closeFn);
     document.getElementById('faq-modal-cancel').addEventListener('click', closeFn);
     backdrop.addEventListener('click', e => { if (e.target === backdrop) closeFn(); });
@@ -1865,6 +1875,7 @@ async function saveFAQ(faqId) {
             await apiFetch('POST', '/cms/faqs', { category, question, answer, status });
             showToast('FAQ created', 'success');
         }
+        ModalTrap.close();
         document.querySelectorAll('.cms-modal-backdrop').forEach(el => el.remove());
         await loadFAQs();
     } catch (err) {
@@ -1879,13 +1890,14 @@ async function deleteFAQ(faqId) {
     if (!faq) return;
 
     // Confirm dialog
+    ModalTrap.close();
     document.querySelectorAll('.cms-modal-backdrop').forEach(el => el.remove());
     const backdrop = document.createElement('div');
     backdrop.className = 'cms-modal-backdrop';
     backdrop.innerHTML = `
-    <div class="cms-modal" role="dialog" aria-modal="true" style="max-width:440px;text-align:center">
+    <div class="cms-modal" role="dialog" aria-modal="true" aria-labelledby="del-faq-title" style="max-width:440px;text-align:center">
       <div class="cms-modal-header" style="justify-content:center">
-        <h2 class="cms-modal-title">Delete FAQ?</h2>
+        <h2 class="cms-modal-title" id="del-faq-title">Delete FAQ?</h2>
       </div>
       <p class="cms-text-muted" style="margin:.5rem 0 1.25rem">
         "<strong>${escHtml(truncateFAQ(faq.question, 80))}</strong>"
@@ -1897,14 +1909,16 @@ async function deleteFAQ(faqId) {
       </div>
     </div>`;
     document.body.appendChild(backdrop);
+    ModalTrap.open(backdrop);
+    const closeDeleteModal = () => { ModalTrap.close(backdrop); backdrop.remove(); };
 
-    document.getElementById('del-cancel').addEventListener('click', () => backdrop.remove());
-    backdrop.addEventListener('click', e => { if (e.target === backdrop) backdrop.remove(); });
+    document.getElementById('del-cancel').addEventListener('click', closeDeleteModal);
+    backdrop.addEventListener('click', e => { if (e.target === backdrop) closeDeleteModal(); });
 
     document.getElementById('del-confirm').addEventListener('click', async () => {
         try {
             await apiFetch('DELETE', `/cms/faqs/${faqId}`);
-            backdrop.remove();
+            closeDeleteModal();
             showToast('FAQ deleted', 'success');
             await loadFAQs();
         } catch (err) {
