@@ -1,5 +1,5 @@
 <% locals.layout='layouts/dashboard'; %>
-<section class="hero-section"><div class="hero-content"><h1>Automatic NAICS matches</h1><p>Open opportunities matched to the NAICS codes on your profile.</p></div></section>
+<section class="hero-section"><div class="hero-content"><h1>Automatic NAICS matches</h1><p><%= user.type==='worker'?'Open labor jobs':'Prime opportunities' %> matched to the NAICS codes on your profile.</p></div></section>
 <section class="recommendations-list" style="padding:var(--space-xl)">
 <p>Matches refresh whenever you visit, using your current profile and currently published, unexpired opportunities. No search filters are needed.</p>
 <p>The percentage is the share of the opportunity’s NAICS codes that match yours exactly. It is not a qualification or award prediction. Review the scope, location, certifications, and requirements before applying.</p>

@@ -1,0 +1,4 @@
+<% locals.layout='layouts/dashboard'; %>
+<section class="search-section"><div class="container"><div class="search-header"><h1><%= title %></h1><p>Find a partner, review their profile and capability statement, and request a connection.</p></div>
+<form method="get" style="display:flex;gap:.75rem;flex-wrap:wrap;margin:1.5rem 0"><div><label for="directory-name">Name</label><input id="directory-name" name="q" class="form-control" value="<%= filters.q || '' %>"></div><div><label for="directory-state">State</label><input id="directory-state" name="state" class="form-control" maxlength="2" value="<%= filters.state || '' %>"></div><button class="btn btn-secondary">Search</button></form>
+<p><%= profiles.length %> members found</p><% if(profiles.length) { %><%- include('directory-cards',{profiles,profileType}) %><% } else { %><p>No matching members. Try broadening your search.</p><% } %></div></section>

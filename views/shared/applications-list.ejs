@@ -7,7 +7,7 @@
 
 <section class="hero-section">
     <div class="hero-content hero-welcome">
-        <h1>📋 My Submitted Applications</h1>
+        <h1>📋 <%= user.type==='worker'?'My Job Applications':'My Opportunity Applications' %></h1>
         <p>Track the status of your submitted bids, capability statements, and subcontracting applications.</p>
     </div>
 </section>
@@ -24,7 +24,7 @@
                 <thead>
                     <tr>
                         <th>Opportunity</th>
-                        <th>Prime Contractor</th>
+                        <th>Posted by</th>
                         <th>Proposed Bid</th>
                         <th>Submitted</th>
                         <th>Status</th>

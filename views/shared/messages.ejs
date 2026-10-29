@@ -10,7 +10,7 @@
 <section class="hero-section">
     <div class="hero-content hero-welcome">
         <h1>💬 Messages & Communications</h1>
-        <p>Communicate directly with prime contractors, subcontractors, and platform support.</p>
+        <p>Message accepted connections and platform support. Labor communicates with small businesses; small businesses communicate with labor and primes.</p>
     </div>
 </section>
 
@@ -21,7 +21,7 @@
         <div class="section-header">
             <h2>✉️ Send New Message</h2>
         </div>
-        <form method="POST" action="<%= basePath %>/messages/send">
+        <form method="POST" action="<%= basePath %>/messages/send"><input type="hidden" name="_csrf" value="<%= csrfToken %>">
             <div class="form-group" style="margin-bottom:1rem;">
                 <label style="display:block;font-weight:600;margin-bottom:.35rem;font-size:.9rem;">Recipient *</label>
                 <select name="recipient_key" class="form-control" required>

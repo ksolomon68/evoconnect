@@ -328,13 +328,7 @@ router.get('/dashboard', requireType('worker'), async (req, res) => {
         }
 
         // Connection requests from primes
-        const [connections] = await db.execute(`
-            SELECT c.*, p.company_name as prime_company_name, p.contact_name as prime_contact
-            FROM connections c
-            JOIN primes p ON c.prime_id = p.id
-            WHERE c.target_type = 'worker' AND c.target_id = ?
-            ORDER BY c.created_at DESC
-        `, [userId]);
+        const connections=await require('../services/role-connections').list(db,{type:req.user.type,id:userId});
 
         // Resources
         const [resources] = await db.execute(`
@@ -512,67 +506,7 @@ router.post('/checklist', requireType('worker'), async (req, res) => {
 });
 
 // ── POST /labor/connections/:id ────────────────────────────────────────────────
-router.post('/connections/:id', requireType('worker'), async (req, res) => {
-    const connectionId = parseInt(req.params.id);
-    const { action } = req.body; // 'accept' or 'decline'
-    const userId = req.user.id;
 
-    if (!['accept', 'decline'].includes(action)) {
-        return res.status(400).json({ success: false, error: 'Invalid action.' });
-    }
-
-    try {
-        const db = getDb();
-
-        // Verify this connection belongs to this worker
-        const [rows] = await db.execute(
-            `SELECT c.*, p.email as prime_email, p.company_name as prime_company, p.contact_name as prime_contact
-             FROM connections c JOIN primes p ON c.prime_id = p.id
-             WHERE c.id = ? AND c.target_type = 'worker' AND c.target_id = ?`,
-            [connectionId, userId]
-        );
-
-        if (!rows.length) {
-            return res.status(404).json({ success: false, error: 'Connection not found.' });
-        }
-
-        const conn = rows[0];
-        const newStatus = action === 'accept' ? 'accepted' : 'declined';
-        await db.execute('UPDATE connections SET status = ? WHERE id = ?', [newStatus, connectionId]);
-
-        // If accepted, notify the prime
-        if (action === 'accept') {
-            const [wRows] = await db.execute('SELECT full_name, email, phone, trade_category FROM workers WHERE id = ?', [userId]);
-            if (wRows.length) {
-                const w = wRows[0];
-                const notifyHtml = `
-                    <h2 style="color:#1a56db;">Connection Accepted on EvoConnect</h2>
-                    <p>Hi ${conn.prime_contact},</p>
-                    <p>Good news — <strong>${w.full_name}</strong> has accepted your connection request on EvoConnect.</p>
-                    <table style="border-collapse:collapse;width:100%;margin:16px 0;">
-                        <tr><td style="padding:8px;font-weight:700;color:#374151;">Name</td><td style="padding:8px;">${w.full_name}</td></tr>
-                        <tr style="background:#f9fafb;"><td style="padding:8px;font-weight:700;color:#374151;">Trade</td><td style="padding:8px;">${w.trade_category}</td></tr>
-                        <tr><td style="padding:8px;font-weight:700;color:#374151;">Email</td><td style="padding:8px;"><a href="mailto:${w.email}" style="color:#1a56db;">${w.email}</a></td></tr>
-                        <tr style="background:#f9fafb;"><td style="padding:8px;font-weight:700;color:#374151;">Phone</td><td style="padding:8px;">${w.phone}</td></tr>
-                    </table>
-                    <p><a href="${process.env.APP_URL || 'https://evoconnect.evobrand.net'}/prime/dashboard" style="display:inline-block;background:#1a56db;color:#fff;padding:12px 28px;border-radius:6px;text-decoration:none;font-weight:700;">View Dashboard</a></p>
-                `;
-                sendEmail({
-                    to: conn.prime_email,
-                    subject: `EvoConnect: ${w.full_name} accepted your connection request`,
-                    html: notifyHtml,
-                    text: `${w.full_name} (${w.trade_category}) accepted your connection request on EvoConnect.\nEmail: ${w.email}\nPhone: ${w.phone}`
-                }).catch(e => console.error('EvoConnect [labor/connections] prime email error:', e));
-            }
-        }
-
-        res.json({ success: true });
-
-    } catch (err) {
-        console.error('EvoConnect [labor/connections]:', err);
-        res.status(500).json({ success: false, error: 'Server error.' });
-    }
-});
 
 // ── GET /labor/faq ─────────────────────────────────────────────────────────────
 router.get('/faq', async (req, res, next) => {
@@ -751,27 +685,7 @@ router.get('/resources', requireType('worker'), async (req, res) => {
 });
 
 // ── GET /labor/connections ─────────────────────────────────────────────────────
-router.get('/connections', requireType('worker'), async (req, res) => {
-    try {
-        const db = getDb();
-        const userId = req.user.id;
-        const [connections] = await db.execute(`
-            SELECT c.*, p.company_name AS prime_company_name, p.contact_name AS prime_contact, p.email AS prime_email
-            FROM connections c
-            JOIN primes p ON c.prime_id = p.id
-            WHERE c.target_type='worker' AND c.target_id=?
-            ORDER BY c.status ASC, c.created_at DESC
-        `, [userId]);
-        res.render('labor/connections', {
-            title: 'My Connections | EvoConnect Labor',
-            flash: getFlash(req),
-            connections
-        });
-    } catch (err) {
-        console.error('EvoConnect [labor/connections GET]:', err);
-        res.redirect('/labor/dashboard');
-    }
-});
+
 
 // ── Utility ───────────────────────────────────────────────────────────────────
 function safeJson(val, fallback) {

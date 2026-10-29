@@ -16,7 +16,7 @@ const acceptedConns = connList.filter(c => c.status === 'accepted').length;
 <section class="hero-section">
     <div class="hero-content hero-welcome">
         <h1>🏢 Prime Contractor Dashboard</h1>
-        <p>Welcome, <%= prime.company_name || prime.contact_name || 'Prime Partner' %>! Manage opportunities, track small business &amp; worker engagement, and monitor performance.</p>
+        <p>Welcome, <%= prime.company_name || prime.contact_name || 'Prime Partner' %>! Manage opportunities, track small business engagement, and monitor performance.</p>
     </div>
 </section>
 
@@ -53,7 +53,7 @@ const acceptedConns = connList.filter(c => c.status === 'accepted').length;
         </div>
         <div class="summary-card success">
             <div class="summary-value"><%= totalSubcontractors %></div>
-            <div class="summary-label">Registered Subs &amp; Workers</div>
+            <div class="summary-label">Registered Small Businesses</div>
         </div>
         <div class="summary-card <%= pendingApps > 0 ? 'warning' : 'primary' %>">
             <div class="summary-value"><%= pendingApps %></div>
@@ -75,7 +75,7 @@ const acceptedConns = connList.filter(c => c.status === 'accepted').length;
         <a href="/prime/post-opportunity" class="action-card">
             <div class="icon-box" style="background:var(--color-bg-secondary);">📝</div>
             <h3>Post New Opportunity</h3>
-            <p>Create and publish contracting opportunities for small businesses and workers.</p>
+            <p>Create and publish contracting opportunities for small businesses and subcontractors.</p>
         </a>
         <a href="/prime/opportunities" class="action-card">
             <div class="icon-box" style="background:var(--color-bg-secondary);">📋</div>
@@ -92,15 +92,11 @@ const acceptedConns = connList.filter(c => c.status === 'accepted').length;
             <h3>Search Small Businesses</h3>
             <p>Find certified DBE, HUB, 8(a), WBE, and SDVOSB subcontractors by NAICS code.</p>
         </a>
-        <a href="/prime/search/workers" class="action-card">
-            <div class="icon-box" style="background:var(--color-bg-secondary);">👷</div>
-            <h3>Search Labor Directory</h3>
-            <p>Connect with skilled tradespeople by trade category, state, and certifications.</p>
-        </a>
+
         <a href="/prime/search/businesses?invite=true" class="action-card">
             <div class="icon-box" style="background:rgba(245,158,11,0.15);">✉️</div>
             <h3>Invite to Apply</h3>
-            <p>Search for a qualified small business or worker and send a direct invitation.</p>
+            <p>Search for a qualified small business and send a direct invitation.</p>
         </a>
         <a href="/prime/analytics" class="action-card">
             <div class="icon-box" style="background:var(--color-bg-secondary);">📈</div>
@@ -117,35 +113,6 @@ const acceptedConns = connList.filter(c => c.status === 'accepted').length;
 
 <!-- Directory Search & RFQs & Connections -->
 <div class="dashboard-grid" style="margin-top: var(--space-xl);">
-
-    <!-- Search Panel: Labor -->
-    <div class="dash-card">
-        <div class="dash-card-header">
-            <h2>Quick Search: Labor Directory</h2>
-            <a href="/prime/search/workers" class="btn-sm btn-primary">Open Search</a>
-        </div>
-        <form method="GET" action="/prime/search/workers" class="quick-search-form">
-            <div class="form-group">
-                <label for="qs-trade" class="form-label">Trade</label>
-                <select id="qs-trade" name="trade" class="form-control">
-                    <option value="">All trades</option>
-                    <option value="fiber-broadband">Fiber &amp; Broadband</option>
-                    <option value="electrical">Electrical</option>
-                    <option value="construction-general">General Construction</option>
-                    <option value="concrete-cement">Concrete &amp; Cement</option>
-                    <option value="cdl-trucking">CDL Trucking</option>
-                    <option value="welding-fabrication">Welding &amp; Fabrication</option>
-                    <option value="plumbing-hvac">Plumbing &amp; HVAC</option>
-                    <option value="cloud-network-infra">Cloud &amp; Network Infra</option>
-                </select>
-            </div>
-            <div class="form-group">
-                <label for="qs-state" class="form-label">State</label>
-                <input type="text" id="qs-state" name="state" class="form-control" maxlength="2" placeholder="TX">
-            </div>
-            <button type="submit" class="btn-primary btn-sm">Search Workers</button>
-        </form>
-    </div>
 
     <!-- Search Panel: Business -->
     <div class="dash-card">
@@ -239,7 +206,7 @@ const acceptedConns = connList.filter(c => c.status === 'accepted').length;
             </table>
         <% } else { %>
             <div class="empty-state">
-                <p>No connections yet. Start searching the <a href="/prime/search/workers">Labor Directory</a> or <a href="/prime/search/businesses">Business Directory</a>.</p>
+                <p>No connections yet. Start searching the <a href="/prime/search/businesses">Business Directory</a>.</p>
             </div>
         <% } %>
     </div>

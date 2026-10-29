@@ -1,7 +1,7 @@
 'use strict';
 const { AsyncLocalStorage } = require('async_hooks');
 const storage = new AsyncLocalStorage();
-const tables = ['workers','businesses','primes','admins','naics_codes','worker_matches','connections','checklist_progress','subcontractor_requests','password_reset_tokens','resources','announcements','opportunities','applications','saved_opportunities','messages','notifications','site_issues','cms_faqs','capability_documents','opportunity_attachments','performance_events'];
+const tables = ['workers','businesses','primes','admins','naics_codes','worker_matches','connections','role_connections','checklist_progress','subcontractor_requests','password_reset_tokens','resources','announcements','opportunities','applications','saved_opportunities','messages','notifications','site_issues','cms_faqs','capability_documents','opportunity_attachments','performance_events'];
 const allowed = new Set(tables);
 function sql(statement) {
     if (!storage.getStore()) return statement;

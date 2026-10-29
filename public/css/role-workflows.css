@@ -1,0 +1,5 @@
+.role-workflow-table {min-width:900px}
+.application-review-actions {display:flex;align-items:center;gap:.5rem;min-width:220px}
+.application-review-actions select {flex:1 0 140px;min-width:140px;width:auto}
+.application-review-actions button {flex:0 0 auto;min-width:64px;white-space:nowrap;word-break:normal}
+.role-workflow-table td:first-child {max-width:260px;overflow-wrap:anywhere}

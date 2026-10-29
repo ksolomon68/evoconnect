@@ -7,7 +7,7 @@ document.querySelectorAll('.directory-contact-form').forEach(form=>{
         try {
             const values=Object.fromEntries(new FormData(form));
             const response=await fetch(form.action,{method:'POST',credentials:'same-origin',headers:{'content-type':'application/json'},body:JSON.stringify(values)});
-            const data=await response.json();
+            const data=response.headers.get('content-type')?.includes('application/json') ? await response.json() : {error:response.redirected?'Please sign in again to request a connection.':await response.text()};
             if(!response.ok || !data.success)throw new Error(data.error || 'Unable to send request. Please try again.');
             status.textContent='Connection request sent.';button.textContent='Request sent';
         }catch(error){status.textContent=error.message;button.disabled=false;}

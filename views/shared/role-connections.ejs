@@ -1,0 +1,11 @@
+<% locals.layout='layouts/dashboard'; %>
+<%- include('../partials/flash') %>
+<section class="hero-section"><div class="hero-content"><h1>Connections</h1><p><%= user.type==='worker'?'Connect with small businesses that hire labor.':user.type==='prime'?'Connect with small businesses and subcontractors.':'Connect with labor workers and prime contractors.' %></p></div></section>
+<section class="recommendations-list" style="padding:var(--space-xl)">
+<p>Recipients accept or decline requests. Contact details and direct messaging become available after acceptance.</p>
+<p><% if(user.type==='business') { %><a class="btn btn-secondary" href="/business/directory/worker">Find labor</a> <a class="btn btn-secondary" href="/business/directory/prime">Find primes</a><% } else { %><a class="btn btn-secondary" href="/<%= user.type==='worker'?'labor':'prime' %>/directory/business">Find small businesses</a><% } %></p>
+<% if(!connections.length) { %><p>No connections yet. Find a member in the directory to send a request.</p><% } %>
+<% for(const connection of connections) { %><article class="card" style="padding:1.25rem;margin:1rem 0"><h2><a href="/directory/<%= connection.peer.type %>/<%= connection.peer.id %>"><%= connection.peer.name %></a></h2><p><%= connection.peer.type==='worker'?'Labor':connection.peer.type==='prime'?'Prime contractor':'Small business' %> · <%= connection.incoming?'Incoming':'Sent' %> · <strong><%= connection.status %></strong></p><% if(connection.message) { %><p><%= connection.message %></p><% } %>
+<% if(connection.status==='pending') { for(const action of (connection.incoming?['accept','decline']:['withdraw'])) { %><form method="post" action="<%= basePath %>/connections/<%= connection.id %>/<%= action %>" style="display:inline-block;margin-right:.5rem"><input type="hidden" name="_csrf" value="<%= csrfToken %>"><button class="btn btn-secondary"><%= action[0].toUpperCase()+action.slice(1) %></button></form><% } } %>
+<% if(connection.status==='accepted') { %><p><% if(connection.peer.email) { %><a href="mailto:<%= connection.peer.email %>"><%= connection.peer.email %></a><% } %> <% if(connection.peer.phone) { %> · <%= connection.peer.phone %><% } %></p><a class="btn btn-primary" href="<%= basePath %>/messages">Send a message</a><% } %></article><% } %>
+</section>

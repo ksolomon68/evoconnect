@@ -36,16 +36,17 @@ async function memberCodes(db, type, id) {
 async function opportunities(db, type, id) {
     const naics = await memberCodes(db, type, id);
     if (!naics.length) return { codes: naics, matches: [] };
-    const [rows] = await db.execute(`SELECT id,title,scope_summary,posted_by_name,district_name,due_date,naics_codes,posted_date FROM opportunities WHERE ${openSql}`);
+    const [rows] = await db.execute(`SELECT id,title,scope_summary,posted_by_name,district_name,due_date,naics_codes,posted_date FROM opportunities WHERE ${openSql} AND listing_type=?`,[type==='worker'?'job':'opportunity']);
     const matches = rows.map(row => ({ ...row, ...score(row.naics_codes, naics) }))
         .filter(row => row.matched.length)
         .sort((a,b) => b.score - a.score || b.matched.length - a.matched.length ||
             (a.due_date || '9999').localeCompare(b.due_date || '9999') || a.title.localeCompare(b.title) || String(a.id).localeCompare(String(b.id)));
     return { codes: naics, matches };
 }
-async function partners(db, required) {
+async function partners(db, required,kind='opportunity') {
     if (!codes(required).length) return [];
     const [businesses] = await db.execute("SELECT id,company_name AS name,naics_codes,city,state FROM businesses WHERE status='active'");
+    if(kind!=='job')return ranked(businesses.map(row=>({...row,type:'business'})),required);
     const [workers] = await db.execute(`SELECT w.id,w.full_name AS name,w.city,w.state,wm.naics_code
         FROM workers w JOIN worker_matches wm ON wm.worker_id=w.id WHERE w.status='active'`);
     const byWorker = new Map();
@@ -53,6 +54,6 @@ async function partners(db, required) {
         if (!byWorker.has(worker.id)) byWorker.set(worker.id,{id:worker.id,name:worker.name,city:worker.city,state:worker.state,type:'worker',naics_codes:[]});
         byWorker.get(worker.id).naics_codes.push(worker.naics_code);
     }
-    return ranked([...businesses.map(row=>({...row,type:'business'})),...byWorker.values()],required);
+    return ranked([...byWorker.values()],required);
 }
 module.exports = { codes, score, opportunities, partners };

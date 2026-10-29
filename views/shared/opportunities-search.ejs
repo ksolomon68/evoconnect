@@ -1,5 +1,5 @@
 <% if (locals.user) { locals.layout='layouts/dashboard' ; } %>
-    <% const title=locals.title || 'Search Contracting Opportunities | EvoConnect' %>
+    <% const title=locals.title || ((locals.user?.type==='worker'?'Find Labor Jobs':'Search Contracting Opportunities')+' | EvoConnect') %>
         <% const basePath=locals.basePath || (locals.user?.type==='business' ? '/business' : '/labor' ) %>
             <% const oppList=locals.opportunities || [] %>
                 <% const savedIds=(locals.savedIds || []).map(String) %>
@@ -10,16 +10,15 @@
 
                                 <section class="hero-section">
                                     <div class="hero-content hero-welcome">
-                                        <h1>🔍 Contracting Opportunities</h1>
-                                        <p>Browse active government and prime contractor solicitations, save
-                                            opportunities for later, or submit your application directly.</p>
+                                        <h1>🔍 <%= locals.user?.type==='worker'?'Labor Jobs':'Contracting Opportunities' %></h1>
+                                        <p><%= locals.user?.type==='worker' ? 'Browse jobs posted by small businesses, save jobs for later, or submit your application directly.' : 'Browse active government and prime contractor solicitations, save opportunities for later, or submit your application directly.' %></p>
                                     </div>
                                 </section>
 
                                 <!-- Filter Form -->
                                 <div class="recommendations-list"
                                     style="padding: var(--space-xl); margin-bottom: var(--space-xl);">
-                                    <form method="GET" action="<%= basePath %>/search"
+                                    <form method="GET" action="<%= locals.user ? basePath + '/search' : '/opportunities' %>"
                                         style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:1rem;align-items:end;">
                                         <div>
                                             <label
@@ -57,7 +56,7 @@
                                         <div style="display:flex;gap:.5rem;">
                                             <button type="submit" class="btn btn-primary"
                                                 style="flex:1;">Filter</button>
-                                            <a href="<%= basePath %>/search" class="btn btn-secondary">Reset</a>
+                                            <a href="<%= locals.user ? basePath + '/search' : '/opportunities' %>" class="btn btn-secondary">Reset</a>
                                         </div>
                                     <input type="hidden" name="_csrf" value="<%= csrfToken %>"></form>
                                 </div>
@@ -157,7 +156,7 @@
                                                                 <% } else { %>
                                                                     <button type="button" class="btn btn-sm btn-primary"
                                                                         onclick="document.getElementById('apply-form-<%= oppIdStr %>').style.display = document.getElementById('apply-form-<%= oppIdStr %>').style.display === 'none' ? 'block' : 'none'">
-                                                                        Apply / Submit Bid
+                                                                        <%= locals.user?.type==='worker'?'Apply for Job':'Apply / Submit Bid' %>
                                                                     </button>
                                                                     <% } %>
                                                         </div>
@@ -214,7 +213,7 @@
                                                         style="padding: var(--space-2xl); text-align:center; color:var(--text-muted);">
                                                         <p style="font-size:1.1rem;margin-bottom:0.5rem;">No
                                                             opportunities matched your search filters.</p>
-                                                        <a href="<%= basePath %>/search"
+                                                        <a href="<%= locals.user ? basePath + '/search' : '/opportunities' %>"
                                                             class="btn btn-sm btn-secondary">View All Open
                                                             Opportunities</a>
                                                     </div>

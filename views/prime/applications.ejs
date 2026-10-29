@@ -6,26 +6,26 @@
 
 <section class="hero-section">
     <div class="hero-content hero-welcome">
-        <h1>📥 Submitted Applications</h1>
-        <p>Review bids and capability statements submitted by small businesses and skilled workers.</p>
+        <h1>📥 <%= user.type==='business'?'Job Applications':'Submitted Applications' %></h1>
+        <p><%= user.type==='business'?'Review labor applications for your jobs.':'Review applications from small businesses and subcontractors.' %></p>
     </div>
 </section>
 
 <div class="recommendations-list" style="padding: var(--space-xl);">
     <div class="section-header">
         <h2>Received Applications (<%= appList.length %>)</h2>
-        <a href="<%= locals.basePath || '/prime' %>/opportunities" class="btn btn-sm btn-secondary">Manage Opportunities</a>
+        <a href="<%= locals.basePath || '/prime' %>/<%= user.type==='business'?'jobs':'opportunities' %>" class="btn btn-sm btn-secondary"><%= user.type==='business'?'Manage Jobs':'Manage Opportunities' %></a>
     </div>
 
     <% if (appList.length > 0) { %>
         <div style="overflow-x:auto;">
-            <table class="data-table" style="width:100%;">
+            <table class="data-table role-workflow-table" style="width:100%;">
                 <thead>
                     <tr>
                         <th>Applicant</th>
                         <th>Type</th>
-                        <th>Opportunity</th>
-                        <th>Proposed Bid</th>
+                        <th><%= user.type==='business'?'Job':'Opportunity' %></th>
+                        <th><%= user.type==='business'?'Proposed rate':'Proposed bid' %></th>
                         <th>Notes / Summary</th>
                         <th>Status</th>
                         <th>Action</th>
@@ -40,7 +40,7 @@
                         <p><a href="/directory/<%= app.applicant_type %>/<%= app.applicant_id %>">Profile &amp; capability statement</a></p></td>
                         <td style="text-transform:capitalize;"><%= app.applicant_type %></td>
                         <td><strong><%= app.opportunity_title %></strong></td>
-                        <td><%= app.proposed_amount || 'Standard' %></td>
+                        <td><%= app.proposed_amount || (app.notes || '').match(/^\[Proposed: ([^\]]+)\]/)?.[1] || 'Not provided' %></td>
                         <td style="max-width:260px;font-size:0.85rem;"><%= app.notes || '—' %></td>
                         <td>
                             <span class="status-badge <%= app.status === 'awarded' ? 'badge-consulting' : (app.status === 'declined' ? 'badge-construction' : 'badge-consulting') %>" style="text-transform:capitalize;margin:0;">
@@ -48,7 +48,7 @@
                             </span>
                         </td>
                         <td style="white-space:nowrap;">
-                            <form method="POST" action="<%= locals.basePath || "/prime" %>/applications/<%= app.id %>/status" style="display:flex;gap:0.35rem;">
+                            <form method="POST" action="<%= locals.basePath || "/prime" %>/applications/<%= app.id %>/status" class="application-review-actions">
                                 <select name="status" class="form-control" style="padding:0.25rem 0.5rem;font-size:0.8rem;width:auto;">
                                     <option value="approved" <%= app.status === 'approved' ? 'selected' : '' %>>Approved</option>
                                     <option value="under_review" <%= app.status === 'under_review' ? 'selected' : '' %>>Under Review</option>

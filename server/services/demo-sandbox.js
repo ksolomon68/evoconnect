@@ -8,6 +8,8 @@ async function initialize() {
     if (!initialized) initialized=context.live(async()=>{
         const db=getDb();
         for(const table of context.tables)await db.execute(`CREATE TABLE IF NOT EXISTS demo_${table} LIKE ${table}`);
+        const [columns]=await db.execute("SELECT COLUMN_NAME FROM information_schema.COLUMNS WHERE TABLE_SCHEMA=DATABASE() AND TABLE_NAME='demo_opportunities' AND COLUMN_NAME='listing_type'");
+        if(!columns.length)await db.execute("ALTER TABLE demo_opportunities ADD COLUMN listing_type ENUM('opportunity','job') NOT NULL DEFAULT 'opportunity'");
         // Only the public NAICS reference is copied; no live member data is copied.
         await db.execute('INSERT IGNORE INTO demo_naics_codes SELECT * FROM naics_codes');
         await context.run(async()=>{
@@ -15,7 +17,11 @@ async function initialize() {
             await require('./faqs').seed(db);
             const [[prime]]=await db.execute("SELECT id FROM primes WHERE email='demo-prime@evoconnect.io'");
             const [[worker]]=await db.execute("SELECT id FROM workers WHERE email='demo-labor@evoconnect.io'");
+            const [[business]]=await db.execute("SELECT id FROM businesses WHERE email='demo-business@evoconnect.io'");
             for(const code of ['237130','238210'])await db.execute('INSERT IGNORE INTO worker_matches (worker_id,naics_code) VALUES (?,?)',[worker.id,code]);
+            await db.execute("INSERT IGNORE INTO role_connections (left_type,left_id,right_type,right_id,requester_type,requester_id,status) VALUES ('business',?,'worker',?,'business',?,'accepted')",[business.id,worker.id,business.id]);
+            await db.execute("INSERT IGNORE INTO role_connections (left_type,left_id,right_type,right_id,requester_type,requester_id,status) VALUES ('business',?,'prime',?,'prime',?,'accepted')",[business.id,prime.id,prime.id]);
+            await db.execute("INSERT IGNORE INTO opportunities (id,title,scope_summary,category,category_name,status,due_date,naics_codes,posted_by,posted_by_type,posted_by_name,listing_type) VALUES ('demo-labor-job','Electrical field technician','Illustrative labor job posted by a small business.','Electrical','Electrical','published','2099-12-31','[\"238210\"]',?,'business','GreenPath Environmental Services','job')",[business.id]);
             for(const [id,title,naics] of [['demo-electrical','Highway lighting installation','["238210","237130"]'],['demo-environmental','Environmental site assessment','["541620","562910"]']]) {
                 await db.execute(`INSERT IGNORE INTO opportunities (id,title,scope_summary,district_name,category,category_name,due_date,status,posted_by,posted_by_type,posted_by_name,naics_codes)
                     VALUES (?,?,'Illustrative demo project. No real solicitation or application.','Texas','Infrastructure','Infrastructure','2099-12-31','published',?,'prime','Apex Construction Group',?)`,[id,title,prime.id,naics]);

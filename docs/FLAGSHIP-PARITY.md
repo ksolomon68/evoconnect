@@ -104,3 +104,22 @@ Business and labor directory routes and templates now share the same `results` l
 Connection request forms use the existing `/prime/connect` endpoint with in-place success/error feedback. Read-only demos show preview status instead. Existing query names in the visible directory filters are supported, including case-insensitive certification matching and exact NAICS code filtering.
 
 Browser checks verified the CMS FAQ/Admin Accounts lists load successfully and business/labor profile cards render without horizontal overflow at desktop and mobile widths. Integration tests cover FAQ publication/update/removal/order/sanitization and one-time seeding, admin account management/revocation, and directory card content/filtering/statement links.
+
+
+## Role communication and hiring workflows
+
+Member relationships follow **labor ↔ small business ↔ prime contractor**. Either side can request a connection. Only the recipient can accept/decline a pending request; only its sender can withdraw it. Acceptance unlocks contact details and direct messages for that pair. Direct labor-to-prime connections/messages and same-role member connections are rejected by the server. Administrator/support messages remain available independently of a member connection. Recipient IDs, account activity, role compatibility and connection ownership are validated on the server; recipient names cannot be supplied to impersonate a member.
+
+Prime contractors post contracting **opportunities**, which small businesses/subcontractors can discover, match, save and apply to. The existing administrator publication-review process for primes is retained. Small businesses post **jobs** at `/business/post-job`, manage them at `/business/jobs`, and review labor applications at `/business/job-applications`. Labor discovers jobs at `/labor/search` and applies using its own applicant identity. Small businesses can still submit their own opportunity applications separately at `/business/applications`.
+
+Posting type and owner role are enforced independently of submitted form fields. Businesses cannot impersonate primes, labor cannot apply to prime opportunities, and businesses cannot apply to labor jobs. Posting owners review only their own applications. Submissions notify the actual typed owner; review outcomes notify the actual typed applicant. Duplicate submissions do not create duplicate records or notifications. Closed/expired postings cannot receive applications. Withdrawal and archival retain application histories.
+
+New directories let labor find small businesses and let small businesses find both labor and primes. Prime directories and invitations target small businesses. Automatic NAICS matching uses the same applicant audiences: labor gets jobs, businesses get opportunities, and posting owners get eligible partners. Dashboards and navigation use the corresponding role relationships.
+
+Startup adds `opportunities.listing_type` and the typed `role_connections` table. Existing postings default to opportunities; when the type column is first added, business-owned postings are classified as jobs. Existing prime–business connections are copied idempotently. Historical prime–labor connections remain in the legacy table but do not grant new member messaging or application permissions. No existing connections or applications are deleted.
+
+Demo tables receive the new listing column and role-connection schema, fictional accepted labor/business and business/prime connections, and a sample business job. Demos remain read-only and isolated from live data. Notifications in these workflows are in-app messages/notifications; no production SMTP delivery was exercised during validation.
+
+Validation includes the full role-pair permission matrix, request/accept/decline/withdraw ownership, messaging before and after acceptance, recipient identity checks, both posting/application paths, duplicate prevention, wrong-role rejections and same-role cross-owner rejections. Browser checks also exercised job posting → labor application → business review and labor connection request → business acceptance → message delivery.
+
+Untrusted message subjects are escaped before appearing in the notification dropdown; a browser check verified that HTML in a message subject is displayed as text rather than executed.

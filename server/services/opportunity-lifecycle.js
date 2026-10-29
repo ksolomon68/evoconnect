@@ -9,7 +9,7 @@ async function statusChanged(db, opportunity, status, sender) {
     if (opportunity.status === status) return;
     const [applicants] = await db.execute('SELECT DISTINCT applicant_type,applicant_id FROM applications WHERE opportunity_id=?',[opportunity.id]);
     for(const person of applicants) await notify(db,sender,{type:person.applicant_type,id:person.applicant_id},opportunity,'Opportunity status updated',`${opportunity.title} is now ${status}. View your application for details.`);
-    if(opportunity.posted_by && opportunity.posted_by_type === 'prime' && sender.type === 'admin') await notify(db,sender,{type:'prime',id:opportunity.posted_by},opportunity,'Opportunity publication updated',`${opportunity.title} is now ${status}.`);
+    if(opportunity.posted_by && ['prime','business'].includes(opportunity.posted_by_type) && sender.type === 'admin') await notify(db,sender,{type:opportunity.posted_by_type,id:opportunity.posted_by},opportunity,'Opportunity publication updated',`${opportunity.title} is now ${status}.`);
 }
 async function submittedForReview(db, opportunity, sender) {
     const [admins] = await db.execute('SELECT id FROM admins');

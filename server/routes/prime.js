@@ -298,22 +298,7 @@ router.get('/dashboard', requireType('prime'), async (req, res) => {
         }
 
         // Connections sent by this prime
-        const [connections] = await db.execute(`
-            SELECT c.*,
-                CASE c.target_type
-                    WHEN 'worker'   THEN w.full_name
-                    WHEN 'business' THEN b.company_name
-                END AS target_name,
-                CASE c.target_type
-                    WHEN 'worker'   THEN w.trade_category
-                    WHEN 'business' THEN b.business_type
-                END AS target_detail
-            FROM connections c
-            LEFT JOIN workers   w ON c.target_type = 'worker'   AND c.target_id = w.id
-            LEFT JOIN businesses b ON c.target_type = 'business' AND c.target_id = b.id
-            WHERE c.prime_id = ?
-            ORDER BY c.created_at DESC
-        `, [userId]);
+        const connections=await require('../services/role-connections').list(db,{type:req.user.type,id:userId});
 
         // RFQs by this prime
         const [rfqs] = await db.execute(
@@ -321,6 +306,7 @@ router.get('/dashboard', requireType('prime'), async (req, res) => {
             [userId]
         );
 
+        const [[{ pendingAppsCount }]]=await db.execute("SELECT COUNT(*) AS pendingAppsCount FROM applications a JOIN opportunities o ON o.id=a.opportunity_id WHERE o.posted_by_type='prime' AND o.posted_by=? AND a.applicant_type='business' AND a.status IN ('submitted','pending','under_review')",[userId]);
         const [[{ myOppsCount }]] = await db.execute("SELECT COUNT(*) AS myOppsCount FROM opportunities WHERE posted_by = ? AND posted_by_type = 'prime'", [userId]);
         const [[{ wCnt }]] = await db.execute("SELECT COUNT(*) AS wCnt FROM workers WHERE status='active'");
         const [[{ bCnt }]] = await db.execute("SELECT COUNT(*) AS bCnt FROM businesses WHERE status='active'");
@@ -332,7 +318,8 @@ router.get('/dashboard', requireType('prime'), async (req, res) => {
             connections,
             rfqs,
             myOppsCount,
-            totalDirectoryCount: Number(wCnt) + Number(bCnt)
+            pendingAppsCount,
+            totalDirectoryCount: Number(bCnt)
         });
 
     } catch (err) {
@@ -527,82 +514,7 @@ router.get('/search/businesses', requireType('prime'), async (req, res) => {
 });
 
 // ── POST /prime/connect ────────────────────────────────────────────────────────
-router.post('/connect', requireType('prime'), async (req, res) => {
-    const { target_type, target_id, message } = req.body;
-    const primeId = req.user.id;
 
-    if (!['worker','business'].includes(target_type) || !target_id) {
-        return res.status(400).json({ success: false, error: 'Invalid request.' });
-    }
-
-    try {
-        const db = getDb();
-
-        const [pRows] = await db.execute('SELECT * FROM primes WHERE id = ?', [primeId]);
-        if (!pRows.length) return res.status(404).json({ success: false, error: 'Prime not found.' });
-
-        const prime = decoratePrime(pRows[0]);
-        if (prime.active !== 1) {
-            return res.status(403).json({ success: false, error: 'Account pending approval.' });
-        }
-
-        await maybeResetMonthlyLimits(db, prime);
-
-        const contactLimit = CONTACT_LIMITS[prime.subscription_tier] || 5;
-        if (prime.monthly_contacts_used >= contactLimit) {
-            return res.status(429).json({
-                success: false,
-                error: `You've reached your ${contactLimit} monthly connection limit. Upgrade your plan to send more.`
-            });
-        }
-
-        // Upsert connection
-        await db.execute(`
-            INSERT INTO connections (prime_id, target_type, target_id, message, prime_company_name, status)
-            VALUES (?, ?, ?, ?, ?, 'pending')
-            ON DUPLICATE KEY UPDATE message = VALUES(message), status = 'pending', updated_at = CURRENT_TIMESTAMP
-        `, [primeId, target_type, target_id, message || null, prime.company_name]);
-
-        // Increment contacts used
-        await db.execute(
-            'UPDATE primes SET monthly_contacts_used = monthly_contacts_used + 1 WHERE id = ?',
-            [primeId]
-        );
-
-        // Notify the target
-        let targetEmail = null, targetName = null;
-        if (target_type === 'worker') {
-            const [tr] = await db.execute('SELECT email, full_name FROM workers WHERE id = ?', [target_id]);
-            if (tr.length) { targetEmail = tr[0].email; targetName = tr[0].full_name; }
-        } else {
-            const [tr] = await db.execute('SELECT email, contact_name, company_name FROM businesses WHERE id = ?', [target_id]);
-            if (tr.length) { targetEmail = tr[0].email; targetName = tr[0].contact_name || tr[0].company_name; }
-        }
-
-        if (targetEmail) {
-            const notifyHtml = `
-                <h2 style="color:#1a56db;">New Connection Request on EvoConnect</h2>
-                <p>Hi ${targetName},</p>
-                <p><strong>${prime.company_name}</strong> has sent you a connection request on EvoConnect.</p>
-                ${message ? `<div style="background:#f9fafb;border-left:4px solid #1a56db;padding:16px;margin:16px 0;border-radius:0 6px 6px 0;"><p style="margin:0;color:#374151;font-style:italic;">"${message}"</p></div>` : ''}
-                <p>Log in to your dashboard to review this request and accept or decline.</p>
-                <p><a href="${process.env.APP_URL || 'https://evoconnect.evobrand.net'}/${target_type === 'worker' ? 'labor' : 'business'}/dashboard" style="display:inline-block;background:#1a56db;color:#fff;padding:12px 28px;border-radius:6px;text-decoration:none;font-weight:700;">Review Request</a></p>
-            `;
-            sendEmail({
-                to: targetEmail,
-                subject: `EvoConnect: ${prime.company_name} wants to connect`,
-                html: notifyHtml,
-                text: `Hi ${targetName},\n\n${prime.company_name} sent you a connection request on EvoConnect.${message ? `\n\nMessage: "${message}"` : ''}\n\nLog in to review: ${process.env.APP_URL || 'https://evoconnect.evobrand.net'}/${target_type === 'worker' ? 'labor' : 'business'}/dashboard`
-            }).catch(e => console.error('EvoConnect [prime/connect] notification email error:', e));
-        }
-
-        res.json({ success: true });
-
-    } catch (err) {
-        console.error('EvoConnect [prime/connect]:', err);
-        res.status(500).json({ success: false, error: 'Server error.' });
-    }
-});
 
 // ── GET /prime/rfq ─────────────────────────────────────────────────────────────
 router.get('/rfq', requireType('prime'), async (req, res) => {
@@ -726,45 +638,7 @@ router.post('/rfq/post', requireType('prime'), async (req, res) => {
 });
 
 // ── GET /prime/connections ──────────────────────────────────────────────────────
-router.get('/connections', requireType('prime'), async (req, res) => {
-    try {
-        const db = getDb();
-        const userId = req.user.id;
 
-        const [pRows] = await db.execute('SELECT * FROM primes WHERE id = ?', [userId]);
-        if (!pRows.length) return res.redirect('/prime/dashboard');
-        const prime = decoratePrime(pRows[0]);
-
-        const [connections] = await db.execute(`
-            SELECT c.*,
-                CASE WHEN c.target_type='worker'
-                    THEN w.full_name ELSE b.company_name END AS target_name,
-                CASE WHEN c.target_type='worker'
-                    THEN w.trade_category ELSE b.business_type END AS target_detail,
-                CASE WHEN c.target_type='worker'
-                    THEN w.city ELSE b.city END AS target_city,
-                CASE WHEN c.target_type='worker'
-                    THEN w.state ELSE b.state END AS target_state
-            FROM connections c
-            LEFT JOIN workers w ON c.target_type='worker' AND c.target_id=w.id
-            LEFT JOIN businesses b ON c.target_type='business' AND c.target_id=b.id
-            WHERE c.prime_id = ?
-            ORDER BY FIELD(c.status,'pending','accepted','declined'), c.created_at DESC
-        `, [userId]);
-
-        res.render('prime/connections', {
-            title: 'My Connections | EvoConnect Prime',
-            flash: getFlash(req),
-            prime,
-            connections
-        });
-
-    } catch (err) {
-        console.error('EvoConnect [prime/connections GET]:', err);
-        flash(req, 'error', 'Failed to load connections.');
-        res.redirect('/prime/dashboard');
-    }
-});
 
 // ── GET /prime/profile/edit ────────────────────────────────────────────────────
 router.get('/profile/edit', requireType('prime'), async (req, res) => {
@@ -849,7 +723,7 @@ router.get('/opportunities', requireType('prime'), async (req, res) => {
         const [workers] = await db.execute("SELECT id, full_name FROM workers WHERE status='active' ORDER BY full_name ASC LIMIT 50");
         const candidates = [
             ...businesses.map(b => ({ type: 'business', id: b.id, name: b.company_name, label: `🏢 ${b.company_name} (Business)` })),
-            ...workers.map(w => ({ type: 'worker', id: w.id, name: w.full_name, label: `👷 ${w.full_name} (Worker)` }))
+
         ];
         res.render('prime/opportunities', {
             title: 'Manage Opportunities | EvoConnect Prime',
@@ -881,7 +755,7 @@ router.get('/applications', requireType('prime'), async (req, res) => {
             JOIN opportunities o ON a.opportunity_id = o.id
             LEFT JOIN workers w ON a.applicant_type = 'worker' AND a.applicant_id = w.id
             LEFT JOIN businesses b ON a.applicant_type = 'business' AND a.applicant_id = b.id
-            WHERE o.posted_by = ? AND o.posted_by_type = 'prime'
+            WHERE o.posted_by = ? AND o.posted_by_type = 'prime' AND a.applicant_type='business'
             ORDER BY a.applied_date DESC
         `, [req.user.id]);
         res.render('prime/applications', {

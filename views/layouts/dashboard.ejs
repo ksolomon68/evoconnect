@@ -8,11 +8,12 @@ const NAV_CONFIG = {
         dashboardHref: '/labor/dashboard',
         messagesHref: '/labor/messages',
         items: [
+            { label: 'Small Business Directory', href: '/labor/directory/business', icon: '🔗' },
             { label: 'Automatic Matches', href: '/labor/matches', icon: '🎯' },
             { label: 'Analytics', href: '/labor/analytics', icon: '📈' },
             { label: 'Upload Capability Statement', href: '/labor/documents', icon: '📄' },
             { label: 'Dashboard',             href: '/labor/dashboard',       icon: '🏠' },
-            { label: 'Search Opportunities',  href: '/labor/search',          icon: '🔍' },
+            { label: 'Find Jobs',  href: '/labor/search',          icon: '🔍' },
             { label: 'My Applications',       href: '/labor/applications',    icon: '📋' },
             { label: 'Saved Opportunities',   href: '/labor/saved',           icon: '⭐' },
             { label: 'Connection Requests',   href: '/labor/connections',     icon: '🤝' },
@@ -29,6 +30,11 @@ const NAV_CONFIG = {
         dashboardHref: '/business/dashboard',
         messagesHref: '/business/messages',
         items: [
+            { label: 'Post a Job', href: '/business/post-job', icon: '🔗' },
+            { label: 'Manage Jobs', href: '/business/jobs', icon: '🔗' },
+            { label: 'Review Job Applications', href: '/business/job-applications', icon: '🔗' },
+            { label: 'Labor Directory', href: '/business/directory/worker', icon: '🔗' },
+            { label: 'Prime Directory', href: '/business/directory/prime', icon: '🔗' },
             { label: 'Automatic Matches', href: '/business/matches', icon: '🎯' },
             { label: 'Analytics', href: '/business/analytics', icon: '📈' },
             { label: 'Upload Capability Statement', href: '/business/documents', icon: '📄' },
@@ -58,7 +64,6 @@ const NAV_CONFIG = {
             { label: 'View Applications',       href: '/prime/applications',       icon: '📝' },
             { label: 'Subcontractor RFQs',      href: '/prime/rfq',                icon: '📋' },
             { label: 'Search Small Businesses', href: '/prime/search/businesses',  icon: '🏢' },
-            { label: 'Search Labor Directory',  href: '/prime/search/workers',     icon: '👷' },
             { label: 'Connections',             href: '/prime/connections',        icon: '🤝' },
             { label: 'Messages',                href: '/prime/messages',           icon: '📬' },
             { label: 'Analytics',               href: '/prime/analytics',          icon: '📈' },
@@ -114,6 +119,8 @@ const navCfg = NAV_CONFIG[currentRole] || NAV_CONFIG.worker;
     <link rel="stylesheet" href="/css/accessibility-widget.css?v=3.4.1">
     <link rel="stylesheet" href="/css/faq.css?v=3.4.1">
   <link rel="stylesheet" href="/css/directory-cards.css?v=1">
+  <meta name="csrf-token" content="<%= locals.csrfToken || '' %>">
+  <link rel="stylesheet" href="/css/role-workflows.css?v=1">
 </head>
 <body class="dashboard-v2">
     <% if(locals.user?.demo) { %><div role="status" style="position:fixed;bottom:0;left:0;right:0;z-index:2000;padding:.5rem;text-align:center;background:#0f172a;color:#fff">Demo preview · sample data · read only · <a href="/logout" style="color:#67e8f9">Exit demo</a></div><% } %>
@@ -237,10 +244,10 @@ const navCfg = NAV_CONFIG[currentRole] || NAV_CONFIG.worker;
     </script>
     <script src="/agency.config.js"></script>
     <script src="/js/config.js"></script>
-    <script src="/js/components/navigation.js?v=3.4.1"></script>
+    <script src="/js/components/navigation.js?v=3.6.0"></script>
     <script src="/js/accessibility-widget.js"></script>
     <script src="/js/pwa.js"></script>
-    <script src="/js/evo.js"></script>
+    <script src="/js/evo.js?v=3.6.0"></script>
     
     <script>
         document.addEventListener('DOMContentLoaded', function() {
@@ -258,6 +265,6 @@ const navCfg = NAV_CONFIG[currentRole] || NAV_CONFIG.worker;
             }
         });
     </script>
-  <script src="/js/directory-cards.js?v=1" defer></script>
+  <script src="/js/directory-cards.js?v=2" defer></script>
 </body>
 </html>

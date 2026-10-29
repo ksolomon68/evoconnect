@@ -236,13 +236,7 @@ router.get('/dashboard', requireType('business'), async (req, res) => {
         }
 
         // Connections
-        const [connections] = await db.execute(`
-            SELECT c.*, p.company_name as prime_company_name, p.contact_name as prime_contact
-            FROM connections c
-            JOIN primes p ON c.prime_id = p.id
-            WHERE c.target_type = 'business' AND c.target_id = ?
-            ORDER BY c.created_at DESC
-        `, [userId]);
+        const connections=await require('../services/role-connections').list(db,{type:req.user.type,id:userId});
 
         // Resources
         const [resources] = await db.execute(`
@@ -251,7 +245,7 @@ router.get('/dashboard', requireType('business'), async (req, res) => {
             ORDER BY sort_order ASC LIMIT 4
         `);
 
-        const [[{ openOppsCount }]] = await db.execute("SELECT COUNT(*) AS openOppsCount FROM opportunities WHERE status='published'");
+        const [[{ openOppsCount }]] = await db.execute("SELECT COUNT(*) AS openOppsCount FROM opportunities WHERE status='published' AND listing_type='opportunity'");
         const autoMatches = await require('../services/naics-matching').opportunities(db,req.user.type,userId);
         res.render('business/dashboard', {
             autoMatches,
@@ -417,65 +411,7 @@ router.post('/checklist', requireType('business'), async (req, res) => {
 });
 
 // ── POST /business/connections/:id ─────────────────────────────────────────────
-router.post('/connections/:id', requireType('business'), async (req, res) => {
-    const connectionId = parseInt(req.params.id);
-    const { action } = req.body;
-    const userId = req.user.id;
 
-    if (!['accept', 'decline'].includes(action)) {
-        return res.status(400).json({ success: false, error: 'Invalid action.' });
-    }
-
-    try {
-        const db = getDb();
-
-        const [rows] = await db.execute(
-            `SELECT c.*, p.email as prime_email, p.company_name as prime_company, p.contact_name as prime_contact
-             FROM connections c JOIN primes p ON c.prime_id = p.id
-             WHERE c.id = ? AND c.target_type = 'business' AND c.target_id = ?`,
-            [connectionId, userId]
-        );
-
-        if (!rows.length) {
-            return res.status(404).json({ success: false, error: 'Connection not found.' });
-        }
-
-        const conn = rows[0];
-        const newStatus = action === 'accept' ? 'accepted' : 'declined';
-        await db.execute('UPDATE connections SET status = ? WHERE id = ?', [newStatus, connectionId]);
-
-        if (action === 'accept') {
-            const [bRows] = await db.execute('SELECT company_name, contact_name, email, phone FROM businesses WHERE id = ?', [userId]);
-            if (bRows.length) {
-                const b = bRows[0];
-                const notifyHtml = `
-                    <h2 style="color:#1a56db;">Connection Accepted on EvoConnect</h2>
-                    <p>Hi ${conn.prime_contact},</p>
-                    <p>Good news — <strong>${b.company_name}</strong> has accepted your connection request on EvoConnect.</p>
-                    <table style="border-collapse:collapse;width:100%;margin:16px 0;">
-                        <tr><td style="padding:8px;font-weight:700;color:#374151;">Company</td><td style="padding:8px;">${b.company_name}</td></tr>
-                        <tr style="background:#f9fafb;"><td style="padding:8px;font-weight:700;color:#374151;">Contact</td><td style="padding:8px;">${b.contact_name}</td></tr>
-                        <tr><td style="padding:8px;font-weight:700;color:#374151;">Email</td><td style="padding:8px;"><a href="mailto:${b.email}" style="color:#1a56db;">${b.email}</a></td></tr>
-                        <tr style="background:#f9fafb;"><td style="padding:8px;font-weight:700;color:#374151;">Phone</td><td style="padding:8px;">${b.phone}</td></tr>
-                    </table>
-                    <p><a href="${process.env.APP_URL || 'https://evoconnect.evobrand.net'}/prime/dashboard" style="display:inline-block;background:#1a56db;color:#fff;padding:12px 28px;border-radius:6px;text-decoration:none;font-weight:700;">View Dashboard</a></p>
-                `;
-                sendEmail({
-                    to: conn.prime_email,
-                    subject: `EvoConnect: ${b.company_name} accepted your connection request`,
-                    html: notifyHtml,
-                    text: `${b.company_name} accepted your connection request on EvoConnect.\nContact: ${b.contact_name}\nEmail: ${b.email}\nPhone: ${b.phone}`
-                }).catch(e => console.error('EvoConnect [business/connections] prime email error:', e));
-            }
-        }
-
-        res.json({ success: true });
-
-    } catch (err) {
-        console.error('EvoConnect [business/connections]:', err);
-        res.status(500).json({ success: false, error: 'Server error.' });
-    }
-});
 
 // ── GET /business/capability-statement ────────────────────────────────────────
 router.get('/capability-statement', requireType('business'), async (req, res) => {
@@ -715,30 +651,7 @@ router.get('/checklist', requireType('business'), async (req, res) => {
 });
 
 // ── GET /business/connections ──────────────────────────────────────────────────
-router.get('/connections', requireType('business'), async (req, res) => {
-    try {
-        const db = getDb();
-        const [connections] = await db.execute(
-            `SELECT c.*, p.company_name AS prime_company_name, p.contact_name AS prime_contact, p.email AS prime_email
-             FROM connections c
-             JOIN primes p ON c.prime_id = p.id
-             WHERE c.target_type = 'business' AND c.target_id = ?
-             ORDER BY FIELD(c.status,'pending','accepted','declined'), c.created_at DESC`,
-            [req.user.id]
-        );
 
-        res.render('business/connections', {
-            title: 'My Connections | EvoConnect Business',
-            flash: getFlash(req),
-            connections
-        });
-
-    } catch (err) {
-        console.error('EvoConnect [business/connections GET]:', err);
-        flash(req, 'error', 'Failed to load connections.');
-        res.redirect('/business/dashboard');
-    }
-});
 
 
 const pf = require('./portalFeatures');

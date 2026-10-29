@@ -5,14 +5,18 @@
  */
 
 const Navigation = {
+    escapeText(value) {
+        return String(value ?? '').replace(/[&<>"']/g,character=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[character]));
+    },
     config: {
         worker: {
             title: 'Labor Portal',
             dashboardHref: '/labor/dashboard',
             messagesHref: '/labor/messages',
             items: [
+                { label: 'Small Business Directory', href: '/labor/directory/business', icon: '🔗' },
                 { label: 'Dashboard',             href: '/labor/dashboard',       icon: '🏠' },
-                { label: 'Search Opportunities',  href: '/labor/search',          icon: '🔍' },
+                { label: 'Find Jobs',  href: '/labor/search',          icon: '🔍' },
                 { label: 'My Applications',       href: '/labor/applications',    icon: '📋' },
                 { label: 'Saved Opportunities',   href: '/labor/saved',           icon: '⭐' },
                 { label: 'Connection Requests',   href: '/labor/connections',     icon: '🤝' },
@@ -29,6 +33,11 @@ const Navigation = {
             dashboardHref: '/business/dashboard',
             messagesHref: '/business/messages',
             items: [
+                { label: 'Post a Job', href: '/business/post-job', icon: '🔗' },
+                { label: 'Manage Jobs', href: '/business/jobs', icon: '🔗' },
+                { label: 'Review Job Applications', href: '/business/job-applications', icon: '🔗' },
+                { label: 'Labor Directory', href: '/business/directory/worker', icon: '🔗' },
+                { label: 'Prime Directory', href: '/business/directory/prime', icon: '🔗' },
                 { label: 'Dashboard',             href: '/business/dashboard',            icon: '🏠' },
                 { label: 'Search Opportunities',  href: '/business/search',               icon: '🔍' },
                 { label: 'My Applications',       href: '/business/applications',         icon: '📋' },
@@ -54,7 +63,6 @@ const Navigation = {
                 { label: 'View Applications',       href: '/prime/applications',       icon: '📝' },
                 { label: 'Subcontractor RFQs',      href: '/prime/rfq',                icon: '📋' },
                 { label: 'Search Small Businesses', href: '/prime/search/businesses',  icon: '🏢' },
-                { label: 'Search Labor Directory',  href: '/prime/search/workers',     icon: '👷' },
                 { label: 'Connections',             href: '/prime/connections',        icon: '🤝' },
                 { label: 'Messages',                href: '/prime/messages',           icon: '📬' },
                 { label: 'Analytics',               href: '/prime/analytics',          icon: '📈' },
@@ -358,8 +366,8 @@ const Navigation = {
                 } else {
                     list.innerHTML = notifications.map(n => `
                         <div class="notification-item" style="padding: 10px; border-bottom: 1px solid var(--color-border, #eee); cursor: pointer;" onclick="Navigation.markNotificationRead('${n.id}', '${n.message_id || ''}')">
-                            <div style="font-size: 0.75rem; color: var(--color-primary); font-weight: 700;">${(n.type || n.message_type || 'NOTIFICATION').toUpperCase()}</div>
-                            <div style="font-size: 0.85rem; color: var(--color-text-secondary);">${n.message || n.subject || 'New platform update'}</div>
+                            <div style="font-size: 0.75rem; color: var(--color-primary); font-weight: 700;">${this.escapeText(String(n.type || n.message_type || 'NOTIFICATION').toUpperCase())}</div>
+                            <div style="font-size: 0.85rem; color: var(--color-text-secondary);">${this.escapeText(n.message || n.subject || 'New platform update')}</div>
                             <div style="font-size: 0.7rem; color: var(--color-text-muted); margin-top: 4px;">${n.created_at ? new Date(n.created_at).toLocaleString() : ''}</div>
                         </div>
                     `).join('');

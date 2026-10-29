@@ -34,7 +34,7 @@ const stateChecked = byTrack.state         || {};
 const subChecked   = byTrack.subcontractor || {};
 
 const connectionList = locals.connections || [];
-const pendingConns = connectionList.filter(c => c.status === 'pending');
+const pendingConns = connectionList.filter(c => c.status === 'pending' && c.incoming);
 const naicsMatches = locals.matches || [];
 const skillsArr = Array.isArray(worker.skills) ? worker.skills : [];
 const pct = worker.profile_pct || 0;
@@ -54,7 +54,7 @@ const checklistPct = Math.round((totalDone / totalItems) * 100) || 0;
 <section class="hero-section">
     <div class="hero-content hero-welcome">
         <h1>💼 Worker Dashboard</h1>
-        <p>Welcome back, <%= worker.full_name ? worker.full_name.split(' ')[0] : 'there' %>! Track your business growth and discover new contracting opportunities.</p>
+        <p>Welcome back, <%= worker.full_name ? worker.full_name.split(' ')[0] : 'there' %>! Find jobs posted by small businesses and manage your applications.</p>
     </div>
 </section>
 
@@ -63,7 +63,7 @@ const checklistPct = Math.round((totalDone / totalItems) * 100) || 0;
 <div id="notificationBanner" style="margin-bottom:var(--space-lg);border-radius:var(--border-radius-lg);padding:var(--space-md) var(--space-lg);background:linear-gradient(135deg,#e8f4fd,#f0f9ff);border-left:4px solid var(--color-primary);display:flex;align-items:center;gap:var(--space-md);">
     <span style="font-size:1.5rem;">👋</span>
     <div style="flex:1;font-weight:500;color:var(--color-text-primary);">
-        You have <strong><%= pendingConns.length %> pending connection request<%= pendingConns.length > 1 ? 's' : '' %></strong> from prime contractors. Review them below!
+        You have <strong><%= pendingConns.length %> pending connection request<%= pendingConns.length > 1 ? 's' : '' %></strong> from small businesses. Review them below!
     </div>
     <button onclick="this.parentElement.style.display='none'" style="background:none;border:none;cursor:pointer;color:var(--text-muted);font-size:1.2rem;padding:0 0.25rem;" aria-label="Dismiss">&times;</button>
 </div>
@@ -71,7 +71,7 @@ const checklistPct = Math.round((totalDone / totalItems) * 100) || 0;
 <div id="notificationBanner" style="margin-bottom:var(--space-lg);border-radius:var(--border-radius-lg);padding:var(--space-md) var(--space-lg);background:linear-gradient(135deg,#fffbf0,#fff4d6);border-left:4px solid var(--color-warning);display:flex;align-items:center;gap:var(--space-md);">
     <span style="font-size:1.5rem;">⚠️</span>
     <div style="flex:1;font-weight:500;color:var(--color-text-primary);">
-        Your profile is only <strong><%= pct %>% complete</strong>. Complete your profile and checklist to maximize your visibility to prime contractors.
+        Your profile is only <strong><%= pct %>% complete</strong>. Complete your profile and checklist to maximize your visibility to small businesses.
     </div>
     <button onclick="this.parentElement.style.display='none'" style="background:none;border:none;cursor:pointer;color:var(--text-muted);font-size:1.2rem;padding:0 0.25rem;" aria-label="Dismiss">&times;</button>
 </div>
@@ -123,7 +123,7 @@ const checklistPct = Math.round((totalDone / totalItems) * 100) || 0;
         <a href="/labor/messages" class="action-card">
             <div class="icon-box" style="background:var(--color-bg-secondary);">💬</div>
             <h3>Messages</h3>
-            <p>Communicate directly with prime contractors.</p>
+            <p>Communicate with your connected small businesses.</p>
         </a>
         <a href="/labor/profile" class="action-card">
             <div class="icon-box" style="background:var(--color-bg-secondary);">👤</div>
@@ -164,7 +164,7 @@ const checklistPct = Math.round((totalDone / totalItems) * 100) || 0;
             <% pendingConns.forEach(function(conn) { %>
             <li class="recommendation-item">
                 <div class="rec-info">
-                <h4><%= conn.prime_company_name || conn.prime_company || 'Prime Contractor' %></h4>
+                <h4><%= conn.prime_company_name || conn.prime_company || 'Small Business' %></h4>
                 <% if (conn.message) { %><p class="rec-meta"><%= conn.message %></p><% } %>
                 <span class="rec-meta" style="font-size: 0.8rem;"><%= new Date(conn.created_at).toLocaleDateString() %></span>
                 </div>
@@ -172,11 +172,11 @@ const checklistPct = Math.round((totalDone / totalItems) * 100) || 0;
                 <form method="POST" action="/labor/connections/<%= conn.id %>" style="display:inline">
                     <input type="hidden" name="action" value="accept">
                     <button type="submit" class="btn btn-sm btn-primary" style="margin-right: 8px;">Accept</button>
-                </form>
+                <input type="hidden" name="_csrf" value="<%= csrfToken %>"></form>
                 <form method="POST" action="/labor/connections/<%= conn.id %>" style="display:inline">
                     <input type="hidden" name="action" value="decline">
                     <button type="submit" class="btn btn-sm btn-secondary">Decline</button>
-                </form>
+                <input type="hidden" name="_csrf" value="<%= csrfToken %>"></form>
                 </div>
             </li>
             <% }) %>

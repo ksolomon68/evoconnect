@@ -8,6 +8,7 @@ const { getDb } = require('../database');
 const { requireAuth } = require('../middleware/auth');
 const { record } = require('../services/performance');
 const lifecycle = require('../services/opportunity-lifecycle');
+const policy = require('../services/role-policy');
 const matching = require('../services/naics-matching');
 const router = express.Router();
 const roles = { labor: 'worker', business: 'business', prime: 'prime', admin: 'admin' };
@@ -40,7 +41,7 @@ async function opportunity(req) {
     return rows[0];
 }
 const open = lifecycle.isOpen;
-function publisher(req, res, next) { return ['prime','admin'].includes(req.user.type) ? next() : res.status(403).send('Only administrators and prime contractors can manage opportunities.'); }
+function publisher(req, res, next) { return ['prime','business','admin'].includes(req.user.type) ? next() : res.status(403).send('Only posting owners and administrators can manage listings.'); }
 
 // Matches are recomputed from current codes and publication state on every request.
 router.get('/:portal(labor|business)/matches', ...portalAuth, wrap(async(req,res)=>{
@@ -130,12 +131,13 @@ router.get('/directory/:type(worker|business|prime)/:id', requireAuth, wrap(asyn
     res.set('Cache-Control','private, no-store');
     res.render('shared/directory-profile',{title:'Profile | EvoConnect', profile:{id:account.id,type:req.params.type,name:account.company_name || account.full_name, city:account.city,state:account.state,description:account.service_description || account.experience_summary || account.contract_vehicles,naics:account.naics_codes,certifications:account.certifications}, document:documents[0]});
 }));
-router.get('/opportunities/:id', requireAuth, wrap(async (req,res) => {
+router.get(['/opportunities/:id','/jobs/:id'], requireAuth, wrap(async (req,res) => {
     const opp=await opportunity(req);if(!opp || (!open(opp) && !managed(req,opp))) return notFound(res);
     if(opp.posted_by) await record(req,opp.posted_by_type,opp.posted_by,'opportunity',opp.id,'view');
-    const [primes] = opp.posted_by_type === 'prime' && opp.posted_by ? await getDb().execute('SELECT id FROM primes WHERE id = ? AND active = 1',[opp.posted_by]) : [[]];
+    const [publishers]=['prime','business'].includes(opp.posted_by_type) && opp.posted_by ? await getDb().execute(`SELECT id FROM ${policy.tables[opp.posted_by_type]} WHERE id=?`,[opp.posted_by]) : [[]];
+    const publisherProfile=publishers[0]?{...publishers[0],type:opp.posted_by_type}:null;
     const [attachments]=await getDb().execute('SELECT id,original_name,size_bytes FROM opportunity_attachments WHERE opportunity_id=?',[opp.id]);
-    res.render('shared/opportunity-detail',{title:opp.title,opp,attachments,publisherProfile:primes[0],basePath:req.user.type === 'business' ? '/business' : '/labor'});
+    res.render('shared/opportunity-detail',{title:opp.title,opp,attachments,publisherProfile,basePath:req.user.type === 'business' ? '/business' : '/labor'});
 }));
 
 // One validated editor serves both admin and prime owners.
@@ -147,25 +149,14 @@ router.get('/:portal(prime|admin)/opportunities/:id/edit', ...portalAuth, publis
     const [attachments]=await getDb().execute('SELECT id,original_name,size_bytes FROM opportunity_attachments WHERE opportunity_id=?',[opp.id]);
     res.render('shared/opportunity-editor',{title:'Edit Opportunity',basePath:`/${req.params.portal}`,opp,attachments,error:null});
 }));
-function validateOpportunity(body) {
-    const text=(key,max) => typeof body[key] === 'string' ? body[key].trim().slice(0,max) : '';
-    const data={ title:text('title',255),scope_summary:text('scope_summary',20000),category:text('category',100),district_name:text('district_name',100),estimated_value:text('estimated_value',100),due_date:text('due_date',10),due_time:text('due_time',5),submission_method:text('submission_method',255),requirements:text('requirements',10000),certifications:text('certifications',5000),naics_codes:text('naics_codes',1000),status:text('status',20) };
-    if(!data.title || !data.scope_summary || !data.category || !data.district_name) return {data,error:'Title, scope, category, and location are required.'};
-    if(!['draft','pending','published','closed','awarded','archived'].includes(data.status))return {data,error:'Select a valid publication status.'};
-    if(data.due_time && !/^([01]\d|2[0-3]):[0-5]\d$/.test(data.due_time))return {data,error:'Enter a valid deadline time.'};
-    if(data.due_date && (!/^\d{4}-\d{2}-\d{2}$/.test(data.due_date) || Number.isNaN(Date.parse(data.due_date)) || new Date(data.due_date).toISOString().slice(0,10)!==data.due_date))return {data,error:'Enter a valid deadline.'};
-    if(data.status==='published' && !open(data))return {data,error:'Published opportunities need a current or future deadline.'};
-    const codes=data.naics_codes.split(/[\s,]+/).filter(Boolean);
-    if(codes.some(c=>!/^\d{2,6}$/.test(c)))return {data,error:'Use comma-separated NAICS codes, each 2–6 digits.'};
-    data.naics_codes=JSON.stringify([...new Set(codes)]);
-    return {data};
-}
+const validateOpportunity=require('../services/listing-validation');
 async function saveOpportunity(req,res) {
     const existing=req.params.id ? await opportunity(req) : null;
     if(req.params.id && (!existing || !managed(req,existing)))return notFound(res);
     const {data,error}=validateOpportunity(req.body);
     if(error)return res.status(400).render('shared/opportunity-editor',{title:'Opportunity',basePath:`/${req.params.portal}`,opp:{...data,id:existing?.id},error});
     if(req.user.type === 'prime' && data.status === 'published') data.status = 'pending';
+    data.listing_type=existing?.listing_type || (req.user.type==='admin' && req.body.listing_type==='job'?'job':'opportunity');
     const keys=Object.keys(data);
     const db=getDb();
     const id=existing?.id || crypto.randomUUID();
@@ -189,6 +180,7 @@ router.post('/:portal(prime|admin)/opportunities/:id/:action(status|delete)', ..
         await getDb().execute('UPDATE opportunities SET status = ? WHERE id = ?',[req.body.status,opp.id]);
     }
     await lifecycle.statusChanged(getDb(),opp,req.params.action === 'delete' ? 'archived' : req.body.status,req.user);
+    if(req.body.status==='pending' && opp.status!=='pending')await lifecycle.submittedForReview(getDb(),opp,req.user);
     flash(req,'Opportunity updated.');res.redirect(`/${req.params.portal}/opportunities`);
 }));
 
@@ -220,7 +212,7 @@ router.get('/:portal(labor|business|prime|admin)/analytics', ...portalAuth, wrap
 router.post('/:portal(labor|business)/applications/:id/withdraw', ...portalAuth, csrf, wrap(async(req,res)=>{
     const [result]=await getDb().execute("UPDATE applications SET status = 'withdrawn' WHERE id = ? AND applicant_type = ? AND applicant_id = ? AND status IN ('pending','submitted','under_review')",[req.params.id,req.user.type,req.user.id]);
     if(!result.affectedRows)return notFound(res);
-    flash(req,'Application withdrawn.');res.redirect(`/${req.params.portal}/applications`);
+    flash(req,'Application withdrawn.');res.redirect(req.user.type==='business'?'/business/job-applications':`/${req.params.portal}/applications`);
 }));
 router.get('/admin/applications', requireAuth, wrap(async(req,res)=>{
     if(req.user.type!=='admin')return res.status(403).send('Access denied.');
@@ -231,15 +223,16 @@ router.get('/admin/applications', requireAuth, wrap(async(req,res)=>{
         LEFT JOIN workers w ON a.applicant_type='worker' AND w.id=a.applicant_id ORDER BY a.applied_date DESC`);
     res.render('prime/applications',{title:'Application Review',applications,flash:req.session.flash || null,basePath:'/admin'});delete req.session.flash;
 }));
-router.post('/:portal(prime|admin)/applications/:id/status', ...portalAuth, publisher, csrf, wrap(async(req,res)=>{
+router.post('/:portal(prime|business|admin)/applications/:id/status', ...portalAuth, publisher, csrf, wrap(async(req,res)=>{
     if(!['under_review','approved','awarded','declined'].includes(req.body.status))return res.status(400).send('Invalid application status.');
-    const [rows]=await getDb().execute('SELECT a.*, o.posted_by, o.posted_by_type, o.title FROM applications a JOIN opportunities o ON o.id = a.opportunity_id WHERE a.id = ?',[req.params.id]);
+    const [rows]=await getDb().execute('SELECT a.*, o.posted_by, o.posted_by_type, o.listing_type, o.title FROM applications a JOIN opportunities o ON o.id = a.opportunity_id WHERE a.id = ?',[req.params.id]);
     const app=rows[0];if(!app || !managed(req,app))return notFound(res);
+    if(req.user.type!=='admin' && !policy.canApply(app.applicant_type,app))return res.status(403).send('Applicant role does not match the listing.');
     if(app.status==='withdrawn')return res.status(409).send('A withdrawn application cannot be reviewed.');
     await getDb().execute('UPDATE applications SET status = ? WHERE id = ?',[req.body.status,app.id]);
     const [msg]=await getDb().execute("INSERT INTO messages (sender_type,sender_id,receiver_type,receiver_id,opportunity_id,message_type,subject,body) VALUES (?,?,?,?,?,'system',?,?)",[req.user.type,req.user.id,app.applicant_type,app.applicant_id,app.opportunity_id,'Application status updated',`Your application for ${app.title} is now ${req.body.status.replace('_',' ')}.`]);
     await getDb().execute('INSERT INTO notifications (user_type,user_id,message_id) VALUES (?,?,?)',[app.applicant_type,app.applicant_id,msg.insertId]);
-    flash(req,'Application status updated and applicant notified.');res.redirect(`/${req.params.portal}/applications`);
+    flash(req,'Application status updated and applicant notified.');res.redirect(req.user.type==='business'?'/business/job-applications':`/${req.params.portal}/applications`);
 }));
 // Caltrans user management parity, with role-specific records and retained histories.
 router.get('/admin/users/new', requireAuth, (req,res) => {
@@ -285,7 +278,7 @@ router.post('/admin/users/new', requireAuth, csrf, wrap(saveMember));
 router.post('/admin/users/:type(worker|business|prime)/:id/edit', requireAuth, csrf, wrap(saveMember));
 
 // Solicitation attachments are PDFs stored outside all public/static directories.
-router.post('/:portal(prime|admin)/opportunities/:id/attachments', ...portalAuth, publisher, (req,res,next)=>{
+router.post('/:portal(prime|business|admin)/opportunities/:id/attachments', ...portalAuth, publisher, (req,res,next)=>{
     upload.single('statement')(req,res,err=>err?res.status(400).send('Upload one PDF, 10 MB or smaller.'):next());
 }, csrf, wrap(async(req,res)=>{
     const opp=await opportunity(req);if(!opp || !managed(req,opp))return notFound(res);
@@ -296,7 +289,7 @@ router.post('/:portal(prime|admin)/opportunities/:id/attachments', ...portalAuth
     await fs.promises.writeFile(path.join(privateDir,storage),file.buffer,{flag:'wx',mode:0o600});
     try{await getDb().execute('INSERT INTO opportunity_attachments (id,opportunity_id,storage_name,original_name,size_bytes) VALUES (?,?,?,?,?)',[id,opp.id,storage,path.basename(file.originalname).slice(0,255),file.size]);}
     catch(err){await fs.promises.unlink(path.join(privateDir,storage));throw err;}
-    res.redirect(`/${req.params.portal}/opportunities/${encodeURIComponent(opp.id)}/edit`);
+    res.redirect(`/${req.params.portal}/${req.user.type==='business'?'jobs':'opportunities'}/${encodeURIComponent(opp.id)}/edit`);
 }));
 router.get('/opportunity-attachments/:attachment', requireAuth, wrap(async(req,res,next)=>{
     const [rows]=await getDb().execute('SELECT f.*,o.status,o.due_date,o.due_time,o.posted_by,o.posted_by_type FROM opportunity_attachments f JOIN opportunities o ON o.id=f.opportunity_id WHERE f.id=?',[req.params.attachment]);
@@ -307,29 +300,29 @@ router.get('/opportunity-attachments/:attachment', requireAuth, wrap(async(req,r
     res.set({'Cache-Control':'private, no-store','X-Content-Type-Options':'nosniff'});
     res.download(filename,'solicitation.pdf',err=>{if(err)next(err);});
 }));
-router.post('/:portal(prime|admin)/opportunities/:id/attachments/:attachment/delete', ...portalAuth, publisher, csrf, wrap(async(req,res)=>{
+router.post('/:portal(prime|business|admin)/opportunities/:id/attachments/:attachment/delete', ...portalAuth, publisher, csrf, wrap(async(req,res)=>{
     const opp=await opportunity(req);if(!opp || !managed(req,opp))return notFound(res);
     const [files]=await getDb().execute('SELECT * FROM opportunity_attachments WHERE id=? AND opportunity_id=?',[req.params.attachment,opp.id]);
     if(!files.length)return notFound(res);
     await getDb().execute('DELETE FROM opportunity_attachments WHERE id=?',[files[0].id]);
     await fs.promises.unlink(path.join(privateDir,path.basename(files[0].storage_name))).catch(err=>{if(err.code!=='ENOENT')throw err;});
-    res.redirect(`/${req.params.portal}/opportunities/${encodeURIComponent(opp.id)}/edit`);
+    res.redirect(`/${req.params.portal}/${req.user.type==='business'?'jobs':'opportunities'}/${encodeURIComponent(opp.id)}/edit`);
 }));
-router.get('/:portal(prime|admin)/opportunities/:id/matches', ...portalAuth, publisher, wrap(async(req,res)=>{
+router.get('/:portal(prime|business|admin)/opportunities/:id/matches', ...portalAuth, publisher, wrap(async(req,res)=>{
     const opp=await opportunity(req);if(!opp || !managed(req,opp))return notFound(res);
-    const matches=await matching.partners(getDb(),opp.naics_codes);
+    const matches=await matching.partners(getDb(),opp.naics_codes,opp.listing_type || 'opportunity');
     res.render('shared/opportunity-matches',{title:'Suggested partners',basePath:`/${req.params.portal}`,opp,matches});
 }));
-router.post('/:portal(prime|admin)/opportunities/:id/invite', ...portalAuth, publisher, csrf, wrap(async(req,res)=>{
+router.post('/:portal(prime|business|admin)/opportunities/:id/invite', ...portalAuth, publisher, csrf, wrap(async(req,res)=>{
     const opp=await opportunity(req);if(!opp || !managed(req,opp))return notFound(res);
     if(!open(opp))return res.status(400).send('Publish an open opportunity before inviting applicants.');
     const [type,id]=String(req.body.target_key || '').split(':');
-    if(!['worker','business'].includes(type) || !/^\d+$/.test(id))return res.status(400).send('Invalid recipient.');
+    if(!policy.canApply(type,opp) || !/^\d+$/.test(id))return res.status(400).send('Invalid recipient.');
     const [targets]=await getDb().execute(`SELECT id FROM ${tables[type]} WHERE id=? AND status='active'`,[id]);
     if(!targets.length)return notFound(res);
     const [message]=await getDb().execute("INSERT INTO messages (sender_type,sender_id,receiver_type,receiver_id,opportunity_id,message_type,subject,body) VALUES (?,?,?,?,?,'invite',?,?)",[req.user.type,req.user.id,type,id,opp.id,`Invitation: ${opp.title}`,`You are invited to apply for ${opp.title}. View the opportunity at /opportunities/${opp.id}.`]);
     await getDb().execute('INSERT INTO notifications (user_type,user_id,message_id) VALUES (?,?,?)',[type,id,message.insertId]);
-    flash(req,'Invitation sent.');res.redirect(`/${req.params.portal}/opportunities`);
+    flash(req,'Invitation sent.');res.redirect(req.user.type==='business'?'/business/jobs':`/${req.params.portal}/opportunities`);
 }));
 
 router.use((err,req,res,next)=>{

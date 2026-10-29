@@ -3,6 +3,8 @@
 const bcrypt = require('bcryptjs');
 const { getDb } = require('../database');
 const { openSql } = require('../services/opportunity-lifecycle');
+const policy=require('../services/role-policy');
+const roles=require('../services/role-connections');
 
 function flash(req, type, message) {
     req.session.flash = { type, message };
@@ -20,8 +22,8 @@ async function renderOpportunitiesSearch(req, res, roleType, basePath) {
         const db = getDb();
         const { q, category, naics } = req.query;
 
-        const conditions = [openSql];
-        const params = [];
+        const conditions = [openSql,'listing_type=?'];
+        const params = [policy.listingType(roleType) || 'opportunity'];
 
         if (q && q.trim()) {
             conditions.push('(title LIKE ? OR scope_summary LIKE ? OR posted_by_name LIKE ? OR district_name LIKE ?)');
@@ -59,7 +61,7 @@ async function renderOpportunitiesSearch(req, res, roleType, basePath) {
         }
 
         res.render('shared/opportunities-search', {
-            title: 'Search Opportunities | EvoConnect',
+            title: roleType==='worker'?'Find Jobs | EvoConnect':'Search Opportunities | EvoConnect',
             flash: getFlash(req),
             basePath,
             opportunities,
@@ -81,8 +83,9 @@ async function toggleSavedOpportunity(req, res, roleType, basePath) {
         const oppId = String(req.body.opportunity_id || '').trim();
         const redirectTo = `${basePath}/search`;
         if (!oppId) return res.redirect(redirectTo);
-        const [available] = await db.execute(`SELECT id FROM opportunities WHERE id = ? AND ${openSql}`, [oppId]);
-        if (!available.length) return res.status(404).send('Opportunity unavailable.');
+        const [available] = await db.execute(`SELECT * FROM opportunities WHERE id = ? AND ${openSql}`, [oppId]);
+        if (!available.length) return res.status(404).send('Listing unavailable.');
+        if(!policy.canApply(roleType,available[0]))return res.status(403).send('Businesses apply to prime opportunities; labor workers apply to small-business jobs.');
 
         const [existing] = await db.execute(
             'SELECT id FROM saved_opportunities WHERE user_type = ? AND user_id = ? AND opportunity_id = ?',
@@ -115,9 +118,9 @@ async function renderSavedOpportunities(req, res, roleType, basePath) {
             SELECT o.*
             FROM saved_opportunities s
             JOIN opportunities o ON s.opportunity_id = o.id
-            WHERE s.user_type = ? AND s.user_id = ?
+            WHERE s.user_type = ? AND s.user_id = ? AND o.listing_type = ?
             ORDER BY s.saved_at DESC
-        `, [roleType, req.user.id]);
+        `, [roleType, req.user.id,policy.listingType(roleType)]);
 
         const [aRows] = await db.execute(
             'SELECT opportunity_id FROM applications WHERE applicant_type = ? AND applicant_id = ?',
@@ -140,67 +143,34 @@ async function renderSavedOpportunities(req, res, roleType, basePath) {
 
 // ── Submit Application ───────────────────────────────────────────────────────
 async function submitApplication(req, res, roleType, basePath) {
+    const payload=req.body || {};
+    const oppId=typeof payload.opportunity_id==='string'?payload.opportunity_id.trim():'';
+    const notes=typeof payload.notes==='string'?payload.notes.trim():'';
+    const amount=typeof payload.proposed_amount==='string'?payload.proposed_amount.trim():'';
+    if(!oppId || !notes || notes.length>10000 || amount.length>100)return res.status(400).send('Provide an application note of up to 10,000 characters.');
+    let connection;
     try {
-        const db = getDb();
-        const oppId = String(req.body.opportunity_id || '').trim();
-        const notes = (req.body.notes || '').trim();
-        const proposedAmount = (req.body.proposed_amount || '').trim();
-        const fullNotes = proposedAmount ? `[Proposed: ${proposedAmount}] ${notes}` : notes;
-
-        if (!oppId || !notes) {
-            flash(req, 'error', 'Please provide a capability summary / note for your application.');
-            return res.redirect(`${basePath}/search`);
+        connection=await getDb().getConnection();
+        await connection.beginTransaction();
+        // Serializing submissions for this listing also prevents duplicate applications on double clicks.
+        const [available]=await connection.execute(`SELECT * FROM opportunities WHERE id=? AND ${openSql} FOR UPDATE`,[oppId]);
+        const listing=available[0];
+        if(!listing){await connection.rollback();return res.status(404).send('Listing unavailable.');}
+        if(!policy.canApply(roleType,listing)){await connection.rollback();return res.status(403).send('Businesses apply to prime opportunities; labor workers apply to small-business jobs.');}
+        const [existing]=await connection.execute('SELECT id,status FROM applications WHERE opportunity_id=? AND applicant_type=? AND applicant_id=? FOR UPDATE',[oppId,roleType,req.user.id]);
+        if(existing.length && existing[0].status!=='withdrawn'){await connection.rollback();return res.status(409).send('You have already applied to this listing.');}
+        const body=amount?`[Proposed: ${amount}] ${notes}`:notes;
+        if(existing.length)await connection.execute("UPDATE applications SET notes=?,status='submitted',applied_date=CURRENT_TIMESTAMP WHERE id=?",[body,existing[0].id]);
+        else await connection.execute("INSERT INTO applications (opportunity_id,applicant_type,applicant_id,notes,status) VALUES (?,?,?,?,'submitted')",[oppId,roleType,req.user.id,body]);
+        const owner=await policy.account(connection,listing.posted_by_type,listing.posted_by);
+        const actor=await policy.account(connection,roleType,req.user.id);
+        if(owner && actor){
+            const [message]=await connection.execute("INSERT INTO messages (sender_type,sender_id,sender_business_name,receiver_type,receiver_id,receiver_business_name,opportunity_id,message_type,subject,body) VALUES (?,?,?,?,?,?,?,'application',?,?)",[roleType,req.user.id,actor.name,owner.type,owner.id,owner.name,oppId,`New Application: ${listing.title}`,`${actor.name} applied for ${listing.title}.\n\n${body}`]);
+            await connection.execute('INSERT INTO notifications (user_type,user_id,message_id) VALUES (?,?,?)',[owner.type,owner.id,message.insertId]);
         }
-
-        const [available] = await db.execute(`SELECT id FROM opportunities WHERE id = ? AND ${openSql}`, [oppId]);
-        if (!available.length) return res.status(404).send('Opportunity unavailable.');
-        const [existing] = await db.execute(
-            'SELECT id FROM applications WHERE opportunity_id = ? AND applicant_type = ? AND applicant_id = ?',
-            [oppId, roleType, req.user.id]
-        );
-
-        if (existing.length) {
-            await db.execute(
-                'UPDATE applications SET notes = ?, status = ? WHERE id = ?',
-                [fullNotes, 'submitted', existing[0].id]
-            );
-        } else {
-            await db.execute(
-                'INSERT INTO applications (opportunity_id, applicant_type, applicant_id, notes, status) VALUES (?, ?, ?, ?, ?)',
-                [oppId, roleType, req.user.id, fullNotes, 'submitted']
-            );
-        }
-
-        // Send internal message & notification to prime contractor
-        const [opps] = await db.execute('SELECT title, posted_by, posted_by_type, posted_by_name FROM opportunities WHERE id = ?', [oppId]);
-        if (opps.length && opps[0].posted_by) {
-            const [msgRes] = await db.execute(`
-                INSERT INTO messages (sender_type, sender_id, sender_business_name, receiver_type, receiver_id, receiver_business_name, opportunity_id, message_type, subject, body)
-                VALUES (?, ?, ?, ?, ?, ?, ?, 'application', ?, ?)
-            `, [
-                roleType,
-                req.user.id,
-                req.user.name || req.user.email,
-                opps[0].posted_by_type,
-                opps[0].posted_by,
-                opps[0].posted_by_name || 'Prime Contractor',
-                oppId,
-                `New Application: ${opps[0].title}`,
-                `${req.user.name || req.user.email} submitted an application for "${opps[0].title}".\n\n${fullNotes}`
-            ]);
-            await db.execute(
-                'INSERT INTO notifications (user_type, user_id, message_id) VALUES (?, ?, ?)',
-                [opps[0].posted_by_type, opps[0].posted_by, msgRes.insertId]
-            );
-        }
-
-        flash(req, 'success', 'Application submitted successfully!');
-        res.redirect(`${basePath}/applications`);
-    } catch (err) {
-        console.error(`EvoConnect [${basePath}/applications/apply]:`, err);
-        flash(req, 'error', 'Failed to submit application.');
-        res.redirect(`${basePath}/search`);
-    }
+        await connection.commit();flash(req,'success','Application submitted.');res.redirect(`${basePath}/applications`);
+    }catch(err){if(connection)await connection.rollback().catch(()=>{});console.error('Application submission:',err.code || err.message);res.status(500).send('Unable to submit your application. Please try again.');}
+    finally{if(connection)connection.release();}
 }
 
 // ── My Applications List ─────────────────────────────────────────────────────
@@ -261,26 +231,7 @@ async function renderMessages(req, res, roleType, basePath) {
             receiver_name: m.receiver_business_name || m.receiver_name || m.receiver_type
         }));
 
-        // Build recipient list depending on role
-        const recipients = [];
-        if (roleType === 'worker' || roleType === 'business') {
-            const [primes] = await db.execute('SELECT id, company_name FROM primes WHERE active = 1 ORDER BY company_name ASC LIMIT 50');
-            primes.forEach(p => recipients.push({ type: 'prime', id: p.id, name: p.company_name, label: `🏗️ ${p.company_name} (Prime Contractor)` }));
-            const [admins] = await db.execute('SELECT id, name FROM admins ORDER BY id ASC LIMIT 5');
-            admins.forEach(a => recipients.push({ type: 'admin', id: a.id, name: a.name || 'Platform Admin', label: `🛡️ ${a.name || 'EvoConnect Support'} (Admin)` }));
-        } else {
-            const [businesses] = await db.execute('SELECT id, company_name FROM businesses WHERE status = "active" ORDER BY company_name ASC LIMIT 50');
-            businesses.forEach(b => recipients.push({ type: 'business', id: b.id, name: b.company_name, label: `🏢 ${b.company_name} (Business)` }));
-            const [workers] = await db.execute('SELECT id, full_name FROM workers WHERE status = "active" ORDER BY full_name ASC LIMIT 50');
-            workers.forEach(w => recipients.push({ type: 'worker', id: w.id, name: w.full_name, label: `👷 ${w.full_name} (Worker)` }));
-            if (roleType === 'prime') {
-                const [admins] = await db.execute('SELECT id, name FROM admins ORDER BY id ASC LIMIT 5');
-                admins.forEach(a => recipients.push({ type: 'admin', id: a.id, name: a.name || 'Platform Admin', label: `🛡️ ${a.name || 'EvoConnect Support'} (Admin)` }));
-            } else if (roleType === 'admin') {
-                const [primes] = await db.execute('SELECT id, company_name FROM primes ORDER BY company_name ASC LIMIT 50');
-                primes.forEach(p => recipients.push({ type: 'prime', id: p.id, name: p.company_name, label: `🏗️ ${p.company_name} (Prime Contractor)` }));
-            }
-        }
+        const recipients = await roles.recipients(db,{type:roleType,id:userId});
 
         res.render('shared/messages', {
             title: 'Messages | EvoConnect',
@@ -308,7 +259,15 @@ async function sendMessage(req, res, roleType, basePath) {
         const parts = recipient_key.split(':');
         const receiverType = parts[0];
         const receiverId = parseInt(parts[1]);
-        const receiverName = parts.slice(2).join(':') || 'Recipient';
+        const target=await policy.account(db,receiverType,receiverId);
+        if(!target)return res.status(404).send('Recipient unavailable.');
+        if(roleType!=='admin' && receiverType!=='admin') {
+            if(!policy.canConnect(roleType,receiverType))return res.status(403).send('These roles cannot communicate directly.');
+            const connection=await roles.relationship(db,{type:roleType,id:req.user.id},target);
+            if(!connection || connection.status!=='accepted')return res.status(403).send('Accept a connection request before sending direct messages.');
+        }
+        const receiverName=target.name;
+        if(typeof body!=='string' || body.trim().length>10000 || typeof subject!=='string' || subject.length>255)return res.status(400).send('Enter a valid subject and a message up to 10,000 characters.');
 
         const [msgRes] = await db.execute(`
             INSERT INTO messages (sender_type, sender_id, sender_business_name, receiver_type, receiver_id, receiver_business_name, message_type, subject, body)

@@ -33,7 +33,7 @@ const stateChecked = byTrack.state         || {};
 const subChecked   = byTrack.subcontractor || {};
 
 const pct = business.profile_pct || 0;
-const pendingBizConns = (locals.connections || []).filter(c => c.status === 'pending');
+const pendingBizConns = (locals.connections || []).filter(c => c.status === 'pending' && c.incoming);
 const naicsMatches = locals.naicsDetails || [];
 const openOpps = locals.openOppsCount ?? naicsMatches.length;
 const savedCount = locals.savedCount ?? 0;
@@ -41,6 +41,7 @@ const appsCount = locals.appsCount ?? 0;
 %>
 
 <%- include('../partials/flash') %>
+<p><a class="btn btn-primary" href="/business/post-job">Post a job</a> <a class="btn btn-secondary" href="/business/job-applications">Review labor applications</a></p>
 <%- include('../shared/match-preview', { result: autoMatches, basePath: '/business' }) %>
 
 <!-- Hero Section -->
@@ -56,7 +57,7 @@ const appsCount = locals.appsCount ?? 0;
 <div id="notificationBanner" style="margin-bottom:var(--space-lg);border-radius:var(--border-radius-lg);padding:var(--space-md) var(--space-lg);background:linear-gradient(135deg,#e8f4fd,#f0f9ff);border-left:4px solid var(--color-primary);display:flex;align-items:center;gap:var(--space-md);">
     <span style="font-size:1.5rem;">👋</span>
     <div style="flex:1;font-weight:500;color:var(--color-text-primary);">
-        You have <strong><%= pendingBizConns.length %> pending connection request<%= pendingBizConns.length > 1 ? 's' : '' %></strong> from prime contractors. Review them below!
+        You have <strong><%= pendingBizConns.length %> pending connection request<%= pendingBizConns.length > 1 ? 's' : '' %></strong> from labor workers and prime contractors. Review them below!
     </div>
     <button onclick="this.parentElement.style.display='none'" style="background:none;border:none;cursor:pointer;color:var(--text-muted);font-size:1.2rem;padding:0 0.25rem;" aria-label="Dismiss">&times;</button>
 </div>
@@ -131,7 +132,7 @@ const appsCount = locals.appsCount ?? 0;
         <a href="/business/messages" class="action-card">
             <div class="icon-box" style="background:var(--color-bg-secondary);">✉️</div>
             <h3>Messages</h3>
-            <p>Read invitations and communicate with prime contractors.</p>
+            <p>Communicate with connected labor workers and prime contractors.</p>
         </a>
         <a href="/business/settings" class="action-card">
             <div class="icon-box" style="background:var(--color-bg-secondary);">🔧</div>
@@ -215,17 +216,17 @@ const appsCount = locals.appsCount ?? 0;
                         <form method="POST" action="/business/connections/<%= conn.id %>" style="display:inline">
                             <input type="hidden" name="action" value="accept">
                             <button type="submit" class="btn-sm btn-primary">Accept</button>
-                        </form>
+                        <input type="hidden" name="_csrf" value="<%= csrfToken %>"></form>
                         <form method="POST" action="/business/connections/<%= conn.id %>" style="display:inline">
                             <input type="hidden" name="action" value="decline">
                             <button type="submit" class="btn-sm btn-secondary">Decline</button>
-                        </form>
+                        <input type="hidden" name="_csrf" value="<%= csrfToken %>"></form>
                     </div>
                 </li>
                 <% }) %>
             </ul>
         <% } else { %>
-            <div class="empty-state"><p>No pending requests. Complete your profile to attract prime contractors.</p></div>
+            <div class="empty-state"><p>No pending requests. Use the labor and prime directories to find partners.</p></div>
         <% } %>
     </div>
 

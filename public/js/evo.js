@@ -249,12 +249,12 @@
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           credentials: 'same-origin',
-          body: JSON.stringify({ action })
+          body: JSON.stringify({ action, _csrf: document.querySelector('meta[name=csrf-token]')?.content })
         });
-        const data = await res.json();
+        const data = res.headers.get('content-type')?.includes('application/json') ? await res.json() : {success:res.ok};
         if (data.success) {
-          const card = btn.closest('.connection-card');
-          card.innerHTML = `<p class="text-muted text-sm">${action === 'accept' ? '✅ Connection accepted.' : '❌ Connection declined.'}</p>`;
+          const card = btn.closest('.connection-card, .connection-item, .recommendation-item');
+          if(card) card.innerHTML = `<p class="text-muted text-sm">${action === 'accept' ? '✅ Connection accepted.' : '❌ Connection declined.'}</p>`;
         }
       } catch {
         btn.disabled = false;
@@ -283,7 +283,7 @@
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           credentials: 'same-origin',
-          body: JSON.stringify({ target_type: targetType, target_id: targetId, message })
+          body: JSON.stringify({ target_type: targetType, target_id: targetId, message, _csrf: document.querySelector('meta[name=csrf-token]')?.content })
         });
         const data = await res.json();
         if (data.success) {

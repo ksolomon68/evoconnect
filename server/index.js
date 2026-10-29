@@ -102,7 +102,7 @@ app.use((req, res, next) => {
             (p.startsWith('/business/') && !p.startsWith('/business/register') && !p.startsWith('/business/capability-statement')) ||
             (p.startsWith('/prime/') && !p.startsWith('/prime/register')) ||
             p.startsWith('/admin') ||
-            p === '/opportunities';
+            p === '/opportunities' || p.startsWith('/opportunities/') || p.startsWith('/jobs/') || p.startsWith('/directory/');
         if (isPortalSubpage) {
             res.locals.layout = 'layouts/dashboard';
         }
@@ -150,6 +150,7 @@ async function startServer() {
     try {
         await initDatabase();
 
+        app.use(require('./routes/ecosystem'));
         app.use(require('./routes/flagship'));
 
         // Auth
@@ -197,8 +198,8 @@ async function startServer() {
         // Public Opportunities Board
         const pf = require('./routes/portalFeatures');
         app.get('/opportunities', (req, res) => {
-            const roleType = req.user?.type || 'worker';
-            const basePath = req.user?.type === 'business' ? '/business' : '/labor';
+            const roleType = req.user?.type || 'business';
+            const basePath = req.user?.type === 'worker' ? '/labor' : '/business';
             return pf.renderOpportunitiesSearch(req, res, roleType, basePath);
         });
 
