@@ -25,11 +25,11 @@ const fs      = require('fs');
 const multer  = require('multer');
 const jwt     = require('jsonwebtoken');
 const bcrypt  = require('bcryptjs');
-// Content is file-based; real administrator authentication uses the database.
 
 const router = express.Router();
 
 const { JWT_SECRET: CMS_JWT_SECRET, setAuthCookie, signToken } = require('../middleware/auth');
+const { resolveSlug } = require('../services/cms-content');
 
 // ─── Directory paths ────────────────────────────────────────────────────────
 const ROOT_DIR    = path.join(__dirname, '../../');
@@ -231,8 +231,8 @@ router.put('/global', requireAdmin, (req, res) => {
 
 // Nav order — pages appear in this sequence in the CMS page list
 const NAV_ORDER = [
-    'index', 'for-small-businesses', 'for-prime-contractors',
-    'opportunities', 'how-it-works', 'resources', 'faq', 'support-services', 'eligibility', 'contact'
+    'index', 'labor', 'for-small-businesses', 'for-prime-contractors',
+    'contact', 'resources', 'opportunities', 'how-it-works', 'faq', 'support-services', 'eligibility'
 ];
 
 /** GET /api/cms/pages — list all pages (public) */
@@ -267,11 +267,14 @@ router.get('/pages', (_req, res) => {
 
 /** GET /api/cms/pages/:slug — get a single page (public) */
 router.get('/pages/:slug', (req, res) => {
-    const { slug } = req.params;
+    const slug = resolveSlug(req.params.slug);
     if (!isValidSlug(slug)) {
         return res.status(400).json({ error: 'Invalid page slug' });
     }
-    const data = readJson(path.join(PAGES_DIR, `${slug}.json`));
+    let data = readJson(path.join(PAGES_DIR, `${slug}.json`));
+    if (!data && req.params.slug !== slug) {
+        data = readJson(path.join(PAGES_DIR, `${req.params.slug}.json`));
+    }
     if (!data) {
         return res.status(404).json({ error: `Page "${slug}" not found` });
     }
@@ -280,7 +283,7 @@ router.get('/pages/:slug', (req, res) => {
 
 /** PUT /api/cms/pages/:slug — update page content (admin only) */
 router.put('/pages/:slug', requireAdmin, (req, res) => {
-    const { slug } = req.params;
+    const slug = resolveSlug(req.params.slug);
     if (!isValidSlug(slug)) {
         return res.status(400).json({ error: 'Invalid page slug' });
     }
@@ -323,7 +326,7 @@ router.post('/pages', requireAdmin, (req, res) => {
         },
         header: {
             backgroundImage: '',
-            logoImage:       '/images/logo-light.png',
+            logoImage:       '/images/favicon.png',
             logoAlt:         'EVOConnect'
         },
         sections:  sections || [],
@@ -402,7 +405,7 @@ router.post('/media', requireAdmin, upload.single('image'), (req, res) => {
         // Delete the uploaded file — alt text is mandatory per style guide
         fs.unlinkSync(path.join(MEDIA_DIR, req.file.filename));
         return res.status(400).json({
-            error: 'Alt text is required for every uploaded image (Caltrans accessibility policy)'
+            error: 'Alt text is required for every uploaded image (accessibility policy)'
         });
     }
 
@@ -453,16 +456,18 @@ router.use(require('./cms-faqs')(requireAdmin));
 /** GET /api/cms/stats — dashboard stats (file-based) */
 router.get('/stats', requireAdmin, async (_req, res, next) => {
     try {
-    const pageFiles = fs.existsSync(PAGES_DIR)
-        ? fs.readdirSync(PAGES_DIR).filter(f => f.endsWith('.json')).length
-        : 0;
-    const mediaFiles = fs.existsSync(MEDIA_DIR)
-        ? fs.readdirSync(MEDIA_DIR).filter(f => /\.(jpg|jpeg|png|gif|webp|svg)$/i.test(f)).length
-        : 0;
-    const [[counts]]=await require('../database').getDb().execute('SELECT COUNT(*) AS faqs FROM cms_faqs');
-    const [[admins]]=await require('../database').getDb().execute('SELECT COUNT(*) AS users FROM admins');
-    res.json({ pages: pageFiles, faqs: counts.faqs, media: mediaFiles, users: admins.users });
-    }catch(err){next(err);}
+        const pageFiles = fs.existsSync(PAGES_DIR)
+            ? fs.readdirSync(PAGES_DIR).filter(f => f.endsWith('.json')).length
+            : 0;
+        const mediaFiles = fs.existsSync(MEDIA_DIR)
+            ? fs.readdirSync(MEDIA_DIR).filter(f => /\.(jpg|jpeg|png|gif|webp|svg)$/i.test(f)).length
+            : 0;
+        const [[counts]] = await require('../database').getDb().execute('SELECT COUNT(*) AS faqs FROM cms_faqs');
+        const [[admins]] = await require('../database').getDb().execute('SELECT COUNT(*) AS users FROM admins');
+        res.json({ pages: pageFiles, faqs: counts.faqs, media: mediaFiles, users: admins.users });
+    } catch (err) {
+        next(err);
+    }
 });
 
 // ─── Utility ──────────────────────────────────────────────────────────────────

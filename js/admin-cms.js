@@ -147,7 +147,7 @@ async function showShell() {
                   style="background:rgba(255,255,255,.15);color:#fff;border-color:transparent">
             Change Password
           </button>
-          <a href="/cms-tutorial.html" target="_blank" rel="noopener" class="cms-btn cms-btn-sm"
+          <a href="/cms-tutorial" target="_blank" rel="noopener" class="cms-btn cms-btn-sm"
                   style="background:rgba(255,255,255,.15);color:#fff;border-color:transparent;text-decoration:none;display:inline-flex;align-items:center;gap:4px">
             <span aria-hidden="true">❔</span> Help
           </a>
@@ -182,13 +182,13 @@ async function showShell() {
         <div class="cms-nav-section">
           <span class="cms-nav-label">Support</span>
           <ul class="cms-page-list">
-            <li><a href="cms-tutorial.html" target="_blank" rel="noopener">
+            <li><a href="/cms-tutorial" target="_blank" rel="noopener">
               <span aria-hidden="true">📘</span> CMS Admin Guide
             </a></li>
           </ul>
         </div>
         <div class="cms-nav-section" style="padding:0 1rem;margin-top:1rem">
-          <a href="index.html" target="_blank" rel="noopener"
+          <a href="/?public=1" target="_blank" rel="noopener"
              class="cms-btn cms-btn-secondary cms-btn-sm cms-w100"
              style="justify-content:center">
             ↗ View Live Site
@@ -506,11 +506,16 @@ async function renderPageEditor(container, slug) {
         document.getElementById('add-section-btn').addEventListener('click', () => navigateTab('builder', slug));
 
         document.getElementById('preview-page-btn').addEventListener('click', () => {
-            // Save current in-memory state to localStorage for preview
             localStorage.setItem('cms_preview_' + activeSlug, JSON.stringify(activePage));
-            // Open the page in a new tab with the preview query parameter
-            const url = `/${activeSlug === 'index' ? 'index' : activeSlug}.html?preview=true`;
-            window.open(url, '_blank');
+            let route = '/?public=1';
+            if (activeSlug === 'labor') route = '/labor';
+            else if (activeSlug === 'for-small-businesses' || activeSlug === 'business') route = '/business';
+            else if (activeSlug === 'for-prime-contractors' || activeSlug === 'prime') route = '/prime';
+            else if (activeSlug === 'contact') route = '/contact';
+            else if (activeSlug === 'resources') route = '/resources';
+            else if (activeSlug !== 'index') route = '/pages/' + activeSlug;
+            const sep = route.includes('?') ? '&' : '?';
+            window.open(route + sep + 'preview=true', '_blank');
         });
 
         container.querySelectorAll('[data-section-edit]').forEach(btn => {

@@ -679,4 +679,22 @@ router.post('/messages/send', requireType('prime'), (req, res) => pf.sendMessage
 router.get('/settings', requireType('prime'), (req, res) => pf.renderSettings(req, res, '/prime'));
 router.post('/settings/password', requireType('prime'), (req, res) => pf.updatePassword(req, res, 'primes', '/prime'));
 
+
+// Resources Library for Primes
+router.get('/resources', requireType('prime'), async (req, res) => {
+    try {
+        const db = getDb();
+        const [resources] = await db.execute(`
+            SELECT * FROM resources
+            WHERE audience IN ('all','business','prime') AND status = 'active'
+            ORDER BY sort_order ASC
+        `);
+        res.render('labor/resources', { title: 'Resources | EVOConnect Prime', flash: getFlash(req), resources });
+    } catch (err) {
+        console.error('EVOConnect [prime/resources]:', err);
+        flash(req, 'error', 'Failed to load resources.');
+        res.redirect('/prime/dashboard');
+    }
+});
+
 module.exports = router;

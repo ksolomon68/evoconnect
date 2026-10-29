@@ -79,6 +79,7 @@ app.use(cors({
 // ── Globals: attach user + flash to res.locals ────────────────────
 app.use(attachUser);
 app.use(require('./services/demo-sandbox').requestContext);
+app.use(require('./services/cms-content').cmsMiddleware);
 app.use((req, res, next) => {
     // Flash messages
     const sessionFlash = req.session.flash;
@@ -214,6 +215,17 @@ async function startServer() {
         });
         app.get(['/admin-tutorial', '/admin-tutorial.html'], (req, res) => {
             res.render('admin/tutorial', { title: 'Platform Admin Guide | EVOConnect', guideType: 'platform', layout: req.user ? 'layouts/dashboard' : 'layouts/default' });
+        });
+
+        // Custom CMS Pages created in Page Builder
+        app.get(['/pages/:slug', '/pages/:slug.html'], (req, res, next) => {
+            const pageData = require('./services/cms-content').getPage(req.params.slug);
+            if (!pageData) return next();
+            res.render('shared/cms-page', {
+                title: pageData.meta?.title || 'EVOConnect',
+                page: pageData,
+                layout: 'layouts/default'
+            });
         });
 
         // Public home

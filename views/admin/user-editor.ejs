@@ -1,4 +1,3 @@
-<% locals.layout='layouts/dashboard'; %>
 <section class="hero-section"><div class="hero-content"><h1><%= member.id ? 'Edit member' : 'Create member' %></h1></div></section>
 <section class="recommendations-list" style="padding:var(--space-xl)"><% if(error) { %><p role="alert"><%= error %></p><% } %>
 <form method="post" style="display:grid;gap:1rem" action="/admin/users/<%= member.id ? member.type+'/'+member.id+'/edit' : 'new' %>"><input type="hidden" name="_csrf" value="<%= csrfToken %>">

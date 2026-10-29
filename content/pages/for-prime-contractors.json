@@ -1,79 +1,105 @@
 {
   "slug": "for-prime-contractors",
   "isSystem": true,
-  "updatedAt": "2026-03-26T00:00:00.000Z",
+  "updatedAt": "2026-10-29T01:30:00.000Z",
   "meta": {
-    "title": "For Prime Contractors - PrimeReach",
-    "description": "Prime Contractors: Post opportunities, find qualified Small Businesses, and manage your contracting needs."
+    "title": "Prime Contractor & Enterprise Sourcing Console | EVOConnect",
+    "description": "EVOConnect gives prime contractors, estimators, and compliance executives instant access to a searchable directory of pre-profiled, SAM-aligned, and socioeconomic-certified subcontractors built for government contract execution."
   },
   "header": {
     "backgroundImage": "",
-    "logoImage": "images/logo.png",
-    "logoAlt": "Caltrans"
+    "logoImage": "/images/favicon.png",
+    "logoAlt": "EVOConnect Logo"
   },
   "sections": [
     {
       "id": "hero",
       "type": "hero-inner",
       "fields": {
-        "title": "For Prime Contractors",
-        "subtitle": "Find qualified Small Businesses, post structured opportunities, and streamline your contractor outreach with PrimeReach.",
+        "eyebrow": "DIVISION 03 // PRIME CONTRACTORS & GENERAL CONTRACTORS",
+        "title": "Audit-Ready Subcontractor & Diversity Compliance Pipeline.",
+        "subtitle": "EVOConnect gives prime contractors, estimators, and compliance executives instant access to a searchable directory of pre-profiled, SAM-aligned, and socioeconomic-certified subcontractors built for government contract execution.",
         "primaryButton": {
-          "label": "Create Prime Contractor Account",
-          "href": "register-prime-contractor.html"
+          "label": "Initialize Prime Console",
+          "href": "/prime/register"
         },
         "secondaryButton": {
-          "label": "Search Small Businesses",
-          "href": "search-small-businesses.html"
+          "label": "Executive Sign In",
+          "href": "/login"
         }
       }
     },
     {
-      "id": "how-we-help",
+      "id": "benefits",
       "type": "card-grid",
       "fields": {
-        "heading": "How PrimeReach Helps Prime Contractors",
+        "heading": "Engineered for Primes Operating on Compressed Bid Timelines",
+        "intro": "Federal and state solicitations mandate strict DBE/HUB/8(a) participation goals and verified trade capacity. EVOConnect delivers an actionable subcontractor pipeline searchable in seconds.",
         "cards": [
           {
-            "id": "post-opportunities",
-            "title": "Post Structured Opportunities",
-            "body": "Create detailed opportunity listings that attract the most qualified Small Businesses for your project requirements."
+            "id": "prime-search",
+            "title": "Multi-Parameter Vendor Search",
+            "body": "Filter small businesses by six-digit NAICS code, trade specialization, SAM.gov registration status, bonding capacity, and mobilization radius."
           },
           {
-            "id": "find-small-businesses",
-            "title": "Find Qualified Small Businesses",
-            "body": "Search our directory of pre-screened Small Businesses by district, certification, and work category to find the right partners."
+            "id": "prime-compliance",
+            "title": "Set-Aside & Good-Faith Tracking",
+            "body": "Isolate DBE, MBE, WBE, Texas HUB, SDVOSB, and SBA 8(a) subcontractors immediately to meet statutory participation goals and document outreach."
           },
           {
-            "id": "manage-contracts",
-            "title": "Manage Contracting",
-            "body": "Track applications, communicate with small businesses, and manage your contracting workflow all in one place."
+            "id": "prime-rfq",
+            "title": "Targeted RFQ Broadcasting",
+            "body": "Publish Request for Qualifications (RFQs) directly to NAICS-matched small-business subcontractors in your project corridor and review bids in one console."
+          },
+          {
+            "id": "prime-engagement",
+            "title": "Verified Capability & Contact Access",
+            "body": "Inspect standardized capability statements, initiate direct connection requests, and export vetted subcontractor rosters for bid packages."
           }
         ]
       }
     },
     {
-      "id": "posting-requirements",
-      "type": "text-block",
+      "id": "pricing",
+      "type": "card-grid",
       "fields": {
-        "heading": "Opportunity Posting Requirements",
-        "body": "All prime contractor opportunity postings must include a clear project description, required certifications, district location, estimated value, and submission deadline. This ensures small businesses can accurately assess fit and submit complete proposals."
+        "heading": "Transparent Prime Licensing",
+        "intro": "Flexible monthly access scaled to your estimating volume and compliance requirements.",
+        "cards": [
+          {
+            "id": "tier-basic",
+            "title": "Basic — $49/month",
+            "body": "For regional primes initiating structured subcontractor outreach. Includes Business & Labor Directory access, up to 10 connection requests/month, and SAM.gov UEI filtering.",
+            "buttonLabel": "Select Basic Plan",
+            "buttonHref": "/prime/register?tier=basic"
+          },
+          {
+            "id": "tier-pro",
+            "title": "Pro — $149/month (Most Popular)",
+            "body": "For active primes assembling certified sub pipelines across multiple bids. Includes unlimited vendor connections, full DBE/MBE/HUB/8(a)/SDVOSB filtering, 6-digit NAICS search, and CSV export.",
+            "buttonLabel": "Select Pro Plan",
+            "buttonHref": "/prime/register?tier=pro"
+          },
+          {
+            "id": "tier-enterprise",
+            "title": "Enterprise — $399/month",
+            "body": "For national primes and GCs managing major government infrastructure portfolios. Includes unlimited RFQ broadcasting, multi-seat team access, dedicated account executive, and good-faith reporting.",
+            "buttonLabel": "Select Enterprise Plan",
+            "buttonHref": "/prime/register?tier=enterprise"
+          }
+        ]
       }
     },
     {
       "id": "cta",
       "type": "cta-banner",
       "fields": {
-        "heading": "Start Finding Qualified Small Businesses",
-        "text": "Register your prime contractor account today to post opportunities and connect with our Small Business network.",
+        "heading": "Ready to Mobilize Your Certified Subcontractor Pipeline?",
+        "text": "Join EVOConnect and start sourcing qualified, SAM-aligned, and diversity-certified subcontractors today.",
         "columns": [
           {
-            "buttonLabel": "Create Prime Contractor Account",
-            "buttonHref": "register-prime-contractor.html"
-          },
-          {
-            "buttonLabel": "Search Small Businesses",
-            "buttonHref": "search-small-businesses.html"
+            "buttonLabel": "Register as Prime Contractor",
+            "buttonHref": "/prime/register"
           }
         ]
       }

@@ -106,7 +106,6 @@ textarea {
 
 /* Touch Targets for Mobile */
 .nav-item,
-.action-card,
 .header-actions button {
     min-height: 44px;
     min-width: 44px;
@@ -919,4 +918,152 @@ textarea {
 .dashboard-v2 select option {
     background-color: #ffffff;
     color: #0f172a;
+}
+
+/* ==========================================================================
+   Refined Dashboard UI: Clean Scrollbars & Executive Action Cards
+   ========================================================================== */
+
+/* 1. Global & Sidebar Scrollbar Polish */
+html, body, .dashboard-container {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(148, 163, 184, 0.35) transparent;
+}
+
+.sidebar,
+.sidebar-nav {
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+    scrollbar-width: none !important;
+    -ms-overflow-style: none !important;
+}
+
+.sidebar::-webkit-scrollbar,
+.sidebar-nav::-webkit-scrollbar {
+    display: none !important;
+    width: 0 !important;
+    height: 0 !important;
+}
+
+/* 2. Neater, Executive Action Cards (Global Admin & Quick Actions) */
+.action-grid {
+    display: grid !important;
+    grid-template-columns: repeat(4, 1fr) !important;
+    gap: 1.25rem !important;
+    margin-bottom: 2.5rem !important;
+    align-items: stretch !important;
+}
+
+@media (max-width: 1200px) {
+    .action-grid {
+        grid-template-columns: repeat(3, 1fr) !important;
+    }
+}
+
+@media (max-width: 900px) {
+    .action-grid {
+        grid-template-columns: repeat(2, 1fr) !important;
+    }
+}
+
+@media (max-width: 580px) {
+    .action-grid {
+        grid-template-columns: 1fr !important;
+    }
+}
+
+.action-card {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    justify-content: flex-start !important;
+    padding: 1.5rem 1.4rem !important;
+    background: #ffffff !important;
+    border: 1px solid #e2e8f0 !important;
+    border-radius: 14px !important;
+    box-shadow: 0 1px 3px rgba(15, 23, 42, 0.05), 0 2px 6px -1px rgba(15, 23, 42, 0.03) !important;
+    text-decoration: none !important;
+    color: #0f172a !important;
+    position: relative !important;
+    overflow: hidden !important;
+    transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.2s ease !important;
+    margin: 0 !important;
+    min-height: 175px !important;
+    height: 100% !important;
+}
+
+.action-card::before {
+    content: '' !important;
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    height: 3px !important;
+    background: linear-gradient(90deg, #0284c7, #06b6d4) !important;
+    transform: scaleX(0) !important;
+    transform-origin: left !important;
+    transition: transform 0.25s ease !important;
+}
+
+.action-card:hover::before {
+    transform: scaleX(1) !important;
+}
+
+.action-card:hover {
+    transform: translateY(-3px) !important;
+    box-shadow: 0 12px 24px -4px rgba(15, 23, 42, 0.08), 0 4px 8px -2px rgba(15, 23, 42, 0.04) !important;
+    border-color: #38bdf8 !important;
+}
+
+.action-card .icon-box {
+    width: 44px !important;
+    height: 44px !important;
+    border-radius: 12px !important;
+    background: #f1f5f9 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    font-size: 1.35rem !important;
+    margin-bottom: 1rem !important;
+    flex-shrink: 0 !important;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.7) !important;
+    transition: transform 0.2s ease !important;
+}
+
+.action-card:hover .icon-box {
+    transform: scale(1.08) !important;
+    background: #e0f2fe !important;
+}
+
+.action-card h3 {
+    font-size: 1.02rem !important;
+    font-weight: 700 !important;
+    color: #0f172a !important;
+    margin: 0 0 0.45rem 0 !important;
+    line-height: 1.35 !important;
+    letter-spacing: -0.01em !important;
+    width: 100% !important;
+    text-align: left !important;
+}
+
+.action-card p {
+    font-size: 0.85rem !important;
+    color: #64748b !important;
+    line-height: 1.5 !important;
+    margin: 0 !important;
+    flex: 1 !important;
+    width: 100% !important;
+    text-align: left !important;
+}
+
+/* 3. Equal Height & Uniform Alignment Across Grids */
+.summary-grid,
+.resource-grid {
+    align-items: stretch !important;
+}
+
+.summary-card,
+.resource-card {
+    margin-top: 0 !important;
+    margin-bottom: 0 !important;
 }

@@ -1,4 +1,3 @@
-<% locals.layout='layouts/dashboard'; %>
 <%- include('../partials/flash') %>
 <section class="hero-section"><div class="hero-content"><h1>Connections</h1><p><%= user.type==='worker'?'Connect with small businesses that hire labor.':user.type==='prime'?'Connect with small businesses and subcontractors.':'Connect with labor workers and prime contractors.' %></p></div></section>
 <section class="recommendations-list" style="padding:var(--space-xl)">

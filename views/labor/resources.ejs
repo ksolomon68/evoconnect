@@ -1,4 +1,3 @@
-<% if (locals.user) { locals.layout = 'layouts/dashboard'; } %>
 <% const title = locals.title || 'Resources | EVOConnect' %>
 <% const role = locals.user?.type || 'worker' %>
 <% const basePath = role === 'business' ? '/business' : (role === 'prime' ? '/prime' : (role === 'admin' ? '/admin' : '/labor')) %>

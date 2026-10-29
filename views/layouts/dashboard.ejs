@@ -102,7 +102,7 @@ const navCfg = NAV_CONFIG[currentRole] || NAV_CONFIG.worker;
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="robots" content="noindex, nofollow">
-    <title><%= locals.title ? locals.title : 'Dashboard — EVOConnect' %></title>
+    <title><%= (locals.title && locals.title !== 'layouts/dashboard') ? locals.title : 'Dashboard | EVOConnect' %></title>
     
     <link rel="icon" href="/images/favicon.png" type="image/png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -180,7 +180,7 @@ const navCfg = NAV_CONFIG[currentRole] || NAV_CONFIG.worker;
                         <line x1="4" y1="18" x2="20" y2="18"></line>
                     </svg>
                 </button>
-                <span class="header-portal-title"><%= navCfg.title %></span>
+                <span class="header-portal-title"><%= (navCfg.title && navCfg.title !== 'layouts/dashboard') ? navCfg.title : 'Portal Dashboard' %></span>
             </div>
 
             <div class="header-top-right">

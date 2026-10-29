@@ -1,4 +1,3 @@
-<% if (locals.user) { locals.layout = 'layouts/dashboard'; } %>
 <% const title = locals.title || 'Prime Contractor Dashboard' %>
 
 <%
@@ -103,7 +102,12 @@ const acceptedConns = connList.filter(c => c.status === 'accepted').length;
             <h3>View Analytics</h3>
             <p>Monitor engagement metrics, outreach compliance, and performance analytics.</p>
         </a>
-        <a href="/prime/settings" class="action-card">
+                <a href="/prime/resources" class="action-card">
+            <div class="icon-box" style="background:var(--color-bg-secondary);">📚</div>
+            <h3>Resource Library</h3>
+            <p>Access federal set-aside regulations, compliance guides, and prompt pay standards.</p>
+        </a>
+<a href="/prime/settings" class="action-card">
             <div class="icon-box" style="background:var(--color-bg-secondary);">⚙️</div>
             <h3>Prime Settings</h3>
             <p>Update organization profile, subscription tier, and account settings.</p>

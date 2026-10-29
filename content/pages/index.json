@@ -1,120 +1,202 @@
 {
   "slug": "index",
   "isSystem": true,
-  "updatedAt": "2026-03-17T00:00:00.000Z",
+  "updatedAt": "2026-10-29T01:30:00.000Z",
   "meta": {
-    "title": "PrimeReach - Connecting Businesses with Opportunities",
-    "description": "PrimeReach connects Small Businesses with contracting opportunities and Prime Contractors with qualified partners. Your central hub for Caltrans business development."
+    "title": "Government Contract Workforce Ecosystem | EVOConnect",
+    "description": "EVOConnect bridges the gap between federal appropriations and field execution—algorithmically mapping skilled trade labor to six-digit NAICS codes, certifying small business readiness, and delivering audit-ready diversity pipelines for prime contractors."
   },
   "header": {
     "backgroundImage": "",
-    "logoImage": "images/logo.png",
-    "logoAlt": "PrimeReach Logo"
+    "logoImage": "/images/favicon.png",
+    "logoAlt": "EVOConnect Logo"
   },
   "sections": [
     {
       "id": "hero",
       "type": "hero",
       "fields": {
-        "title": "Build. Compete. Win.",
-        "subtitle": "Caltrans delivers statewide supportive services to help Small Businesses strengthen readiness for transportation contracting opportunities through structured training, technical assistance, and resource navigation.",
+        "eyebrow": "FEDERAL & STATE CONTRACTING INFRASTRUCTURE • ZERO COST",
+        "title": "Institutional Workforce & Subcontractor Intelligence.",
+        "subtitle": "EVOConnect bridges the gap between federal appropriations and field execution—algorithmically mapping skilled trade labor to six-digit NAICS codes, certifying small business readiness, and delivering audit-ready diversity pipelines for prime contractors.",
+        "primaryButton": {
+          "label": "Initialize Free Profile",
+          "href": "/register"
+        },
+        "secondaryButton": {
+          "label": "Explore Ecosystem Architecture",
+          "href": "#pathways"
+        },
         "backgroundImage": "",
         "backgroundImageAlt": ""
       }
     },
     {
-      "id": "pathway-cards",
-      "type": "pathway-cards",
+      "id": "pathways",
+      "type": "card-grid",
       "fields": {
-        "smallBusinessCard": {
-          "href": "for-small-businesses.html",
-          "image": "images/small-business-pathway.jpg",
-          "imageAlt": "Construction professionals reviewing plans on site",
-          "title": "For Small Businesses",
-          "description": "Find contracting opportunities, upload your capability statement, and connect with Prime Contractors seeking your expertise.",
-          "srText": "Learn more about small business services"
-        },
-        "primeContractorCard": {
-          "href": "for-prime-contractors.html",
-          "image": "images/prime-contractor-pathway.jpg",
-          "imageAlt": "Construction professional reviewing blueprints",
-          "title": "For Prime Contractors",
-          "description": "Post structured opportunities, find qualified Small Businesses, and manage your contracting needs efficiently.",
-          "srText": "Learn more about agency services"
-        }
-      }
-    },
-    {
-      "id": "value-tiles",
-      "type": "tiles",
-      "fields": {
-        "heading": "Why Choose PrimeReach?",
-        "tiles": [
+        "heading": "Three Portals. One Unified Supply Chain.",
+        "intro": "Purpose-built workflows for skilled trade operators, certified small businesses, and prime contracting executives.",
+        "cards": [
           {
-            "id": "bid-readiness",
-            "href": "support-services.html",
-            "title": "Bid Readiness",
-            "description": "Expert guidance through bid packages, requirement identification, and submission timeline planning to strengthen your competitive position.",
-            "linkText": "Get Support"
+            "id": "pathway-labor",
+            "title": "Skilled Trade Workforce",
+            "body": "Map your trade credentials to federal NAICS codes automatically, complete your vendor readiness track, and get recruited directly for prevailing-wage government contracts.",
+            "image": "https://images.unsplash.com/photo-1748442001865-5583ec02ae22?w=640&q=80&fm=jpg&fit=crop&crop=faces",
+            "imageAlt": "Skilled trade professional",
+            "buttonLabel": "Enter Labor Portal →",
+            "buttonHref": "/labor",
+            "external": false
           },
           {
-            "id": "capacity-building",
-            "href": "#events",
-            "title": "Capacity Building",
-            "description": "Strengthen your estimating, compliance, and project readiness capabilities through structured training and one-on-one technical assistance.",
-            "linkText": "View Training"
+            "id": "pathway-business",
+            "title": "Certified Subcontractors",
+            "body": "Position your firm in front of prime contractors searching by socioeconomic set-aside and NAICS code, generate capability statements, and post jobs to hire verified field labor.",
+            "image": "https://images.unsplash.com/photo-1742119803195-aaf41d6b2e61?w=640&q=80&fm=jpg&fit=crop&crop=faces",
+            "imageAlt": "Small business owner",
+            "buttonLabel": "Enter Business Portal →",
+            "buttonHref": "/business",
+            "external": false
           },
           {
-            "id": "partnership-connections",
-            "href": "opportunities.html",
-            "title": "Partnership Connections",
-            "description": "Connect with prime contractors and explore upcoming subcontracting opportunities across all Caltrans districts.",
-            "linkText": "Explore Roles"
-          },
-          {
-            "id": "resource-navigation",
-            "href": "resources.html",
-            "title": "Resource Navigation",
-            "description": "Access templates, checklists, and guidance materials designed to streamline your business operations and contracting processes.",
-            "linkText": "Access Tools"
+            "id": "pathway-prime",
+            "title": "Prime Contractors & GCs",
+            "body": "Filter pre-vetted subcontractors by certification (DBE, MBE, WBE, HUB, SDVOSB), dispatch targeted RFQs, and document good-faith diversity compliance in seconds.",
+            "image": "https://images.unsplash.com/photo-1643308012242-704341800ef3?w=640&q=80&fm=jpg&fit=crop&crop=entropy",
+            "imageAlt": "Prime contractor executive team",
+            "buttonLabel": "Enter Prime Console →",
+            "buttonHref": "/prime",
+            "external": false
           }
         ]
       }
     },
     {
-      "id": "events",
-      "type": "iframe-embed",
+      "id": "how-it-works",
+      "type": "steps",
       "fields": {
-        "heading": "Upcoming Events",
-        "iframeSrc": "https://dot.ca.gov/programs/civil-rights/caltrans-events-calendar",
-        "iframeTitle": "Caltrans Events Calendar",
-        "externalLinkText": "View Full Calendar",
-        "externalLinkHref": "https://dot.ca.gov/programs/civil-rights/caltrans-events-calendar"
+        "heading": "Four Stages from Registration to Contract Award",
+        "intro": "A structured, compliance-first onboarding pipeline engineered to eliminate federal procurement friction.",
+        "steps": [
+          {
+            "label": "Establish Verified Credentials",
+            "detail": "Register your primary trade, equipment capabilities, service radius, and active licenses in under five minutes—at zero cost."
+          },
+          {
+            "label": "Automated NAICS Classification",
+            "detail": "Our engine translates your field capabilities into exact 6-digit federal NAICS codes used by contracting officers and prime estimators."
+          },
+          {
+            "label": "Execute Readiness Protocol",
+            "detail": "Follow guided tracks for SAM.gov UEI issuance, capability statement generation, and HUB / DBE / 8(a) / SDVOSB certification."
+          },
+          {
+            "label": "Receive Direct Solicitations",
+            "detail": "Respond to targeted RFQs from prime contractors and apply directly to subcontracting and labor opportunities in your corridor."
+          }
+        ]
+      }
+    },
+    {
+      "id": "mandate-banner",
+      "type": "cta-banner",
+      "fields": {
+        "heading": "$65 Billion Broadband & Civil Infrastructure Deployment",
+        "text": "Federal appropriations require immediate mobilization of fiber optic technicians, cell tower crews, civil earthwork operators, and CDL logistics fleets. Position your profile in the active procurement directory today.",
+        "columns": [
+          {
+            "heading": "237130 / 517111",
+            "text": "Primary Priority NAICS",
+            "buttonLabel": "Register Priority Trade Profile",
+            "buttonHref": "/labor/register"
+          }
+        ]
+      }
+    },
+    {
+      "id": "trades",
+      "type": "text-block",
+      "fields": {
+        "heading": "13 Core Infrastructure Classifications",
+        "body": "Every trade maps directly to active federal and state NAICS procurement codes. Select your discipline to initialize registration or explore all 22 infrastructure trade categories and 58 federal NAICS codes on the Labor Portal."
+      }
+    },
+    {
+      "id": "benefits",
+      "type": "card-grid",
+      "fields": {
+        "heading": "Engineered for Public Sector Compliance.",
+        "intro": "Every tool required to transition from independent contractor to verified government vendor—consolidated into a single architecture.",
+        "cards": [
+          {
+            "id": "benefit-naics",
+            "title": "Algorithmic NAICS Code Matching",
+            "body": "Select your trade specialization and equipment inventory—EVOConnect automatically maps your profile to the exact 6-digit North American Industry Classification System (NAICS) codes used by federal and state procurement officers."
+          },
+          {
+            "id": "benefit-dispatch",
+            "title": "Prime-to-Sub Dispatch",
+            "body": "Verified prime contractors filter our directory by NAICS and certification to issue direct connection requests and RFQs without middlemen."
+          },
+          {
+            "id": "benefit-readiness",
+            "title": "Vendor Readiness Tracks",
+            "body": "Interactive checklists guide you through SAM.gov UEI registration, business banking, insurance compliance, and capability statements."
+          },
+          {
+            "id": "benefit-certifications",
+            "title": "Socioeconomic & Diversity Certification Matrix",
+            "body": "Full support and tracking for DBE, MBE, WBE, Texas HUB, SDVOSB, WOSB, HUBZone, and SBA 8(a) designations—enabling prime contractors to fulfill mandated federal participation goals with verified documentation."
+          },
+          {
+            "id": "benefit-geospatial",
+            "title": "Corridor & Radius Matching",
+            "body": "Opportunities are filtered by your home ZIP code and mobilization range—whether local municipal work, statewide DOT corridors, or national deployment."
+          },
+          {
+            "id": "benefit-security",
+            "title": "Permissioned Directory & Role Governance",
+            "body": "Your credentials and capability documentation remain protected behind role-based access controls. Contact details are only exchanged when you approve a prime or business connection."
+          }
+        ]
+      }
+    },
+    {
+      "id": "checklist-preview",
+      "type": "alert",
+      "fields": {
+        "heading": "Audit-Ready Compliance in 7 Milestones",
+        "alertType": "info",
+        "alertLabel": "Our interactive readiness engine structures federal and state onboarding into verifiable milestones so you never miss a mandatory filing:",
+        "items": [
+          "Obtain your free SAM.gov Unique Entity ID (UEI)",
+          "Activate federal vendor registration on SAM.gov",
+          "Map primary & secondary 6-digit NAICS codes",
+          "Establish a dedicated commercial banking & EIN structure",
+          "Generate a print-ready One-Page Capability Statement",
+          "File qualifying set-asides (HUB, DBE, WOSB, SDVOSB, 8(a))",
+          "Respond to matched prime contractor RFQs & Job Solicitations"
+        ]
       }
     },
     {
       "id": "get-started",
       "type": "cta-banner",
       "fields": {
-        "heading": "Get Started Today",
+        "heading": "Position Your Trade or Firm for Government Contracts.",
+        "text": "Join skilled trade operators, certified small businesses, and prime contractors building the next generation of public infrastructure.",
         "columns": [
           {
-            "heading": "New to the Platform?",
-            "text": "Learn how PrimeReach works and what you need to get started.",
-            "buttonLabel": "How It Works",
-            "buttonHref": "how-it-works.html"
+            "heading": "New to EVOConnect?",
+            "text": "Create your free Worker, Business, or Prime profile in minutes.",
+            "buttonLabel": "Initialize Free Account",
+            "buttonHref": "/register"
           },
           {
-            "heading": "Check Eligibility",
-            "text": "Review the eligibility criteria for Small Business certification.",
-            "buttonLabel": "View Requirements",
-            "buttonHref": "eligibility.html"
-          },
-          {
-            "heading": "Browse Opportunities",
-            "text": "Explore current contracting opportunities across all Caltrans districts.",
-            "buttonLabel": "View Opportunities",
-            "buttonHref": "opportunities.html"
+            "heading": "Active Solicitations",
+            "text": "Explore open RFQs and field labor jobs across all corridors.",
+            "buttonLabel": "Browse Active Solicitations",
+            "buttonHref": "/opportunities"
           }
         ]
       }

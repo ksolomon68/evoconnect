@@ -1,42 +1,40 @@
 {
   "slug": "contact",
   "isSystem": true,
-  "updatedAt": "2026-03-21T00:00:00.000Z",
+  "updatedAt": "2026-10-29T01:30:00.000Z",
   "meta": {
-    "title": "Contact Us - WorkForce Connect",
-    "description": "Contact WorkForce Connect for support, questions, or assistance with the platform."
+    "title": "Contact Executive Support & Compliance Desk | EVOConnect",
+    "description": "Questions regarding vendor onboarding, NAICS classification, or prime contractor licensing? Contact the EVOConnect Executive Support & Compliance Desk."
+  },
+  "header": {
+    "backgroundImage": "",
+    "logoImage": "/images/favicon.png",
+    "logoAlt": "EVOConnect Logo"
   },
   "sections": [
     {
       "id": "page-header",
       "type": "text-block",
       "fields": {
-        "heading": "Contact Us",
-        "body": "Have questions or need assistance? We are here to help. Choose the best way to reach us below."
+        "eyebrow": "EXECUTIVE SUPPORT & COMPLIANCE DESK",
+        "heading": "Contact EVOConnect",
+        "body": "Questions regarding vendor onboarding, NAICS classification, or prime contractor licensing? Our support desk is ready to assist."
       }
     },
     {
       "id": "program-contact",
       "type": "text-block",
       "fields": {
-        "heading": "Program Contact",
-        "body": "Small Business Supportive Services\n\nPhone: +1 (214) 531-4427\nEmail: info@workforceconnect.io\nHours: Monday - Friday, 9:00 AM - 5:00 PM CST\n\nFor general inquiries about the program, certification, or technical assistance."
+        "heading": "Direct Support Dispatch",
+        "body": "Email: info@evoconnect.evobrand.net\nOperations Line: 214-531-4427\nHours: Monday - Friday, 8:00 AM - 6:00 PM CST\n\nFor inquiries regarding skilled worker onboarding, small business certification, capability statements, or prime contractor RFQ licensing."
       }
     },
     {
       "id": "technical-support",
       "type": "text-block",
       "fields": {
-        "heading": "Technical Support",
-        "body": "Platform Technical Support\n\nEmail: info@workforceconnect.io\nResponse Time: Within 1 business day\n\nFor issues with logging in, uploading documents, or other technical problems."
-      }
-    },
-    {
-      "id": "mailing-address",
-      "type": "text-block",
-      "fields": {
-        "heading": "Mailing Address",
-        "body": "California Department of Transportation\nOffice of Business and Economic Opportunity\n1120 N Street, MS-79\nSacramento, CA 95814\n\nFor physical mail and document submissions."
+        "heading": "Technical & Compliance Support",
+        "body": "Platform Technical Support\n\nEmail: support@evoconnect.evobrand.net\nResponse Time: Within 1 business day\n\nFor assistance with account verification, SAM.gov UEI alignment, NAICS code mapping, or document uploads."
       }
     }
   ]

@@ -21,8 +21,16 @@
   <meta name="csrf-token" content="<%= locals.csrfToken || '' %>">
   <link rel="stylesheet" href="/css/role-workflows.css?v=1">
 </head>
-<body>
+<body data-cms-page="<%= locals.cmsPageSlug || '' %>">
   <a href="#main" class="skip-link">Skip to main content</a>
+  <% if (locals.cmsGlobal?.announcement?.enabled) { %>
+  <div id="site-announcement" class="site-announcement" style="background:linear-gradient(90deg, #06B6D4, #0D9488);color:#0F172A;padding:0.65rem 1.25rem;font-weight:600;font-size:0.88rem;text-align:center;position:relative;z-index:999;box-shadow:0 2px 8px rgba(0,0,0,0.2);">
+    <span><%- locals.cmsGlobal.announcement.message %></span>
+    <% if (locals.cmsGlobal.announcement.linkText && locals.cmsGlobal.announcement.linkUrl) { %>
+      <a href="<%= locals.cmsGlobal.announcement.linkUrl %>" style="color:#0F172A;text-decoration:underline;margin-left:0.5rem;font-weight:800;"><%= locals.cmsGlobal.announcement.linkText %> &rarr;</a>
+    <% } %>
+  </div>
+  <% } %>
   <%- include('../partials/nav') %>
   <main id="main"><%- body %></main>
   <%- include('../partials/footer') %>
@@ -34,5 +42,6 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js" defer></script>
   <script src="/js/evo.js?v=3.8.0" defer></script>
   <script src="/js/directory-cards.js?v=2" defer></script>
+  <script src="/js/cms-renderer.js?v=3.8.0" defer></script>
 </body>
 </html>
