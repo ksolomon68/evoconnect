@@ -90,6 +90,11 @@
   --color-border-light: #1E3A4A;
   --color-border-dark: #1E3A4A;
 
+  /* Text color to use on a badge/button whose background is light
+     (secondary slate, warning amber) regardless of theme. */
+  --color-text-on-secondary: #000000;
+  --color-text-on-warning: #000000;
+
   /* Aliases for shorter usage and backward compatibility */
   --text-primary: var(--color-text-primary);
   --text-secondary: var(--color-text-secondary);
@@ -767,7 +772,7 @@ button.yellow,
 
 .badge-secondary {
   background-color: var(--color-secondary);
-  color: #000000;
+  color: var(--color-text-on-secondary);
 }
 
 .badge-success {
@@ -777,7 +782,7 @@ button.yellow,
 
 .badge-warning {
   background-color: var(--color-warning);
-  color: #000000;
+  color: var(--color-text-on-warning);
 }
 
 /* ============================================
