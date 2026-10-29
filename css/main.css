@@ -54,7 +54,7 @@
    ============================================ */
 
 .site-header {
-    background: #0F172A;
+    background: var(--color-bg-primary);
     backdrop-filter: blur(10px);
     color: var(--color-text-inverse);
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
@@ -62,7 +62,7 @@
     top: 0;
     z-index: 1060;
     /* Higher than accordion indices */
-    border-bottom: 1px solid #1E3A4A;
+    border-bottom: 1px solid var(--color-border);
 }
 
 /* Clip horizontal overflow without creating nested vertical scroll containers. */
@@ -123,7 +123,7 @@ body {
 }
 
 .main-nav a {
-    color: #F8FAFC;
+    color: var(--color-text-primary);
     text-decoration: none;
     font-weight: var(--font-weight-medium);
     padding: var(--space-sm) 0.5rem;
@@ -150,7 +150,7 @@ body {
 .main-nav a:hover,
 .main-nav a:focus {
     background-color: rgba(255, 255, 255, 0.15);
-    color: #F8FAFC;
+    color: var(--color-text-primary);
     transform: translateY(-2px);
 }
 
@@ -179,7 +179,7 @@ body {
     left: 0;
     min-width: 210px;
     background: #1E293B;
-    border: 1px solid #1E3A4A;
+    border: 1px solid var(--color-border);
     border-radius: var(--border-radius-md);
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
     flex-direction: column;
@@ -297,8 +297,8 @@ body {
         right: -100%;
         width: 280px;
         height: 100vh;
-        background: #0F172A;
-        border-left: 1px solid #1E3A4A;
+        background: var(--color-bg-primary);
+        border-left: 1px solid var(--color-border);
         backdrop-filter: blur(20px);
         padding: 80px var(--space-lg) var(--space-lg);
         transition: right 0.4s cubic-bezier(0.4, 0, 0.2, 1);
@@ -1193,7 +1193,7 @@ body {
     left: 0;
     right: 0;
     bottom: 0;
-    background: #0F172A;
+    background: var(--color-bg-primary);
     z-index: 1;
 }
 
@@ -1349,28 +1349,24 @@ body {
   --shadow-glow: 0 1px 3px rgba(0,0,0,0.4);
   --shadow-card: 0 1px 3px rgba(0,0,0,0.4);
   --shadow-card-hover: 0 1px 3px rgba(0,0,0,0.4);
-  --gradient-brand: #06B6D4;
-  --gradient-amber: #F59E0B;
   --gradient-dark: #0F172A;
   --gradient-page: #0F172A;
-  
-  /* Fallback aliases if main.css lacks them */
-  --slate: #0F172A;
+
+  /* --slate-700/800/200/100 intentionally keep their own values here —
+     they drive the form/pricing-tier look below and differ from
+     design-system.css's tokens of the same name. That name collision
+     is a separate, pre-existing issue (flagged, not resolved here)
+     since picking either value would visibly change rendered forms. */
   --slate-800: #1E293B;
   --slate-700: #263348;
-  --slate-500: #94A3B8;
   --slate-200: #1E3A4A;
   --slate-100: #1E3A4A;
   --slate-df: #0F172A;
-  --cyan: #06B6D4;
   --cyan-dark: #0891B2;
   --cyan-light: rgba(6, 182, 212, 0.15);
   --amber: #F59E0B;
-  --amber-dark: #D97706;
   --amber-light: rgba(245, 158, 11, 0.15);
-  --green: #10B981;
   --red: #EF4444;
-  --white: #F8FAFC;
 }
 
 /* -- FORMS: glowing premium inputs -- */
@@ -1516,18 +1512,18 @@ body {
   box-shadow: 0 0 0 4px rgba(6,182,212,.25);
   border-color: var(--cyan);
 }
-.step-item.complete .step-dot { 
-  background: var(--green, #10b981); 
-  color: #fff; 
+.step-item.complete .step-dot {
+  background: var(--color-success);
+  color: #fff;
 }
-.step-item span { 
-  font-size: .9rem; 
-  color: rgba(255, 255, 255, 0.5) !important; 
-  font-weight: 500; 
+.step-item span {
+  font-size: .9rem;
+  color: rgba(255, 255, 255, 0.5) !important;
+  font-weight: 500;
 }
-.step-item.active span { 
-  color: var(--white) !important; 
-  font-weight: 700; 
+.step-item.active span {
+  color: var(--white) !important;
+  font-weight: 700;
 }
 .step-item.complete span {
   color: rgba(255, 255, 255, 0.8) !important;
@@ -1538,8 +1534,8 @@ body {
   background: rgba(255, 255, 255, 0.1);
   margin: 0 1rem;
 }
-.step-item.complete + .step-divider { 
-  background: var(--cyan); 
+.step-item.complete + .step-divider {
+  background: var(--cyan);
 }
 
 /* Tier cards (prime register) */
@@ -1583,8 +1579,8 @@ body {
 
 /* -- FOOTER: premium dark gradient -- */
 .site-footer {
-  background: #0F172A !important;
-  border-top: 1px solid #1E3A4A !important;
+  background: var(--color-bg-primary) !important;
+  border-top: 1px solid var(--color-border) !important;
   box-shadow: none !important;
   color: var(--slate-500) !important;
   padding: 4rem 0 2rem !important;
@@ -1639,7 +1635,7 @@ body {
 }
 .footer-links ul li { margin-bottom: .6rem; }
 .footer-links ul li a {
-  color: #94A3B8 !important;
+  color: var(--color-text-muted) !important;
   font-size: .875rem;
   transition: color .2s, padding-left .2s;
   text-decoration: none !important;
@@ -1878,12 +1874,12 @@ body {
 /* Secondary Button styling */
 .btn-secondary {
   background: transparent;
-  color: #F8FAFC !important;
+  color: var(--color-text-primary) !important;
   border: 2px solid rgba(255, 255, 255, 0.35);
 }
 .btn-secondary:hover {
   background: rgba(255, 255, 255, 0.08);
-  color: #F8FAFC !important;
+  color: var(--color-text-primary) !important;
   border-color: rgba(255, 255, 255, 0.7);
   transform: translateY(-2px);
 }
@@ -2115,7 +2111,7 @@ body {
    ============================================ */
 .faq-section {
   padding: 5rem 0;
-  background: #0F172A;
+  background: var(--color-bg-primary);
   position: relative;
 }
 .faq-list {
@@ -2167,13 +2163,13 @@ body {
   content: '＋';
   font-size: 1.35rem;
   font-weight: 300;
-  color: #00d2ff;
+  color: var(--color-primary);
   transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1), color 0.3s ease;
   display: inline-block;
   flex-shrink: 0;
 }
 .faq-item:hover .faq-question {
-  color: #00d2ff;
+  color: var(--color-primary);
 }
 .faq-item[open] .faq-question {
   color: #ffffff;
@@ -2181,7 +2177,7 @@ body {
 }
 .faq-item[open] .faq-question::after {
   transform: rotate(45deg);
-  color: #f5a623;
+  color: var(--color-warning);
 }
 .faq-answer {
   padding: 1.75rem 2rem;
@@ -2202,14 +2198,14 @@ body {
   font-weight: 600;
 }
 .faq-answer a {
-  color: #00d2ff;
+  color: var(--color-primary);
   text-decoration: none;
   border-bottom: 1px solid transparent;
   transition: all 0.2s ease;
 }
 .faq-answer a:hover {
-  color: #00e5ff;
-  border-color: #00e5ff;
+  color: var(--color-primary-dark);
+  border-color: var(--color-primary-dark);
 }
 @keyframes faqSlideDown {
   from {
@@ -2327,7 +2323,7 @@ body {
 .reg-card-desc {
   font-size: 0.95rem;
   line-height: 1.6;
-  color: #94a3b8;
+  color: var(--color-text-muted);
   margin-bottom: 2.5rem;
   flex-grow: 1;
 }
@@ -2367,10 +2363,10 @@ body {
 .profile-ring-fill { fill: none; stroke-width: 8; stroke-linecap: round; transition: stroke-dashoffset 0.6s ease; }
 .ring-amber .profile-ring-fill  { stroke: #0D9488; }
 .ring-cyan  .profile-ring-fill  { stroke: #00D2FF; }
-.ring-green .profile-ring-fill  { stroke: #10B981; }
+.ring-green .profile-ring-fill  { stroke: var(--color-success); }
 .ring-amber .profile-ring-label { color: #0D9488; }
 .ring-cyan  .profile-ring-label { color: #00D2FF; }
-.ring-green .profile-ring-label { color: #10B981; }
+.ring-green .profile-ring-label { color: var(--color-success); }
 .profile-ring-label {
   position: absolute;
   font-size: 1.25rem;
@@ -2435,11 +2431,11 @@ body {
 }
 .section-save-status {
   font-size: .85rem;
-  color: #10B981;
+  color: var(--color-success);
   opacity: 0;
   transition: opacity 0.3s ease;
 }
 .section-save-status.visible { opacity: 1; }
 
 
-
+

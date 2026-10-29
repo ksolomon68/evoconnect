@@ -6,7 +6,7 @@
 <h2>Current statement</h2><p><%= document.original_name %> · <%= (document.size_bytes / 1024).toFixed(0) %> KB · Uploaded <%= new Date(document.created_at).toLocaleDateString() %></p>
 <p><a class="btn btn-primary" href="/capabilities/<%= document.id %>">View PDF</a> <a class="btn btn-secondary" href="/capabilities/<%= document.id %>?download=1">Download PDF</a></p>
 <form method="post" action="<%= basePath %>/documents/delete"><input type="hidden" name="_csrf" value="<%= csrfToken %>"><button class="btn btn-secondary">Remove statement</button></form>
-<% } else { %><p>No uploaded statement yet. Upload a PDF to make it available from your directory profile.</p><% } %>
+<% } else { %><div class="empty-state-inline"><p>No uploaded statement yet. Upload a PDF to make it available from your directory profile.</p></div><% } %>
 <h2 style="margin-top:2rem"><%= document ? 'Replace statement' : 'Upload statement' %></h2>
 <p>PDF only, up to 10 MB. Signed-in members can view and download your statement. Include only information you want to share with potential partners. Uploading a replacement removes the previous PDF.</p>
 <form method="post" action="<%= basePath %>/documents" enctype="multipart/form-data">

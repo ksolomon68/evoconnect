@@ -334,7 +334,10 @@ const Navigation = {
             });
 
             const list = document.getElementById('notification-list');
-            if (!res.ok) return;
+            if (!res.ok) {
+                if (list) list.innerHTML = '<div style="color: var(--text-muted); text-align: center; padding: 10px;">No new notifications</div>';
+                return;
+            }
 
             const notifications = await res.json();
             const unread = Array.isArray(notifications) ? notifications.filter(n => !n.is_read) : [];
@@ -362,7 +365,10 @@ const Navigation = {
                     `).join('');
                 }
             }
-        } catch (e) {}
+        } catch (e) {
+            const list = document.getElementById('notification-list');
+            if (list) list.innerHTML = '<div style="color: var(--text-muted); text-align: center; padding: 10px;">No new notifications</div>';
+        }
     },
 
     async markNotificationRead(id, messageId) {

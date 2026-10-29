@@ -1,12 +1,16 @@
+/* These alias design-system.css's tokens under this file's own naming
+   scheme (kept so the ~60 var(--navy)/var(--orange)/etc. call sites below
+   don't all need touching) rather than hardcoding the same colors again —
+   a rebrand in design-system.css now reaches this file too. */
 :root {
-  --navy:   #0F172A; /* Base background */
-  --navy-2: #1E293B; /* Surface */
-  --orange: #06B6D4; /* Cyan primary action */
-  --amber:  #F59E0B; /* Amber accent */
-  --white:  #F8FAFC;
-  --text:   #F8FAFC;
-  --gray-100: #1E3A4A; /* Border */
-  --gray-600: #94A3B8; /* Muted text */
+  --navy:   var(--color-bg-primary);
+  --navy-2: var(--color-bg-secondary);
+  --orange: var(--color-primary); /* named for a pre-rebrand color; value is cyan */
+  --amber:  var(--color-warning);
+  --white:  var(--color-text-primary);
+  --text:   var(--color-text-primary);
+  --gray-100: var(--color-border);
+  --gray-600: var(--color-text-muted);
 }
 
 /* ── Reset / Base ───────────────────────────────────── */
@@ -18,8 +22,8 @@ body { margin: 0; font-family: 'Arial', 'Calibri', sans-serif; background: var(-
   position: sticky;
   top: 0;
   z-index: 200;
-  background: #0F172A;
-  border-bottom: 1px solid #1E3A4A;
+  background: var(--color-bg-primary);
+  border-bottom: 1px solid var(--color-border);
   padding: 0 1.5rem;
 }
 .wfc-header-inner {
@@ -46,13 +50,13 @@ body { margin: 0; font-family: 'Arial', 'Calibri', sans-serif; background: var(-
 .wfc-nav a:hover { color: var(--white); }
 .wfc-nav .btn-register {
   background: var(--orange);
-  color: #0F172A !important;
+  color: var(--color-text-inverse) !important;
   font-weight: 700;
   padding: 0.5rem 1.25rem;
   border-radius: 6px;
   transition: background 0.15s, transform 0.1s;
 }
-.wfc-nav .btn-register:hover { background: #0891B2; transform: translateY(-1px); }
+.wfc-nav .btn-register:hover { background: var(--color-primary-dark); transform: translateY(-1px); }
 .wfc-nav .btn-login {
   color: var(--gray-600);
   font-weight: 500;
@@ -63,7 +67,7 @@ body { margin: 0; font-family: 'Arial', 'Calibri', sans-serif; background: var(-
 .wfc-hero {
   position: relative;
   overflow: hidden;
-  background: #0F172A;
+  background: var(--color-bg-primary);
   padding: 6rem 1.5rem 5rem;
   text-align: center;
 }
@@ -126,7 +130,7 @@ body { margin: 0; font-family: 'Arial', 'Calibri', sans-serif; background: var(-
     }
     .btn-primary {
       background: var(--orange);
-      color: #0F172A !important;
+      color: var(--color-text-inverse) !important;
       font-size: 1rem;
       font-weight: 700;
       padding: 0.9rem 2.25rem;
@@ -136,7 +140,7 @@ body { margin: 0; font-family: 'Arial', 'Calibri', sans-serif; background: var(-
       transition: background 0.15s, transform 0.1s, box-shadow 0.15s;
       box-shadow: 0 1px 3px rgba(0,0,0,0.4);
     }
-    .btn-primary:hover { background: #0891B2; transform: translateY(-2px); box-shadow: 0 1px 3px rgba(0,0,0,0.4); }
+    .btn-primary:hover { background: var(--color-primary-dark); transform: translateY(-2px); box-shadow: 0 1px 3px rgba(0,0,0,0.4); }
     .btn-secondary-outline {
       background: transparent;
       color: var(--orange) !important;
@@ -213,7 +217,7 @@ body { margin: 0; font-family: 'Arial', 'Calibri', sans-serif; background: var(-
     .section-header { margin-bottom: 3rem; }
 
     /* ── How It Works ───────────────────────────────────── */
-    #how-it-works { background: #0F172A; }
+    #how-it-works { background: var(--color-bg-primary); }
     .hiw-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
@@ -229,12 +233,12 @@ body { margin: 0; font-family: 'Arial', 'Calibri', sans-serif; background: var(-
       transition: border-color 0.2s, transform 0.2s, box-shadow 0.2s;
       box-shadow: 0 1px 3px rgba(0,0,0,0.4);
     }
-    .hiw-card:hover { border-color: var(--gray-100); transform: translateY(-3px); box-shadow: 0 1px 3px rgba(0,0,0,0.4); background: #263348; }
+    .hiw-card:hover { border-color: var(--gray-100); transform: translateY(-3px); box-shadow: 0 1px 3px rgba(0,0,0,0.4); background: var(--color-bg-tertiary); }
     .hiw-step {
       width: 40px; height: 40px;
       border-radius: 50%;
       background: var(--orange);
-      color: #0F172A;
+      color: var(--color-text-inverse);
       font-size: 1rem;
       font-weight: 800;
       display: flex;
@@ -281,7 +285,7 @@ body { margin: 0; font-family: 'Arial', 'Calibri', sans-serif; background: var(-
     }
 
     /* ── Trades Grid ────────────────────────────────────── */
-    #trades { background: #0F172A; }
+    #trades { background: var(--color-bg-primary); }
     .trades-grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
@@ -301,7 +305,7 @@ body { margin: 0; font-family: 'Arial', 'Calibri', sans-serif; background: var(-
     }
     .trade-card:hover {
       border-color: var(--gray-100);
-      background: #263348;
+      background: var(--color-bg-tertiary);
       transform: translateY(-2px);
     }
     .trade-icon {
@@ -335,7 +339,7 @@ body { margin: 0; font-family: 'Arial', 'Calibri', sans-serif; background: var(-
     }
 
     /* ── Benefits ───────────────────────────────────────── */
-    #benefits { background: #0F172A; }
+    #benefits { background: var(--color-bg-primary); }
     .benefits-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -349,7 +353,7 @@ body { margin: 0; font-family: 'Arial', 'Calibri', sans-serif; background: var(-
       transition: border-color 0.2s, transform 0.15s, box-shadow 0.2s;
       box-shadow: 0 1px 3px rgba(0,0,0,0.4);
     }
-    .benefit-card:hover { border-color: var(--gray-100); transform: translateY(-2px); box-shadow: 0 1px 3px rgba(0,0,0,0.4); background: #263348; }
+    .benefit-card:hover { border-color: var(--gray-100); transform: translateY(-2px); box-shadow: 0 1px 3px rgba(0,0,0,0.4); background: var(--color-bg-tertiary); }
     .benefit-icon {
       width: 48px; height: 48px;
       border-radius: 10px;
@@ -422,7 +426,7 @@ body { margin: 0; font-family: 'Arial', 'Calibri', sans-serif; background: var(-
     .wfc-cta-banner p { font-size: 1.05rem; color: var(--gray-600); line-height: 1.7; margin: 0 0 2rem; }
     .btn-white {
       background: var(--orange);
-      color: #0F172A !important;
+      color: var(--color-text-inverse) !important;
       font-size: 1rem;
       font-weight: 800;
       padding: 0.9rem 2.5rem;
@@ -432,12 +436,12 @@ body { margin: 0; font-family: 'Arial', 'Calibri', sans-serif; background: var(-
       transition: background 0.15s, transform 0.1s, box-shadow 0.15s;
       box-shadow: 0 1px 3px rgba(0,0,0,0.4);
     }
-    .btn-white:hover { background: #0891B2; transform: translateY(-2px); box-shadow: 0 1px 3px rgba(0,0,0,0.4); }
+    .btn-white:hover { background: var(--color-primary-dark); transform: translateY(-2px); box-shadow: 0 1px 3px rgba(0,0,0,0.4); }
 
     /* ── Footer ─────────────────────────────────────────── */
     .wfc-footer {
-      background: #0F172A;
-      border-top: 1px solid #1E3A4A;
+      background: var(--color-bg-primary);
+      border-top: 1px solid var(--color-border);
       color: var(--gray-600);
       padding: 3.5rem 1.5rem 2rem;
     }

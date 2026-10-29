@@ -59,8 +59,8 @@
         </div>
         <% }) %>
     <% } else { %>
-        <div class="recommendations-list" style="padding: var(--space-2xl); text-align:center; color:var(--text-muted);">
-            <p style="font-size:1.1rem;margin-bottom:0.75rem;">You haven't saved any contracting opportunities yet.</p>
+        <div class="recommendations-list empty-state">
+            <p>You haven't saved any contracting opportunities yet.</p>
             <a href="<%= basePath %>/search" class="btn btn-primary">Browse Open Opportunities</a>
         </div>
     <% } %>
