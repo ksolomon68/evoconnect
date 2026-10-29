@@ -31,7 +31,7 @@ function signToken(payload) {
 function setAuthCookie(res, token) {
     res.cookie(COOKIE_NAME, token, {
         httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
+        secure: !!(process.env.PHUSION_PASSENGER || process.env.PASSENGER_NODE_CONTROL_REPO || process.env.NODE_ENV === 'production'),
         sameSite: 'lax',
         path: '/',
         maxAge: 24 * 60 * 60 * 1000 // 24 hours
@@ -41,7 +41,7 @@ function setAuthCookie(res, token) {
 function clearAuthCookie(res) {
     res.clearCookie(COOKIE_NAME, {
         httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
+        secure: !!(process.env.PHUSION_PASSENGER || process.env.PASSENGER_NODE_CONTROL_REPO || process.env.NODE_ENV === 'production'),
         sameSite: 'lax',
         path: '/'
     });

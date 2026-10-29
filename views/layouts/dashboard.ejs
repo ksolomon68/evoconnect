@@ -475,6 +475,7 @@ const navCfg = NAV_CONFIG[currentRole] || NAV_CONFIG.worker;
   <link rel="stylesheet" href="/css/faq.css?v=1">
 </head>
 <body class="dashboard-v2">
+    <% if(locals.user?.demo) { %><div role="status" style="position:fixed;bottom:0;left:0;right:0;z-index:2000;padding:.5rem;text-align:center;background:#0f172a;color:#fff">Demo preview · sample data · read only · <a href="/logout" style="color:#67e8f9">Exit demo</a></div><% } %>
     <a href="#main-content" class="skip-link">Skip to main content</a>
     
     <!-- Server-Rendered Caltrans Sidebar -->

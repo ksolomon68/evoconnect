@@ -6,7 +6,7 @@ This compares the current New-Caltrans repository with EvoConnect's server-rende
 
 | Workflow in New-Caltrans | EvoConnect implementation | Validation |
 | --- | --- | --- |
-| Registration, login, password reset, account settings | Existing role-aware authentication and settings; corrected password-reset template includes | Public/account pages render; production demo-login rejection tested. Live email delivery is unverified. |
+| Registration, login, password reset, account settings | Existing role-aware authentication and settings; corrected password-reset template includes | Public/account pages render; production demo and regular logins tested. Live email delivery is unverified. |
 | Business profiles, qualifications, certifications, NAICS | Existing profile editors plus safe directory profiles for workers, businesses and primes | All role profile pages render; real profile-view tracking verified |
 | Capability statement PDF uploads and downloads | All roles: `/{portal}/documents`; replacement/removal; signed-in viewing through `/capabilities/:id` | PDF size/type/signature validation, private storage, download bytes, replacement revocation, removal and authorization tested |
 | Business capability statement generation | Existing business generator retained with links to uploads and analytics | Generator renders |
@@ -37,7 +37,7 @@ The startup sweep archives already expired published postings and notifies their
 
 Set `CAPABILITY_STORAGE_DIR` to a private, persistent directory outside any static serving roots and include it in backups. The default is a sibling `evoconnect-private/capabilities` directory outside the checkout. Files are written with private permissions; database records hold generated storage names. These PDFs are not stored in public uploads. A file signature check is not a malware scan; no antivirus integration was introduced.
 
-Production requires a unique `JWT_SECRET`; a separate `SESSION_SECRET` is optional because sessions otherwise use a distinct key derived from the JWT secret, and `ADMIN_DEFAULT_PASSWORD` to provision the first admin in an empty database. Development demo accounts and sample postings are not seeded in production; demo login is rejected there. Existing production deployments should review previously seeded accounts and rotate any historical default credentials: this change does not delete existing accounts or silently replace their passwords. Configure SMTP for welcome/reset emails and test delivery in the deployment environment.
+Production requires a unique `JWT_SECRET`; a separate `SESSION_SECRET` is optional because sessions otherwise use a distinct key derived from the JWT secret, and `ADMIN_DEFAULT_PASSWORD` to provision the first admin in an empty database. Development demo accounts and sample postings are not seeded in production; demo logins use isolated sample tables and read-only sessions in every environment. Existing production deployments should review previously seeded accounts and rotate any historical default credentials: this change does not delete existing accounts or silently replace their passwords. Configure SMTP for welcome/reset emails and test delivery in the deployment environment.
 
 ## Integration tests
 
@@ -60,3 +60,12 @@ For opportunity owners, **Suggested partners** now ranks active businesses and w
 `/faq` (also `/faq.html`) is a public FAQ page with worker, business, and prime-contractor topics, linked from the public navigation and footer. Existing role FAQ URLs remain available. Every dashboard includes Help & FAQ, including the administrator console. Role pages and the public hub share the same FAQ content source in `server/services/faq-content.js`.
 
 A scoped `/css/faq.css` stylesheet supplies explicit dark question/answer colors on light cards in both layouts, visible keyboard focus, and stacked responsive headings. Chromium checks at desktop and mobile widths verified computed text/background colors, expanded answers, keyboard toggling, and absence of horizontal page overflow in both the public and labor-dashboard layouts. HTTP tests cover public access and all role FAQ routes.
+
+
+## Demo sign-in
+
+The four login-page demo buttons work in production as well as development. Both one-click access and the existing demo email/password form issue signed tokens marked as demo sessions. The four sample emails use `DemoPass1!`; normal accounts still authenticate against their stored password hashes.
+
+Demo requests use separate `demo_` tables in the configured database, created lazily with the same schema as the app tables. Only public NAICS reference data is copied. Sample members and sample opportunities are fictional fixtures; live user records, applications and messages are never copied. The database account needs CREATE and INSERT privileges, which the app's schema initialization also uses. These tables are shared read-only preview data, not a separate writable account per visitor.
+
+A visible preview banner identifies demo sessions. Changes and live CMS access are blocked for those sessions; signing out returns to normal login. The SQL adapter scopes demo queries (including transactions) without changing live queries. Production HTTP tests exercise every demo role, preview pages, both sign-in methods, denied writes, no live users in the admin preview, and a normal account sign-in.

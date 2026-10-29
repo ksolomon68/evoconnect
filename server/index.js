@@ -78,6 +78,7 @@ app.use(cors({
 
 // ── Globals: attach user + flash to res.locals ────────────────────
 app.use(attachUser);
+app.use(require('./services/demo-sandbox').requestContext);
 app.use((req, res, next) => {
     // Flash messages
     const sessionFlash = req.session.flash;

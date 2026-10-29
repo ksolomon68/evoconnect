@@ -1,6 +1,7 @@
 const mysql = require('mysql2/promise');
 const dotenv = require('dotenv');
 const path = require('path');
+const demoContext = require('./services/demo-context');
 
 dotenv.config({ path: path.join(__dirname, '../.env') });
 // Always load .env.production if present — dotenv silently ignores missing files
@@ -41,35 +42,35 @@ function getDb() {
     return {
         async execute(sql, values) {
             try {
-                return await pool.execute(sql, values);
+                return await pool.execute(demoContext.sql(sql), values);
             } catch (err) {
                 if (err.code === 'PROTOCOL_CONNECTION_LOST' || err.code === 'ECONNRESET') {
                     console.warn(`EvoConnect DB: Connection lost during execute, retrying... (${err.message})`);
                     pool = createPool();
-                    return await pool.execute(sql, values);
+                    return await pool.execute(demoContext.sql(sql), values);
                 }
                 throw err;
             }
         },
         async query(sql, values) {
             try {
-                return await pool.query(sql, values);
+                return await pool.query(demoContext.sql(sql), values);
             } catch (err) {
                 if (err.code === 'PROTOCOL_CONNECTION_LOST' || err.code === 'ECONNRESET') {
                     console.warn(`EvoConnect DB: Connection lost during query, retrying... (${err.message})`);
                     pool = createPool();
-                    return await pool.query(sql, values);
+                    return await pool.query(demoContext.sql(sql), values);
                 }
                 throw err;
             }
         },
         async getConnection() {
             try {
-                return await pool.getConnection();
+                return demoContext.connection(await pool.getConnection());
             } catch (err) {
                 if (err.code === 'PROTOCOL_CONNECTION_LOST' || err.code === 'ECONNRESET') {
                     pool = createPool();
-                    return await pool.getConnection();
+                    return demoContext.connection(await pool.getConnection());
                 }
                 throw err;
             }
