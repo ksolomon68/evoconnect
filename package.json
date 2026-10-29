@@ -8,13 +8,22 @@
     "create-admin": "node scripts/create-admin.js",
     "dev": "nodemon server/index.js",
     "init-db": "node -e \"require('./server/database.js').initDatabase()\"",
-    "test": "node --test tests/*.test.js"
+    "test": "node --test tests/*.test.js",
+    "build:netlify": "node scripts/build-netlify.js",
+    "migrate:db": "node scripts/migrate-database.js"
   },
-  "keywords": ["government-contracting", "workforce", "naics", "small-business", "evobrand"],
+  "keywords": [
+    "government-contracting",
+    "workforce",
+    "naics",
+    "small-business",
+    "evobrand"
+  ],
   "author": "EVOBRAND Concepts — Keisha Solomon",
   "license": "UNLICENSED",
   "type": "commonjs",
   "dependencies": {
+    "@netlify/blobs": "^11.1.7",
     "bcryptjs": "^2.4.3",
     "connect-flash": "^0.1.1",
     "cookie-parser": "^1.4.7",
@@ -32,9 +41,13 @@
     "mysql2": "^3.11.5",
     "nodemailer": "^8.0.3",
     "pdfkit": "^0.15.0",
-    "sanitize-html": "^2.18.1"
+    "sanitize-html": "^2.18.1",
+    "serverless-http": "^4.0.0"
   },
   "devDependencies": {
     "nodemon": "^3.1.0"
+  },
+  "engines": {
+    "node": ">=22.12.0"
   }
 }

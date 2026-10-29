@@ -4,7 +4,7 @@
 <form method="post" action="<%= basePath %>/documents/delete"><input type="hidden" name="_csrf" value="<%= csrfToken %>"><button class="btn btn-secondary">Remove statement</button></form>
 <% } else { %><div class="empty-state-inline"><p>No uploaded statement yet. Upload a PDF to make it available from your directory profile.</p></div><% } %>
 <h2 style="margin-top:2rem"><%= document ? 'Replace statement' : 'Upload statement' %></h2>
-<p>PDF only, up to 10 MB. Signed-in members can view and download your statement. Include only information you want to share with potential partners. Uploading a replacement removes the previous PDF.</p>
+<p>PDF only, up to <%= locals.uploadLimitMB || 10 %> MB. Signed-in members can view and download your statement. Include only information you want to share with potential partners. Uploading a replacement removes the previous PDF.</p>
 <form method="post" action="<%= basePath %>/documents" enctype="multipart/form-data">
 <input type="hidden" name="_csrf" value="<%= csrfToken %>">
 <label for="statement">Capability statement PDF</label><input id="statement" type="file" name="statement" accept="application/pdf,.pdf" required class="form-control">

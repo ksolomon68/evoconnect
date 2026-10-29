@@ -226,7 +226,7 @@
       <div class="form-group">
         <label for="resume" class="form-label"><%= locals.worker?.resume_path ? 'Replace Resume' : 'Upload Resume' %></label>
         <input type="file" id="resume" name="resume" class="form-control" accept=".pdf,.doc,.docx" aria-describedby="resume-hint">
-        <span id="resume-hint" class="field-hint">PDF, DOC, or DOCX only. Max 5MB. <%= locals.worker?.resume_path ? 'Leave blank to keep existing file.' : '' %></span>
+        <span id="resume-hint" class="field-hint">PDF, DOC, or DOCX only. Max <%= locals.uploadLimitMB===4 ? 4 : 5 %> MB. <%= locals.worker?.resume_path ? 'Leave blank to keep existing file.' : '' %></span>
       </div>
 
       <div class="form-card-actions">

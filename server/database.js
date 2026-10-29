@@ -1,11 +1,12 @@
 const mysql = require('mysql2/promise');
 const dotenv = require('dotenv');
 const path = require('path');
+const root = require('./services/app-root');
 const demoContext = require('./services/demo-context');
 
-dotenv.config({ path: path.join(__dirname, '../.env') });
+dotenv.config({ path: path.join(root, '.env') });
 // Always load .env.production if present — dotenv silently ignores missing files
-dotenv.config({ path: path.join(__dirname, '../.env.production'), override: true });
+dotenv.config({ path: path.join(root, '.env.production'), override: true });
 
 console.log('EvoConnect DB: Initializing MySQL Connection Pool...');
 
@@ -13,13 +14,9 @@ let pool;
 
 function createPool() {
     const cfg = {
-        host:             (process.env.DB_HOST     || 'localhost').trim(),
-        user:             (process.env.DB_USER     || 'root').trim(),
-        password:         (process.env.DB_PASSWORD || '').trim(),
-        database:         (process.env.DB_NAME     || 'evoconnect').trim(),
-        port:             parseInt((process.env.DB_PORT || '3306').toString().trim(), 10),
+        ...require('./services/database-config')(),
         waitForConnections: true,
-        connectionLimit:  10,
+        connectionLimit:  Number(process.env.DB_CONNECTION_LIMIT || (process.env.EVO_SERVERLESS ? 2 : 10)),
         queueLimit:       0,
         enableKeepAlive:  true,
         keepAliveInitialDelay: 10000
@@ -79,7 +76,7 @@ function getDb() {
 }
 
 // Keep-alive ping every 60s to prevent Hostinger idle disconnects
-setInterval(async () => {
+if (!process.env.EVO_SERVERLESS) setInterval(async () => {
     try {
         await getDb().execute('SELECT 1');
     } catch (e) {
@@ -91,12 +88,11 @@ async function initDatabase() {
     console.log('EvoConnect DB: Running initDatabase()...');
 
     try {
-        const setupConn = await mysql.createConnection({
-            host:     process.env.DB_HOST || 'localhost',
-            user:     process.env.DB_USER || 'root',
-            password: process.env.DB_PASSWORD || ''
-        });
+        if (process.env.DB_SKIP_CREATE === 'true' || process.env.EVO_SERVERLESS) throw new Error('Using a provisioned database; skipping CREATE DATABASE.');
+        const { database, ...setupConfig } = require('./services/database-config')();
+        const setupConn = await mysql.createConnection(setupConfig);
         const dbName = process.env.DB_NAME || 'evoconnect';
+        if (!/^[a-zA-Z0-9_-]+$/.test(dbName)) throw new Error('Invalid database name.');
         await setupConn.execute(`CREATE DATABASE IF NOT EXISTS \`${dbName}\` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci`);
         console.log(`EvoConnect DB: Database "${dbName}" ready.`);
         await setupConn.end();
@@ -768,16 +764,18 @@ async function initDatabase() {
         } // Development-only demo accounts and sample opportunities.
         console.log('EvoConnect DB: All tables initialized successfully.');
 
+        await require('./services/runtime-schema')(db);
         await require('./services/flagship-schema')(db);
         await require('./services/faqs').migrate(db);
         await require('./services/ecosystem-schema')(db);
         await require('./services/opportunity-lifecycle').archiveExpired(db);
-        setInterval(() => require('./services/opportunity-lifecycle').archiveExpired(db).catch(err => console.error('Opportunity expiry:', err)), 60 * 1000).unref();
+        if (!process.env.EVO_SERVERLESS) setInterval(() => require('./services/opportunity-lifecycle').archiveExpired(db).catch(err => console.error('Opportunity expiry:', err)), 60 * 1000).unref();
 
         // Cleanup expired tokens hourly
-        setInterval(async () => {
+        if (!process.env.EVO_SERVERLESS) setInterval(async () => {
             try {
                 const d = getDb();
+                await d.execute('DELETE FROM app_sessions WHERE expires_at < UTC_TIMESTAMP()');
                 await d.execute('DELETE FROM password_reset_tokens WHERE expires_at < NOW() OR used = 1');
             } catch {}
         }, 60 * 60 * 1000);

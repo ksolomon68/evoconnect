@@ -2,7 +2,7 @@
 const express = require('express');
 const crypto = require('crypto');
 const path = require('path');
-const fs = require('fs');
+const fileStorage = require('../services/file-storage');
 const multer = require('multer');
 const { getDb } = require('../database');
 const { requireAuth } = require('../middleware/auth');
@@ -13,8 +13,8 @@ const matching = require('../services/naics-matching');
 const router = express.Router();
 const roles = { labor: 'worker', business: 'business', prime: 'prime', admin: 'admin' };
 const tables = { worker: 'workers', business: 'businesses', prime: 'primes', admin: 'admins' };
-const privateDir = path.resolve(process.env.CAPABILITY_STORAGE_DIR || path.join(__dirname, '../../../evoconnect-private/capabilities'));
-const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 10 * 1024 * 1024, files: 1, fields: 5 } });
+const uploadLimitMB = process.env.EVO_SERVERLESS ? 4 : 10;
+const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: uploadLimitMB * 1024 * 1024, files: 1, fields: 5 } });
 const wrap = fn => (req, res, next) => Promise.resolve(fn(req, res, next)).catch(next);
 const notFound = res => res.status(404).send('This item is unavailable.');
 function flash(req, message) { req.session.flash = { type: 'success', message }; }
@@ -81,21 +81,20 @@ router.post('/:portal(labor|business|prime|admin)/documents', ...portalAuth, (re
     // Check before buffering a multipart request.
     const origin = req.get('origin');
     if (origin && origin !== `${req.protocol}://${req.get('host')}`) return res.status(403).send('Invalid upload origin.');
-    upload.single('statement')(req,res,err => err ? res.status(400).send(err.code === 'LIMIT_FILE_SIZE' ? 'PDF must be 10 MB or smaller.' : 'Upload one PDF, 10 MB or smaller.') : next());
+    upload.single('statement')(req,res,err => err ? res.status(400).send(err.code === 'LIMIT_FILE_SIZE' ? `PDF must be ${uploadLimitMB} MB or smaller.` : `Upload one PDF, ${uploadLimitMB} MB or smaller.`) : next());
 }, csrf, wrap(async (req,res) => {
     const file = req.file;
-    if (!file || file.mimetype !== 'application/pdf' || !file.buffer.subarray(0,5).equals(Buffer.from('%PDF-')) || !file.buffer.subarray(-2048).includes(Buffer.from('%%EOF'))) return res.status(400).send('Upload a valid PDF document, 10 MB or smaller.');
+    if (!file || file.mimetype !== 'application/pdf' || !file.buffer.subarray(0,5).equals(Buffer.from('%PDF-')) || !file.buffer.subarray(-2048).includes(Buffer.from('%%EOF'))) return res.status(400).send(`Upload a valid PDF document, ${uploadLimitMB} MB or smaller.`);
     const id = crypto.randomUUID();
     const storage = `${id}.pdf`;
-    await fs.promises.mkdir(privateDir, { recursive: true, mode: 0o700 });
     const [old] = await getDb().execute('SELECT storage_name FROM capability_documents WHERE owner_type = ? AND owner_id = ?', [req.user.type, req.user.id]);
-    await fs.promises.writeFile(path.join(privateDir,storage), file.buffer, { flag: 'wx', mode: 0o600 });
+    await fileStorage.put('capabilities',storage,file.buffer);
     try {
         await getDb().execute(`INSERT INTO capability_documents (id, owner_type, owner_id, storage_name, original_name, size_bytes)
             VALUES (?, ?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE id = VALUES(id), storage_name = VALUES(storage_name), original_name = VALUES(original_name), size_bytes = VALUES(size_bytes), created_at = CURRENT_TIMESTAMP`,
         [id, req.user.type, req.user.id, storage, path.basename(file.originalname).slice(0,255), file.size]);
-    } catch (err) { await fs.promises.unlink(path.join(privateDir,storage)); throw err; }
-    for(const doc of old) await fs.promises.unlink(path.join(privateDir,doc.storage_name)).catch(err => { if(err.code !== 'ENOENT') console.error('Old capability cleanup failed:', err.code); });
+    } catch (err) { await fileStorage.remove('capabilities',storage); throw err; }
+    for(const doc of old) await fileStorage.remove('capabilities',doc.storage_name).catch(err => { if(err.code !== 'ENOENT') console.error('Old capability cleanup failed:', err.code); });
     flash(req, 'Capability statement uploaded. Your profile now links to this PDF.');
     res.redirect(req.params.portal === 'business' ? '/business/profile#capability-statement' : `/${req.params.portal}/documents`);
 }));
@@ -103,7 +102,7 @@ router.post('/:portal(labor|business|prime|admin)/documents/delete', ...portalAu
     const [docs] = await getDb().execute('SELECT * FROM capability_documents WHERE owner_type = ? AND owner_id = ?', [req.user.type,req.user.id]);
     if(docs[0]) {
         await getDb().execute('DELETE FROM capability_documents WHERE id = ? AND owner_type = ? AND owner_id = ?', [docs[0].id,req.user.type,req.user.id]);
-        await fs.promises.unlink(path.join(privateDir,docs[0].storage_name)).catch(err => { if(err.code !== 'ENOENT') throw err; });
+        await fileStorage.remove('capabilities',docs[0].storage_name).catch(err => { if(err.code !== 'ENOENT') throw err; });
     }
     flash(req, 'Uploaded statement removed.');res.redirect(req.params.portal === 'business' ? '/business/profile#capability-statement' : `/${req.params.portal}/documents`);
 }));
@@ -113,12 +112,12 @@ router.get('/capabilities/:id', requireAuth, wrap(async (req,res,next) => {
     const [owners] = await getDb().execute(`SELECT * FROM ${tables[doc.owner_type]} WHERE id = ?`,[doc.owner_id]);
     if(!owners.length || (doc.owner_type === 'prime' ? !owners[0].active : owners[0].status && owners[0].status !== 'active')) return notFound(res);
     if(doc.owner_type === 'admin' && req.user.type !== 'admin') return notFound(res);
-    const filename = path.join(privateDir,path.basename(doc.storage_name));
-    try { await fs.promises.access(filename,fs.constants.R_OK); } catch { return notFound(res); }
+    const stored = await fileStorage.get('capabilities',doc.storage_name);
+    if(!stored)return notFound(res);
     await record(req,doc.owner_type,doc.owner_id,'capability',doc.id,req.query.download === '1' ? 'download' : 'view');
     res.set({ 'Content-Type': 'application/pdf', 'Cache-Control': 'private, no-store', 'X-Content-Type-Options': 'nosniff', 'Content-Security-Policy': "default-src 'none'; sandbox" });
-    if(req.query.download === '1') return res.download(filename, 'capability-statement.pdf', err => { if(err) next(err); });
-    res.sendFile(filename,err => { if(err) next(err); });
+    res.set('Content-Disposition',`${req.query.download==='1'?'attachment':'inline'}; filename="capability-statement.pdf"`);
+    res.send(stored.buffer);
 }));
 
 // Directory profile views are measured when a person opens the profile, not on search impressions.
@@ -279,33 +278,32 @@ router.post('/admin/users/:type(worker|business|prime)/:id/edit', requireAuth, c
 
 // Solicitation attachments are PDFs stored outside all public/static directories.
 router.post('/:portal(prime|business|admin)/opportunities/:id/attachments', ...portalAuth, publisher, (req,res,next)=>{
-    upload.single('statement')(req,res,err=>err?res.status(400).send('Upload one PDF, 10 MB or smaller.'):next());
+    upload.single('statement')(req,res,err=>err?res.status(400).send(`Upload one PDF, ${uploadLimitMB} MB or smaller.`):next());
 }, csrf, wrap(async(req,res)=>{
     const opp=await opportunity(req);if(!opp || !managed(req,opp))return notFound(res);
     const file=req.file;
     if(!file || file.mimetype!=='application/pdf' || !file.buffer.subarray(0,5).equals(Buffer.from('%PDF-')) || !file.buffer.subarray(-2048).includes(Buffer.from('%%EOF')))return res.status(400).send('A valid PDF is required.');
     const id=crypto.randomUUID(),storage=`${id}.pdf`;
-    await fs.promises.mkdir(privateDir,{recursive:true,mode:0o700});
-    await fs.promises.writeFile(path.join(privateDir,storage),file.buffer,{flag:'wx',mode:0o600});
+    await fileStorage.put('capabilities',storage,file.buffer);
     try{await getDb().execute('INSERT INTO opportunity_attachments (id,opportunity_id,storage_name,original_name,size_bytes) VALUES (?,?,?,?,?)',[id,opp.id,storage,path.basename(file.originalname).slice(0,255),file.size]);}
-    catch(err){await fs.promises.unlink(path.join(privateDir,storage));throw err;}
+    catch(err){await fileStorage.remove('capabilities',storage);throw err;}
     res.redirect(`/${req.params.portal}/${req.user.type==='business'?'jobs':'opportunities'}/${encodeURIComponent(opp.id)}/edit`);
 }));
 router.get('/opportunity-attachments/:attachment', requireAuth, wrap(async(req,res,next)=>{
     const [rows]=await getDb().execute('SELECT f.*,o.status,o.due_date,o.due_time,o.posted_by,o.posted_by_type FROM opportunity_attachments f JOIN opportunities o ON o.id=f.opportunity_id WHERE f.id=?',[req.params.attachment]);
     const file=rows[0];if(!file || (!open(file)&&!managed(req,file)))return notFound(res);
-    const filename=path.join(privateDir,path.basename(file.storage_name));
-    try{await fs.promises.access(filename,fs.constants.R_OK);}catch{return notFound(res);}
+    const stored=await fileStorage.get('capabilities',file.storage_name);
+    if(!stored)return notFound(res);
     if(file.posted_by)await record(req,file.posted_by_type,file.posted_by,'opportunity',file.opportunity_id,'download');
     res.set({'Cache-Control':'private, no-store','X-Content-Type-Options':'nosniff'});
-    res.download(filename,'solicitation.pdf',err=>{if(err)next(err);});
+    res.type('application/pdf').set('Content-Disposition','attachment; filename="solicitation.pdf"').send(stored.buffer);
 }));
 router.post('/:portal(prime|business|admin)/opportunities/:id/attachments/:attachment/delete', ...portalAuth, publisher, csrf, wrap(async(req,res)=>{
     const opp=await opportunity(req);if(!opp || !managed(req,opp))return notFound(res);
     const [files]=await getDb().execute('SELECT * FROM opportunity_attachments WHERE id=? AND opportunity_id=?',[req.params.attachment,opp.id]);
     if(!files.length)return notFound(res);
     await getDb().execute('DELETE FROM opportunity_attachments WHERE id=?',[files[0].id]);
-    await fs.promises.unlink(path.join(privateDir,path.basename(files[0].storage_name))).catch(err=>{if(err.code!=='ENOENT')throw err;});
+    await fileStorage.remove('capabilities',files[0].storage_name).catch(err=>{if(err.code!=='ENOENT')throw err;});
     res.redirect(`/${req.params.portal}/${req.user.type==='business'?'jobs':'opportunities'}/${encodeURIComponent(opp.id)}/edit`);
 }));
 router.get('/:portal(prime|business|admin)/opportunities/:id/matches', ...portalAuth, publisher, wrap(async(req,res)=>{

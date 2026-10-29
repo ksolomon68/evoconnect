@@ -12,7 +12,7 @@ window.AGENCY = {
   name:      'EvoConnect',
   shortName: 'EvoConnect',
   appId:     'net.evobrand.evoconnect',
-  domain:    'darkslategrey-partridge-695960.hostingersite.com',
+  domain:    (typeof window !== 'undefined' ? window.location.hostname : 'evoconnect.evobrand.net'),
   logoPath:  '/images/logo-light.png',
   logoAlt:   'EvoConnect Logo',
 

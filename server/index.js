@@ -1,4 +1,5 @@
 const path        = require('path');
+const root = require('./services/app-root');
 const dotenv      = require('dotenv');
 const express     = require('express');
 const layouts     = require('express-ejs-layouts');
@@ -10,9 +11,9 @@ const helmet      = require('helmet');
 const cors        = require('cors');
 const fs          = require('fs');
 
-dotenv.config({ path: path.join(__dirname, '../.env') });
+dotenv.config({ path: path.join(root, '.env') });
 // Always load .env.production if present — dotenv silently ignores missing files
-dotenv.config({ path: path.join(__dirname, '../.env.production'), override: true });
+dotenv.config({ path: path.join(root, '.env.production'), override: true });
 const isLive = !!(process.env.PHUSION_PASSENGER || process.env.PASSENGER_NODE_CONTROL_REPO || process.env.NODE_ENV === 'production');
 
 const cfg = require('./agency.config');
@@ -34,7 +35,7 @@ app.use(helmet({
 
 // ── View engine: EJS ──────────────────────────────────────────────
 app.set('view engine', 'ejs');
-app.set('views', path.join(__dirname, '../views'));
+app.set('views', path.join(root, 'views'));
 app.use(layouts);
 app.set('layout', 'layouts/default');
 
@@ -45,6 +46,7 @@ app.use(cookieParser());
 app.use(methodOvr('_method'));
 app.use(session({
     secret:            require('./services/session-secret')(),
+    store: process.env.EVO_SERVERLESS ? new (require('./services/mysql-session-store'))() : undefined,
     resave:            false,
     saveUninitialized: false,
     cookie: {
@@ -91,6 +93,7 @@ app.use((req, res, next) => {
         else if (msgs.error?.length) res.locals.flash  = { type: 'error',   message: msgs.error[0]   };
         else res.locals.flash = null;
     }
+    res.locals.uploadLimitMB = process.env.EVO_SERVERLESS ? 4 : 10;
     res.locals.cfg     = cfg;
     res.locals.year    = new Date().getFullYear();
 
@@ -118,19 +121,43 @@ app.use((req, res, next) => {
     next();
 });
 
+// Resumes stay available across deployments and remain restricted to hiring roles.
+app.get('/uploads/resumes/:filename', require('./middleware/auth').requireAuth, async(req,res,next)=>{
+    try {
+        if(!/^[a-zA-Z0-9][a-zA-Z0-9._-]*$/.test(req.params.filename))return res.sendStatus(404);
+        const policy=require('./services/role-policy');
+        if(!await policy.account(getDb(),req.user.type,req.user.id))return res.sendStatus(403);
+        const [owners]=await getDb().execute('SELECT id FROM workers WHERE resume_path=? OR resume_path=?',[req.params.filename,'/uploads/resumes/'+req.params.filename]);
+        if(!owners.length || !(['business','admin'].includes(req.user.type) || (req.user.type==='worker' && owners.some(w=>Number(w.id)===Number(req.user.id)))))return res.sendStatus(404);
+        const file=await require('./services/file-storage').get('resumes',req.params.filename);
+        if(!file)return res.sendStatus(404);
+        res.set({'Cache-Control':'private, no-store','X-Content-Type-Options':'nosniff','Content-Disposition':'attachment; filename="resume'+path.extname(req.params.filename)+'"'}).type(path.extname(req.params.filename)).send(file.buffer);
+    }catch(err){next(err);}
+});
+
+// CMS media is served from persistent storage, including on serverless instances.
+app.get('/uploads/cms-media/:filename', async (req,res,next)=>{
+    try {
+        if(!/^[a-zA-Z0-9][a-zA-Z0-9._-]*$/.test(req.params.filename))return res.sendStatus(404);
+        const file=await require('./services/file-storage').get('media',req.params.filename);
+        if(!file)return res.sendStatus(404);
+        res.set({'Content-Type':file.metadata.mimeType || 'application/octet-stream','X-Content-Type-Options':'nosniff','Content-Security-Policy':"default-src 'none'; sandbox"}).send(file.buffer);
+    }catch(err){next(err);}
+});
+
 // ── Static files ──────────────────────────────────────────────────
-const publicPath = path.join(__dirname, '../public');
+const publicPath = path.join(root, 'public');
 app.use(express.static(publicPath, { etag: false, lastModified: false }));
 
 // Also serve the old /images, /css, /js, /uploads root directories for backwards compat
-app.use('/images',  express.static(path.join(__dirname, '../images')));
-app.use('/css',     express.static(path.join(__dirname, '../css')));
-app.use('/js',      express.static(path.join(__dirname, '../js')));
-app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
+app.use('/images',  express.static(path.join(root, 'images')));
+app.use('/css',     express.static(path.join(root, 'css')));
+app.use('/js',      express.static(path.join(root, 'js')));
+app.use('/uploads', express.static(path.join(root, 'uploads')));
 
 // Serve the client-side agency.config.js file from root
 app.get('/agency.config.js', (req, res) => {
-    res.sendFile(path.join(__dirname, '../agency.config.js'));
+    res.sendFile(path.join(root, 'agency.config.js'));
 });
 
 // ── Maintenance mode ──────────────────────────────────────────────
@@ -146,9 +173,10 @@ app.use((req, res, next) => {
 });
 
 // ── Routes ────────────────────────────────────────────────────────
-async function startServer() {
+async function startServer({ listen = true } = {}) {
     try {
-        await initDatabase();
+        if (process.env.EVO_SERVERLESS && process.env.DB_AUTO_MIGRATE !== 'true') await getDb().execute('SELECT 1 FROM app_sessions LIMIT 1');
+        else await initDatabase();
 
         app.use(require('./routes/ecosystem'));
         app.use(require('./routes/flagship'));
@@ -205,7 +233,7 @@ async function startServer() {
 
         // CMS admin SPA (file-based content management, JWT auth)
         app.get(['/admin-cms', '/admin-cms.html'], (req, res) => {
-            res.sendFile(path.join(__dirname, '../admin-cms.html'));
+            res.sendFile(path.join(root, 'admin-cms.html'));
         });
 
         // CMS & Admin tutorial routes (both clean URLs and legacy .html URLs)
@@ -310,6 +338,7 @@ async function startServer() {
         });
 
         // Start
+        if (!listen) return app;
         if (process.env.PHUSION_PASSENGER || process.env.PASSENGER_NODE_CONTROL_REPO) {
             app.listen('passenger');
             console.log(`${cfg.name}: Listening on Phusion Passenger`);
@@ -318,8 +347,13 @@ async function startServer() {
         }
     } catch (err) {
         console.error(`${cfg.name} CRITICAL STARTUP ERROR:`, err);
-        process.exit(1);
+        throw err;
     }
 }
 
-startServer();
+let application;
+module.exports.getApp = () => {
+    if (!application) application = startServer({listen:false}).catch(err=>{application=null;throw err;});
+    return application;
+};
+if (require.main === module) startServer().catch(()=>process.exit(1));

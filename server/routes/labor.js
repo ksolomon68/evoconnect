@@ -45,24 +45,20 @@ function calcWorkerPct(w) {
 }
 
 // ── Multer Upload ─────────────────────────────────────────────────────────────
-const storage = multer.diskStorage({
-    destination: (req, file, cb) => {
-        cb(null, path.join(__dirname, '../../uploads/resumes'));
-    },
-    filename: (req, file, cb) => {
-        const ext = path.extname(file.originalname);
-        cb(null, `resume_${Date.now()}${ext}`);
-    }
+const parseResume = multer({
+    storage: multer.memoryStorage(),
+    limits: { fileSize: (process.env.EVO_SERVERLESS ? 4 : 5) * 1024 * 1024 },
+    fileFilter: (req,file,cb)=>['.pdf','.doc','.docx'].includes(path.extname(file.originalname).toLowerCase())
+        ? cb(null,true) : cb(new Error('Only PDF and Word documents are allowed.'))
 });
-const uploadResume = multer({
-    storage,
-    limits: { fileSize: 5 * 1024 * 1024 },
-    fileFilter: (req, file, cb) => {
-        const allowed = ['.pdf', '.doc', '.docx'];
-        if (allowed.includes(path.extname(file.originalname).toLowerCase())) cb(null, true);
-        else cb(new Error('Only PDF and Word documents are allowed.'));
-    }
-});
+const uploadResume = { single: field => (req,res,next) => {
+    parseResume.single(field)(req,res,err=>{
+        if(err || !req.file)return next(err);
+        req.file.filename=`resume_${require('crypto').randomUUID()}${path.extname(req.file.originalname).toLowerCase()}`;
+        require('../services/file-storage').put('resumes',req.file.filename,req.file.buffer)
+            .then(()=>next()).catch(next);
+    });
+}};
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 function flash(req, type, message) {

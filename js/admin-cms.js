@@ -1137,7 +1137,7 @@ async function saveGlobalSettings() {
 async function renderMediaLibrary(container, onSelect) {
     container.innerHTML = `<div class="cms-loading-state"><div class="cms-spinner"></div> Loading media…</div>`;
     try {
-        const media = await apiFetch('GET', '/cms/media');
+        const [media, runtimeStats] = await Promise.all([apiFetch('GET', '/cms/media'), apiFetch('GET', '/cms/stats')]);
 
         container.innerHTML = `
         <div class="cms-flex-between cms-mb">
@@ -1156,7 +1156,7 @@ async function renderMediaLibrary(container, onSelect) {
                    role="button" aria-label="Upload image — click or drag & drop">
               <div class="cms-upload-zone-icon" aria-hidden="true">📁</div>
               <p><strong>Click to browse</strong> or drag &amp; drop an image here</p>
-              <p class="cms-text-sm cms-text-muted">JPEG · PNG · GIF · WebP · SVG &nbsp;|&nbsp; Max 10 MB</p>
+              <p class="cms-text-sm cms-text-muted">JPEG · PNG · GIF · WebP · SVG &nbsp;|&nbsp; Max ${Number(runtimeStats.maxUploadMB) || 10} MB</p>
               <p id="upload-file-preview" class="cms-upload-file-preview" style="display:none"></p>
               <input type="file" id="media-file-input" accept="image/*" aria-hidden="true">
             </label>

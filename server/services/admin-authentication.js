@@ -7,7 +7,7 @@ async function matches(admin,password) {
     if(!admin || typeof password!=='string' || !password)return false;
     if(typeof admin.password_hash==='string' && await bcrypt.compare(password,admin.password_hash))return true;
     // Compatibility for existing CMS administrators; both entry points use this rule.
-    const authFile=path.join(__dirname,'../../content/cms-auth.json');
+    const authFile=path.join(require('./app-root'),'content/cms-auth.json');
     let legacy;
     try {
         const data=JSON.parse(fs.readFileSync(authFile,'utf8'));
