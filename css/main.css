@@ -1245,6 +1245,13 @@ body {
     margin: 0 auto;
 }
 
+.auth-section {
+    padding: var(--space-4xl) var(--container-padding);
+    min-height: calc(100vh - 160px);
+    display: flex;
+    align-items: center;
+}
+
 .auth-card {
     background: var(--color-bg-secondary);
     backdrop-filter: blur(10px);
@@ -1253,6 +1260,18 @@ body {
     padding: var(--space-2xl);
     border: 1px solid var(--color-border);
     animation: slideUpFade 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+    max-width: 440px;
+    margin: 0 auto;
+}
+
+.auth-links {
+    text-align: center;
+    margin-top: var(--space-md);
+    font-size: var(--font-size-sm);
+}
+
+.auth-links a {
+    font-weight: var(--font-weight-semibold);
 }
 
 @keyframes slideUpFade {
@@ -2118,15 +2137,14 @@ body {
 }
 .toggle-password {
   position: absolute;
-  right: 12px;
+  right: 8px;
   top: 50%;
   transform: translateY(-50%);
   background: none;
   border: none;
-  color: rgba(255, 255, 255, 0.45);
+  color: rgba(255, 255, 255, 0.75);
   cursor: pointer;
-  padding: 6px;
-  font-size: 1.25rem;
+  padding: 7px;
   line-height: 1;
   display: flex;
   align-items: center;
@@ -2135,9 +2153,17 @@ body {
   z-index: 5;
   border-radius: 50%;
 }
+.toggle-password svg {
+  width: 19px;
+  height: 19px;
+  display: block;
+}
+.toggle-password svg[hidden] {
+  display: none;
+}
 .toggle-password:hover {
   color: var(--cyan);
-  background: rgba(255, 255, 255, 0.05);
+  background: rgba(255, 255, 255, 0.08);
   transform: translateY(-50%) scale(1.08);
 }
 .toggle-password:focus-visible {

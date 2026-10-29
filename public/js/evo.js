@@ -501,13 +501,18 @@
   document.querySelectorAll('.toggle-password').forEach(btn => {
     const input = btn.closest('.input-with-toggle')?.querySelector('input') || btn.parentNode.querySelector('input');
     if (!input) return;
+    const iconEye = btn.querySelector('.icon-eye');
+    const iconEyeOff = btn.querySelector('.icon-eye-off');
     btn.setAttribute('aria-pressed', 'false');
     btn.addEventListener('click', () => {
       const shown = input.type === 'text';
       input.type = shown ? 'password' : 'text';
       btn.setAttribute('aria-pressed', String(!shown));
       btn.setAttribute('aria-label', shown ? 'Show password' : 'Hide password');
-      btn.innerHTML = shown ? '&#128065;' : '&#128064;';
+      if (iconEye && iconEyeOff) {
+        iconEye.style.display = shown ? '' : 'none';
+        iconEyeOff.style.display = shown ? 'none' : '';
+      }
     });
   });
 
