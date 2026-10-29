@@ -26,6 +26,29 @@ async function initialize() {
                 await db.execute(`INSERT IGNORE INTO opportunities (id,title,scope_summary,district_name,category,category_name,due_date,status,posted_by,posted_by_type,posted_by_name,naics_codes)
                     VALUES (?,?,'Illustrative demo project. No real solicitation or application.','Texas','Infrastructure','Infrastructure','2099-12-31','published',?,'prime','Apex Construction Group',?)`,[id,title,prime.id,naics]);
             }
+
+            // Illustrative cross-role activity: a worker applying to a business's
+            // job, and a business applying to a prime's opportunity, each with
+            // the application message + a reply, so every demo role has
+            // something to see in Applications and Messages on first login.
+            const [[existingWorkerApp]]=await db.execute("SELECT id FROM applications WHERE opportunity_id='demo-labor-job' AND applicant_type='worker' AND applicant_id=?",[worker.id]);
+            if(!existingWorkerApp){
+                await db.execute("INSERT INTO applications (opportunity_id,applicant_type,applicant_id,status,notes) VALUES ('demo-labor-job','worker',?,'under_review','12 years in highway lighting and traffic signal work, IMSA Signal Level I certified. Available to start within two weeks.')",[worker.id]);
+                await db.execute("INSERT INTO messages (sender_type,sender_id,sender_business_name,receiver_type,receiver_id,receiver_business_name,opportunity_id,message_type,subject,body,is_read) VALUES ('worker',?,'James Okafor','business',?,'GreenPath Environmental Services','demo-labor-job','application','New Application: Electrical field technician','I applied for the Electrical field technician role. 12 years in highway lighting and traffic signal work, IMSA Signal Level I certified, available to start within two weeks.',1)",[worker.id,business.id]);
+                const [replyMsg]=await db.execute("INSERT INTO messages (sender_type,sender_id,sender_business_name,receiver_type,receiver_id,receiver_business_name,opportunity_id,message_type,subject,body,is_read) VALUES ('business',?,'GreenPath Environmental Services','worker',?,'James Okafor','demo-labor-job','reply','Re: New Application: Electrical field technician','Thanks for applying, James — your IMSA certification is exactly what we need. We are reviewing applications now and will follow up this week to schedule a call.',0)",[business.id,worker.id]);
+                await db.execute("INSERT INTO notifications (user_type,user_id,message_id,is_read) VALUES ('worker',?,?,0)",[worker.id,replyMsg.insertId]);
+            }
+
+            const [[existingBizApp]]=await db.execute("SELECT id FROM applications WHERE opportunity_id='demo-environmental' AND applicant_type='business' AND applicant_id=?",[business.id]);
+            if(!existingBizApp){
+                await db.execute("INSERT INTO applications (opportunity_id,applicant_type,applicant_id,status,notes) VALUES ('demo-environmental','business',?,'under_review','GreenPath specializes in NEPA compliance and site assessment for transportation projects. SAM.gov registered, DBE/SBE/WBE certified.')",[business.id]);
+                await db.execute("INSERT INTO messages (sender_type,sender_id,sender_business_name,receiver_type,receiver_id,receiver_business_name,opportunity_id,message_type,subject,body,is_read) VALUES ('business',?,'GreenPath Environmental Services','prime',?,'Apex Construction Group','demo-environmental','application','New Application: Environmental site assessment','GreenPath Environmental Services has submitted a proposal for Environmental site assessment. We specialize in NEPA compliance and hazardous materials management for transportation projects, DBE/SBE/WBE certified.',1)",[business.id,prime.id]);
+                const [replyMsg2]=await db.execute("INSERT INTO messages (sender_type,sender_id,sender_business_name,receiver_type,receiver_id,receiver_business_name,opportunity_id,message_type,subject,body,is_read) VALUES ('prime',?,'Apex Construction Group','business',?,'GreenPath Environmental Services','demo-environmental','reply','Re: New Application: Environmental site assessment','Thanks for the submission, Tanya. Your DBE/SBE/WBE certifications help us meet our participation goals on this project. We are reviewing qualifications now and will follow up by the end of the week.',0)",[prime.id,business.id]);
+                await db.execute("INSERT INTO notifications (user_type,user_id,message_id,is_read) VALUES ('business',?,?,0)",[business.id,replyMsg2.insertId]);
+            }
+
+            const [[existingSave]]=await db.execute("SELECT id FROM saved_opportunities WHERE opportunity_id='demo-electrical' AND user_type='business' AND user_id=?",[business.id]);
+            if(!existingSave)await db.execute("INSERT INTO saved_opportunities (user_type,user_id,opportunity_id) VALUES ('business',?,'demo-electrical')",[business.id]);
         });
     }).catch(err=>{initialized=null;throw err;});
     return initialized;
