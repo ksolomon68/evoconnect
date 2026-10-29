@@ -1,78 +1,92 @@
 <% if (locals.user) { locals.layout = 'layouts/dashboard'; } %>
-<% const title = locals.title || 'Resources' %>
+<% const title = locals.title || 'Resources | EvoConnect' %>
+<% const role = locals.user?.type || 'worker' %>
+<% const basePath = role === 'business' ? '/business' : (role === 'prime' ? '/prime' : (role === 'admin' ? '/admin' : '/labor')) %>
 
-<section class="dashboard-section">
-  <div class="container">
+<%
+const FALLBACK_URLS = {
+  'SAM.gov Registration Guide': 'https://sam.gov/content/entity-registration',
+  'Capability Statement Template': role === 'business' ? '/business/capability-statement' : 'https://www.sba.gov/federal-contracting/contracting-guide/basic-requirements',
+  'Set-Aside Contract Explainer': 'https://www.sba.gov/federal-contracting/contracting-guide/types-contracts',
+  'How Prime Contractors Pay Subs': 'https://www.sba.gov/federal-contracting/contracting-guide/prime-subcontracting',
+  '8(a) Business Development Program': 'https://www.sba.gov/federal-contracting/contracting-assistance-programs/8a-business-development-program',
+  'HUBZone Program Guide': 'https://www.sba.gov/federal-contracting/contracting-assistance-programs/hubzone-program',
+  'Texas HUB Certification': 'https://comptroller.texas.gov/purchasing/vendor/hub/',
+  'BEAD Program Overview': 'https://broadbandusa.ntia.gov/funding-programs/bead'
+};
 
-    <%- include('../partials/flash') %>
+const BUILTIN_RESOURCES = [
+  { title: 'SAM.gov Entity Registration', description: 'Register your business or trade entity for federal contracts — free and required for federal awards.', url: 'https://sam.gov/content/entity-registration', icon: '🏛️', category: 'Federal Basics' },
+  { title: 'USASpending.gov Award Search', description: 'Search historical federal contract awards, prime contractors, and agency spending data.', url: 'https://www.usaspending.gov', icon: '📈', category: 'Market Research' },
+  { title: 'SBA Federal Contracting Guide', description: 'Official Small Business Administration guide to winning federal and subcontracting opportunities.', url: 'https://www.sba.gov/federal-contracting/contracting-guide', icon: '💼', category: 'Federal Basics' },
+  { title: 'Set-Aside & Certification Programs', description: 'Learn how 8(a), HUBZone, WOSB, and SDVOSB set-aside contracts work and how to qualify.', url: 'https://www.sba.gov/federal-contracting/contracting-assistance-programs', icon: '🏷️', category: 'Certifications' },
+  { title: 'Subcontracting & Prompt Pay Rules', description: 'Understand prime-to-subcontractor payment terms, milestone billing, and federal prompt payment protections.', url: 'https://www.sba.gov/federal-contracting/contracting-guide/prime-subcontracting', icon: '🤝', category: 'Subcontracting' },
+  { title: 'Texas HUB Certification Portal', description: 'Apply for Texas Historically Underutilized Business (HUB) certification for state contracts.', url: 'https://comptroller.texas.gov/purchasing/vendor/hub/', icon: '🎯', category: 'State Contracting' },
+  { title: 'Vendor Readiness Checklist', description: 'Interactive step-by-step checklist tracking Federal, State, and Subcontractor readiness milestones.', url: basePath + '/checklist', icon: '✅', category: 'EvoConnect Tool' },
+  { title: 'Portal Help & FAQ', description: 'Answers to common questions about profiles, NAICS matching, capability statements, and bidding.', url: basePath + '/faq', icon: '❓', category: 'EvoConnect Tool' }
+];
 
-    <div class="dashboard-header" style="margin-bottom:2rem">
-      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem">
-        <div>
-          <h1>Resources</h1>
-          <p class="section-sub">Tools and guides to help you land your first government contract.</p>
-        </div>
-        <a href="/labor/dashboard" class="btn-sm btn-secondary">&larr; Dashboard</a>
-      </div>
-    </div>
+if (role === 'business') {
+  BUILTIN_RESOURCES.unshift({
+    title: 'One-Page Capability Statement Generator',
+    description: 'Generate and print your formatted one-page business capability statement directly from your profile.',
+    url: '/business/capability-statement',
+    icon: '📄',
+    category: 'EvoConnect Tool'
+  });
+}
 
-    <div class="dash-card">
-      <div class="dash-card-header">
-        <h2>Government Contracting Resources</h2>
-      </div>
-      <div class="resource-grid">
-        <% if (locals.resources && resources.length > 0) { %>
-          <% resources.forEach(function(res) { %>
-          <a href="<%= res.url || '#' %>" <%= res.url ? 'target="_blank" rel="noopener"' : '' %> class="resource-card">
-            <div class="resource-icon">&#128218;</div>
-            <h4><%= res.title %></h4>
-            <% if (res.description) { %><p><%= res.description %></p><% } %>
-          </a>
-          <% }) %>
-        <% } else { %>
-          <a href="https://sam.gov" target="_blank" rel="noopener" class="resource-card">
-            <div class="resource-icon">&#127963;</div>
-            <h4>SAM.gov</h4>
-            <p>Register your entity for federal contracts — free and required</p>
-          </a>
-          <a href="https://usaspending.gov" target="_blank" rel="noopener" class="resource-card">
-            <div class="resource-icon">&#128200;</div>
-            <h4>USASpending.gov</h4>
-            <p>Search federal contract awards and spending data</p>
-          </a>
-          <a href="https://comptroller.texas.gov/purchasing/vendor/hub/" target="_blank" rel="noopener" class="resource-card">
-            <div class="resource-icon">&#127919;</div>
-            <h4>Texas HUB Program</h4>
-            <p>Apply for Historically Underutilized Business certification</p>
-          </a>
-          <a href="https://beta.sam.gov/help/entity-registration" target="_blank" rel="noopener" class="resource-card">
-            <div class="resource-icon">&#128221;</div>
-            <h4>SAM.gov Registration Guide</h4>
-            <p>Step-by-step instructions for completing your SAM.gov registration</p>
-          </a>
-          <a href="https://www.sba.gov/federal-contracting/contracting-guide" target="_blank" rel="noopener" class="resource-card">
-            <div class="resource-icon">&#128188;</div>
-            <h4>SBA Contracting Guide</h4>
-            <p>Small Business Administration guide to federal contracting</p>
-          </a>
-          <a href="https://www.sba.gov/federal-contracting/contracting-assistance-programs/hubzone-program" target="_blank" rel="noopener" class="resource-card">
-            <div class="resource-icon">&#127981;</div>
-            <h4>HUBZone Program</h4>
-            <p>SBA program for businesses in historically underutilized zones</p>
-          </a>
-          <a href="/labor/checklist" class="resource-card">
-            <div class="resource-icon">&#9989;</div>
-            <h4>Vendor Readiness Checklist</h4>
-            <p>Track every step from SAM.gov registration to your first subcontract</p>
-          </a>
-          <a href="/labor/faq" class="resource-card">
-            <div class="resource-icon">&#10067;</div>
-            <h4>FAQ</h4>
-            <p>Common questions about government contracting for trade workers</p>
-          </a>
-        <% } %>
-      </div>
-    </div>
+const dbResources = (locals.resources || []).map(function(r) {
+  let resolvedUrl = (r.url && r.url !== '#') ? r.url : (FALLBACK_URLS[r.title] || 'https://www.sba.gov/federal-contracting/contracting-guide');
+  if (r.title === 'Capability Statement Template' && role === 'business') {
+    resolvedUrl = '/business/capability-statement';
+  }
+  return {
+    title: r.title,
+    description: r.description || 'Access this contracting resource and guide.',
+    url: resolvedUrl,
+    icon: '📚',
+    category: r.category || 'Resource'
+  };
+});
 
+// Merge DB resources with built-in resources (avoiding duplicates by title)
+const seenTitles = new Set(dbResources.map(r => r.title.toLowerCase()));
+const allResources = dbResources.concat(BUILTIN_RESOURCES.filter(b => !seenTitles.has(b.title.toLowerCase())));
+%>
+
+<%- include('../partials/flash') %>
+
+<section class="hero-section">
+  <div class="hero-content hero-welcome">
+    <h1>📚 Contracting Resource Library</h1>
+    <p>Curated federal and state contracting guides, certification portals, and interactive readiness tools.</p>
   </div>
 </section>
+
+<div class="dash-card">
+  <div class="dash-card-header">
+    <h2>Government Contracting Resources (<%= allResources.length %>)</h2>
+    <a href="<%= basePath %>/dashboard" class="btn btn-sm btn-secondary">&larr; Dashboard</a>
+  </div>
+
+  <div class="resource-grid">
+    <% allResources.forEach(function(res) { 
+       const isExternal = res.url.startsWith('http://') || res.url.startsWith('https://');
+    %>
+      <a href="<%= res.url %>" <%= isExternal ? 'target="_blank" rel="noopener noreferrer"' : '' %> class="resource-card">
+        <div style="display:flex;align-items:center;justify-content:space-between;width:100%;margin-bottom:0.75rem;">
+          <div class="resource-icon" style="margin-bottom:0;"><%= res.icon || '📚' %></div>
+          <% if (res.category) { %>
+            <span style="font-size:0.72rem;font-weight:700;text-transform:uppercase;letter-spacing:0.04em;background:#F1F5F9;color:#475569;padding:0.2rem 0.55rem;border-radius:999px;"><%= res.category %></span>
+          <% } %>
+        </div>
+        <h4><%= res.title %></h4>
+        <p><%= res.description %></p>
+        <span class="resource-cta">
+          <%= isExternal ? 'Open Resource ↗' : 'Open Tool →' %>
+        </span>
+      </a>
+    <% }) %>
+  </div>
+</div>

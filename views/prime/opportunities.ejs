@@ -1,4 +1,4 @@
-<%- locals.layout = 'layouts/dashboard'; %>
+<% if (locals.user) { locals.layout = 'layouts/dashboard'; } %>
 <% const title = locals.title || 'Manage Opportunities | EvoConnect Prime' %>
 <% const oppList = locals.opportunities || [] %>
 <% const candidates = locals.candidates || [] %>

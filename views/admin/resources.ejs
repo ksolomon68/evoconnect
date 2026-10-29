@@ -78,13 +78,26 @@
               </tr>
             </thead>
             <tbody>
-              <% resources.forEach(function(r) { %>
+              <%
+              const ADMIN_FALLBACK_URLS = {
+                'SAM.gov Registration Guide': 'https://sam.gov/content/entity-registration',
+                'Capability Statement Template': 'https://www.sba.gov/federal-contracting/contracting-guide/basic-requirements',
+                'Set-Aside Contract Explainer': 'https://www.sba.gov/federal-contracting/contracting-guide/types-contracts',
+                'How Prime Contractors Pay Subs': 'https://www.sba.gov/federal-contracting/contracting-guide/prime-subcontracting',
+                '8(a) Business Development Program': 'https://www.sba.gov/federal-contracting/contracting-assistance-programs/8a-business-development-program',
+                'HUBZone Program Guide': 'https://www.sba.gov/federal-contracting/contracting-assistance-programs/hubzone-program',
+                'Texas HUB Certification': 'https://comptroller.texas.gov/purchasing/vendor/hub/',
+                'BEAD Program Overview': 'https://broadbandusa.ntia.gov/funding-programs/bead'
+              };
+              resources.forEach(function(r) {
+                const targetUrl = (r.url && r.url !== '#') ? r.url : (ADMIN_FALLBACK_URLS[r.title] || 'https://www.sba.gov/federal-contracting/contracting-guide');
+              %>
               <tr>
-                <td style="color:#94A3B8;font-size:.85rem"><%= r.sort_order %></td>
+                <td style="color:#64748B;font-size:.85rem"><%= r.sort_order %></td>
                 <td>
-                  <strong><%= r.title %></strong>
-                  <% if (r.url) { %><br><a href="<%= r.url %>" target="_blank" rel="noopener" style="color:#06B6D4;font-size:.8rem;word-break:break-all"><%= r.url.length > 50 ? r.url.slice(0,50) + '…' : r.url %></a><% } %>
-                  <% if (r.description) { %><br><span style="color:#64748B;font-size:.8rem"><%= r.description %></span><% } %>
+                  <a href="<%= targetUrl %>" target="_blank" rel="noopener noreferrer" style="color:#0284C7;font-weight:700;text-decoration:none;"><%= r.title %> ↗</a>
+                  <br><a href="<%= targetUrl %>" target="_blank" rel="noopener noreferrer" style="color:#0284C7;font-size:.8rem;word-break:break-all"><%= targetUrl.length > 55 ? targetUrl.slice(0,55) + '…' : targetUrl %></a>
+                  <% if (r.description) { %><br><span style="color:#475569;font-size:.82rem"><%= r.description %></span><% } %>
                 </td>
                 <td style="text-transform:capitalize;color:#64748B"><%= r.category || '—' %></td>
                 <td style="text-transform:capitalize"><%= r.audience || 'all' %></td>

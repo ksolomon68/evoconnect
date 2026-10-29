@@ -154,10 +154,25 @@ const navCfg = NAV_CONFIG[currentRole] || NAV_CONFIG.worker;
             padding: 0;
             z-index: 100;
         }
+        aside.sidebar .sidebar-nav {
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+        aside.sidebar .sidebar-nav::-webkit-scrollbar {
+            display: none;
+            width: 0;
+            height: 0;
+        }
         aside.sidebar .nav-item {
             color: #1E293B !important;
             background: transparent !important;
             border-left: 4px solid transparent !important;
+            display: flex !important;
+            flex-direction: row !important;
+            align-items: center !important;
+            min-height: 36px !important;
+            padding: 0.45rem 1.25rem !important;
+            font-size: 0.88rem !important;
         }
         aside.sidebar .nav-item:hover {
             background: #F1F5F9 !important;
@@ -173,7 +188,7 @@ const navCfg = NAV_CONFIG[currentRole] || NAV_CONFIG.worker;
             position: relative !important;
             margin-top: auto;
             border-top: 1px solid #E2E8F0;
-            padding: 0.75rem 0;
+            padding: 0.5rem 0;
             background: #FFFFFF;
         }
         .dashboard-container {
@@ -196,10 +211,132 @@ const navCfg = NAV_CONFIG[currentRole] || NAV_CONFIG.worker;
         body.dashboard-v2 .summary-card,
         body.dashboard-v2 .action-card,
         body.dashboard-v2 .stat-card,
+        body.dashboard-v2 .dash-card,
         body.dashboard-v2 .recommendations-list {
             background-color: #FFFFFF !important;
             color: #0F172A !important;
             border: 1px solid #E2E8F0 !important;
+            border-radius: 12px !important;
+        }
+        body.dashboard-v2 .dash-card {
+            padding: 1.5rem;
+            box-shadow: 0 1px 3px rgba(15, 23, 42, 0.06);
+        }
+        body.dashboard-v2 .dash-card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1.25rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 1px solid #E2E8F0;
+        }
+        body.dashboard-v2 .dash-card-header h2 {
+            margin: 0 !important;
+            font-size: 1.15rem !important;
+        }
+        body.dashboard-v2 .action-grid {
+            display: grid !important;
+            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)) !important;
+            gap: 1.25rem !important;
+            margin-bottom: 2rem !important;
+        }
+        body.dashboard-v2 .action-card {
+            display: flex !important;
+            flex-direction: column !important;
+            align-items: flex-start !important;
+            justify-content: flex-start !important;
+            padding: 1.35rem !important;
+            text-decoration: none !important;
+            height: 100%;
+            box-shadow: 0 1px 3px rgba(15, 23, 42, 0.06) !important;
+            transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease !important;
+        }
+        body.dashboard-v2 .action-card:hover {
+            transform: translateY(-3px) !important;
+            box-shadow: 0 8px 20px rgba(2, 132, 199, 0.12) !important;
+            border-color: #0284C7 !important;
+        }
+        body.dashboard-v2 .action-card .icon-box {
+            width: 44px !important;
+            height: 44px !important;
+            min-width: 44px !important;
+            border-radius: 10px !important;
+            background: #E0F2FE !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            font-size: 1.35rem !important;
+            margin-bottom: 0.85rem !important;
+        }
+        body.dashboard-v2 .action-card h3 {
+            font-size: 1.02rem !important;
+            font-weight: 700 !important;
+            color: #0F172A !important;
+            margin: 0 0 0.4rem 0 !important;
+            line-height: 1.3 !important;
+        }
+        body.dashboard-v2 .action-card p {
+            font-size: 0.86rem !important;
+            color: #475569 !important;
+            line-height: 1.5 !important;
+            margin: 0 !important;
+        }
+        body.dashboard-v2 .resource-grid {
+            display: grid !important;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)) !important;
+            gap: 1.25rem !important;
+        }
+        body.dashboard-v2 .resource-card {
+            display: flex !important;
+            flex-direction: column !important;
+            align-items: flex-start !important;
+            padding: 1.35rem !important;
+            background: #FFFFFF !important;
+            border: 1px solid #E2E8F0 !important;
+            border-radius: 12px !important;
+            text-decoration: none !important;
+            color: #0F172A !important;
+            box-shadow: 0 1px 3px rgba(15, 23, 42, 0.05) !important;
+            transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease !important;
+            cursor: pointer !important;
+        }
+        body.dashboard-v2 .resource-card:hover {
+            transform: translateY(-3px) !important;
+            box-shadow: 0 8px 20px rgba(2, 132, 199, 0.12) !important;
+            border-color: #0284C7 !important;
+        }
+        body.dashboard-v2 .resource-card .resource-icon {
+            width: 42px;
+            height: 42px;
+            border-radius: 10px;
+            background: #E0F2FE;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.3rem;
+            margin-bottom: 0.75rem;
+        }
+        body.dashboard-v2 .resource-card h4 {
+            font-size: 1rem !important;
+            font-weight: 700 !important;
+            color: #0284C7 !important;
+            margin: 0 0 0.4rem 0 !important;
+        }
+        body.dashboard-v2 .resource-card p {
+            font-size: 0.86rem !important;
+            color: #475569 !important;
+            line-height: 1.5 !important;
+            margin: 0 0 0.75rem 0 !important;
+            flex: 1;
+        }
+        body.dashboard-v2 .resource-card .resource-cta {
+            font-size: 0.82rem;
+            font-weight: 600;
+            color: #0284C7;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.25rem;
+            margin-top: auto;
         }
         body.dashboard-v2 h1,
         body.dashboard-v2 h2,
@@ -330,43 +467,43 @@ const navCfg = NAV_CONFIG[currentRole] || NAV_CONFIG.worker;
     
     <!-- Server-Rendered Caltrans Sidebar -->
     <aside class="sidebar" id="sidebar">
-        <div class="sidebar-brand" style="display:flex;align-items:center;justify-content:space-between;padding:1.1rem 1.5rem;border-bottom:1px solid #E2E8F0;">
+        <div class="sidebar-brand" style="display:flex;align-items:center;justify-content:space-between;padding:0.85rem 1.25rem;border-bottom:1px solid #E2E8F0;">
             <a href="<%= navCfg.dashboardHref %>" style="text-decoration:none;display:flex;align-items:center;gap:0.5rem;font-weight:800;font-size:1.15rem;color:var(--color-primary, #005A8C);">
-                <img src="/images/favicon.png" alt="EvoConnect" style="height:28px;width:auto;">
+                <img src="/images/favicon.png" alt="EvoConnect" style="height:26px;width:auto;">
                 <span>EvoConnect</span>
             </a>
             <button class="sidebar-close-btn" aria-label="Close menu" onclick="Navigation.closeSidebar()">&times;</button>
         </div>
 
-        <nav class="sidebar-nav" style="padding:1rem 0;flex:1;overflow-y:auto;">
-            <div style="padding:0 1.5rem 0.5rem;font-size:0.75rem;text-transform:uppercase;color:#64748B;font-weight:700;letter-spacing:0.04em;">
+        <nav class="sidebar-nav" style="padding:0.6rem 0;flex:1;overflow-y:auto;">
+            <div style="padding:0 1.25rem 0.35rem;font-size:0.72rem;text-transform:uppercase;color:#64748B;font-weight:700;letter-spacing:0.04em;">
                 <%= navCfg.title %>
             </div>
             <% navCfg.items.forEach(function(item) { %>
-                <a href="<%= item.href %>" class="nav-item" style="display:flex;align-items:center;gap:0.75rem;padding:0.65rem 1.5rem;min-height:42px;color:#1E293B;text-decoration:none;font-weight:500;font-size:0.92rem;border-radius:0;margin:0;">
-                    <span aria-hidden="true" style="font-size:1.15rem;width:24px;text-align:center;"><%= item.icon %></span>
+                <a href="<%= item.href %>" class="nav-item" style="display:flex;align-items:center;gap:0.65rem;padding:0.45rem 1.25rem;min-height:36px;color:#1E293B;text-decoration:none;font-weight:500;font-size:0.88rem;border-radius:0;margin:0;">
+                    <span aria-hidden="true" style="font-size:1.05rem;width:22px;text-align:center;"><%= item.icon %></span>
                     <span><%= item.label %></span>
                 </a>
             <% }) %>
 
             <!-- Quick Role / Demo Switcher -->
-            <div style="padding:1rem 1.5rem 0.35rem;font-size:0.7rem;text-transform:uppercase;color:#94A3B8;font-weight:700;letter-spacing:0.04em;border-top:1px solid #F1F5F9;margin-top:0.75rem;">
+            <div style="padding:0.65rem 1.25rem 0.25rem;font-size:0.68rem;text-transform:uppercase;color:#94A3B8;font-weight:700;letter-spacing:0.04em;border-top:1px solid #F1F5F9;margin-top:0.5rem;">
                 Switch Demo Portal
             </div>
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.35rem;padding:0.25rem 1.25rem;">
-                <a href="/auth/demo/worker" style="font-size:0.78rem;padding:0.35rem 0.5rem;border:1px solid #E2E8F0;border-radius:6px;text-decoration:none;color:<%= currentRole === 'worker' ? '#0284C7' : '#475569' %>;background:<%= currentRole === 'worker' ? '#E0F2FE' : '#F8FAFC' %>;font-weight:600;text-align:center;">👷 Labor</a>
-                <a href="/auth/demo/business" style="font-size:0.78rem;padding:0.35rem 0.5rem;border:1px solid #E2E8F0;border-radius:6px;text-decoration:none;color:<%= currentRole === 'business' ? '#0284C7' : '#475569' %>;background:<%= currentRole === 'business' ? '#E0F2FE' : '#F8FAFC' %>;font-weight:600;text-align:center;">🏢 Business</a>
-                <a href="/auth/demo/prime" style="font-size:0.78rem;padding:0.35rem 0.5rem;border:1px solid #E2E8F0;border-radius:6px;text-decoration:none;color:<%= currentRole === 'prime' ? '#0284C7' : '#475569' %>;background:<%= currentRole === 'prime' ? '#E0F2FE' : '#F8FAFC' %>;font-weight:600;text-align:center;">🏗️ Prime</a>
-                <a href="/auth/demo/admin" style="font-size:0.78rem;padding:0.35rem 0.5rem;border:1px solid #E2E8F0;border-radius:6px;text-decoration:none;color:<%= currentRole === 'admin' ? '#0284C7' : '#475569' %>;background:<%= currentRole === 'admin' ? '#E0F2FE' : '#F8FAFC' %>;font-weight:600;text-align:center;">🛡️ Admin</a>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.3rem;padding:0.2rem 1.1rem;">
+                <a href="/auth/demo/worker" style="font-size:0.75rem;padding:0.28rem 0.4rem;border:1px solid #E2E8F0;border-radius:6px;text-decoration:none;color:<%= currentRole === 'worker' ? '#0284C7' : '#475569' %>;background:<%= currentRole === 'worker' ? '#E0F2FE' : '#F8FAFC' %>;font-weight:600;text-align:center;">👷 Labor</a>
+                <a href="/auth/demo/business" style="font-size:0.75rem;padding:0.28rem 0.4rem;border:1px solid #E2E8F0;border-radius:6px;text-decoration:none;color:<%= currentRole === 'business' ? '#0284C7' : '#475569' %>;background:<%= currentRole === 'business' ? '#E0F2FE' : '#F8FAFC' %>;font-weight:600;text-align:center;">🏢 Business</a>
+                <a href="/auth/demo/prime" style="font-size:0.75rem;padding:0.28rem 0.4rem;border:1px solid #E2E8F0;border-radius:6px;text-decoration:none;color:<%= currentRole === 'prime' ? '#0284C7' : '#475569' %>;background:<%= currentRole === 'prime' ? '#E0F2FE' : '#F8FAFC' %>;font-weight:600;text-align:center;">🏗️ Prime</a>
+                <a href="/auth/demo/admin" style="font-size:0.75rem;padding:0.28rem 0.4rem;border:1px solid #E2E8F0;border-radius:6px;text-decoration:none;color:<%= currentRole === 'admin' ? '#0284C7' : '#475569' %>;background:<%= currentRole === 'admin' ? '#E0F2FE' : '#F8FAFC' %>;font-weight:600;text-align:center;">🛡️ Admin</a>
             </div>
         </nav>
 
         <div class="sidebar-footer">
-            <a href="/?public=1" class="sidebar-footer-link" style="min-height:40px;display:flex;align-items:center;gap:0.75rem;padding:0.5rem 1.5rem;text-decoration:none;color:#475569;font-size:0.9rem;">
-                <span style="font-size:1.1rem;">🌐</span> Back to Public Site
+            <a href="/?public=1" class="sidebar-footer-link" style="min-height:34px;display:flex;align-items:center;gap:0.65rem;padding:0.35rem 1.25rem;text-decoration:none;color:#475569;font-size:0.86rem;">
+                <span style="font-size:1rem;">🌐</span> Back to Public Site
             </a>
-            <a href="/logout" onclick="localStorage.removeItem('wfc_user');" class="sidebar-footer-link sidebar-signout-btn" style="min-height:40px;display:flex;align-items:center;gap:0.75rem;padding:0.5rem 1.5rem;text-decoration:none;color:#DC2626;font-weight:600;font-size:0.9rem;">
-                <span style="font-size:1.1rem;">🚪</span> Sign Out
+            <a href="/logout" onclick="localStorage.removeItem('wfc_user');" class="sidebar-footer-link sidebar-signout-btn" style="min-height:34px;display:flex;align-items:center;gap:0.65rem;padding:0.35rem 1.25rem;text-decoration:none;color:#DC2626;font-weight:600;font-size:0.86rem;">
+                <span style="font-size:1rem;">🚪</span> Sign Out
             </a>
         </div>
     </aside>

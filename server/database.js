@@ -523,10 +523,10 @@ async function initDatabase() {
         const [[{ rc }]] = await db.execute('SELECT COUNT(*) AS rc FROM resources');
         if (rc === 0) {
             const resources = [
-                ['SAM.gov Registration Guide','Step-by-step guide to registering on the federal vendor database.','https://sam.gov','Federal Basics','all',1],
-                ['Capability Statement Template','Download and customize this one-page capability statement template.', null,'Capability Statement','all',2],
-                ['Set-Aside Contract Explainer','Learn how set-aside programs work and which ones you qualify for.', null,'Federal Basics','worker',3],
-                ['How Prime Contractors Pay Subs','Understand payment terms, milestone billing, and prompt pay requirements.', null,'Subcontracting','worker',4],
+                ['SAM.gov Registration Guide','Step-by-step guide to registering on the federal vendor database.','https://sam.gov/content/entity-registration','Federal Basics','all',1],
+                ['Capability Statement Template','Generate or customize a formatted one-page capability statement.','/business/capability-statement','Capability Statement','all',2],
+                ['Set-Aside Contract Explainer','Learn how set-aside programs work and which ones you qualify for.','https://www.sba.gov/federal-contracting/contracting-guide/types-contracts','Federal Basics','worker',3],
+                ['How Prime Contractors Pay Subs','Understand payment terms, milestone billing, and prompt pay requirements.','https://www.sba.gov/federal-contracting/contracting-guide/prime-subcontracting','Subcontracting','worker',4],
                 ['8(a) Business Development Program','SBA\'s flagship small business program — eligibility and application.','https://www.sba.gov/federal-contracting/contracting-assistance-programs/8a-business-development-program','Certifications','business',5],
                 ['HUBZone Program Guide','Historically Underutilized Business Zone certification and benefits.','https://www.sba.gov/federal-contracting/contracting-assistance-programs/hubzone-program','Certifications','business',6],
                 ['Texas HUB Certification','Texas Historically Underutilized Business certification guide.','https://comptroller.texas.gov/purchasing/vendor/hub/','Certifications','business',7],
@@ -540,6 +540,12 @@ async function initDatabase() {
             }
             console.log('EvoConnect DB: Seeded default resources.');
         }
+
+        // Backfill any existing resources that had NULL urls from earlier seeds
+        await db.execute(`UPDATE resources SET url = 'https://sam.gov/content/entity-registration' WHERE title = 'SAM.gov Registration Guide' AND (url IS NULL OR url = '' OR url = '#')`);
+        await db.execute(`UPDATE resources SET url = 'https://www.sba.gov/federal-contracting/contracting-guide/basic-requirements' WHERE title = 'Capability Statement Template' AND (url IS NULL OR url = '' OR url = '#')`);
+        await db.execute(`UPDATE resources SET url = 'https://www.sba.gov/federal-contracting/contracting-guide/types-contracts' WHERE title = 'Set-Aside Contract Explainer' AND (url IS NULL OR url = '' OR url = '#')`);
+        await db.execute(`UPDATE resources SET url = 'https://www.sba.gov/federal-contracting/contracting-guide/prime-subcontracting' WHERE title = 'How Prime Contractors Pay Subs' AND (url IS NULL OR url = '' OR url = '#')`);
 
         // ── Seed default admin ─────────────────────────────────────
         const [[{ ac }]] = await db.execute('SELECT COUNT(*) AS ac FROM admins');

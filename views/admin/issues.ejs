@@ -1,4 +1,4 @@
-<%- locals.layout = 'layouts/dashboard'; %>
+<% if (locals.user) { locals.layout = 'layouts/dashboard'; } %>
 <% const title = locals.title || 'Reported Issues | EvoConnect Admin' %>
 <% const issues = locals.issues || [] %>
 
