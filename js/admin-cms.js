@@ -2152,7 +2152,7 @@ async function renderAdminsTab(container) {
             <div class="cms-tab-header">
                 <div>
                     <h1 class="cms-page-title">👥 Admin Accounts</h1>
-                    <p class="cms-page-subtitle">Manage users with access to the Caltrans CMS and admin dashboards.</p>
+                    <p class="cms-page-subtitle">Manage administrators with access to the EvoConnect CMS and admin dashboards.</p>
                 </div>
                 <button class="cms-btn cms-btn-primary" onclick="showAdminModal()">+ Add New Admin</button>
             </div>
@@ -2170,13 +2170,13 @@ async function renderAdminsTab(container) {
                         ${admins.map(a => `
                             <tr>
                                 <td>
-                                    <div style="font-weight:600;color:var(--cms-primary)">${a.organization_name || a.contact_name || 'Administrator'}</div>
-                                    <div style="font-size:0.85rem;color:var(--cms-text-muted)">${a.email}</div>
+                                    <div style="font-weight:600;color:var(--cms-primary)">${escHtml(a.organization_name || a.contact_name || 'Administrator')}</div>
+                                    <div style="font-size:0.85rem;color:var(--cms-text-muted)">${escHtml(a.email)}</div>
                                 </td>
                                 <td><span class="cms-badge ${a.type === 'wfc_admin' ? 'cms-badge-primary' : 'cms-badge-secondary'}">${a.type}</span></td>
                                 <td>${new Date(a.created_at).toLocaleDateString()}</td>
                                 <td style="text-align:right">
-                                    <button class="cms-btn cms-btn-sm" onclick="showAdminModal(${JSON.stringify(a).replace(/"/g, '&quot;')})">Edit</button>
+                                    <button class="cms-btn cms-btn-sm" data-admin-edit="${a.id}">Edit</button>
                                 </td>
                             </tr>
                         `).join('') || '<tr><td colspan="4" style="text-align:center;padding:2rem">No other admin accounts found.</td></tr>'}
@@ -2184,6 +2184,7 @@ async function renderAdminsTab(container) {
                 </table>
             </div>
         `;
+        container.querySelectorAll('[data-admin-edit]').forEach(button=>button.addEventListener('click',()=>showAdminModal(admins.find(admin=>admin.id===Number(button.dataset.adminEdit)))));
     } catch (err) {
         container.innerHTML = `<div class="cms-alert cms-alert-error">Failed to load admins: ${err.message}</div>`;
     }
@@ -2204,21 +2205,20 @@ window.showAdminModal = function(adminData = null) {
             <form id="cms-admin-form">
                 <div class="cms-form-group">
                     <label class="cms-label cms-label-required">Display Name (Department/Name)</label>
-                    <input type="text" id="adm-name" class="cms-input" style="width:100%" value="${adminData?.organization_name || adminData?.contact_name || ''}" required>
+                    <input type="text" id="adm-name" class="cms-input" style="width:100%" value="${escHtml(adminData?.organization_name || adminData?.contact_name || '')}" required>
                 </div>
                 <div class="cms-form-group">
                     <label class="cms-label cms-label-required">Email Address</label>
-                    <input type="email" id="adm-email" class="cms-input" style="width:100%" value="${adminData?.email || ''}" required ${isEdit ? 'disabled' : ''}>
+                    <input type="email" id="adm-email" class="cms-input" style="width:100%" value="${escHtml(adminData?.email || '')}" required ${isEdit ? 'disabled' : ''}>
                 </div>
                 <div class="cms-form-group">
                     <label class="cms-label ${isEdit ? '' : 'cms-label-required'}">Password ${isEdit ? '(Leave blank to keep current)' : ''}</label>
-                    <input type="password" id="adm-password" class="cms-input" style="width:100%" ${isEdit ? '' : 'required'}>
+                    <input type="password" minlength="12" maxlength="72" autocomplete="new-password" id="adm-password" class="cms-input" style="width:100%" ${isEdit ? '' : 'required'}>
                 </div>
                 <div class="cms-form-group">
                     <label class="cms-label cms-label-required">Role / Permission Level</label>
                     <select id="adm-type" class="cms-input" style="width:100%">
                         <option value="admin" ${adminData?.type === 'admin' ? 'selected' : ''}>System Admin</option>
-                        <option value="wfc_admin" ${adminData?.type === 'wfc_admin' ? 'selected' : ''}>Caltrans CMS Editor</option>
                     </select>
                 </div>
                 <div id="adm-error" style="display:none;color:var(--cms-error);font-size:.85rem;margin-bottom:1rem;"></div>

@@ -67,63 +67,14 @@
       <!-- Results -->
       <div class="search-results">
         <div class="results-meta">
-          <span><%= locals.total || 0 %> businesses found</span>
+          <span><%= locals.results?.length || 0 %> businesses found</span>
           <% if (prime.tier === 'basic') { %>
             <span class="badge badge-amber"><%= locals.connectionsUsed || 0 %> / 10 connections used this month</span>
           <% } %>
         </div>
 
-        <% if (locals.businesses && businesses.length > 0) { %>
-          <div class="results-grid">
-            <% businesses.forEach(function(biz) { %>
-            <%
-              const isLocked = prime.tier === 'basic' && locals.connectionsUsed >= 10;
-              let bizCerts = [];
-              try { bizCerts = JSON.parse(biz.certifications || '[]'); } catch(e) {}
-              let naicsList = [];
-              try { naicsList = JSON.parse(biz.naics_codes || '[]'); } catch(e) {}
-            %>
-            <div class="result-card <%= isLocked ? 'result-card-locked' : '' %>">
-              <% if (isLocked) { %>
-                <div class="locked-overlay">
-                  <div class="locked-message">
-                    <span>&#128274;</span>
-                    <p>Monthly connection limit reached.</p>
-                    <a href="/prime/billing" class="btn-amber btn-sm">Upgrade to Pro</a>
-                  </div>
-                </div>
-              <% } %>
-              <div class="result-card-header">
-                <div class="result-avatar biz-avatar"><%= biz.company_name ? biz.company_name[0] : 'B' %></div>
-                <div>
-                  <div class="result-name"><%= biz.company_name || 'Business' %></div>
-                  <div class="result-location"><%= biz.city && biz.state ? biz.city + ', ' + biz.state : 'Location not set' %></div>
-                </div>
-              </div>
-              <% if (biz.service_description) { %>
-                <p class="result-desc"><%= biz.service_description.substring(0, 120) %><%= biz.service_description.length > 120 ? '...' : '' %></p>
-              <% } %>
-              <% if (naicsList.length > 0) { %>
-                <div class="result-naics">
-                  <strong>NAICS:</strong>
-                  <% naicsList.slice(0,3).forEach(function(code) { %><span class="tag"><%= code %></span><% }) %>
-                  <% if (naicsList.length > 3) { %><span class="tag tag-more">+<%= naicsList.length - 3 %></span><% } %>
-                </div>
-              <% } %>
-              <div class="result-badges">
-                <% if (biz.sam_registered === 'yes') { %><span class="badge badge-success">SAM Active</span><% } %>
-                <% bizCerts.slice(0,4).forEach(function(c) { %><span class="badge badge-cyan"><%= c.toUpperCase() %></span><% }) %>
-              </div>
-              <% if (!isLocked) { %>
-                <div class="result-actions"><a class="btn btn-secondary" href="/directory/business/<%= biz.id %>">View profile &amp; statement</a>
-                  <form method="POST" action="/prime/connect/business/<%= biz.id %>">
-                    <button type="submit" class="btn-primary btn-sm">Request Contact</button>
-                  </form>
-                </div>
-              <% } %>
-            </div>
-            <% }) %>
-          </div>
+        <% if (locals.results && results.length > 0) { %>
+          <%- include('../shared/directory-cards', { profiles: results, profileType: 'business' }) %>
 
           <!-- Pagination -->
           <% if (locals.totalPages > 1) { %>

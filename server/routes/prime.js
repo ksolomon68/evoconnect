@@ -52,9 +52,6 @@ const SUBSCRIPTION_TIERS = [
     }
 ];
 
-// ── FAQ Data ──────────────────────────────────────────────────────────────────
-const { PRIME_FAQS } = require('../services/faq-content');
-
 // ── Helpers ───────────────────────────────────────────────────────────────────
 function flash(req, type, message) {
     req.session.flash = { type, message };
@@ -376,8 +373,10 @@ router.get('/search/workers', requireType('prime'), async (req, res) => {
             });
         }
 
-        const { trade, state, travel_willingness, sam_registered } = req.query;
-        const certFilter = req.query.certifications;
+        const { trade, state } = req.query;
+        const travel_willingness=(req.query.travel_willingness || req.query.travel || '').replace('local_only','local');
+        const sam_registered=req.query.sam_registered || req.query.sam;
+        const certFilter=req.query.certifications || req.query.cert;
 
         const conditions = ['w.status = ?'];
         const params = ['active'];
@@ -391,7 +390,7 @@ router.get('/search/workers', requireType('prime'), async (req, res) => {
         const [results] = await db.execute(
             `SELECT id, full_name, trade_category, skills, certifications,
                     years_experience, sam_registered, business_entity,
-                    city, state, zip, travel_willingness, profile_pct
+                    city, state, zip, travel_willingness, profile_pct, experience_summary
              FROM workers w WHERE ${where}
              ORDER BY profile_pct DESC LIMIT 50`,
             params
@@ -405,7 +404,9 @@ router.get('/search/workers', requireType('prime'), async (req, res) => {
         }));
 
         if (certFilter) {
-            filtered = filtered.filter(w => w.certifications.includes(certFilter));
+            const selected=Array.isArray(certFilter)?certFilter:[certFilter];
+            const normalize=value=>String(value).toLowerCase().replace(/[^a-z0-9]/g,'');
+            filtered = filtered.filter(w => selected.every(cert=>w.certifications.map(normalize).includes(normalize(cert))));
         }
 
         // Increment view count for basic tier
@@ -420,7 +421,7 @@ router.get('/search/workers', requireType('prime'), async (req, res) => {
             title: 'Search Workers | EvoConnect',
             flash: getFlash(req),
             prime,
-            results: filtered,
+            results: await require('../services/directory-profiles')(db,'worker',filtered),
             filters: req.query,
             limitReached: false,
             states: US_STATES
@@ -464,14 +465,17 @@ router.get('/search/businesses', requireType('prime'), async (req, res) => {
             });
         }
 
-        const { state, service_radius, naics_code } = req.query;
-        const certFilter = req.query.certifications;
+        const { state, service_radius } = req.query;
+        const naics_code=req.query.naics_code || req.query.naics;
+        const sam_registered=req.query.sam_registered || req.query.sam;
+        const certFilter=req.query.certifications || req.query.cert;
 
         const conditions = ['status = ?'];
         const params = ['active'];
 
         if (state)          { conditions.push('state = ?');          params.push(state); }
         if (service_radius) { conditions.push('service_radius = ?'); params.push(service_radius); }
+        if (sam_registered) { conditions.push('sam_registered = ?'); params.push(sam_registered); }
 
         const where = conditions.join(' AND ');
         const [results] = await db.execute(
@@ -490,10 +494,12 @@ router.get('/search/businesses', requireType('prime'), async (req, res) => {
         }));
 
         if (certFilter) {
-            filtered = filtered.filter(b => b.certifications.includes(certFilter));
+            const selected=Array.isArray(certFilter)?certFilter:[certFilter];
+            const normalize=value=>String(value).toLowerCase().replace(/[^a-z0-9]/g,'');
+            filtered = filtered.filter(b => selected.every(cert=>b.certifications.map(normalize).includes(normalize(cert))));
         }
         if (naics_code) {
-            filtered = filtered.filter(b => b.naics_codes.includes(naics_code));
+            filtered = filtered.filter(b => b.naics_codes.map(String).includes(String(naics_code)));
         }
 
         if (prime.subscription_tier === 'basic' && filtered.length > 0) {
@@ -507,7 +513,7 @@ router.get('/search/businesses', requireType('prime'), async (req, res) => {
             title: 'Search Businesses | EvoConnect',
             flash: getFlash(req),
             prime,
-            results: filtered,
+            results: await require('../services/directory-profiles')(db,'business',filtered),
             filters: req.query,
             limitReached: false,
             states: US_STATES
@@ -671,12 +677,14 @@ router.post('/rfq', requireType('prime'), async (req, res) => {
 });
 
 // ── GET /prime/faq ─────────────────────────────────────────────────────────────
-router.get('/faq', (req, res) => {
-    res.render('prime/faq', {
-        title: 'FAQ | EvoConnect Prime',
-        flash: getFlash(req),
-        faqs: PRIME_FAQS
-    });
+router.get('/faq', async (req, res, next) => {
+    try {
+        res.render('prime/faq', {
+            title: 'FAQ | EvoConnect Prime',
+            flash: getFlash(req),
+            faqs: await require('../services/faqs').list(getDb(),'prime')
+        });
+    }catch(err){next(err);}
 });
 
 // ── GET /prime/login ───────────────────────────────────────────────────────────

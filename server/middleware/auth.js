@@ -100,7 +100,7 @@ function requireType(...types) {
 }
 
 // Middleware: require admin
-function requireAdmin(req, res, next) {
+async function requireAdmin(req, res, next) {
     const token = getTokenFromRequest(req);
     if (!token) return res.redirect('/login');
     try {
@@ -114,6 +114,8 @@ function requireAdmin(req, res, next) {
             };
             return res.redirect(dest[decoded.type] || '/login');
         }
+        const [accounts]=await require('../database').getDb().execute('SELECT id FROM admins WHERE id=?',[decoded.id]);
+        if(!accounts.length){clearAuthCookie(res);return res.redirect('/login');}
         req.user = decoded;
         res.locals.user = decoded;
         next();

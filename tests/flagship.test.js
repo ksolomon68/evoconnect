@@ -330,3 +330,63 @@ test('dashboard admin sessions open CMS without a separate login; other roles ca
     assert.equal((await clients.business.request('/api/cms/session',{method:'POST'})).status,403);
     assert.equal((await fetch(base+'/api/cms/session',{method:'POST'})).status,401);
 });
+test('CMS FAQ edits, rich text, visibility, categories, order and deletion sync to public and dashboard pages',async()=>{
+    const api=async(method,path,body)=>clients.admin.request('/api/cms'+path,{method,headers:{'content-type':'application/json'},...(body?{body:JSON.stringify(body)}:{})});
+    const initial=await api('GET','/faqs');assert.equal(initial.status,200);assert.ok((await initial.json()).length);
+    assert.equal((await clients.business.request('/api/cms/faqs')).status,403);
+    assert.equal((await fetch(base+'/api/cms/faqs')).status,401);
+    const payload={category:'General',question:'CMS sync fixture question',answer:'<p>CMS edited <strong>answer</strong>.</p><script>alert(1)</script><a href="javascript:alert(1)" onclick="alert(1)">Link</a>',status:'active'};
+    const created=await api('POST','/faqs',payload);assert.equal(created.status,201);const {id}=await created.json();
+    for(const path of ['/faq','/labor/faq','/business/faq','/prime/faq']){const html=await(await fetch(base+path)).text();assert.match(html,/CMS sync fixture question/);assert.match(html,/<strong>answer<\/strong>/);assert.doesNotMatch(html,/javascript:alert|onclick="alert|<script>alert/);}
+    assert.equal((await api('PUT',`/faqs/${id}`,{...payload,status:'inactive'})).status,200);
+    assert.doesNotMatch(await(await fetch(base+'/faq')).text(),/CMS sync fixture question/);
+    assert.ok((await(await api('GET','/faqs')).json()).some(row=>row.id===id && row.status==='inactive'));
+    assert.ok(!(await(await fetch(base+'/api/cms/faqs/export')).json()).some(row=>row.id===id));
+    assert.equal((await api('PUT',`/faqs/${id}`,{...payload,category:'For workers',status:'active'})).status,200);
+    assert.match(await(await fetch(base+'/labor/faq')).text(),/CMS sync fixture question/);assert.doesNotMatch(await(await fetch(base+'/business/faq')).text(),/CMS sync fixture question/);
+    assert.ok((await(await api('GET','/faq-categories')).json()).includes('For workers'));
+    const second=await api('POST','/faqs',{...payload,category:'For workers',question:'CMS second fixture question'});const {id:secondId}=await second.json();
+    assert.equal((await api('POST','/faqs/reorder',{updates:[{id,sort_order:50},{id:secondId,sort_order:0}]})).status,200);
+    const ordered=await(await fetch(base+'/labor/faq')).text();assert.ok(ordered.indexOf('CMS second fixture question')<ordered.indexOf('CMS sync fixture question'));
+    assert.equal((await api('POST','/faqs/reorder',{updates:[{id,sort_order:-1}]})).status,400);
+    assert.equal((await api('POST','/faqs',{...payload,answer:'<script>bad()</script>'})).status,400);
+    assert.equal((await api('DELETE',`/faqs/${id}`)).status,200);assert.equal((await api('DELETE',`/faqs/${secondId}`)).status,200);
+    assert.doesNotMatch(await(await fetch(base+'/faq')).text(),/CMS sync fixture question|CMS second fixture question/);
+    const [rows]=await db.execute('SELECT COUNT(*) n FROM cms_faqs');assert.equal((await(await api('GET','/stats')).json()).faqs,rows[0].n);
+});
+test('FAQ seeding is one-time and does not restore intentionally removed content',async()=>{
+    const [original]=await db.execute('SELECT * FROM cms_faqs');
+    try {
+        await db.execute('DELETE FROM cms_faqs');await require('../server/services/faqs').migrate({execute:(...args)=>db.execute(...args),getConnection:async()=>new Proxy(db,{get(target,key){if(key==='release')return ()=>{};const value=target[key];return typeof value==='function'?value.bind(target):value;}})});
+        const [[count]]=await db.execute('SELECT COUNT(*) n FROM cms_faqs');assert.equal(count.n,0);
+        assert.match(await(await fetch(base+'/faq')).text(),/No published FAQs/);
+    }finally{for(const row of original)await db.execute('INSERT INTO cms_faqs (id,category,question,answer,sort_order,status) VALUES (?,?,?,?,?,?)',[row.id,row.category,row.question,row.answer,row.sort_order,row.status]);}
+});
+test('CMS Admin Accounts returns JSON, supports account management and revokes deleted accounts',async()=>{
+    const api=async(method,path='',body)=>clients.admin.request('/api/admin/users'+path,{method,headers:{'content-type':'application/json'},...(body?{body:JSON.stringify(body)}:{})});
+    const list=await api('GET');assert.equal(list.status,200);assert.match(list.headers.get('content-type'),/application\/json/);const rows=await list.json();assert.ok(rows.length);assert.ok(rows.every(row=>!('password_hash' in row)));
+    assert.equal((await clients.business.request('/api/admin/users')).status,403);
+    const anonymous=await fetch(base+'/api/admin/users');assert.equal(anonymous.status,401);assert.match(anonymous.headers.get('content-type'),/application\/json/);
+    const email=`cms-created-${Date.now()}@example.invalid`,password='CMS-created-admin-password';
+    const added=await api('POST','',{email,password,organization_name:'CMS Admin Fixture',type:'admin'});assert.equal(added.status,201);const {id}=await added.json();
+    assert.equal((await api('POST','',{email,password,organization_name:'Duplicate',type:'admin'})).status,409);
+    const logged=await fetch(base+'/api/cms/login',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({email,password})});assert.equal(logged.status,200);const {token}=await logged.json();
+    assert.equal((await api('PUT',`/${id}`,{email,organization_name:'Updated CMS Admin',type:'admin'})).status,200);
+    assert.equal((await api('DELETE',`/${clients.adminId}`)).status,409);
+    assert.equal((await api('DELETE',`/${id}`)).status,200);
+    assert.equal((await fetch(base+'/api/cms/stats',{headers:{authorization:`Bearer ${token}`}})).status,401);
+    assert.equal((await fetch(base+'/admin/dashboard',{headers:{authorization:`Bearer ${token}`},redirect:'manual'})).status,302);
+});
+test('business and labor directories render real profile cards with qualifications and statement links',async()=>{
+    await clients.business.page('/business/documents');assert.equal((await clients.business.upload('business',pdf,'directory-statement.pdf')).status,302);
+    const [[document]]=await db.execute("SELECT id FROM capability_documents WHERE owner_type='business' AND owner_id=?",[clients.businessId]);
+    const business=await clients.prime.page('/prime/search/businesses');assert.equal(business.res.status,200);
+    assert.match(business.text,/directory-profile-card/);assert.match(business.text,/Profile completeness/);assert.match(business.text,new RegExp(`/directory/business/${clients.businessId}`));assert.match(business.text,new RegExp(`/capabilities/${document.id}`));
+    const workers=await clients.prime.page('/prime/search/workers');assert.equal(workers.res.status,200);assert.match(workers.text,/directory-profile-card/);assert.match(workers.text,new RegExp(`/directory/worker/${clients.workerId}`));assert.match(workers.text,/Request a connection/);
+    assert.doesNotMatch(business.text,/<form method="POST" action="\/prime\/connect\/business/);
+    assert.match(business.text,/action="\/prime\/connect"/);
+    const naicsFiltered=await clients.prime.page('/prime/search/businesses?naics=999999');assert.doesNotMatch(naicsFiltered.text,/<article class="directory-profile-card"/);
+    const certFiltered=await clients.prime.page('/prime/search/businesses?cert=dbe');assert.match(certFiltered.text,/directory-profile-card/);
+    const empty=await clients.prime.page('/prime/search/businesses?state=ZZ');assert.equal(empty.res.status,200);assert.doesNotMatch(empty.text,/<article class="directory-profile-card"/);
+    const filtered=await clients.prime.page('/prime/search/workers?state=ZZ');assert.equal(filtered.res.status,200);assert.doesNotMatch(filtered.text,/<article class="directory-profile-card"/);
+});

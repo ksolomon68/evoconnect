@@ -1,0 +1,35 @@
+.search-section .search-layout {display:grid;grid-template-columns:230px minmax(0,1fr);gap:1.5rem;align-items:start;margin-top:1.5rem}
+.search-section .filter-panel {background:#fff;color:#334155;border:1px solid #e2e8f0;border-radius:12px;padding:1.25rem}
+.search-section .filter-group {margin-bottom:1rem}
+.search-section .filter-label {display:block;margin-bottom:.4rem;font-weight:600}
+.search-section .results-meta {margin-bottom:1rem;color:#475569}
+.directory-card-grid {display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,290px),1fr));gap:1.25rem;align-items:stretch}
+.directory-profile-card {display:flex;flex-direction:column;gap:1rem;min-width:0;padding:1.5rem;background:#fff;color:#334155;border:1px solid #cbd5e1;border-top:4px solid #0284c7;border-radius:14px;box-shadow:0 3px 12px rgb(15 23 42 / 5%)}
+.directory-profile-card:focus-within {border-color:#0369a1;box-shadow:0 0 0 2px #bae6fd}
+.profile-card-header {display:flex;align-items:center;gap:1rem;min-width:0}
+.profile-card-header>div:last-child {min-width:0}
+.profile-avatar {display:grid;place-items:center;flex-shrink:0;width:52px;height:52px;border-radius:14px;background:#e0f2fe;color:#075985;font-size:1.1rem;font-weight:800}
+.directory-profile-card h2 {margin:.15rem 0!important;font-size:1.2rem!important;overflow-wrap:anywhere;line-height:1.35}
+.directory-profile-card h2 a {color:#0f172a!important;text-decoration:none}
+.directory-profile-card h2 a:hover {text-decoration:underline}
+.profile-role {font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#0369a1}
+.directory-profile-card .profile-location {font-size:.85rem;margin:0;color:#64748b!important}
+.directory-profile-card .profile-specialty {margin:0;font-size:.85rem;font-weight:600;color:#075985!important;text-transform:capitalize}
+.profile-description {margin:0;color:#475569!important;font-size:.9rem;line-height:1.65;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.directory-profile-card h3 {font-size:.75rem!important;text-transform:uppercase;letter-spacing:.04em;margin:0 0 .4rem!important;color:#475569!important}
+.profile-detail p {font-size:.85rem;margin:0;color:#475569!important}
+.profile-tags {display:flex;flex-wrap:wrap;gap:.4rem;list-style:none;padding:0;margin:0}
+.profile-tags li {font-size:.75rem;line-height:1.4;padding:.3rem .5rem;border-radius:6px;background:#f1f5f9;color:#334155;overflow-wrap:anywhere}
+.profile-readiness {margin-top:auto}
+.profile-readiness label {display:flex;justify-content:space-between;font-size:.75rem;gap:.5rem;color:#64748b;margin-bottom:.4rem}
+.profile-readiness progress {display:block;appearance:none;width:100%;height:6px;border:0;border-radius:4px;background:#e2e8f0}
+.profile-readiness progress::-webkit-progress-bar {background:#e2e8f0;border-radius:4px}
+.profile-readiness progress::-webkit-progress-value {background:#0284c7;border-radius:4px}
+.profile-readiness progress::-moz-progress-bar {background:#0284c7;border-radius:4px}
+.profile-card-actions {display:flex;flex-wrap:wrap;gap:.5rem}
+.profile-contact-note {font-size:.8rem;margin:0;color:#64748b!important}
+.profile-connect {border-top:1px solid #e2e8f0;padding-top:.8rem;font-size:.85rem}
+.profile-connect summary {cursor:pointer;color:#075985;font-weight:600}
+.directory-contact-form {display:grid;gap:.5rem;margin-top:.75rem}
+.profile-contact-status {margin:0;font-size:.8rem;color:#334155!important}
+@media(max-width:900px){.search-section .search-layout{grid-template-columns:1fr}.directory-profile-card{padding:1.1rem}}

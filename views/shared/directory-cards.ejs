@@ -1,0 +1,22 @@
+<% const list=value=>{if(Array.isArray(value))return value.filter(v=>typeof v==='string'||typeof v==='number');try{const parsed=JSON.parse(value||'[]');return Array.isArray(parsed)?parsed.filter(v=>typeof v==='string'||typeof v==='number'):[];}catch{return [];}}; %>
+<div class="directory-card-grid">
+<% for(const profile of profiles) {
+const worker=profileType==='worker',name=worker?profile.full_name:profile.company_name;
+const initials=(name||'Member').split(/\s+/).filter(Boolean).slice(0,2).map(word=>word[0]).join('').toUpperCase();
+const certifications=list(profile.certifications),codes=list(profile.naics_codes),skills=list(profile.skills);
+const completeness=Math.max(0,Math.min(100,Number(profile.profile_pct)||0));
+const description=(worker?profile.experience_summary:profile.service_description)||'This member has not added a description yet.';
+%>
+<article class="directory-profile-card" aria-labelledby="profile-<%= profileType %>-<%= profile.id %>">
+  <header class="profile-card-header"><div class="profile-avatar" aria-hidden="true"><%= initials %></div><div><span class="profile-role"><%= worker?'Skilled professional':'Small business' %></span><h2 id="profile-<%= profileType %>-<%= profile.id %>"><a href="/directory/<%= profileType %>/<%= profile.id %>"><%= name || 'EvoConnect member' %></a></h2><p class="profile-location"><%= [profile.city,profile.state].filter(Boolean).join(', ') || 'Location not provided' %></p></div></header>
+  <p class="profile-specialty"><%= worker?(profile.trade_category||'Skilled trades').replaceAll('_',' '):(profile.business_type || 'Business services') %><% if(worker && profile.years_experience) { %> · <%= profile.years_experience %> years’ experience<% } %></p>
+  <p class="profile-description"><%= description %></p>
+  <% if(worker && skills.length) { %><div class="profile-detail"><h3>Skills</h3><p><%= skills.slice(0,3).join(' · ') %></p></div><% } %>
+  <div class="profile-detail"><h3>NAICS codes</h3><% if(codes.length) { %><ul class="profile-tags"><% for(const code of codes.slice(0,4)) { %><li><%= code %></li><% } %><% if(codes.length>4) { %><li>+<%= codes.length-4 %> more</li><% } %></ul><% } else { %><p>Not added yet</p><% } %></div>
+  <% if(certifications.length) { %><div class="profile-detail"><h3>Certifications</h3><ul class="profile-tags"><% for(const cert of certifications.slice(0,3)) { %><li><%= cert %></li><% } %><% if(certifications.length>3) { %><li>+<%= certifications.length-3 %> more</li><% } %></ul></div><% } %>
+  <div class="profile-readiness"><label for="profile-progress-<%= profileType %>-<%= profile.id %>">Profile completeness <strong><%= completeness %>%</strong></label><progress id="profile-progress-<%= profileType %>-<%= profile.id %>" max="100" value="<%= completeness %>"><%= completeness %>%</progress></div>
+  <div class="profile-card-actions"><a class="btn btn-primary btn-sm" href="/directory/<%= profileType %>/<%= profile.id %>">View full profile</a><% if(profile.capability_id) { %><a class="btn btn-secondary btn-sm" href="/capabilities/<%= profile.capability_id %>">Capability statement</a><% } %></div>
+  <% if(locals.user?.demo) { %><p class="profile-contact-note">Read-only demo preview</p><% } else { %><details class="profile-connect"><summary>Request a connection</summary><form method="post" action="/prime/connect" class="directory-contact-form"><input type="hidden" name="target_type" value="<%= profileType %>"><input type="hidden" name="target_id" value="<%= profile.id %>"><label for="connect-<%= profileType %>-<%= profile.id %>">Message (optional)</label><textarea id="connect-<%= profileType %>-<%= profile.id %>" name="message" rows="2" maxlength="1000" class="form-control"></textarea><button class="btn btn-secondary btn-sm" type="submit">Send connection request</button><p role="status" class="profile-contact-status"></p></form></details><% } %>
+</article>
+<% } %>
+</div>

@@ -79,7 +79,7 @@
       <!-- Results -->
       <div class="search-results">
         <div class="results-meta">
-          <span><%= locals.total || 0 %> workers found</span>
+          <span><%= locals.results?.length || 0 %> workers found</span>
           <% if (locals.connectionLimit) { %>
             <span class="connection-limit-note">
               <% if (prime.tier === 'basic') { %>
@@ -89,61 +89,8 @@
           <% } %>
         </div>
 
-        <% if (locals.workers && workers.length > 0) { %>
-          <div class="results-grid">
-            <% workers.forEach(function(worker, idx) { %>
-            <%
-              const isLocked = prime.tier === 'basic' && locals.connectionsUsed >= 10;
-              let skills = [];
-              try { skills = JSON.parse(worker.skills_json || '[]'); } catch(e) {}
-              let certs = [];
-              try { certs = JSON.parse(worker.certifications || '[]'); } catch(e) {}
-              const nameDisplay = worker.full_name
-                ? (worker.full_name.split(' ')[0] + ' ' + (worker.full_name.split(' ')[1] ? worker.full_name.split(' ')[1][0] + '.' : ''))
-                : 'Worker';
-            %>
-            <div class="result-card <%= isLocked ? 'result-card-locked' : '' %>">
-              <% if (isLocked) { %>
-                <div class="locked-overlay">
-                  <div class="locked-message">
-                    <span>&#128274;</span>
-                    <p>Monthly connection limit reached.</p>
-                    <a href="/prime/billing" class="btn-amber btn-sm">Upgrade to Pro</a>
-                  </div>
-                </div>
-              <% } %>
-              <div class="result-card-header">
-                <div class="result-avatar"><%= nameDisplay[0] %></div>
-                <div>
-                  <div class="result-name"><%= nameDisplay %></div>
-                  <div class="result-trade badge badge-cyan"><%= worker.trade_category ? worker.trade_category.replace(/_/g,' ') : 'Trade not listed' %></div>
-                </div>
-              </div>
-              <div class="result-meta">
-                <span><%= worker.city && worker.state ? worker.city + ', ' + worker.state : 'Location not set' %></span>
-                <span>&#8226;</span>
-                <span><%= worker.travel_willingness ? worker.travel_willingness.replace(/_/g,' ') : 'Travel: TBD' %></span>
-              </div>
-              <% if (skills.length > 0) { %>
-                <div class="result-skills">
-                  <% skills.slice(0,3).forEach(function(s) { %><span class="tag"><%= s %></span><% }) %>
-                  <% if (skills.length > 3) { %><span class="tag tag-more">+<%= skills.length - 3 %> more</span><% } %>
-                </div>
-              <% } %>
-              <div class="result-badges">
-                <% if (worker.sam_registered === 'yes') { %><span class="badge badge-success">SAM Registered</span><% } %>
-                <% certs.slice(0,3).forEach(function(c) { %><span class="badge badge-muted"><%= c.toUpperCase() %></span><% }) %>
-              </div>
-              <% if (!isLocked) { %>
-                <div class="result-actions"><a class="btn btn-secondary" href="/directory/worker/<%= worker.id %>">View profile &amp; statement</a>
-                  <form method="POST" action="/prime/connect/worker/<%= worker.id %>">
-                    <button type="submit" class="btn-primary btn-sm">Request Contact</button>
-                  </form>
-                </div>
-              <% } %>
-            </div>
-            <% }) %>
-          </div>
+        <% if (locals.results && results.length > 0) { %>
+          <%- include('../shared/directory-cards', { profiles: results, profileType: 'worker' }) %>
 
           <!-- Pagination -->
           <% if (locals.totalPages > 1) { %>

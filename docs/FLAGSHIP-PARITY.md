@@ -57,7 +57,7 @@ For opportunity owners, **Suggested partners** now ranks active businesses and w
 
 ## FAQ visibility
 
-`/faq` (also `/faq.html`) is a public FAQ page with worker, business, and prime-contractor topics, linked from the public navigation and footer. Existing role FAQ URLs remain available. Every dashboard includes Help & FAQ, including the administrator console. Role pages and the public hub share the same FAQ content source in `server/services/faq-content.js`.
+`/faq` (also `/faq.html`) is a public FAQ page with worker, business, and prime-contractor topics, linked from the public navigation and footer. Existing role FAQ URLs remain available. Every dashboard includes Help & FAQ, including the administrator console. Role pages, the public hub, and CMS FAQ Manager share the `cms_faqs` database table. The former static content is used only for the one-time initial migration.
 
 A scoped `/css/faq.css` stylesheet supplies explicit dark question/answer colors on light cards in both layouts, visible keyboard focus, and stacked responsive headings. Chromium checks at desktop and mobile widths verified computed text/background colors, expanded answers, keyboard toggling, and absence of horizontal page overflow in both the public and labor-dashboard layouts. HTTP tests cover public access and all role FAQ routes.
 
@@ -87,3 +87,20 @@ Creating or testing an account in the cloud workspace does not create it in Host
 CMS and dashboard sign-in now validate real administrators with the same password rules, including existing legacy CMS password configuration. Where one email belongs to more than one role, sign-in checks the submitted password against the matching records instead of stopping at the first email match. Confirmed administrator credentials take precedence when no role is specified.
 
 CMS sign-in also sets the HTTP-only dashboard cookie. Opening CMS recognizes an existing dashboard admin cookie automatically; no separate CMS login is required. Reopening a saved CMS session also exchanges its valid admin token for that cookie through `/api/cms/session`, after checking that the administrator still exists. CMS sign-out clears the dashboard cookie as well. Refreshing the CMS after deployment restores access through its Admin Dashboard link without another account setup step.
+
+
+## Live CMS FAQs and administrator management
+
+FAQ Manager now supports create, update, active/inactive visibility, delete, category listing, export, and drag-and-drop ordering. Every public and dashboard FAQ request reads the same database rows; CMS changes appear on the next page load without a code deployment. Existing defaults are migrated once when the FAQ table is empty. A migration marker prevents deleted FAQs from reappearing on restart. Existing CMS content is preserved.
+
+Public `/faq` includes all active categories. Worker/business/prime categories appear on their respective role pages; general and custom categories are shared with all roles. Rich-text answers use a sanitizing HTML allowlist, including safe links and lists. Inactive answers are excluded from public pages and export. The CMS FAQ count reflects the database.
+
+CMS Admin Accounts now uses a working JSON API at `/api/admin/users` for listing, creation, name/password editing, and deletion. Responses omit password hashes. These are system administrators with access to both dashboard and CMS; unsupported legacy editor roles are not offered. Self-deletion and deletion of the last admin are blocked. Deleting an account revokes dashboard and CMS access for its existing token. The CMS count now reflects actual administrator records.
+
+## Directory profile cards
+
+Business and labor directory routes and templates now share the same `results` list, fixing the prior empty lists despite matching database records. Responsive cards show identity initials, location, specialism, experience/description, certifications, NAICS codes, profile completeness, full-profile links, and uploaded capability statement links when present. Private email addresses and phone numbers are not shown in the cards. Worker codes and document availability are loaded in batches.
+
+Connection request forms use the existing `/prime/connect` endpoint with in-place success/error feedback. Read-only demos show preview status instead. Existing query names in the visible directory filters are supported, including case-insensitive certification matching and exact NAICS code filtering.
+
+Browser checks verified the CMS FAQ/Admin Accounts lists load successfully and business/labor profile cards render without horizontal overflow at desktop and mobile widths. Integration tests cover FAQ publication/update/removal/order/sanitization and one-time seeding, admin account management/revocation, and directory card content/filtering/statement links.

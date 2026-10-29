@@ -161,6 +161,7 @@ async function startServer() {
         app.use('/prime',    require('./routes/prime'));
         app.use('/admin',    require('./routes/admin'));
         app.use('/api/cms',  require('./routes/cms'));
+        app.use('/api/admin/users', require('./routes/cms-admins'));
 
         // Notifications API (cookie-aware + query fallback)
         app.get('/api/notifications', async (req, res) => {
@@ -267,13 +268,10 @@ async function startServer() {
         // Utility redirects that are linked from marketing copy
         app.get('/checklist',    (req, res) => res.redirect('/labor/checklist'));
         app.get('/how-it-works', (req, res) => res.redirect('/#how-it-works'));
-        app.get(['/faq', '/faq.html'], (req, res) => {
-            const faqs = require('./services/faq-content');
-            res.render('shared/faq-index', { title: 'Frequently Asked Questions', activePage: 'faq', layout: req.user ? 'layouts/dashboard' : 'layouts/default', groups: [
-                { id: 'labor', title: 'For workers', items: faqs.LABOR_FAQS },
-                { id: 'business', title: 'For small businesses', items: faqs.BUSINESS_FAQS },
-                { id: 'prime', title: 'For prime contractors', items: faqs.PRIME_FAQS }
-            ] });
+        app.get(['/faq', '/faq.html'], async (req, res, next) => {
+            try {
+                res.render('shared/faq-index', { title: 'Frequently Asked Questions', activePage: 'faq', layout: req.user ? 'layouts/dashboard' : 'layouts/default', groups: await require('./services/faqs').groups(getDb()) });
+            }catch(err){next(err);}
         });
 
         // Sitemap

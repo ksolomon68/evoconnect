@@ -12,6 +12,7 @@ async function initialize() {
         await db.execute('INSERT IGNORE INTO demo_naics_codes SELECT * FROM naics_codes');
         await context.run(async()=>{
             for(const email of emails)await ensureAccount(db,email);
+            await require('./faqs').seed(db);
             const [[prime]]=await db.execute("SELECT id FROM primes WHERE email='demo-prime@evoconnect.io'");
             const [[worker]]=await db.execute("SELECT id FROM workers WHERE email='demo-labor@evoconnect.io'");
             for(const code of ['237130','238210'])await db.execute('INSERT IGNORE INTO worker_matches (worker_id,naics_code) VALUES (?,?)',[worker.id,code]);

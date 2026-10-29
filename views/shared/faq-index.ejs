@@ -8,6 +8,7 @@
     <nav class="faq-topics" aria-label="FAQ topics">
       <% for(const group of groups) { %><a href="#faq-<%= group.id %>"><%= group.title %></a><% } %>
     </nav>
+    <% if(!groups.length) { %><p>No published FAQs are available yet.</p><% } %>
     <% for(const group of groups) { %>
     <section class="faq-group" id="faq-<%= group.id %>" aria-labelledby="faq-title-<%= group.id %>">
       <h2 id="faq-title-<%= group.id %>"><%= group.title %></h2>
@@ -15,7 +16,7 @@
         <% for(const faq of group.items) { %>
         <details class="faq-item">
           <summary class="faq-question"><%= faq.q %></summary>
-          <div class="faq-answer"><p><%= faq.a %></p></div>
+          <div class="faq-answer"><%- faq.a %></div>
         </details>
         <% } %>
       </div>

@@ -65,3 +65,7 @@
   margin: 0.75rem 0;
 }
 .faq-section .section-header .hero-badge { display: inline-block; }
+
+.faq-section .faq-answer ul { list-style: disc outside; padding-left: 1.5rem; }
+.faq-section .faq-answer ol { list-style: decimal outside; padding-left: 1.5rem; }
+.faq-section .faq-answer li { display: list-item; margin-bottom: .35rem; }

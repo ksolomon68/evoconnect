@@ -144,7 +144,7 @@ router.post('/change-password', requireAdmin, async (req, res) => {
 });
 
 // ─── Admin auth middleware ────────────────────────────────────────────────────
-function requireAdmin(req, res, next) {
+async function requireAdmin(req, res, next) {
     const authHeader = req.headers['authorization'];
     const token = authHeader && authHeader.startsWith('Bearer ') ? authHeader.slice(7) : req.cookies?.evo_token;
     if (!token) {
@@ -155,6 +155,8 @@ function requireAdmin(req, res, next) {
         if (decoded.type !== 'wfc_admin' && decoded.type !== 'admin') {
             return res.status(403).json({ error: 'Admin access required' });
         }
+        const [accounts]=await require('../database').getDb().execute('SELECT id FROM admins WHERE id=?',[decoded.id]);
+        if(!accounts.length)return res.status(401).json({error:'Administrator account unavailable.'});
         req.user = decoded;
         next();
     } catch (err) {
@@ -445,25 +447,22 @@ router.delete('/media/:filename', requireAdmin, (req, res) => {
     res.json({ success: true, message: `"${filename}" deleted` });
 });
 
-// ─── FAQ MANAGER (stubs — FAQs are managed in EJS templates) ─────────────────
-
-router.get('/faqs',           requireAdmin, (_req, res) => res.json([]));
-router.get('/faq-categories', requireAdmin, (_req, res) => res.json([]));
-router.get('/faqs/export',               (_req, res) => res.json([]));
-router.post('/faqs',          requireAdmin, (_req, res) => res.status(501).json({ error: 'FAQ DB management not enabled' }));
-router.put('/faqs/:id',       requireAdmin, (_req, res) => res.status(501).json({ error: 'FAQ DB management not enabled' }));
-router.delete('/faqs/:id',    requireAdmin, (_req, res) => res.status(501).json({ error: 'FAQ DB management not enabled' }));
-router.post('/faqs/reorder',  requireAdmin, (_req, res) => res.json({ message: 'ok' }));
+// FAQ Manager and public pages share the cms_faqs table.
+router.use(require('./cms-faqs')(requireAdmin));
 
 /** GET /api/cms/stats — dashboard stats (file-based) */
-router.get('/stats', requireAdmin, (_req, res) => {
+router.get('/stats', requireAdmin, async (_req, res, next) => {
+    try {
     const pageFiles = fs.existsSync(PAGES_DIR)
         ? fs.readdirSync(PAGES_DIR).filter(f => f.endsWith('.json')).length
         : 0;
     const mediaFiles = fs.existsSync(MEDIA_DIR)
         ? fs.readdirSync(MEDIA_DIR).filter(f => /\.(jpg|jpeg|png|gif|webp|svg)$/i.test(f)).length
         : 0;
-    res.json({ pages: pageFiles, faqs: 0, media: mediaFiles, users: 0 });
+    const [[counts]]=await require('../database').getDb().execute('SELECT COUNT(*) AS faqs FROM cms_faqs');
+    const [[admins]]=await require('../database').getDb().execute('SELECT COUNT(*) AS users FROM admins');
+    res.json({ pages: pageFiles, faqs: counts.faqs, media: mediaFiles, users: admins.users });
+    }catch(err){next(err);}
 });
 
 // ─── Utility ──────────────────────────────────────────────────────────────────
