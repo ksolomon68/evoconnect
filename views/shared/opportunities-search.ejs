@@ -1,5 +1,5 @@
 <% if (locals.user) { locals.layout='layouts/dashboard' ; } %>
-    <% const title=locals.title || ((locals.user?.type==='worker'?'Find Labor Jobs':'Search Contracting Opportunities')+' | EvoConnect') %>
+    <% const title=locals.title || ((locals.user?.type==='worker'?'Find Labor Jobs':'Search Contracting Opportunities')+' | EVOConnect') %>
         <% const basePath=locals.basePath || (locals.user?.type==='business' ? '/business' : '/labor' ) %>
             <% const oppList=locals.opportunities || [] %>
                 <% const savedIds=(locals.savedIds || []).map(String) %>

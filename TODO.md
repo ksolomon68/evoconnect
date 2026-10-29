@@ -1,4 +1,4 @@
-# EvoConnect Hardening — Deferred Items (TODO)
+# EVOConnect Hardening — Deferred Items (TODO)
 
 These items require live DB access, business content decisions, or are lower priority and can be completed before Hostinger deployment.
 

@@ -1,6 +1,6 @@
 module.exports = {
-    name:            'EvoConnect',
-    shortName:       'EvoConnect',
+    name:            'EVOConnect',
+    shortName:       'EVOConnect',
     tagline:         'Connect the Contract. Build the Future.',
     domain:          process.env.DOMAIN || 'darkslategrey-partridge-695960.hostingersite.com',
     appId:           'net.evobrand.evoconnect',

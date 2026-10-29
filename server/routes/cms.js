@@ -324,7 +324,7 @@ router.post('/pages', requireAdmin, (req, res) => {
         header: {
             backgroundImage: '',
             logoImage:       '/images/logo-light.png',
-            logoAlt:         'EvoConnect'
+            logoAlt:         'EVOConnect'
         },
         sections:  sections || [],
         createdAt: new Date().toISOString(),

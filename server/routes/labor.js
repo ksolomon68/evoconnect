@@ -82,7 +82,7 @@ function validateEmail(email) {
 // ── GET /labor ─────────────────────────────────────────────────────────────────
 router.get('/', (req, res) => {
     res.render('labor/index', {
-        title: 'Labor Portal | EvoConnect',
+        title: 'Labor Portal | EVOConnect',
         flash: getFlash(req)
     });
 });
@@ -91,7 +91,7 @@ router.get('/', (req, res) => {
 router.get('/register', (req, res) => {
     const step = parseInt(req.query.step) || 1;
     res.render('labor/register', {
-        title: 'Register | EvoConnect Labor',
+        title: 'Register | EVOConnect Labor',
         flash: getFlash(req),
         states: US_STATES,
         stateNames: STATE_NAMES,
@@ -130,7 +130,7 @@ router.post('/register', regLimiter, (req, res, next) => {
 
         if (errors.length) {
             return res.render('labor/register', {
-                title: 'Register | EvoConnect Labor',
+                title: 'Register | EVOConnect Labor',
                 flash: null, states: US_STATES, stateNames: STATE_NAMES,
                 step: 1, errors, values: v
             });
@@ -146,7 +146,7 @@ router.post('/register', regLimiter, (req, res, next) => {
 
         if (errors.length) {
             return res.render('labor/register', {
-                title: 'Register | EvoConnect Labor',
+                title: 'Register | EVOConnect Labor',
                 flash: null, states: US_STATES, stateNames: STATE_NAMES,
                 step: 2, errors, values: { ...(req.session.laborReg || {}), ...v }
             });
@@ -184,7 +184,7 @@ router.post('/register', regLimiter, (req, res, next) => {
 
     if (errors.length) {
         return res.render('labor/register', {
-            title: 'Register | EvoConnect Labor',
+            title: 'Register | EVOConnect Labor',
             flash: null, states: US_STATES, stateNames: STATE_NAMES,
             step: 3, errors, values: { ...saved, ...v }
         });
@@ -196,7 +196,7 @@ router.post('/register', regLimiter, (req, res, next) => {
         const [existing] = await db.execute('SELECT id FROM workers WHERE email = ?', [email]);
         if (existing.length) {
             return res.render('labor/register', {
-                title: 'Register | EvoConnect Labor',
+                title: 'Register | EVOConnect Labor',
                 flash: null, states: US_STATES, stateNames: STATE_NAMES,
                 errors: ['An account with that email already exists.'],
                 step: 1, values: saved
@@ -251,7 +251,7 @@ router.post('/register', regLimiter, (req, res, next) => {
 
         // Send confirmation email (non-blocking)
         const confirmHtml = `
-            <h2 style="color:#1a56db;">Welcome to EvoConnect, ${full_name}!</h2>
+            <h2 style="color:#1a56db;">Welcome to EVOConnect, ${full_name}!</h2>
             <p>Your labor profile has been created and is now visible to approved prime contractors on the platform.</p>
             <h3 style="color:#374151;">Here's what happens next:</h3>
             <ol>
@@ -264,10 +264,10 @@ router.post('/register', regLimiter, (req, res, next) => {
         `;
         sendEmail({
             to: email,
-            subject: 'Welcome to EvoConnect — here\'s what happens next',
+            subject: 'Welcome to EVOConnect — here\'s what happens next',
             html: confirmHtml,
-            text: `Welcome to EvoConnect, ${full_name}!\n\nYour labor profile is live. Log in at: ${process.env.APP_URL || 'https://evoconnect.evobrand.net'}/labor/dashboard\n\nNext steps:\n1. Complete the Vendor Readiness Checklist\n2. Watch for prime contractor connection requests\n3. Add certifications to improve visibility`
-        }).catch(e => console.error('EvoConnect [labor/register] email error:', e));
+            text: `Welcome to EVOConnect, ${full_name}!\n\nYour labor profile is live. Log in at: ${process.env.APP_URL || 'https://evoconnect.evobrand.net'}/labor/dashboard\n\nNext steps:\n1. Complete the Vendor Readiness Checklist\n2. Watch for prime contractor connection requests\n3. Add certifications to improve visibility`
+        }).catch(e => console.error('EVOConnect [labor/register] email error:', e));
 
         // Clear registration session
         delete req.session.laborReg;
@@ -276,14 +276,14 @@ router.post('/register', regLimiter, (req, res, next) => {
         const token = signToken({ id: workerId, email, type: 'worker', name: full_name });
         setAuthCookie(res, token);
 
-        flash(req, 'success', 'Welcome to EvoConnect! Your profile is live — start with the checklist below.');
+        flash(req, 'success', 'Welcome to EVOConnect! Your profile is live — start with the checklist below.');
         res.redirect('/labor/dashboard');
 
     } catch (err) {
-        console.error('EvoConnect [labor/register]:', err);
+        console.error('EVOConnect [labor/register]:', err);
         const saved = req.session.laborReg || {};
         res.render('labor/register', {
-            title: 'Register | EvoConnect Labor',
+            title: 'Register | EVOConnect Labor',
             flash: null, states: US_STATES, stateNames: STATE_NAMES,
             errors: ['A server error occurred. Please try again.'],
             step: 3, values: { ...saved, ...v }
@@ -340,7 +340,7 @@ router.get('/dashboard', requireType('worker'), async (req, res) => {
         const autoMatches = await require('../services/naics-matching').opportunities(db,req.user.type,userId);
         res.render('labor/dashboard', {
             autoMatches,
-            title: 'My Dashboard | EvoConnect Labor',
+            title: 'My Dashboard | EVOConnect Labor',
             flash: getFlash(req),
             worker,
             matches,
@@ -350,7 +350,7 @@ router.get('/dashboard', requireType('worker'), async (req, res) => {
         });
 
     } catch (err) {
-        console.error('EvoConnect [labor/dashboard]:', err);
+        console.error('EVOConnect [labor/dashboard]:', err);
         flash(req, 'error', 'Failed to load dashboard.');
         res.redirect('/login');
     }
@@ -368,7 +368,7 @@ router.get('/profile', requireType('worker'), async (req, res) => {
         worker.certifications = safeJson(worker.certifications, []);
 
         res.render('labor/profile', {
-            title: 'My Profile | EvoConnect Labor',
+            title: 'My Profile | EVOConnect Labor',
             flash: getFlash(req),
             worker,
             states: US_STATES,
@@ -376,7 +376,7 @@ router.get('/profile', requireType('worker'), async (req, res) => {
         });
 
     } catch (err) {
-        console.error('EvoConnect [labor/profile GET]:', err);
+        console.error('EVOConnect [labor/profile GET]:', err);
         flash(req, 'error', 'Failed to load profile.');
         res.redirect('/labor/dashboard');
     }
@@ -427,7 +427,7 @@ router.post('/profile', requireType('worker'), async (req, res) => {
         res.redirect('/labor/profile');
 
     } catch (err) {
-        console.error('EvoConnect [labor/profile POST]:', err);
+        console.error('EVOConnect [labor/profile POST]:', err);
         flash(req, 'error', 'Failed to update profile.');
         res.redirect('/labor/profile');
     }
@@ -482,16 +482,16 @@ router.post('/checklist', requireType('worker'), async (req, res) => {
                     const milestoneHtml = `
                         <h2 style="color:#1a56db;">You've hit ${milestone}% on the ${track} checklist!</h2>
                         <p>Hi ${full_name},</p>
-                        <p>Congratulations — you've completed <strong>${milestone}%</strong> of the <strong>${track.charAt(0).toUpperCase() + track.slice(1)} Contracting</strong> readiness track on EvoConnect.</p>
+                        <p>Congratulations — you've completed <strong>${milestone}%</strong> of the <strong>${track.charAt(0).toUpperCase() + track.slice(1)} Contracting</strong> readiness track on EVOConnect.</p>
                         ${milestone === 100 ? '<p><strong>You\'re fully ready in this track!</strong> Prime contractors who search for workers in your trade will see your completed readiness score.</p>' : '<p>Keep going — each completed item increases your visibility to prime contractors.</p>'}
                         <p><a href="${process.env.APP_URL || 'https://evoconnect.evobrand.net'}/labor/dashboard" style="display:inline-block;background:#1a56db;color:#fff;padding:12px 28px;border-radius:6px;text-decoration:none;font-weight:700;">Continue Checklist</a></p>
                     `;
                     sendEmail({
                         to: email,
-                        subject: `EvoConnect: You've hit ${milestone}% on the ${track} checklist!`,
+                        subject: `EVOConnect: You've hit ${milestone}% on the ${track} checklist!`,
                         html: milestoneHtml,
-                        text: `Congratulations! You've completed ${milestone}% of the ${track} checklist on EvoConnect. Log in to keep going: ${process.env.APP_URL || 'https://evoconnect.evobrand.net'}/labor/dashboard`
-                    }).catch(e => console.error('EvoConnect [labor/checklist] milestone email error:', e));
+                        text: `Congratulations! You've completed ${milestone}% of the ${track} checklist on EVOConnect. Log in to keep going: ${process.env.APP_URL || 'https://evoconnect.evobrand.net'}/labor/dashboard`
+                    }).catch(e => console.error('EVOConnect [labor/checklist] milestone email error:', e));
                 }
                 break;
             }
@@ -500,7 +500,7 @@ router.post('/checklist', requireType('worker'), async (req, res) => {
         res.json({ success: true, pct });
 
     } catch (err) {
-        console.error('EvoConnect [labor/checklist]:', err);
+        console.error('EVOConnect [labor/checklist]:', err);
         res.status(500).json({ success: false, error: 'Server error.' });
     }
 });
@@ -512,7 +512,7 @@ router.post('/checklist', requireType('worker'), async (req, res) => {
 router.get('/faq', async (req, res, next) => {
     try {
         res.render('labor/faq', {
-            title: 'FAQ | EvoConnect Labor',
+            title: 'FAQ | EVOConnect Labor',
             flash: getFlash(req),
             faqs: await require('../services/faqs').list(getDb(),'labor')
         });
@@ -576,7 +576,7 @@ router.post('/profile/section', requireType('worker'), uploadResume.single('resu
         res.redirect('/labor/profile/edit');
 
     } catch (err) {
-        console.error('EvoConnect [labor/profile/section]:', err);
+        console.error('EVOConnect [labor/profile/section]:', err);
         const wantsJson = req.headers.accept && req.headers.accept.includes('application/json');
         if (wantsJson) return res.status(500).json({ success: false, error: 'Server error.' });
         flash(req, 'error', 'Failed to save section.');
@@ -597,14 +597,14 @@ router.get('/profile/edit', requireType('worker'), async (req, res) => {
         worker.skills = safeJson(worker.skills, []);
         worker.certifications = safeJson(worker.certifications, []);
         res.render('labor/profile', {
-            title: 'Edit Profile | EvoConnect Labor',
+            title: 'Edit Profile | EVOConnect Labor',
             flash: getFlash(req),
             worker,
             states: US_STATES,
             stateNames: STATE_NAMES
         });
     } catch (err) {
-        console.error('EvoConnect [labor/profile/edit]:', err);
+        console.error('EVOConnect [labor/profile/edit]:', err);
         res.redirect('/labor/dashboard');
     }
 });
@@ -634,7 +634,7 @@ router.post('/profile/update', requireType('worker'), uploadResume.single('resum
         flash(req, 'success', 'Profile updated successfully.');
         res.redirect('/labor/profile/edit');
     } catch (err) {
-        console.error('EvoConnect [labor/profile/update]:', err);
+        console.error('EVOConnect [labor/profile/update]:', err);
         flash(req, 'error', 'Failed to update profile.');
         res.redirect('/labor/profile/edit');
     }
@@ -655,13 +655,13 @@ router.get('/checklist', requireType('worker'), async (req, res) => {
             checklistByTrack[row.track][row.item_key] = row.completed;
         }
         res.render('labor/checklist', {
-            title: 'Vendor Readiness Checklist | EvoConnect Labor',
+            title: 'Vendor Readiness Checklist | EVOConnect Labor',
             flash: getFlash(req),
             worker: wRows[0] || {},
             checklistByTrack
         });
     } catch (err) {
-        console.error('EvoConnect [labor/checklist GET]:', err);
+        console.error('EVOConnect [labor/checklist GET]:', err);
         res.redirect('/labor/dashboard');
     }
 });
@@ -674,12 +674,12 @@ router.get('/resources', requireType('worker'), async (req, res) => {
             `SELECT * FROM resources WHERE audience IN ('all','worker') AND status='active' ORDER BY sort_order ASC`
         );
         res.render('labor/resources', {
-            title: 'Resources | EvoConnect Labor',
+            title: 'Resources | EVOConnect Labor',
             flash: getFlash(req),
             resources
         });
     } catch (err) {
-        console.error('EvoConnect [labor/resources]:', err);
+        console.error('EVOConnect [labor/resources]:', err);
         res.redirect('/labor/dashboard');
     }
 });

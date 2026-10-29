@@ -7,7 +7,7 @@ dotenv.config({ path: path.join(__dirname, '../.env') });
 // Always load .env.production if present — dotenv silently ignores missing files
 dotenv.config({ path: path.join(__dirname, '../.env.production'), override: true });
 
-console.log('EvoConnect DB: Initializing MySQL Connection Pool...');
+console.log('EVOConnect DB: Initializing MySQL Connection Pool...');
 
 let pool;
 
@@ -26,12 +26,12 @@ function createPool() {
     };
     const p = mysql.createPool(cfg);
     p.pool.on('error', (err) => {
-        console.error('EvoConnect DB: Pool connection error —', err.message);
+        console.error('EVOConnect DB: Pool connection error —', err.message);
         if (err.code === 'PROTOCOL_CONNECTION_LOST' || err.code === 'ECONNRESET') {
             pool = null;
         }
     });
-    console.log(`EvoConnect DB: MySQL Pool Created → ${cfg.user}@${cfg.host}/${cfg.database}`);
+    console.log(`EVOConnect DB: MySQL Pool Created → ${cfg.user}@${cfg.host}/${cfg.database}`);
     return p;
 }
 
@@ -45,7 +45,7 @@ function getDb() {
                 return await pool.execute(demoContext.sql(sql), values);
             } catch (err) {
                 if (err.code === 'PROTOCOL_CONNECTION_LOST' || err.code === 'ECONNRESET') {
-                    console.warn(`EvoConnect DB: Connection lost during execute, retrying... (${err.message})`);
+                    console.warn(`EVOConnect DB: Connection lost during execute, retrying... (${err.message})`);
                     pool = createPool();
                     return await pool.execute(demoContext.sql(sql), values);
                 }
@@ -57,7 +57,7 @@ function getDb() {
                 return await pool.query(demoContext.sql(sql), values);
             } catch (err) {
                 if (err.code === 'PROTOCOL_CONNECTION_LOST' || err.code === 'ECONNRESET') {
-                    console.warn(`EvoConnect DB: Connection lost during query, retrying... (${err.message})`);
+                    console.warn(`EVOConnect DB: Connection lost during query, retrying... (${err.message})`);
                     pool = createPool();
                     return await pool.query(demoContext.sql(sql), values);
                 }
@@ -88,7 +88,7 @@ setInterval(async () => {
 }, 60 * 1000);
 
 async function initDatabase() {
-    console.log('EvoConnect DB: Running initDatabase()...');
+    console.log('EVOConnect DB: Running initDatabase()...');
 
     try {
         const setupConn = await mysql.createConnection({
@@ -98,17 +98,17 @@ async function initDatabase() {
         });
         const dbName = process.env.DB_NAME || 'evoconnect';
         await setupConn.execute(`CREATE DATABASE IF NOT EXISTS \`${dbName}\` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci`);
-        console.log(`EvoConnect DB: Database "${dbName}" ready.`);
+        console.log(`EVOConnect DB: Database "${dbName}" ready.`);
         await setupConn.end();
     } catch (err) {
-        console.warn('EvoConnect DB: Could not auto-create database:', err.message);
+        console.warn('EVOConnect DB: Could not auto-create database:', err.message);
     }
 
     const db = getDb();
 
     try {
         await db.execute('SELECT 1');
-        console.log('EvoConnect DB: Connection verified.');
+        console.log('EVOConnect DB: Connection verified.');
 
         // ── 1. Workers (Labor Portal) ─────────────────────────────
         await db.execute(`
@@ -473,7 +473,7 @@ async function initDatabase() {
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
         `);
 
-        console.log('EvoConnect DB: Core + Caltrans parity tables initialized.');
+        console.log('EVOConnect DB: Core + Caltrans parity tables initialized.');
 
         // ── Seed NAICS codes ───────────────────────────────────────
         const [[{ nc }]] = await db.execute('SELECT COUNT(*) AS nc FROM naics_codes');
@@ -517,7 +517,7 @@ async function initDatabase() {
                     [code, desc, trade, avg, sa]
                 );
             }
-            console.log(`EvoConnect DB: Seeded ${naics.length} NAICS codes.`);
+            console.log(`EVOConnect DB: Seeded ${naics.length} NAICS codes.`);
         }
 
         // ── Seed default resources ─────────────────────────────────
@@ -539,7 +539,7 @@ async function initDatabase() {
                     [title, desc, url, cat, audience, sort]
                 );
             }
-            console.log('EvoConnect DB: Seeded default resources.');
+            console.log('EVOConnect DB: Seeded default resources.');
         }
 
         // Backfill any existing resources that had NULL urls from earlier seeds
@@ -559,7 +559,7 @@ async function initDatabase() {
             if (process.env.NODE_ENV === 'production') throw new Error('Set ADMIN_EMAIL and ADMIN_DEFAULT_PASSWORD to provision the first administrator.');
             await require('./services/provision-admin')(db, {
                 email: process.env.ADMIN_EMAIL || 'admin@evoconnect.evobrand.net',
-                password: 'EvoConnect2026!'
+                password: 'EVOConnect2026!'
             });
         }
 
@@ -673,7 +673,7 @@ async function initDatabase() {
                     '$450,000 – $850,000',
                     '2026-12-15',
                     '17:00',
-                    'EvoConnect Portal',
+                    'EVOConnect Portal',
                     'published',
                     primeId,
                     'Apex Construction Group',
@@ -694,7 +694,7 @@ async function initDatabase() {
                     '$1,200,000 – $2,500,000',
                     '2026-12-30',
                     '16:00',
-                    'EvoConnect Portal',
+                    'EVOConnect Portal',
                     'published',
                     primeId,
                     'Apex Construction Group',
@@ -715,7 +715,7 @@ async function initDatabase() {
                     '$180,000 – $320,000',
                     '2026-11-30',
                     '15:00',
-                    'EvoConnect Portal',
+                    'EVOConnect Portal',
                     'published',
                     primeId,
                     'Apex Construction Group',
@@ -736,7 +736,7 @@ async function initDatabase() {
                     '$900,000 – $1,600,000',
                     '2027-01-20',
                     '14:00',
-                    'EvoConnect Portal',
+                    'EVOConnect Portal',
                     'published',
                     primeId,
                     'Apex Construction Group',
@@ -762,11 +762,11 @@ async function initDatabase() {
                     opp[15], opp[16], opp[17], opp[18]
                 ]);
             }
-            console.log('EvoConnect DB: Seeded 4 sample contracting opportunities.');
+            console.log('EVOConnect DB: Seeded 4 sample contracting opportunities.');
         }
 
         } // Development-only demo accounts and sample opportunities.
-        console.log('EvoConnect DB: All tables initialized successfully.');
+        console.log('EVOConnect DB: All tables initialized successfully.');
 
         await require('./services/flagship-schema')(db);
         await require('./services/faqs').migrate(db);
@@ -783,7 +783,7 @@ async function initDatabase() {
         }, 60 * 60 * 1000);
 
     } catch (err) {
-        console.error('EvoConnect DB CRITICAL ERROR:', err);
+        console.error('EVOConnect DB CRITICAL ERROR:', err);
         throw err;
     }
 }

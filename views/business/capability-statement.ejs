@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Capability Statement — <%= business.company_name || 'EvoConnect' %></title>
+  <title>Capability Statement — <%= business.company_name || 'EVOConnect' %></title>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     body {
@@ -147,7 +147,7 @@
         <p><%= business.entity_type ? business.entity_type.replace(/_/g,' ').toUpperCase() : '' %><% if (business.years_in_business) { %> &bull; <%= business.years_in_business %> Years in Business<% } %></p>
       </div>
       <div class="cap-logo">
-        <img src="/images/logo-light.png" alt="EvoConnect">
+        <img src="/images/logo-light.png" alt="EVOConnect">
       </div>
     </div>
 
@@ -248,8 +248,8 @@
     <!-- Footer -->
     <div class="cap-footer">
       <div>
-        <strong>EvoConnect</strong> — Connect the Contract. Build the Future.<br>
-        Profile verified on EvoConnect | <a href="https://evoconnect.io">evoconnect.io</a>
+        <strong>EVOConnect</strong> — Connect the Contract. Build the Future.<br>
+        Profile verified on EVOConnect | <a href="https://evoconnect.io">evoconnect.io</a>
       </div>
       <div style="text-align:right">
         Generated: <%= new Date().toLocaleDateString('en-US', {year:'numeric', month:'long', day:'numeric'}) %><br>

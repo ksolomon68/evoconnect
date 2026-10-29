@@ -4,4 +4,4 @@
 <% for(const field of ['naics','certifications']) { let list=[]; try {list=typeof profile[field]==='string'?JSON.parse(profile[field]):profile[field];} catch {} %>
 <% if(Array.isArray(list) && list.length) { %><h3><%= field === 'naics' ? 'NAICS codes' : 'Certifications' %></h3><p><%= list.join(', ') %></p><% } %><% } %>
 <h2>Capability statement</h2><% if(document) { %><p><a class="btn btn-primary" href="/capabilities/<%= document.id %>">View PDF</a> <a class="btn btn-secondary" href="/capabilities/<%= document.id %>?download=1">Download PDF</a></p><% } else { %><p>No uploaded capability statement.</p><% } %>
-<p>Contact details are shared through EvoConnect connections and messages.</p></section>
+<p>Contact details are shared through EVOConnect connections and messages.</p></section>

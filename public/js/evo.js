@@ -1,4 +1,4 @@
-/* EvoConnect — Client-side JS */
+/* EVOConnect — Client-side JS */
 
 (function() {
   'use strict';

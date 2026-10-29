@@ -1,5 +1,5 @@
 <% if (locals.user) { locals.layout = 'layouts/dashboard'; } %>
-<% const title = locals.title || 'Messages | EvoConnect' %>
+<% const title = locals.title || 'Messages | EVOConnect' %>
 <% const basePath = locals.basePath || (locals.user?.type === 'business' ? '/business' : (locals.user?.type === 'prime' ? '/prime' : (locals.user?.type === 'admin' ? '/admin' : '/labor'))) %>
 <% const inbox = locals.inbox || [] %>
 <% const sent = locals.sent || [] %>

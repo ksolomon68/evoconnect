@@ -14,7 +14,7 @@ async function matches(admin,password) {
         legacy=data.passwordHash ? {value:data.passwordHash,hashed:true} : data.password ? {value:data.password,hashed:false} : null;
     }catch(err){if(err.code!=='ENOENT' && !(err instanceof SyntaxError))throw err;}
     if(!legacy) {
-        const value=process.env.CMS_ADMIN_PASSWORD || (process.env.NODE_ENV!=='production'?'EvoConnect2026!':null);
+        const value=process.env.CMS_ADMIN_PASSWORD || (process.env.NODE_ENV!=='production'?'EVOConnect2026!':null);
         if(value)legacy={value,hashed:false};
     }
     return !!legacy && (legacy.hashed ? bcrypt.compare(password,legacy.value) : password===legacy.value);

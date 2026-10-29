@@ -106,7 +106,7 @@ router.get('/dashboard', requireAdmin, async (req, res) => {
         `);
 
         res.render('admin/dashboard', {
-            title: 'Admin Dashboard | EvoConnect',
+            title: 'Admin Dashboard | EVOConnect',
             flash: getFlash(req),
             stats: {
                 workerCount,
@@ -122,7 +122,7 @@ router.get('/dashboard', requireAdmin, async (req, res) => {
         });
 
     } catch (err) {
-        console.error('EvoConnect [admin/dashboard]:', err);
+        console.error('EVOConnect [admin/dashboard]:', err);
         res.status(500).render('errors/500', { title: 'Server Error' });
     }
 });
@@ -141,9 +141,9 @@ router.post('/primes/:id/approve', requireAdmin, async (req, res) => {
         if (rows.length) {
             const p = rows[0];
             const approvalHtml = `
-                <h2 style="color:#1a56db;">Your EvoConnect Account is Approved!</h2>
+                <h2 style="color:#1a56db;">Your EVOConnect Account is Approved!</h2>
                 <p>Hi ${p.contact_name},</p>
-                <p>Great news — your <strong>${p.company_name}</strong> prime contractor account on EvoConnect has been approved. You now have full access to search for workers and subcontractors.</p>
+                <p>Great news — your <strong>${p.company_name}</strong> prime contractor account on EVOConnect has been approved. You now have full access to search for workers and subcontractors.</p>
                 <h3 style="color:#374151;">Getting started:</h3>
                 <ul>
                     <li>Search the <a href="${process.env.APP_URL || 'https://evoconnect.evobrand.net'}/prime/search/workers" style="color:#1a56db;">Worker Directory</a> by trade, location, and certifications</li>
@@ -154,17 +154,17 @@ router.post('/primes/:id/approve', requireAdmin, async (req, res) => {
             `;
             sendEmail({
                 to: p.email,
-                subject: 'EvoConnect: Your prime contractor account is approved',
+                subject: 'EVOConnect: Your prime contractor account is approved',
                 html: approvalHtml,
-                text: `Hi ${p.contact_name},\n\nYour EvoConnect prime contractor account for ${p.company_name} has been approved! Log in at: ${process.env.APP_URL || 'https://evoconnect.evobrand.net'}/prime/dashboard`
-            }).catch(e => console.error('EvoConnect [admin/primes/approve] email error:', e));
+                text: `Hi ${p.contact_name},\n\nYour EVOConnect prime contractor account for ${p.company_name} has been approved! Log in at: ${process.env.APP_URL || 'https://evoconnect.evobrand.net'}/prime/dashboard`
+            }).catch(e => console.error('EVOConnect [admin/primes/approve] email error:', e));
         }
 
         flash(req, 'success', 'Prime contractor approved and notified.');
         res.redirect('/admin/dashboard');
 
     } catch (err) {
-        console.error('EvoConnect [admin/primes/approve]:', err);
+        console.error('EVOConnect [admin/primes/approve]:', err);
         flash(req, 'error', 'Failed to approve prime contractor.');
         res.redirect('/admin/dashboard');
     }
@@ -182,18 +182,18 @@ router.post('/primes/:id/deny', requireAdmin, async (req, res) => {
         if (rows.length) {
             const p = rows[0];
             const denyHtml = `
-                <h2 style="color:#dc2626;">EvoConnect Application Update</h2>
+                <h2 style="color:#dc2626;">EVOConnect Application Update</h2>
                 <p>Hi ${p.contact_name},</p>
-                <p>After reviewing your application, we are unable to approve your <strong>${p.company_name}</strong> account on EvoConnect at this time.</p>
+                <p>After reviewing your application, we are unable to approve your <strong>${p.company_name}</strong> account on EVOConnect at this time.</p>
                 ${reason ? `<p><strong>Reason:</strong> ${reason}</p>` : ''}
                 <p>If you believe this is an error or would like to reapply with updated information, please contact us at <a href="mailto:${process.env.ADMIN_EMAIL || 'admin@evoconnect.evobrand.net'}" style="color:#1a56db;">${process.env.ADMIN_EMAIL || 'admin@evoconnect.evobrand.net'}</a>.</p>
             `;
             sendEmail({
                 to: p.email,
-                subject: 'EvoConnect: Application Status Update',
+                subject: 'EVOConnect: Application Status Update',
                 html: denyHtml,
-                text: `Hi ${p.contact_name},\n\nWe are unable to approve your EvoConnect application for ${p.company_name} at this time.${reason ? `\n\nReason: ${reason}` : ''}\n\nContact us to reapply: ${process.env.ADMIN_EMAIL || 'admin@evoconnect.evobrand.net'}`
-            }).catch(e => console.error('EvoConnect [admin/primes/deny] email error:', e));
+                text: `Hi ${p.contact_name},\n\nWe are unable to approve your EVOConnect application for ${p.company_name} at this time.${reason ? `\n\nReason: ${reason}` : ''}\n\nContact us to reapply: ${process.env.ADMIN_EMAIL || 'admin@evoconnect.evobrand.net'}`
+            }).catch(e => console.error('EVOConnect [admin/primes/deny] email error:', e));
         }
 
         // Set active = -1 (denied)
@@ -203,7 +203,7 @@ router.post('/primes/:id/deny', requireAdmin, async (req, res) => {
         res.redirect('/admin/dashboard');
 
     } catch (err) {
-        console.error('EvoConnect [admin/primes/deny]:', err);
+        console.error('EVOConnect [admin/primes/deny]:', err);
         flash(req, 'error', 'Failed to deny prime contractor.');
         res.redirect('/admin/dashboard');
     }
@@ -256,7 +256,7 @@ router.get('/users', requireAdmin, async (req, res) => {
         const totalPages = Math.ceil(total / limit);
 
         res.render('admin/users', {
-            title: 'User Management | EvoConnect Admin',
+            title: 'User Management | EVOConnect Admin',
             flash: getFlash(req),
             users: paginated,
             page,
@@ -267,7 +267,7 @@ router.get('/users', requireAdmin, async (req, res) => {
         });
 
     } catch (err) {
-        console.error('EvoConnect [admin/users]:', err);
+        console.error('EVOConnect [admin/users]:', err);
         flash(req, 'error', 'Failed to load users.');
         res.redirect('/admin/dashboard');
     }
@@ -280,13 +280,13 @@ router.get('/naics', requireAdmin, async (req, res) => {
         const [codes] = await db.execute('SELECT * FROM naics_codes ORDER BY code ASC');
 
         res.render('admin/naics', {
-            title: 'NAICS Code Management | EvoConnect Admin',
+            title: 'NAICS Code Management | EVOConnect Admin',
             flash: getFlash(req),
             codes
         });
 
     } catch (err) {
-        console.error('EvoConnect [admin/naics GET]:', err);
+        console.error('EVOConnect [admin/naics GET]:', err);
         flash(req, 'error', 'Failed to load NAICS codes.');
         res.redirect('/admin/dashboard');
     }
@@ -318,7 +318,7 @@ router.post('/naics', requireAdmin, async (req, res) => {
         res.redirect('/admin/naics');
 
     } catch (err) {
-        console.error('EvoConnect [admin/naics POST]:', err);
+        console.error('EVOConnect [admin/naics POST]:', err);
         if (err.code === 'ER_DUP_ENTRY') {
             flash(req, 'error', `NAICS code ${code} already exists.`);
         } else {
@@ -348,7 +348,7 @@ router.put('/naics/:code', requireAdmin, async (req, res) => {
         res.json({ success: true });
 
     } catch (err) {
-        console.error('EvoConnect [admin/naics PUT]:', err);
+        console.error('EVOConnect [admin/naics PUT]:', err);
         res.status(500).json({ success: false, error: 'Server error.' });
     }
 });
@@ -361,7 +361,7 @@ router.delete('/naics/:code', requireAdmin, async (req, res) => {
         await db.execute('DELETE FROM naics_codes WHERE code = ?', [code]);
         res.json({ success: true });
     } catch (err) {
-        console.error('EvoConnect [admin/naics DELETE]:', err);
+        console.error('EVOConnect [admin/naics DELETE]:', err);
         res.status(500).json({ success: false, error: 'Server error.' });
     }
 });
@@ -373,13 +373,13 @@ router.get('/resources', requireAdmin, async (req, res) => {
         const [resources] = await db.execute('SELECT * FROM resources ORDER BY sort_order ASC, id ASC');
 
         res.render('admin/resources', {
-            title: 'Resource Library | EvoConnect Admin',
+            title: 'Resource Library | EVOConnect Admin',
             flash: getFlash(req),
             resources
         });
 
     } catch (err) {
-        console.error('EvoConnect [admin/resources GET]:', err);
+        console.error('EVOConnect [admin/resources GET]:', err);
         flash(req, 'error', 'Failed to load resources.');
         res.redirect('/admin/dashboard');
     }
@@ -413,7 +413,7 @@ router.post('/resources', requireAdmin, async (req, res) => {
         res.redirect('/admin/resources');
 
     } catch (err) {
-        console.error('EvoConnect [admin/resources POST]:', err);
+        console.error('EVOConnect [admin/resources POST]:', err);
         flash(req, 'error', 'Failed to add resource.');
         res.redirect('/admin/resources');
     }
@@ -442,7 +442,7 @@ router.put('/resources/:id', requireAdmin, async (req, res) => {
         res.json({ success: true });
 
     } catch (err) {
-        console.error('EvoConnect [admin/resources PUT]:', err);
+        console.error('EVOConnect [admin/resources PUT]:', err);
         res.status(500).json({ success: false, error: 'Server error.' });
     }
 });
@@ -455,7 +455,7 @@ router.delete('/resources/:id', requireAdmin, async (req, res) => {
         await db.execute('DELETE FROM resources WHERE id = ?', [id]);
         res.json({ success: true });
     } catch (err) {
-        console.error('EvoConnect [admin/resources DELETE]:', err);
+        console.error('EVOConnect [admin/resources DELETE]:', err);
         res.status(500).json({ success: false, error: 'Server error.' });
     }
 });
@@ -469,13 +469,13 @@ router.get('/announcements', requireAdmin, async (req, res) => {
         );
 
         res.render('admin/announcements', {
-            title: 'Announcements | EvoConnect Admin',
+            title: 'Announcements | EVOConnect Admin',
             flash: getFlash(req),
             announcements
         });
 
     } catch (err) {
-        console.error('EvoConnect [admin/announcements GET]:', err);
+        console.error('EVOConnect [admin/announcements GET]:', err);
         flash(req, 'error', 'Failed to load announcements.');
         res.redirect('/admin/dashboard');
     }
@@ -508,7 +508,7 @@ router.post('/announcements', requireAdmin, async (req, res) => {
         res.redirect('/admin/announcements');
 
     } catch (err) {
-        console.error('EvoConnect [admin/announcements POST]:', err);
+        console.error('EVOConnect [admin/announcements POST]:', err);
         flash(req, 'error', 'Failed to save announcement.');
         res.redirect('/admin/announcements');
     }
@@ -570,7 +570,7 @@ router.get('/export/csv', requireAdmin, async (req, res) => {
         res.send(csv);
 
     } catch (err) {
-        console.error('EvoConnect [admin/export/csv]:', err);
+        console.error('EVOConnect [admin/export/csv]:', err);
         flash(req, 'error', 'Failed to export CSV.');
         res.redirect('/admin/dashboard');
     }
@@ -590,14 +590,14 @@ router.get('/approvals', requireAdmin, async (req, res) => {
         );
 
         res.render('admin/approvals', {
-            title: 'Prime Approvals | EvoConnect Admin',
+            title: 'Prime Approvals | EVOConnect Admin',
             flash: getFlash(req),
             pendingList,
             deniedList
         });
 
     } catch (err) {
-        console.error('EvoConnect [admin/approvals]:', err);
+        console.error('EVOConnect [admin/approvals]:', err);
         flash(req, 'error', 'Failed to load approvals.');
         res.redirect('/admin/dashboard');
     }
@@ -616,13 +616,13 @@ router.post('/approve/:id', requireAdmin, async (req, res, next) => {
         const [rows] = await db.execute('SELECT * FROM primes WHERE id = ?', [primeId]);
         if (rows.length) {
             const p = rows[0];
-            const approvalHtml = `<h2 style="color:#1a56db;">Your EvoConnect Account is Approved!</h2><p>Hi ${p.contact_name},</p><p>Your <strong>${p.company_name}</strong> prime contractor account has been approved. <a href="${process.env.APP_URL || 'https://evoconnect.evobrand.net'}/prime/dashboard" style="color:#1a56db;">Log in now</a> to start searching.</p>`;
-            sendEmail({ to: p.email, subject: 'EvoConnect: Your prime contractor account is approved', html: approvalHtml, text: `Your EvoConnect account for ${p.company_name} is approved.` }).catch(() => {});
+            const approvalHtml = `<h2 style="color:#1a56db;">Your EVOConnect Account is Approved!</h2><p>Hi ${p.contact_name},</p><p>Your <strong>${p.company_name}</strong> prime contractor account has been approved. <a href="${process.env.APP_URL || 'https://evoconnect.evobrand.net'}/prime/dashboard" style="color:#1a56db;">Log in now</a> to start searching.</p>`;
+            sendEmail({ to: p.email, subject: 'EVOConnect: Your prime contractor account is approved', html: approvalHtml, text: `Your EVOConnect account for ${p.company_name} is approved.` }).catch(() => {});
         }
         flash(req, 'success', 'Prime contractor approved.');
         res.redirect('/admin/approvals');
     } catch (err) {
-        console.error('EvoConnect [admin/approve]:', err);
+        console.error('EVOConnect [admin/approve]:', err);
         flash(req, 'error', 'Failed to approve prime contractor.');
         res.redirect('/admin/approvals');
     }
@@ -637,14 +637,14 @@ router.post('/deny/:id', requireAdmin, async (req, res) => {
         const [rows] = await db.execute('SELECT * FROM primes WHERE id = ?', [primeId]);
         if (rows.length) {
             const p = rows[0];
-            const denyHtml = `<h2 style="color:#dc2626;">EvoConnect Application Update</h2><p>Hi ${p.contact_name},</p><p>We are unable to approve your <strong>${p.company_name}</strong> account at this time.${reason ? `<br><strong>Reason:</strong> ${reason}` : ''}</p>`;
-            sendEmail({ to: p.email, subject: 'EvoConnect: Application Status Update', html: denyHtml, text: `Your EvoConnect application for ${p.company_name} was not approved.${reason ? ` Reason: ${reason}` : ''}` }).catch(() => {});
+            const denyHtml = `<h2 style="color:#dc2626;">EVOConnect Application Update</h2><p>Hi ${p.contact_name},</p><p>We are unable to approve your <strong>${p.company_name}</strong> account at this time.${reason ? `<br><strong>Reason:</strong> ${reason}` : ''}</p>`;
+            sendEmail({ to: p.email, subject: 'EVOConnect: Application Status Update', html: denyHtml, text: `Your EVOConnect application for ${p.company_name} was not approved.${reason ? ` Reason: ${reason}` : ''}` }).catch(() => {});
         }
         await db.execute('UPDATE primes SET active = -1 WHERE id = ?', [primeId]);
         flash(req, 'success', 'Prime contractor denied.');
         res.redirect('/admin/approvals');
     } catch (err) {
-        console.error('EvoConnect [admin/deny]:', err);
+        console.error('EVOConnect [admin/deny]:', err);
         flash(req, 'error', 'Failed to deny prime contractor.');
         res.redirect('/admin/approvals');
     }
@@ -658,7 +658,7 @@ router.get('/opportunities', requireAdmin, async (req, res) => {
         const db = getDb();
         const [opportunities] = await db.execute('SELECT * FROM opportunities ORDER BY posted_date DESC');
         res.render('admin/opportunities', {
-            title: 'Opportunity Manager | EvoConnect Admin',
+            title: 'Opportunity Manager | EVOConnect Admin',
             flash: getFlash(req),
             opportunities
         });
@@ -673,7 +673,7 @@ router.get('/issues', requireAdmin, async (req, res) => {
         const [rawIssues] = await db.execute('SELECT * FROM site_issues ORDER BY created_at DESC');
         const issues = rawIssues.map(i => ({ ...i, reporter_name: i.reporter_name || i.name, reporter_email: i.reporter_email || i.email }));
         res.render('admin/issues', {
-            title: 'Reported Issues | EvoConnect Admin',
+            title: 'Reported Issues | EVOConnect Admin',
             flash: getFlash(req),
             issues
         });
@@ -694,11 +694,11 @@ router.post('/issues/:id/resolve', requireAdmin, async (req, res) => {
 });
 
 router.get('/tutorial', requireAdmin, (req, res) => {
-    res.render('admin/tutorial', { title: 'Platform Admin Guide | EvoConnect', flash: getFlash(req), guideType: 'platform' });
+    res.render('admin/tutorial', { title: 'Platform Admin Guide | EVOConnect', flash: getFlash(req), guideType: 'platform' });
 });
 
 router.get('/cms-tutorial', requireAdmin, (req, res) => {
-    res.render('admin/tutorial', { title: 'CMS Admin Guide | EvoConnect', flash: getFlash(req), guideType: 'cms' });
+    res.render('admin/tutorial', { title: 'CMS Admin Guide | EVOConnect', flash: getFlash(req), guideType: 'cms' });
 });
 
 router.get('/cms', requireAdmin, (req, res) => res.redirect('/admin-cms'));

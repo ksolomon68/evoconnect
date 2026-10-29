@@ -61,8 +61,8 @@ function showLoginScreen() {
     <div class="cms-login-screen" role="main">
       <div class="cms-login-card">
         <div style="display:flex;align-items:center;justify-content:center;gap:0.6rem;margin-bottom:0.75rem;">
-          <img src="/images/favicon.png" alt="EvoConnect" style="height:40px;width:auto;">
-          <span style="font-size:1.6rem;font-weight:800;color:#0F172A;letter-spacing:-0.02em;">EvoConnect</span>
+          <img src="/images/favicon.png" alt="EVOConnect" style="height:40px;width:auto;">
+          <span style="font-size:1.6rem;font-weight:800;color:#0F172A;letter-spacing:-0.02em;">EVOConnect</span>
         </div>
         <h1>CMS Admin</h1>
         <p>Sign in with your admin account to manage site content.</p>
@@ -130,8 +130,8 @@ async function showShell() {
       <!-- Header -->
       <header class="cms-header" role="banner">
         <a href="/admin/dashboard" class="cms-header-brand">
-          <img src="/images/favicon.png" alt="EvoConnect" style="height:28px;width:auto;background:#fff;padding:3px;border-radius:6px;">
-          <span>EvoConnect CMS Admin</span>
+          <img src="/images/favicon.png" alt="EVOConnect" style="height:28px;width:auto;background:#fff;padding:3px;border-radius:6px;">
+          <span>EVOConnect CMS Admin</span>
         </a>
         <div class="cms-header-actions">
           <a href="/admin/dashboard" class="cms-btn cms-btn-sm"
@@ -2166,7 +2166,7 @@ async function renderAdminsTab(container) {
             <div class="cms-tab-header">
                 <div>
                     <h1 class="cms-page-title">👥 Admin Accounts</h1>
-                    <p class="cms-page-subtitle">Manage administrators with access to the EvoConnect CMS and admin dashboards.</p>
+                    <p class="cms-page-subtitle">Manage administrators with access to the EVOConnect CMS and admin dashboards.</p>
                 </div>
                 <button class="cms-btn cms-btn-primary" onclick="showAdminModal()">+ Add New Admin</button>
             </div>

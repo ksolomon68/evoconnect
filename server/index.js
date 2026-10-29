@@ -210,10 +210,10 @@ async function startServer() {
 
         // CMS & Admin tutorial routes (both clean URLs and legacy .html URLs)
         app.get(['/cms-tutorial', '/cms-tutorial.html'], (req, res) => {
-            res.render('admin/tutorial', { title: 'CMS Admin Guide | EvoConnect', guideType: 'cms', layout: req.user ? 'layouts/dashboard' : 'layouts/default' });
+            res.render('admin/tutorial', { title: 'CMS Admin Guide | EVOConnect', guideType: 'cms', layout: req.user ? 'layouts/dashboard' : 'layouts/default' });
         });
         app.get(['/admin-tutorial', '/admin-tutorial.html'], (req, res) => {
-            res.render('admin/tutorial', { title: 'Platform Admin Guide | EvoConnect', guideType: 'platform', layout: req.user ? 'layouts/dashboard' : 'layouts/default' });
+            res.render('admin/tutorial', { title: 'Platform Admin Guide | EVOConnect', guideType: 'platform', layout: req.user ? 'layouts/dashboard' : 'layouts/default' });
         });
 
         // Public home
@@ -241,7 +241,7 @@ async function startServer() {
                 );
                 req.session.flash = { type: 'success', message: 'Thank you! Your message has been received by our team.' };
             } catch (err) {
-                console.error('EvoConnect [/contact POST]:', err);
+                console.error('EVOConnect [/contact POST]:', err);
             }
             res.redirect('/contact');
         });
@@ -302,7 +302,7 @@ async function startServer() {
 
         // 500
         app.use((err, req, res, next) => {
-            console.error('EvoConnect Server Error:', err);
+            console.error('EVOConnect Server Error:', err);
             res.status(500).render('errors/500', {
                 title: 'Server Error',
                 errMsg: isLive ? null : (err.message || String(err))
