@@ -501,3 +501,24 @@ test('RFQs use the shared posting workflow and retain legacy records exactly onc
         assert.match((await clients.prime.page('/prime/opportunities')).text,/Reviewed RFQ/);
     }finally{await db.execute('DELETE FROM opportunities WHERE id=?',[id]);await db.execute('DELETE FROM subcontractor_requests WHERE id=?',[row.insertId]);}
 });
+
+
+test('Hostinger keeps CMS edits in MySQL and accepts PDFs larger than the serverless limit',async()=>{
+    const slug='hostinger-persistence-check';
+    const json=(method,body)=>({method,headers:{'content-type':'application/json'},body:JSON.stringify(body)});
+    const created=await clients.admin.request('/api/cms/pages',json('POST',{slug,meta:{title:'Hostinger persistent CMS page'},sections:[]}));
+    assert.equal(created.status,201,await created.text());
+    try {
+        const publicPage=await clients.business.page('/pages/'+slug);assert.equal(publicPage.res.status,200);assert.match(publicPage.text,/Hostinger persistent CMS page/);
+        const [[stored]]=await db.execute('SELECT data FROM cms_content WHERE content_key=?',['pages/'+slug+'.json']);assert.equal(JSON.parse(stored.data).meta.title,'Hostinger persistent CMS page');
+        const imageForm=new FormData();imageForm.set('altText','Hostinger media check');imageForm.set('image',new Blob([Buffer.from('local-image-test')],{type:'image/png'}),'hostinger-test.png');
+        const media=await clients.admin.request('/api/cms/media',{method:'POST',body:imageForm});assert.equal(media.status,201);const uploaded=await media.json();
+        try{const served=await clients.admin.request(uploaded.url);assert.equal(served.status,200);assert.equal(await served.text(),'local-image-test');}
+        finally{assert.equal((await clients.admin.request('/api/cms/media/'+uploaded.filename,{method:'DELETE'})).status,200);}
+        await clients.business.page('/business/documents');
+        const largePdf=Buffer.concat([Buffer.from('%PDF-1.4\n'),Buffer.alloc(5*1024*1024,32),Buffer.from('\n%%EOF\n')]);
+        const largeUpload=await clients.business.upload('business',largePdf,'hostinger-large.pdf');assert.equal(largeUpload.status,302);
+        const [[document]]=await db.execute("SELECT id,size_bytes FROM capability_documents WHERE owner_type='business' AND owner_id=?",[clients.businessId]);assert.equal(document.size_bytes,largePdf.length);
+        const download=await clients.business.request('/capabilities/'+document.id);assert.equal(download.status,200);assert.equal(Buffer.from(await download.arrayBuffer()).compare(largePdf),0);
+    }finally{await clients.admin.request('/api/cms/pages/'+slug,{method:'DELETE'});}
+});

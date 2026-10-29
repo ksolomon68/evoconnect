@@ -13,7 +13,7 @@ const matching = require('../services/naics-matching');
 const router = express.Router();
 const roles = { labor: 'worker', business: 'business', prime: 'prime', admin: 'admin' };
 const tables = { worker: 'workers', business: 'businesses', prime: 'primes', admin: 'admins' };
-const uploadLimitMB = process.env.EVO_SERVERLESS ? 4 : 10;
+const uploadLimitMB = 10;
 const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: uploadLimitMB * 1024 * 1024, files: 1, fields: 5 } });
 const wrap = fn => (req, res, next) => Promise.resolve(fn(req, res, next)).catch(next);
 const notFound = res => res.status(404).send('This item is unavailable.');

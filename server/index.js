@@ -46,7 +46,6 @@ app.use(cookieParser());
 app.use(methodOvr('_method'));
 app.use(session({
     secret:            require('./services/session-secret')(),
-    store: process.env.EVO_SERVERLESS ? new (require('./services/mysql-session-store'))() : undefined,
     resave:            false,
     saveUninitialized: false,
     cookie: {
@@ -93,7 +92,7 @@ app.use((req, res, next) => {
         else if (msgs.error?.length) res.locals.flash  = { type: 'error',   message: msgs.error[0]   };
         else res.locals.flash = null;
     }
-    res.locals.uploadLimitMB = process.env.EVO_SERVERLESS ? 4 : 10;
+    res.locals.uploadLimitMB = 10;
     res.locals.cfg     = cfg;
     res.locals.year    = new Date().getFullYear();
 
@@ -175,10 +174,9 @@ app.use((req, res, next) => {
 });
 
 // ── Routes ────────────────────────────────────────────────────────
-async function startServer({ listen = true } = {}) {
+async function startServer() {
     try {
-        if (process.env.EVO_SERVERLESS && process.env.DB_AUTO_MIGRATE !== 'true') await getDb().execute('SELECT 1 FROM app_sessions LIMIT 1');
-        else await initDatabase();
+        await initDatabase();
 
         app.use(require('./routes/ecosystem'));
         app.use(require('./routes/flagship'));
@@ -353,7 +351,6 @@ async function startServer({ listen = true } = {}) {
         });
 
         // Start
-        if (!listen) return app;
         if (process.env.PHUSION_PASSENGER || process.env.PASSENGER_NODE_CONTROL_REPO) {
             app.listen('passenger');
             console.log(`${cfg.name}: Listening on Phusion Passenger`);
@@ -366,9 +363,5 @@ async function startServer({ listen = true } = {}) {
     }
 }
 
-let application;
-module.exports.getApp = () => {
-    if (!application) application = startServer({listen:false}).catch(err=>{application=null;throw err;});
-    return application;
-};
-if (require.main === module) startServer().catch(()=>process.exit(1));
+// Passenger loads the entry module with require(), so startup must be unconditional.
+startServer().catch(()=>process.exit(1));

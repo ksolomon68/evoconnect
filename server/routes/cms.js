@@ -46,7 +46,7 @@ const ALLOWED_MIME_TYPES = new Set([
 
 const upload = multer({
     storage: multer.memoryStorage(),
-    limits:  { fileSize: (process.env.EVO_SERVERLESS ? 4 : 10) * 1024 * 1024 }, // 10 MB
+    limits:  { fileSize: 10 * 1024 * 1024 }, // 10 MB
     fileFilter: (_req, file, cb) => {
         if (ALLOWED_MIME_TYPES.has(file.mimetype)) {
             cb(null, true);
@@ -235,7 +235,7 @@ router.get('/stats', requireAdmin, async (_req, res, next) => {
     const mediaFiles=(await files.list('media')).length;
     const [[counts]]=await require('../database').getDb().execute('SELECT COUNT(*) AS faqs FROM cms_faqs');
     const [[admins]]=await require('../database').getDb().execute('SELECT COUNT(*) AS users FROM admins');
-    res.json({ pages: pageFiles, faqs: counts.faqs, media: mediaFiles, users: admins.users, maxUploadMB: process.env.EVO_SERVERLESS ? 4 : 10 });
+    res.json({ pages: pageFiles, faqs: counts.faqs, media: mediaFiles, users: admins.users, maxUploadMB: 10 });
     }catch(err){next(err);}
 });
 

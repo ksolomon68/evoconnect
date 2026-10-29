@@ -93,7 +93,7 @@ function calcWorkerPct(w) {
 // ── Multer Upload ─────────────────────────────────────────────────────────────
 const parseResume = multer({
     storage: multer.memoryStorage(),
-    limits: { fileSize: (process.env.EVO_SERVERLESS ? 4 : 5) * 1024 * 1024 },
+    limits: { fileSize: 5 * 1024 * 1024 },
     fileFilter: (req,file,cb)=>['.pdf','.doc','.docx'].includes(path.extname(file.originalname).toLowerCase())
         ? cb(null,true) : cb(new Error('Only PDF and Word documents are allowed.'))
 });

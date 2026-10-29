@@ -16,7 +16,7 @@ function createPool() {
     const cfg = {
         ...require('./services/database-config')(),
         waitForConnections: true,
-        connectionLimit:  Number(process.env.DB_CONNECTION_LIMIT || (process.env.EVO_SERVERLESS ? 2 : 10)),
+        connectionLimit:  Number(process.env.DB_CONNECTION_LIMIT || 10),
         queueLimit:       0,
         enableKeepAlive:  true,
         keepAliveInitialDelay: 10000
@@ -76,7 +76,7 @@ function getDb() {
 }
 
 // Keep-alive ping every 60s to prevent Hostinger idle disconnects
-if (!process.env.EVO_SERVERLESS) setInterval(async () => {
+setInterval(async () => {
     try {
         await getDb().execute('SELECT 1');
     } catch (e) {
@@ -88,7 +88,7 @@ async function initDatabase() {
     console.log('EVOConnect DB: Running initDatabase()...');
 
     try {
-        if (process.env.DB_SKIP_CREATE === 'true' || process.env.EVO_SERVERLESS) throw new Error('Using a provisioned database; skipping CREATE DATABASE.');
+        if (process.env.DB_SKIP_CREATE === 'true') throw new Error('Using a provisioned database; skipping CREATE DATABASE.');
         const { database, ...setupConfig } = require('./services/database-config')();
         const setupConn = await mysql.createConnection(setupConfig);
         const dbName = process.env.DB_NAME || 'evoconnect';
@@ -807,13 +807,12 @@ async function initDatabase() {
         await require('./services/faqs').migrate(db);
         await require('./services/ecosystem-schema')(db);
         await require('./services/opportunity-lifecycle').archiveExpired(db);
-        if (!process.env.EVO_SERVERLESS) setInterval(() => require('./services/opportunity-lifecycle').archiveExpired(db).catch(err => console.error('Opportunity expiry:', err)), 60 * 1000).unref();
+        setInterval(() => require('./services/opportunity-lifecycle').archiveExpired(db).catch(err => console.error('Opportunity expiry:', err)), 60 * 1000).unref();
 
         // Cleanup expired tokens hourly
-        if (!process.env.EVO_SERVERLESS) setInterval(async () => {
+        setInterval(async () => {
             try {
                 const d = getDb();
-                await d.execute('DELETE FROM app_sessions WHERE expires_at < UTC_TIMESTAMP()');
                 await d.execute('DELETE FROM password_reset_tokens WHERE expires_at < NOW() OR used = 1');
             } catch {}
         }, 60 * 60 * 1000);

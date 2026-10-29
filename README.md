@@ -1,5 +1,7 @@
 # EVOConnect Platform
 
+Production runs on Hostinger as a Node.js/Express application. See [Hostinger deployment settings](docs/HOSTINGER-DEPLOYMENT.md).
+
 A mission-critical digital platform connecting Small Businesses (Small Businesses) with contracting opportunities and Prime Contractors/Prime Contractors with qualified partners.
 
 ## Overview
