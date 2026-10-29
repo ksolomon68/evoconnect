@@ -192,7 +192,12 @@ const navCfg = NAV_CONFIG[currentRole] || NAV_CONFIG.worker;
                             <span>Notifications</span>
                             <a href="<%= navCfg.messagesHref %>">View Messages</a>
                         </div>
-                        <div id="notification-list" class="notification-list">No new notifications</div>
+                        <div id="notification-list" class="notification-list">
+                            <div class="notification-loading" aria-hidden="true">
+                                <span class="notification-loading-bar"></span>
+                                <span class="notification-loading-bar"></span>
+                            </div>
+                        </div>
                     </div>
                 </div>
 

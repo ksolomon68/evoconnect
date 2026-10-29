@@ -633,6 +633,35 @@ textarea {
     color: var(--color-text-muted);
 }
 
+/* Shown while the first notification fetch is in flight, so the dropdown
+   doesn't claim "No new notifications" before it has actually checked.
+   Swapped for real content (or the genuine empty message) by
+   navigation.js's fetchNotifications once the request resolves. */
+.notification-loading {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-sm);
+    padding: var(--space-xs) 0;
+}
+
+.notification-loading-bar {
+    display: block;
+    height: 0.7rem;
+    border-radius: var(--border-radius-sm);
+    background: var(--color-bg-tertiary);
+    animation: notification-loading-pulse 1.2s ease-in-out infinite;
+}
+
+.notification-loading-bar:nth-child(2) {
+    width: 65%;
+    animation-delay: 0.15s;
+}
+
+@keyframes notification-loading-pulse {
+    0%, 100% { opacity: 0.5; }
+    50% { opacity: 1; }
+}
+
 .header-user-info {
     text-align: right;
 }

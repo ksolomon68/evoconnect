@@ -466,10 +466,13 @@ html, body {
     border-radius: var(--cms-radius);
     overflow:      hidden;
     cursor:        pointer;
-    transition:    border-color .15s, box-shadow .15s;
+    transition:    border-color .15s, box-shadow .15s, transform .15s;
     background:    var(--cms-bg);
 }
-.cms-media-card:hover  { border-color: var(--cms-primary); box-shadow: var(--cms-shadow-md); }
+/* Same lift-on-hover language as the dashboard's .action-card/.resource-card,
+   so a clickable tile reads the same way whether you're in the CMS or a
+   dashboard. */
+.cms-media-card:hover  { border-color: var(--cms-primary); box-shadow: var(--cms-shadow-md); transform: translateY(-3px); }
 .cms-media-card.selected { border-color: var(--cms-primary); box-shadow: 0 0 0 3px rgba(0,90,140,.3); }
 
 .cms-media-thumb-wrap {
