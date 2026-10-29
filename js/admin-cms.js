@@ -32,6 +32,8 @@ let globalData  = null;
 let schemaData  = null;
 /** @type {string|null} id of currently edited section */
 let activeSection = null;
+/** @type {object|null} Sortable.js instance for the page editor's section list */
+let sectionSortable = null;
 
 // ── Bootstrap ──────────────────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', async () => {
@@ -520,6 +522,21 @@ async function renderPageEditor(container, slug) {
         container.querySelectorAll('[data-section-move-down]').forEach(btn => {
             btn.addEventListener('click', () => moveSectionDown(btn.getAttribute('data-section-move-down')));
         });
+
+        // Drag-and-drop reordering (mouse/touch). The ↑/↓ buttons stay as
+        // the keyboard-accessible way to reorder, since Sortable.js drag
+        // alone isn't operable without a pointer.
+        if (sectionSortable) { sectionSortable.destroy(); sectionSortable = null; }
+        const sectionListEl = document.getElementById('section-list');
+        if (window.Sortable && sectionListEl && (page.sections || []).length > 1) {
+            sectionSortable = window.Sortable.create(sectionListEl, {
+                animation: 150,
+                handle: '.cms-section-handle',
+                ghostClass: 'cms-section-ghost',
+                onEnd: reorderSectionsFromDOM
+            });
+        }
+
         document.getElementById('delete-section-btn').addEventListener('click', () => {
             if (activeSection) deleteSection(activeSection);
         });
@@ -538,11 +555,19 @@ async function renderPageEditor(container, slug) {
 
 function renderSectionItem(section) {
     const typeLabel = getSectionTypeLabel(section.type);
+    const schema    = schemaData?.componentTypes?.find(c => c.type === section.type);
     const title     = section.fields?.heading || section.fields?.title || section.id;
+    const preview   = getSectionPreviewText(section, schema);
+    const thumb     = getSectionThumbnail(section, schema);
     return `
-    <li class="cms-section-item" id="si-${section.id}" role="listitem">
+    <li class="cms-section-item" id="si-${section.id}" data-section-id="${escHtml(section.id)}" role="listitem">
+      <span class="cms-section-handle" title="Drag to reorder" aria-hidden="true">⠿</span>
+      ${thumb ? `<img class="cms-section-thumb" src="${escHtml(thumb)}" alt="" loading="lazy">` : ''}
       <span class="cms-section-badge">${escHtml(typeLabel)}</span>
-      <span class="cms-section-item-title">${escHtml(String(title))}</span>
+      <div class="cms-section-body">
+        <div class="cms-section-item-title">${escHtml(String(title))}</div>
+        ${preview ? `<div class="cms-section-preview">${escHtml(preview)}</div>` : ''}
+      </div>
       <div class="cms-section-actions">
         <button class="cms-btn cms-btn-sm cms-btn-outline" aria-label="Move up"
                 data-section-move-up="${escHtml(section.id)}">↑</button>
@@ -552,6 +577,36 @@ function renderSectionItem(section) {
                 data-section-edit="${escHtml(section.id)}">Edit</button>
       </div>
     </li>`;
+}
+
+/**
+ * Picks a short text snippet that best represents a section's content,
+ * for the section-list preview line. Prefers a heading/title field (used
+ * as the list item's title already, so falls back to the next text-ish
+ * field) and otherwise the first non-empty text/textarea field.
+ */
+function getSectionPreviewText(section, schema) {
+    const fields = schema?.fields || [];
+    const titleKeys = new Set(['heading', 'title']);
+    const candidate = fields.find(f =>
+        !titleKeys.has(f.key) &&
+        (f.inputType === 'text' || f.inputType === 'textarea') &&
+        typeof section.fields?.[f.key] === 'string' &&
+        section.fields[f.key].trim()
+    );
+    if (!candidate) return '';
+    return truncateFAQ(section.fields[candidate.key].trim(), 90);
+}
+
+/** Returns the first populated media-field image path for a thumbnail, if any. */
+function getSectionThumbnail(section, schema) {
+    const fields = schema?.fields || [];
+    const mediaField = fields.find(f =>
+        f.inputType === 'media' &&
+        typeof section.fields?.[f.key] === 'string' &&
+        section.fields[f.key].trim()
+    );
+    return mediaField ? section.fields[mediaField.key].trim() : '';
 }
 
 function openSectionEditor(sectionId) {
@@ -893,6 +948,14 @@ function moveSectionDown(sectionId) {
         [activePage.sections[idx], activePage.sections[idx + 1]] = [activePage.sections[idx + 1], activePage.sections[idx]];
         renderPageEditor(document.getElementById('cms-main'), activeSlug);
     }
+}
+
+/** Syncs activePage.sections to match the list's current DOM order after a drag. */
+function reorderSectionsFromDOM() {
+    const ids = Array.from(document.querySelectorAll('#section-list .cms-section-item'))
+        .map(el => el.getAttribute('data-section-id'));
+    const byId = new Map(activePage.sections.map(s => [s.id, s]));
+    activePage.sections = ids.map(id => byId.get(id)).filter(Boolean);
 }
 
 function deleteSection(sectionId) {
