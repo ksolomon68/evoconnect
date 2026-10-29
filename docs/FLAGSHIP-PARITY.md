@@ -37,7 +37,7 @@ The startup sweep archives already expired published postings and notifies their
 
 Set `CAPABILITY_STORAGE_DIR` to a private, persistent directory outside any static serving roots and include it in backups. The default is a sibling `evoconnect-private/capabilities` directory outside the checkout. Files are written with private permissions; database records hold generated storage names. These PDFs are not stored in public uploads. A file signature check is not a malware scan; no antivirus integration was introduced.
 
-Production requires unique `JWT_SECRET` and `SESSION_SECRET` values, and `ADMIN_DEFAULT_PASSWORD` to provision the first admin in an empty database. Development demo accounts and sample postings are not seeded in production; demo login is rejected there. Existing production deployments should review previously seeded accounts and rotate any historical default credentials: this change does not delete existing accounts or silently replace their passwords. Configure SMTP for welcome/reset emails and test delivery in the deployment environment.
+Production requires a unique `JWT_SECRET`; a separate `SESSION_SECRET` is optional because sessions otherwise use a distinct key derived from the JWT secret, and `ADMIN_DEFAULT_PASSWORD` to provision the first admin in an empty database. Development demo accounts and sample postings are not seeded in production; demo login is rejected there. Existing production deployments should review previously seeded accounts and rotate any historical default credentials: this change does not delete existing accounts or silently replace their passwords. Configure SMTP for welcome/reset emails and test delivery in the deployment environment.
 
 ## Integration tests
 

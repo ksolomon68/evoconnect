@@ -22,8 +22,8 @@ const { attachUser }   = require('./middleware/auth');
 const app  = express();
 app.set('trust proxy', 1);
 const PORT = process.env.PORT || 3001;
-if (process.env.NODE_ENV === 'production' && (!process.env.JWT_SECRET || !process.env.SESSION_SECRET)) {
-    throw new Error('Production requires JWT_SECRET and SESSION_SECRET.');
+if (process.env.NODE_ENV === 'production' && !process.env.JWT_SECRET) {
+    throw new Error('Production requires JWT_SECRET for authentication.');
 }
 
 // ── Security ──────────────────────────────────────────────────────
@@ -44,7 +44,7 @@ app.use(express.urlencoded({ extended: true, limit: '2mb' }));
 app.use(cookieParser());
 app.use(methodOvr('_method'));
 app.use(session({
-    secret:            process.env.SESSION_SECRET || 'evoconnect-session-secret-2026',
+    secret:            require('./services/session-secret')(),
     resave:            false,
     saveUninitialized: false,
     cookie: {

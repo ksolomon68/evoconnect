@@ -196,9 +196,9 @@ test('expired postings archive automatically with application history intact',as
     assert.equal((await clients.business.post('/business/applications/apply',{opportunity_id:id,notes:'Too late'})).status,404);
     assert.equal((await clients.business.request(`/opportunities/${id}`)).status,404);
 });
-test('production disables demo login and CMS shortcuts',async()=>{
+test('production starts with only JWT_SECRET and disables demo login and CMS shortcuts',async()=>{
     const crypto=require('node:crypto');
-    const production=spawn(process.execPath,['server/index.js'],{cwd:require('node:path').join(__dirname,'..'),env:{...process.env,NODE_ENV:'production',PORT:String(port+1),DB_HOST:process.env.DB_HOST || '127.0.0.1',DB_USER:process.env.DB_USER || 'dev',DB_NAME:process.env.TEST_DB_NAME || 'evoconnect_test',JWT_SECRET:crypto.randomBytes(48).toString('hex'),SESSION_SECRET:crypto.randomBytes(48).toString('hex'),EMAIL_USER:'',EMAIL_PASSWORD:''},stdio:'ignore'});
+    const production=spawn(process.execPath,['server/index.js'],{cwd:require('node:path').join(__dirname,'..'),env:{...process.env,NODE_ENV:'production',PORT:String(port+1),DB_HOST:process.env.DB_HOST || '127.0.0.1',DB_USER:process.env.DB_USER || 'dev',DB_NAME:process.env.TEST_DB_NAME || 'evoconnect_test',JWT_SECRET:crypto.randomBytes(48).toString('hex'),SESSION_SECRET:'',EMAIL_USER:'',EMAIL_PASSWORD:''},stdio:'ignore'});
     const url=`http://127.0.0.1:${port+1}`;
     try {
         let ready=false;for(let i=0;i<100;i++){try{const r=await fetch(url+'/api/health');if((await r.json()).status==='ok'){ready=true;break;}}catch{}await new Promise(r=>setTimeout(r,100));}assert.ok(ready);
