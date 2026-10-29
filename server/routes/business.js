@@ -277,7 +277,9 @@ router.get('/profile', requireType('business'), async (req, res) => {
         business.certifications = safeJson(business.certifications, []);
         business.naics_codes = safeJson(business.naics_codes, []);
 
+        const [documents] = await db.execute('SELECT * FROM capability_documents WHERE owner_type = ? AND owner_id = ?', ['business', req.user.id]);
         res.render('business/profile', {
+            capabilityDocument: documents[0],
             title: 'My Profile | EvoConnect Business',
             flash: getFlash(req),
             business,
@@ -557,7 +559,9 @@ router.get('/profile/edit', requireType('business'), async (req, res) => {
         business.certifications = safeJson(business.certifications, []);
         business.naics_codes = safeJson(business.naics_codes, []);
 
+        const [documents] = await db.execute('SELECT * FROM capability_documents WHERE owner_type = ? AND owner_id = ?', ['business', req.user.id]);
         res.render('business/profile', {
+            capabilityDocument: documents[0],
             title: 'Edit Profile | EvoConnect Business',
             flash: getFlash(req),
             business,

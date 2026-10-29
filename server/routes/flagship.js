@@ -97,7 +97,7 @@ router.post('/:portal(labor|business|prime|admin)/documents', ...portalAuth, (re
     } catch (err) { await fs.promises.unlink(path.join(privateDir,storage)); throw err; }
     for(const doc of old) await fs.promises.unlink(path.join(privateDir,doc.storage_name)).catch(err => { if(err.code !== 'ENOENT') console.error('Old capability cleanup failed:', err.code); });
     flash(req, 'Capability statement uploaded. Your profile now links to this PDF.');
-    res.redirect(`/${req.params.portal}/documents`);
+    res.redirect(req.params.portal === 'business' ? '/business/profile#capability-statement' : `/${req.params.portal}/documents`);
 }));
 router.post('/:portal(labor|business|prime|admin)/documents/delete', ...portalAuth, csrf, wrap(async (req,res) => {
     const [docs] = await getDb().execute('SELECT * FROM capability_documents WHERE owner_type = ? AND owner_id = ?', [req.user.type,req.user.id]);
@@ -105,7 +105,7 @@ router.post('/:portal(labor|business|prime|admin)/documents/delete', ...portalAu
         await getDb().execute('DELETE FROM capability_documents WHERE id = ? AND owner_type = ? AND owner_id = ?', [docs[0].id,req.user.type,req.user.id]);
         await fs.promises.unlink(path.join(privateDir,docs[0].storage_name)).catch(err => { if(err.code !== 'ENOENT') throw err; });
     }
-    flash(req, 'Uploaded statement removed.');res.redirect(`/${req.params.portal}/documents`);
+    flash(req, 'Uploaded statement removed.');res.redirect(req.params.portal === 'business' ? '/business/profile#capability-statement' : `/${req.params.portal}/documents`);
 }));
 router.get('/capabilities/:id', requireAuth, wrap(async (req,res,next) => {
     const [docs] = await getDb().execute('SELECT * FROM capability_documents WHERE id = ?', [req.params.id]);

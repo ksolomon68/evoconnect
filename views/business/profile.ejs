@@ -207,29 +207,10 @@
       </div>
     </form>
 
-    <!-- Section 7: Capability Statement -->
-    <div class="form-card" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem">
-      <div>
-        <h2 class="form-card-title" style="margin:0 0 .5rem">7. Capability Statement</h2>
-        <p style="margin:0;color:rgba(255,255,255,.6);font-size:.9rem">
-          <% if (locals.business?.capability_statement_generated_at) { %>
-            Generated <%= new Date(locals.business.capability_statement_generated_at).toLocaleDateString() %>
-          <% } else { %>
-            Not yet generated — complete your profile first
-          <% } %>
-        </p>
-      </div>
-      <div style="display:flex;gap:.75rem;flex-wrap:wrap">
-        <% if (locals.business?.capability_statement_generated_at) { %>
-          <a href="/business/capability-statement" class="btn-sm btn-secondary">View Statement</a>
-        <% } %>
-        <form method="POST" action="/business/capability-statement/generate" style="display:inline">
-          <button type="submit" class="btn-sm btn-primary">
-            <%= locals.business?.capability_statement_generated_at ? 'Regenerate' : 'Generate Statement' %>
-          </button>
-        </form>
-      </div>
-    </div>
+    <section class="form-card" id="capability-statement">
+      <h2 class="form-card-title">7. Capability Statement</h2>
+      <%- include('../shared/capability-upload', { document: locals.capabilityDocument || null, basePath: '/business' }) %>
+    </section>
 
   </div>
 </section>

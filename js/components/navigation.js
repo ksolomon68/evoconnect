@@ -44,7 +44,6 @@ const Navigation = {
                 { label: 'Saved Opportunities',   href: '/business/saved',                icon: '⭐' },
                 { label: 'Connection Requests',   href: '/business/connections',          icon: '🤝' },
                 { label: 'Messages',              href: '/business/messages',             icon: '✉️' },
-                { label: 'Capability Statement',  href: '/business/capability-statement', icon: '📄' },
                 { label: 'My Profile',            href: '/business/profile',              icon: '👤' },
                 { label: 'Readiness Checklist',   href: '/business/checklist',            icon: '✅' },
                 { label: 'Resources',             href: '/business/resources',            icon: '📚' },

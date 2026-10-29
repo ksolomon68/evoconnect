@@ -30,7 +30,6 @@
         <a href="/business/jobs">Hire Labor</a>
         <a href="/business/messages">Messages</a>
         <a href="/business/profile" class="<%= locals.activePage === 'profile' ? 'active' : '' %>">My Profile</a>
-        <a href="/business/capability-statement" class="<%= locals.activePage === 'capstatement' ? 'active' : '' %>">Capability Statement</a>
         <a href="/logout" class="btn btn-sm btn-ghost">Log Out</a>
       <% } else if (locals.user.type === 'prime') { %>
         <a href="/prime/dashboard" class="<%= locals.activePage === 'dashboard' ? 'active' : '' %>">Dashboard</a>

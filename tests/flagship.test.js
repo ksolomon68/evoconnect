@@ -60,6 +60,14 @@ test('each role can upload a PDF; invalid files, excess size and CSRF fail',asyn
         assert.equal((await clients[role].upload(portal,pdf)).status,302);
         assert.match((await clients[role].page(`/${portal}/documents`)).text,/statement.pdf/);
     }
+    for (const path of ['/business/profile', '/business/profile/edit']) {
+        const profile = await clients.business.page(path);
+        assert.equal(profile.res.status,200);
+        assert.match(profile.text,/enctype="multipart\/form-data"/);
+        assert.match(profile.text,/statement.pdf/);
+        assert.match(profile.text,/id="capability-statement"/);
+        assert.doesNotMatch(profile.text,/label: 'Upload Capability Statement', href: '\/business\/documents'/);
+    }
     assert.equal((await clients.business.upload('business',Buffer.from('<script>alert(1)</script>'))).status,400);
     assert.equal((await clients.business.upload('business',pdf,'fake.txt','text/plain')).status,400);
     assert.equal((await clients.business.upload('business',Buffer.alloc(10*1024*1024+1))).status,400);
