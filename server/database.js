@@ -475,50 +475,88 @@ async function initDatabase() {
 
         console.log('EVOConnect DB: Core + Caltrans parity tables initialized.');
 
-        // ── Seed NAICS codes ───────────────────────────────────────
-        const [[{ nc }]] = await db.execute('SELECT COUNT(*) AS nc FROM naics_codes');
-        if (nc === 0) {
-            const naics = [
-                ['237130','Telecommunications Infrastructure Construction','fiber-broadband','$500K–$5M',1],
-                ['517311','Wired Telecom Carriers','fiber-broadband','$250K–$2M',1],
-                ['238210','Electrical Contractors','electrical','$100K–$1M',1],
-                ['517410','Satellite Telecom Carriers','structured-cabling','$250K–$2M',1],
-                ['541512','Computer Systems Design Services','cloud-network-infra','$150K–$1.5M',1],
-                ['517210','Wireless Telecom Carriers (except Satellite)','cloud-network-infra','$250K–$3M',1],
-                ['484110','General Freight Trucking (Local)','cdl-trucking','$50K–$500K',1],
-                ['484121','General Freight Trucking (Long-Distance TL)','cdl-trucking','$100K–$1M',1],
-                ['484122','General Freight Trucking (Long-Distance LTL)','cdl-trucking','$100K–$1M',1],
-                ['488490','Other Support Activities for Road Transport','cdl-trucking','$50K–$250K',1],
-                ['238220','Plumbing, Heating, A/C Contractors','plumbing-hvac','$75K–$750K',1],
-                ['332312','Fabricated Structural Metal Manufacturing','welding-fabrication','$100K–$1M',1],
-                ['332313','Plate Work Manufacturing','welding-fabrication','$100K–$1M',1],
-                ['238130','Framing Contractors','construction-general','$50K–$500K',1],
-                ['238110','Concrete Contractors','concrete-cement','$75K–$750K',1],
-                ['238140','Masonry Contractors','concrete-cement','$75K–$500K',1],
-                ['238910','Site Preparation Contractors','construction-general','$100K–$1M',1],
-                ['238320','Painting & Wall Covering Contractors','construction-general','$50K–$500K',1],
-                ['238160','Roofing Contractors','construction-general','$50K–$500K',1],
-                ['561730','Landscaping Services','landscaping','$25K–$250K',1],
-                ['238990','Other Specialty Trade Contractors','construction-general','$50K–$500K',1],
-                ['561320','Temporary Help Services','admin-clerical','$25K–$250K',1],
-                ['541511','Custom Computer Programming Services','it-support','$100K–$1M',1],
-                ['811212','Computer & Peripheral Equipment Repair','it-support','$25K–$250K',1],
-                ['236220','Commercial & Institutional Building Construction','construction-general','$500K–$10M',1],
-                ['237310','Highway, Street, Bridge Construction','concrete-cement','$1M–$50M',1],
-                ['236115','New Single-Family Housing Construction','construction-general','$250K–$5M',0],
-                ['541330','Engineering Services','cloud-network-infra','$250K–$5M',1],
-                ['541620','Environmental Consulting Services','environmental','$85K–$500K',1],
-                ['562910','Remediation Services','environmental','$100K–$1M',1],
-                ['561110','Office Administrative Services','admin-clerical','$50K–$500K',1],
-            ];
-            for (const [code, desc, trade, avg, sa] of naics) {
-                await db.execute(
-                    `INSERT IGNORE INTO naics_codes (code, description, trade_category, avg_contract_size, set_aside_eligible) VALUES (?,?,?,?,?)`,
-                    [code, desc, trade, avg, sa]
-                );
-            }
-            console.log(`EVOConnect DB: Seeded ${naics.length} NAICS codes.`);
+        // ── Seed & Sync Federal/State NAICS Codes ──────────────────
+        const naics = [
+            // Sector 23 — Construction & Specialty Infrastructure Trades
+            ['236115','New Single-Family Housing Construction','construction-general','$250K–$5M',0],
+            ['236116','New Multifamily Housing Construction','construction-general','$500K–$15M',1],
+            ['236118','Residential & Facility Remodelers','construction-general','$100K–$2.5M',1],
+            ['236210','Industrial Building Construction','construction-general','$1M–$25M',1],
+            ['236220','Commercial & Institutional Building Construction','construction-general','$500K–$10M',1],
+            ['237110','Water & Sewer Line and Related Structures Construction','underground-utilities','$250K–$5M',1],
+            ['237120','Oil & Gas Pipeline and Related Structures Construction','underground-utilities','$500K–$10M',1],
+            ['237130','Power & Communication Line and Related Structures Construction','fiber-broadband','$500K–$5M',1],
+            ['237310','Highway, Street, and Bridge Construction','civil-construction','$1M–$50M',1],
+            ['237990','Other Heavy & Civil Engineering Construction','civil-construction','$500K–$15M',1],
+            ['238110','Poured Concrete Foundation & Structure Contractors','concrete-cement','$75K–$750K',1],
+            ['238120','Structural Steel & Precast Concrete Contractors','welding-fabrication','$150K–$2M',1],
+            ['238130','Framing Contractors','carpentry-framing','$50K–$500K',1],
+            ['238140','Masonry Contractors','concrete-cement','$75K–$500K',1],
+            ['238150','Glass & Glazing Contractors','painting-finishing','$50K–$500K',1],
+            ['238160','Roofing Contractors','roofing','$50K–$500K',1],
+            ['238170','Siding & Sheet Metal Exterior Contractors','roofing','$50K–$350K',1],
+            ['238210','Electrical Contractors & Other Wiring Installation Contractors','electrical','$100K–$1M',1],
+            ['238220','Plumbing, Heating, and Air-Conditioning Contractors','plumbing-hvac','$75K–$750K',1],
+            ['238290','Other Building Equipment & Mechanical Contractors','hvac-mechanical','$100K–$1M',1],
+            ['238310','Drywall & Insulation Contractors','carpentry-framing','$50K–$500K',1],
+            ['238320','Painting & Wall Covering Contractors','painting-finishing','$50K–$500K',1],
+            ['238330','Flooring Contractors','carpentry-framing','$35K–$350K',1],
+            ['238350','Finish Carpentry Contractors','carpentry-framing','$50K–$400K',1],
+            ['238910','Site Preparation, Excavation & Demolition Contractors','equipment-operation','$100K–$1M',1],
+            ['238990','All Other Specialty Trade Contractors','construction-general','$50K–$500K',1],
+
+            // Sector 33 — Structural Metal & Industrial Fabrication
+            ['332312','Fabricated Structural Metal Manufacturing','welding-fabrication','$100K–$1M',1],
+            ['332313','Plate Work Manufacturing','welding-fabrication','$100K–$1M',1],
+            ['332322','Sheet Metal Work Manufacturing','welding-fabrication','$75K–$750K',1],
+
+            // Sector 48 — CDL Trucking, Specialized Freight & Traffic Control
+            ['484110','General Freight Trucking, Local','cdl-trucking','$50K–$500K',1],
+            ['484121','General Freight Trucking, Long-Distance, Truckload','cdl-trucking','$100K–$1M',1],
+            ['484122','General Freight Trucking, Long-Distance, Less Than Truckload','cdl-trucking','$100K–$1M',1],
+            ['484220','Specialized Freight (Dump, Aggregate & Heavy Haul) Trucking, Local','cdl-trucking','$75K–$750K',1],
+            ['484230','Specialized Freight (except Used Goods) Trucking, Long-Distance','cdl-trucking','$100K–$1.2M',1],
+            ['488490','Other Support Activities for Road Transportation (Traffic Control)','cdl-trucking','$50K–$250K',1],
+
+            // Sector 51 — Telecommunications, Broadband & Wireless Carriers
+            ['517111','Wired Telecommunications Carriers (Fiber & Broadband)','fiber-broadband','$250K–$2.5M',1],
+            ['517112','Wireless Telecommunications Carriers (5G & Cell Towers)','cell-site-tech','$250K–$3M',1],
+            ['517210','Wireless Telecommunications Carriers (except Satellite)','cell-site-tech','$250K–$3M',1],
+            ['517311','Wired Telecommunications Carriers','fiber-broadband','$250K–$2M',1],
+            ['517410','Satellite Telecommunications','structured-cabling','$250K–$2M',1],
+
+            // Sector 54 — Engineering, Surveying, IT & Environmental Consulting
+            ['541330','Engineering Services','cloud-network-infra','$250K–$5M',1],
+            ['541370','Surveying & Mapping (except Geophysical) Services','civil-construction','$75K–$750K',1],
+            ['541511','Custom Computer Programming Services','it-support','$100K–$1M',1],
+            ['541512','Computer Systems Design & Network Integration Services','cloud-network-infra','$150K–$1.5M',1],
+            ['541513','Computer Facilities Management & Data Center Services','cloud-network-infra','$200K–$2M',1],
+            ['541519','Other Computer Related & Field Tech Services','it-support','$75K–$750K',1],
+            ['541620','Environmental Consulting Services','environmental','$85K–$500K',1],
+
+            // Sector 56 — Facilities, Remediation, Security, Grounds & Staffing
+            ['561110','Office Administrative & Project Support Services','admin-clerical','$50K–$500K',1],
+            ['561210','Facilities Support & Base Operations Services','facilities-maintenance','$150K–$2.5M',1],
+            ['561320','Temporary Help & Skilled Trade Staffing Services','admin-clerical','$25K–$250K',1],
+            ['561612','Security Guards & Site Patrol Services','facilities-maintenance','$50K–$500K',1],
+            ['561621','Security Systems Services (Access Control & CCTV)','structured-cabling','$75K–$750K',1],
+            ['561720','Janitorial & Post-Construction Cleaning Services','facilities-maintenance','$25K–$300K',1],
+            ['561730','Landscaping & Right-of-Way Vegetation Management','landscaping','$25K–$250K',1],
+            ['562112','Hazardous Waste Collection Services','environmental','$100K–$1M',1],
+            ['562910','Remediation, Abatement & Environmental Cleanup Services','environmental','$100K–$1M',1],
+
+            // Sector 81 — Commercial Equipment & Electronic Repair
+            ['811210','Electronic & Precision Equipment Repair and Maintenance','it-support','$50K–$400K',1],
+            ['811212','Computer & Office Machine Repair and Maintenance','it-support','$25K–$250K',1],
+            ['811310','Commercial & Industrial Machinery and Equipment Repair','welding-fabrication','$75K–$750K',1],
+        ];
+        for (const [code, desc, trade, avg, sa] of naics) {
+            await db.execute(
+                `INSERT IGNORE INTO naics_codes (code, description, trade_category, avg_contract_size, set_aside_eligible) VALUES (?,?,?,?,?)`,
+                [code, desc, trade, avg, sa]
+            );
         }
+        console.log(`EVOConnect DB: Verified ${naics.length} NAICS codes.`);
 
         // ── Seed default resources ─────────────────────────────────
         const [[{ rc }]] = await db.execute('SELECT COUNT(*) AS rc FROM resources');

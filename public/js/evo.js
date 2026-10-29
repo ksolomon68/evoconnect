@@ -32,6 +32,29 @@
       gsap.registerPlugin(window.ScrollTrigger);
     }
 
+    // Helper: animate elements from -> to without CSS transition interference
+    const revealElements = (targets, fromVars, toVars, timeline, position) => {
+      const els = gsap.utils.toArray(targets);
+      if (!els.length) return;
+      els.forEach(el => el.setAttribute('data-gsap-busy', '1'));
+      const finalTo = Object.assign({}, toVars, {
+        y: 0,
+        x: 0,
+        scale: 1,
+        opacity: 1,
+        clearProps: 'transform,opacity',
+        onComplete: () => {
+          els.forEach(el => el.removeAttribute('data-gsap-busy'));
+          if (typeof toVars.onComplete === 'function') toVars.onComplete();
+        }
+      });
+      if (timeline) {
+        timeline.fromTo(els, fromVars, finalTo, position);
+      } else {
+        gsap.fromTo(els, fromVars, finalTo);
+      }
+    };
+
     // 1. Hero Entrance Timeline
     const heroSection = document.querySelector('.wfc-hero');
     if (heroSection) {
@@ -44,16 +67,18 @@
       const consoleCard = heroSection.querySelector('[data-gsap="hero-console"]');
       const telemetryRows = heroSection.querySelectorAll('[data-gsap="telemetry-row"]');
 
-      if (eyebrow) heroTl.from(eyebrow, { y: 18, opacity: 0, duration: 0.55 });
-      if (title)   heroTl.from(title,   { y: 26, opacity: 0, duration: 0.7 }, '-=0.35');
-      if (lead)    heroTl.from(lead,    { y: 20, opacity: 0, duration: 0.65 }, '-=0.45');
-      if (cta)     heroTl.from(cta,     { y: 18, opacity: 0, duration: 0.55 }, '-=0.4');
-      if (stats)   heroTl.from(stats.children, { y: 14, opacity: 0, duration: 0.5, stagger: 0.08 }, '-=0.35');
+      if (eyebrow) revealElements(eyebrow, { y: 18, opacity: 0 }, { duration: 0.55 }, heroTl);
+      if (title)   revealElements(title,   { y: 26, opacity: 0 }, { duration: 0.7 }, heroTl, '-=0.35');
+      if (lead)    revealElements(lead,    { y: 20, opacity: 0 }, { duration: 0.65 }, heroTl, '-=0.45');
+      if (cta)     revealElements(cta,     { y: 18, opacity: 0 }, { duration: 0.55 }, heroTl, '-=0.4');
+      if (stats && stats.children.length) {
+        revealElements(Array.from(stats.children), { y: 14, opacity: 0 }, { duration: 0.5, stagger: 0.08 }, heroTl, '-=0.35');
+      }
       if (consoleCard) {
-        heroTl.from(consoleCard, { x: 32, y: 16, opacity: 0, scale: 0.97, duration: 0.85 }, '-=0.85');
+        revealElements(consoleCard, { x: 32, y: 16, opacity: 0, scale: 0.97 }, { duration: 0.85 }, heroTl, '-=0.85');
       }
       if (telemetryRows.length) {
-        heroTl.from(telemetryRows, { x: 18, opacity: 0, duration: 0.5, stagger: 0.12 }, '-=0.5');
+        revealElements(telemetryRows, { x: 18, opacity: 0 }, { duration: 0.5, stagger: 0.12 }, heroTl, '-=0.5');
       }
     }
 
@@ -78,64 +103,68 @@
       });
     });
 
-    // 3. ScrollTrigger Section Headers & Staggered Grids
+    // 3. ScrollTrigger Section Headers & Staggered Card Grids
     if (typeof window.ScrollTrigger !== 'undefined') {
       gsap.utils.toArray('[data-gsap="section-header"]').forEach(header => {
-        gsap.from(header.children, {
-          y: 24,
-          opacity: 0,
-          duration: 0.65,
-          stagger: 0.1,
-          ease: 'power3.out',
-          scrollTrigger: {
-            trigger: header,
-            start: 'top 86%',
-            once: true
+        const children = Array.from(header.children);
+        if (!children.length) return;
+        window.ScrollTrigger.create({
+          trigger: header,
+          start: 'top 86%',
+          once: true,
+          onEnter: () => {
+            revealElements(children, { y: 22, opacity: 0 }, { duration: 0.65, stagger: 0.09, ease: 'power3.out' });
           }
         });
       });
 
-      const batchGroups = [
-        { selector: '[data-gsap="pathway-card"]', stagger: 0.12, y: 32 },
-        { selector: '[data-gsap="hiw-step"]',     stagger: 0.1,  y: 28 },
-        { selector: '[data-gsap="trade-card"]',   stagger: 0.05, y: 20 },
-        { selector: '[data-gsap="benefit-card"]', stagger: 0.1,  y: 28 },
-        { selector: '[data-gsap="cert-card"]',    stagger: 0.08, y: 24 },
-        { selector: '[data-gsap="pricing-card"]', stagger: 0.12, y: 30 },
-        { selector: '[data-gsap="faq-item"]',     stagger: 0.06, y: 18 }
+      const cardGroups = [
+        { selector: '[data-gsap="pathway-card"]', stagger: 0.1,  y: 26 },
+        { selector: '[data-gsap="hiw-step"]',     stagger: 0.09, y: 24 },
+        { selector: '[data-gsap="trade-card"]',   stagger: 0.035, y: 18 },
+        { selector: '[data-gsap="benefit-card"]', stagger: 0.09, y: 24 },
+        { selector: '[data-gsap="cert-card"]',    stagger: 0.07, y: 22 },
+        { selector: '[data-gsap="pricing-card"]', stagger: 0.1,  y: 26 },
+        { selector: '[data-gsap="faq-item"]',     stagger: 0.05, y: 16 }
       ];
 
-      batchGroups.forEach(group => {
-        const items = gsap.utils.toArray(group.selector);
-        if (!items.length) return;
-        window.ScrollTrigger.batch(items, {
-          start: 'top 88%',
-          once: true,
-          onEnter: batch => {
-            gsap.from(batch, {
-              y: group.y,
-              opacity: 0,
-              duration: 0.65,
-              stagger: group.stagger,
-              ease: 'power3.out',
-              overwrite: true
-            });
-          }
+      cardGroups.forEach(group => {
+        const allItems = gsap.utils.toArray(group.selector);
+        if (!allItems.length) return;
+
+        // Group items by their parent container so an entire section's cards animate uniformly from the same trigger
+        const parentMap = new Map();
+        allItems.forEach(item => {
+          const parent = item.parentElement || document.body;
+          if (!parentMap.has(parent)) parentMap.set(parent, []);
+          parentMap.get(parent).push(item);
+        });
+
+        parentMap.forEach((cards, parentEl) => {
+          window.ScrollTrigger.create({
+            trigger: parentEl,
+            start: 'top 88%',
+            once: true,
+            onEnter: () => {
+              revealElements(
+                cards,
+                { y: group.y, opacity: 0 },
+                { duration: 0.62, stagger: group.stagger, ease: 'power3.out', overwrite: true }
+              );
+            }
+          });
         });
       });
 
       // Checklist & Banner Reveals
       ['[data-gsap="mandate-banner"]', '[data-gsap="checklist-left"]', '[data-gsap="checklist-right"]', '[data-gsap="cta-banner"]', '[data-gsap="auth-card"]'].forEach(sel => {
         gsap.utils.toArray(sel).forEach(el => {
-          gsap.from(el, {
-            y: 28,
-            opacity: 0,
-            duration: 0.75,
-            ease: 'power3.out',
-            scrollTrigger: {
-              trigger: el,
-              start: 'top 88%',
-              once: true
+          window.ScrollTrigger.create({
+            trigger: el,
+            start: 'top 88%',
+            once: true,
+            onEnter: () => {
+              revealElements(el, { y: 24, opacity: 0 }, { duration: 0.7, ease: 'power3.out' });
             }
           });
         });

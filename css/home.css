@@ -1380,3 +1380,241 @@ h1, h2, h3, h4, .section-title, .pathway-title, .auth-title {
   content: '—';
   color: rgba(148, 163, 184, 0.35);
 }
+
+
+/* ── GSAP Entrance Transition Guard & Card Baseline Alignment ──────── */
+[data-gsap-busy="1"] {
+  transition: none !important;
+}
+
+.pathway-cards,
+.hiw-grid,
+.trades-grid,
+.benefits-grid,
+.cert-cards,
+.pricing-grid,
+.reg-selector-grid {
+  align-items: stretch;
+}
+
+.pathway-cards > *,
+.hiw-grid > *,
+.trades-grid > *,
+.benefits-grid > *,
+.cert-cards > *,
+.pricing-grid > *,
+.reg-selector-grid > * {
+  margin-top: 0 !important;
+  margin-bottom: 0 !important;
+}
+
+/* ── Expanded Trade Cards & Federal NAICS Classification Matrix ────── */
+.trades-grid {
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1.15rem;
+}
+
+.trade-card-desc {
+  font-size: 0.8rem;
+  line-height: 1.5;
+  color: #94A3B8;
+  margin: 0.45rem 0 0;
+}
+
+.naics-matrix-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 1.15rem;
+  margin-bottom: 1.75rem;
+}
+
+.naics-sector-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.55rem;
+  justify-content: center;
+}
+
+.naics-tab {
+  font-family: var(--font-mono);
+  font-size: 0.74rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  padding: 0.58rem 1rem;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(15, 23, 42, 0.72);
+  color: #94A3B8;
+  cursor: pointer;
+  transition: border-color 0.2s ease, background 0.2s ease, color 0.2s ease;
+}
+
+.naics-tab:hover {
+  border-color: rgba(6, 182, 212, 0.4);
+  color: #E2E8F0;
+}
+
+.naics-tab.active {
+  background: rgba(6, 182, 212, 0.14);
+  border-color: rgba(6, 182, 212, 0.55);
+  color: #22D3EE;
+  box-shadow: 0 0 18px -4px rgba(6, 182, 212, 0.35);
+}
+
+.naics-search-wrap {
+  max-width: 640px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+.naics-search-input {
+  width: 100%;
+  padding: 0.82rem 1.15rem;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(15, 23, 42, 0.85);
+  color: #F8FAFC;
+  font-family: var(--font-sans);
+  font-size: 0.9rem;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.naics-search-input::placeholder {
+  color: #64748B;
+}
+
+.naics-search-input:focus {
+  outline: none;
+  border-color: #06B6D4;
+  box-shadow: 0 0 0 3px rgba(6, 182, 212, 0.18);
+}
+
+.naics-table-container {
+  background: rgba(11, 17, 32, 0.9);
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  border-radius: 16px;
+  overflow-x: auto;
+  box-shadow: 0 24px 50px -18px rgba(0, 0, 0, 0.65);
+}
+
+.naics-matrix-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 0;
+  min-width: 820px;
+}
+
+.naics-matrix-table thead th {
+  background: rgba(15, 23, 42, 0.95);
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #94A3B8;
+  padding: 1rem 1.15rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.09);
+  white-space: nowrap;
+}
+
+.naics-matrix-table tbody tr {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  transition: background 0.18s ease;
+}
+
+.naics-matrix-table tbody tr:last-child {
+  border-bottom: none;
+}
+
+.naics-matrix-table tbody tr:hover {
+  background: rgba(6, 182, 212, 0.045);
+}
+
+.naics-matrix-table td {
+  padding: 0.95rem 1.15rem;
+  vertical-align: middle;
+  color: #E2E8F0;
+  font-size: 0.88rem;
+  border-bottom: none;
+}
+
+.naics-matrix-table td strong {
+  display: block;
+  color: #F8FAFC;
+  font-size: 0.9rem;
+  font-weight: 600;
+  margin-bottom: 0.2rem;
+}
+
+.naics-subscope {
+  display: block;
+  font-size: 0.78rem;
+  color: #64748B;
+  line-height: 1.45;
+}
+
+.naics-code-pill {
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #22D3EE;
+  background: rgba(6, 182, 212, 0.12);
+  border: 1px solid rgba(6, 182, 212, 0.3);
+  padding: 0.28rem 0.6rem;
+  border-radius: 6px;
+  display: inline-block;
+}
+
+.naics-track-tag {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  color: #CBD5E1;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  padding: 0.24rem 0.55rem;
+  border-radius: 6px;
+  white-space: nowrap;
+  display: inline-block;
+}
+
+.mono-val {
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  color: #94A3B8;
+  white-space: nowrap;
+}
+
+.naics-sa-badge {
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #34D399;
+  background: rgba(16, 185, 129, 0.12);
+  border: 1px solid rgba(16, 185, 129, 0.28);
+  padding: 0.2rem 0.5rem;
+  border-radius: 4px;
+  display: inline-block;
+}
+
+.naics-action-link {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #22D3EE !important;
+  text-decoration: none !important;
+  white-space: nowrap;
+  padding: 0.35rem 0.65rem;
+  border-radius: 6px;
+  border: 1px solid rgba(6, 182, 212, 0.28);
+  background: rgba(6, 182, 212, 0.08);
+  transition: background 0.2s ease, border-color 0.2s ease;
+  display: inline-block;
+}
+
+.naics-action-link:hover {
+  background: #06B6D4;
+  color: #070B14 !important;
+  border-color: #06B6D4;
+}

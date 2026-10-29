@@ -10,23 +10,69 @@ const { sendEmail } = require('../config/email');
 const { regLimiter } = require('../middleware/rateLimit');
 const router = express.Router();
 
-// ── NAICS Map ─────────────────────────────────────────────────────────────────
+// ── Comprehensive Federal & State Labor NAICS Map ────────────────────────────
 const NAICS_MAP = {
-    'cdl-trucking':         ['484110','484121','484122','488490'],
-    'concrete-cement':      ['238110','238140','237310'],
-    'construction-general': ['236220','238130','238910','238320','238160','238990'],
-    'fiber-broadband':      ['237130','517311'],
-    'cell-site-tech':       ['517311','238210'],
-    'structured-cabling':   ['238210','517410'],
-    'cloud-network-infra':  ['541512','517210','541330'],
-    'welding-fabrication':  ['332312','332313'],
-    'electrical':           ['238210'],
-    'plumbing-hvac':        ['238220'],
-    'landscaping':          ['561730'],
-    'it-support':           ['541511','541512','811212'],
-    'admin-clerical':       ['561110','561320'],
-    'other':                [],
+    // Sector 23 & 51 — Broadband, Telecom & Low-Voltage Infrastructure
+    'fiber-broadband':       ['237130', '517111', '517311'],
+    'telecom_fiber':         ['237130', '517111', '517311'],
+    'cell-site-tech':        ['517112', '517210', '237130', '238210'],
+    'structured-cabling':    ['238210', '517410', '561621'],
+
+    // Sector 23 — Heavy Civil, Utility & Specialty Trade Construction
+    'electrical':            ['238210', '237130'],
+    'civil-construction':    ['237310', '237990', '541370'],
+    'civil_construction':    ['237310', '237990', '541370'],
+    'underground-utilities': ['237110', '237120', '237130'],
+    'underground_utilities': ['237110', '237120', '237130'],
+    'concrete-cement':       ['238110', '238140', '237310'],
+    'concrete_masonry':      ['238110', '238140', '237310'],
+    'equipment-operation':   ['238910', '237310', '237990'],
+    'equipment_operation':   ['238910', '237310', '237990'],
+    'plumbing-hvac':         ['238220', '237110'],
+    'plumbing':              ['238220', '237110'],
+    'hvac-mechanical':       ['238220', '238290'],
+    'hvac_mechanical':       ['238220', '238290'],
+    'carpentry-framing':     ['238130', '238310', '238350', '238330', '238170'],
+    'carpentry_framing':     ['238130', '238310', '238350', '238330', '238170'],
+    'roofing':               ['238160', '238170'],
+    'painting-finishing':    ['238320', '238150'],
+    'painting_finishing':    ['238320', '238150'],
+    'construction-general':  ['236220', '236210', '236116', '236118', '238130', '238910', '238990'],
+    'general_labor':         ['238990', '236220', '561320'],
+
+    // Sector 33 & 81 — Structural Welding, Fabrication & Industrial Repair
+    'welding-fabrication':   ['238120', '332312', '332313', '332322', '811310'],
+
+    // Sector 48 — CDL Freight, Dump Trucking & Highway Support
+    'cdl-trucking':          ['484110', '484121', '484122', '484220', '484230', '488490'],
+
+    // Sector 54 — Cloud, Network Engineering, IT & Technical Services
+    'cloud-network-infra':   ['541512', '541513', '517210', '541330'],
+    'it_network':            ['541512', '541513', '238210'],
+    'it-support':            ['541511', '541512', '541519', '811212', '811210'],
+
+    // Sector 56 — Environmental Remediation, Grounds, Facilities & Staffing
+    'environmental':         ['562910', '541620', '562112'],
+    'landscaping':           ['561730', '238910'],
+    'facilities-maintenance':['561210', '561720', '561612'],
+    'admin-clerical':        ['561110', '561320', '238990'],
+    'other':                 [],
 };
+
+async function syncWorkerNaicsMatches(db, workerId, tradeCategory) {
+    if (!workerId) return;
+    const codes = NAICS_MAP[tradeCategory] || [];
+    await db.execute('DELETE FROM worker_matches WHERE worker_id = ?', [workerId]);
+    for (const code of codes) {
+        const [nc] = await db.execute('SELECT code FROM naics_codes WHERE code = ?', [code]);
+        if (nc.length) {
+            await db.execute(
+                'INSERT IGNORE INTO worker_matches (worker_id, naics_code) VALUES (?,?)',
+                [workerId, code]
+            );
+        }
+    }
+}
 
 // ── US States ─────────────────────────────────────────────────────────────────
 const US_STATES = ['AL','AK','AZ','AR','CA','CO','CT','DE','FL','GA','HI','ID','IL','IN','IA','KS','KY','LA','ME','MD','MA','MI','MN','MS','MO','MT','NE','NV','NH','NJ','NM','NY','NC','ND','OH','OK','OR','PA','RI','SC','SD','TN','TX','UT','VT','VA','WA','WV','WI','WY','DC'];
@@ -90,6 +136,12 @@ router.get('/', (req, res) => {
 // ── GET /labor/register ────────────────────────────────────────────────────────
 router.get('/register', (req, res) => {
     const step = parseInt(req.query.step) || 1;
+    if (req.query.trade && NAICS_MAP[req.query.trade] !== undefined) {
+        req.session.laborReg = {
+            ...(req.session.laborReg || {}),
+            trade_category: req.query.trade
+        };
+    }
     res.render('labor/register', {
         title: 'Register | EVOConnect Labor',
         flash: getFlash(req),
@@ -132,10 +184,10 @@ router.post('/register', regLimiter, (req, res, next) => {
             return res.render('labor/register', {
                 title: 'Register | EVOConnect Labor',
                 flash: null, states: US_STATES, stateNames: STATE_NAMES,
-                step: 1, errors, values: v
+                step: 1, errors, values: { ...(req.session.laborReg || {}), ...v }
             });
         }
-        req.session.laborReg = { full_name, email, phone, password };
+        req.session.laborReg = { ...(req.session.laborReg || {}), full_name, email, phone, password };
         return res.redirect('/labor/register?step=2');
     }
 
@@ -233,16 +285,7 @@ router.post('/register', regLimiter, (req, res, next) => {
         const workerId = result.insertId;
 
         // NAICS auto-match
-        const codes = NAICS_MAP[trade_category] || [];
-        for (const code of codes) {
-            const [nc] = await db.execute('SELECT code FROM naics_codes WHERE code = ?', [code]);
-            if (nc.length) {
-                await db.execute(
-                    'INSERT IGNORE INTO worker_matches (worker_id, naics_code) VALUES (?,?)',
-                    [workerId, code]
-                );
-            }
-        }
+        await syncWorkerNaicsMatches(db, workerId, trade_category);
 
         // Calculate and update profile_pct
         const [wRows] = await db.execute('SELECT * FROM workers WHERE id = ?', [workerId]);
@@ -306,13 +349,23 @@ router.get('/dashboard', requireType('worker'), async (req, res) => {
         worker.skills = safeJson(worker.skills, []);
         worker.certifications = safeJson(worker.certifications, []);
 
-        // NAICS matches
-        const [matches] = await db.execute(`
+        // NAICS matches (auto-sync if empty for worker's trade_category)
+        let [matches] = await db.execute(`
             SELECT wm.naics_code, nc.description, nc.avg_contract_size, nc.set_aside_eligible
             FROM worker_matches wm
             JOIN naics_codes nc ON wm.naics_code = nc.code
             WHERE wm.worker_id = ?
         `, [userId]);
+
+        if (!matches.length && worker.trade_category && (NAICS_MAP[worker.trade_category] || []).length) {
+            await syncWorkerNaicsMatches(db, userId, worker.trade_category);
+            [matches] = await db.execute(`
+                SELECT wm.naics_code, nc.description, nc.avg_contract_size, nc.set_aside_eligible
+                FROM worker_matches wm
+                JOIN naics_codes nc ON wm.naics_code = nc.code
+                WHERE wm.worker_id = ?
+            `, [userId]);
+        }
 
         // Checklist progress (all tracks)
         const [checklist] = await db.execute(
@@ -418,6 +471,10 @@ router.post('/profile', requireType('worker'), async (req, res) => {
             userId
         ]);
 
+        if (v.trade_category) {
+            await syncWorkerNaicsMatches(db, userId, v.trade_category);
+        }
+
         // Recalculate profile_pct
         const [wRows] = await db.execute('SELECT * FROM workers WHERE id = ?', [userId]);
         const pct = calcWorkerPct(wRows[0]);
@@ -505,9 +562,6 @@ router.post('/checklist', requireType('worker'), async (req, res) => {
     }
 });
 
-// ── POST /labor/connections/:id ────────────────────────────────────────────────
-
-
 // ── GET /labor/faq ─────────────────────────────────────────────────────────────
 router.get('/faq', async (req, res, next) => {
     try {
@@ -564,6 +618,10 @@ router.post('/profile/section', requireType('worker'), uploadResume.single('resu
         if (Object.keys(updates).length) {
             const setClauses = Object.keys(updates).map(k => `${k} = ?`).join(', ');
             await db.execute(`UPDATE workers SET ${setClauses} WHERE id = ?`, [...Object.values(updates), userId]);
+        }
+
+        if (section === 'trade' && updates.trade_category) {
+            await syncWorkerNaicsMatches(db, userId, updates.trade_category);
         }
 
         const [wRows] = await db.execute('SELECT * FROM workers WHERE id = ?', [userId]);
@@ -629,6 +687,9 @@ router.post('/profile/update', requireType('worker'), uploadResume.single('resum
         ];
         await db.execute(`UPDATE workers SET full_name=?,phone=?,trade_category=?,skills=?,certifications=?,years_experience=?,sam_registered=?,business_entity=?,city=?,state=?,zip=?,travel_willingness=?,experience_summary=? WHERE id=?`, updates);
         if (req.file) await db.execute('UPDATE workers SET resume_path=? WHERE id=?', [req.file.filename, userId]);
+        if (v.trade_category) {
+            await syncWorkerNaicsMatches(db, userId, v.trade_category);
+        }
         const [wRows] = await db.execute('SELECT * FROM workers WHERE id = ?', [userId]);
         await db.execute('UPDATE workers SET profile_pct=? WHERE id=?', [calcWorkerPct(wRows[0]), userId]);
         flash(req, 'success', 'Profile updated successfully.');
@@ -683,9 +744,6 @@ router.get('/resources', requireType('worker'), async (req, res) => {
         res.redirect('/labor/dashboard');
     }
 });
-
-// ── GET /labor/connections ─────────────────────────────────────────────────────
-
 
 // ── Utility ───────────────────────────────────────────────────────────────────
 function safeJson(val, fallback) {
