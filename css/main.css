@@ -483,7 +483,7 @@ body {
 /* Pathway Cards (Home Page) */
 .pathway-cards {
     display: grid;
-    grid-template-columns: repeat(2, minmax(0, 420px));
+    grid-template-columns: repeat(auto-fit, minmax(260px, 340px));
     gap: var(--space-xl);
     margin-top: var(--space-2xl);
     justify-content: center;
@@ -547,6 +547,16 @@ body {
     object-fit: cover;
 }
 
+.pathway-icon-emoji {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    font-size: 3rem;
+    background: var(--color-bg-secondary);
+}
+
 .pathway-title {
     font-size: var(--font-size-2xl);
     margin-bottom: var(--space-md);
@@ -560,8 +570,8 @@ body {
 }
 
 .pathway-arrow {
-    font-size: var(--font-size-xl);
-    color: var(--color-secondary);
+    font-size: var(--font-size-base);
+    color: var(--color-primary);
     font-weight: var(--font-weight-bold);
 }
 
