@@ -1,96 +1,133 @@
 <% const title = locals.title || 'Business Portal' %>
 
-<!-- Hero -->
-<section class="wfc-hero">
+<!-- Executive Hero -->
+<section class="wfc-hero evo-role-hero">
+  <div class="evo-grid-backdrop" aria-hidden="true"></div>
+  <div class="shape shape-1" aria-hidden="true"></div>
+  <div class="shape shape-2" aria-hidden="true"></div>
   <div class="wfc-hero-inner">
-    <span class="wfc-eyebrow">Business Portal</span>
-    <h1>Your Certification<br>Opens Contract Doors.</h1>
-    <p>Small, disadvantaged, and certified businesses get discovered by prime contractors actively seeking qualified subcontractors and suppliers on government projects. Showcase your capabilities. Win more work. Post jobs to hire labor workers for your projects.</p>
-    <div class="wfc-hero-cta">
-      <a href="/business/register" class="btn-primary">Register Your Business</a>
-      <a href="/login" class="btn-secondary-outline">Already a Member? Log In</a>
+    <div class="wfc-eyebrow" data-gsap="hero-eyebrow" data-cms-field="hero.eyebrow" data-cms-type="eyebrow">
+      <span class="eyebrow-dot" aria-hidden="true"></span>
+      <span>DIVISION 02 // CERTIFIED SMALL BUSINESS &amp; SUBCONTRACTORS</span>
+    </div>
+    <h1 data-gsap="hero-title" data-cms-field="hero.title">Your Socioeconomic Certification<br><span>Unlocks Prime Contract Flow.</span></h1>
+    <p data-gsap="hero-lead" data-cms-field="hero.subtitle">Small, disadvantaged, and certified firms get discovered by prime contractors fulfilling mandated diversity participation goals. Showcase your NAICS capabilities, respond to targeted RFQs, and post jobs to hire verified field labor.</p>
+    <div class="wfc-hero-cta" data-gsap="hero-cta">
+      <a href="/business/register" class="btn-primary">Register Your Business &mdash; Free</a>
+      <a href="/login" class="btn-secondary-outline">Member Sign In</a>
+    </div>
+    <div class="wfc-hero-stats" data-gsap="hero-stats">
+      <div class="hero-stat">
+        <span class="num" data-count-to="8">8</span>
+        <span class="lbl">Set-Aside Designations</span>
+      </div>
+      <div class="hero-stat-divider" aria-hidden="true"></div>
+      <div class="hero-stat">
+        <span class="num">1-Click</span>
+        <span class="lbl">Cap Statement Generator</span>
+      </div>
+      <div class="hero-stat-divider" aria-hidden="true"></div>
+      <div class="hero-stat">
+        <span class="num">SAM.gov</span>
+        <span class="lbl">UEI &amp; NAICS Aligned</span>
+      </div>
     </div>
   </div>
 </section>
 
-<!-- Certifications -->
+<!-- Certifications Matrix -->
 <section class="wfc-section">
   <div class="wfc-section-inner">
-    <div class="section-header text-center">
-      <h2 class="section-title">Certification Types We Support</h2>
-      <p class="section-subtitle">These certifications make your business eligible for set-aside contracts and required diversity spend commitments by prime contractors.</p>
+    <div class="section-header text-center" data-gsap="section-header">
+      <p class="section-label">01 // SOCIOECONOMIC SET-ASIDE MATRIX</p>
+      <h2 class="section-title" data-cms-field="certifications.heading">Supported Federal &amp; State Certifications</h2>
+      <p class="section-subtitle" data-cms-field="certifications.intro">These designations qualify your firm for sole-source awards, set-aside solicitations, and prime contractor diversity spend mandates.</p>
     </div>
     <div class="cert-cards">
-      <div class="cert-card">
+      <div class="cert-card spotlight-card" data-gsap="cert-card">
         <div class="cert-badge">DBE</div>
         <h3>Disadvantaged Business Enterprise</h3>
-        <p>Federally-funded transportation and infrastructure projects require DBE participation goals.</p>
+        <p>Mandated participation goals across US DOT, highway, transit, airport, and federally-assisted infrastructure programs.</p>
       </div>
-      <div class="cert-card">
+      <div class="cert-card spotlight-card" data-gsap="cert-card">
         <div class="cert-badge">MBE</div>
         <h3>Minority Business Enterprise</h3>
-        <p>Recognized by state and local agencies for diversity spend tracking and set-aside programs.</p>
+        <p>Recognized by state, municipal, and institutional procurement authorities for diversity spend tracking and set-aside awards.</p>
       </div>
-      <div class="cert-card">
-        <div class="cert-badge">WBE</div>
+      <div class="cert-card spotlight-card" data-gsap="cert-card">
+        <div class="cert-badge">WBE / WOSB</div>
         <h3>Women-Owned Business Enterprise</h3>
-        <p>Qualifies for WOSB and EDWOSB federal set-asides and many prime diversity requirements.</p>
+        <p>Qualifies for federal WOSB/EDWOSB set-aside solicitations and state/local prime diversity participation goals.</p>
       </div>
-      <div class="cert-card">
+      <div class="cert-card spotlight-card" data-gsap="cert-card">
         <div class="cert-badge">HUB</div>
         <h3>Historically Underutilized Business</h3>
-        <p>Texas state program with spending goals set at 11% for most state agencies.</p>
+        <p>Statewide procurement preference program with statutory good-faith subcontracting goals across state agency contracts.</p>
       </div>
-      <div class="cert-card">
+      <div class="cert-card spotlight-card" data-gsap="cert-card">
         <div class="cert-badge">SDVOSB</div>
         <h3>Service-Disabled Veteran-Owned</h3>
-        <p>Federal set-aside program for veteran entrepreneurs with service-connected disabilities.</p>
+        <p>Priority federal set-aside and sole-source eligibility across VA, DoD, and civilian agency infrastructure procurements.</p>
       </div>
-      <div class="cert-card">
-        <div class="cert-badge">8(a)</div>
-        <h3>SBA 8(a) Program</h3>
-        <p>Nine-year business development program providing access to sole-source federal contracts.</p>
+      <div class="cert-card spotlight-card" data-gsap="cert-card">
+        <div class="cert-badge">SBA 8(a)</div>
+        <h3>SBA 8(a) Business Development</h3>
+        <p>Premier nine-year federal program providing direct access to sole-source contracts and mentor-prot&eacute;g&eacute; joint ventures.</p>
       </div>
-      <div class="cert-card">
+      <div class="cert-card spotlight-card" data-gsap="cert-card">
         <div class="cert-badge">SBE</div>
         <h3>Small Business Enterprise</h3>
-        <p>State and local certifications recognizing qualifying small businesses for procurement preferences.</p>
+        <p>Race- and gender-neutral small business designation prioritized on municipal, county, and regional transit procurements.</p>
       </div>
-      <div class="cert-card">
+      <div class="cert-card spotlight-card" data-gsap="cert-card">
         <div class="cert-badge">AABE</div>
         <h3>African American Business Enterprise</h3>
-        <p>Recognized by participating agencies committed to AABE inclusion in contracting spend.</p>
+        <p>Recognized by municipal and regional contracting authorities committed to equitable subcontracting utilization.</p>
       </div>
     </div>
   </div>
 </section>
 
 <!-- How It Works -->
-<section class="wfc-section" style="background:#0B1220;">
+<section class="wfc-section evo-section-alt">
   <div class="wfc-section-inner">
-    <div class="section-header text-center">
-      <h2 class="section-title">How the Business Portal Works</h2>
+    <div class="section-header text-center" data-gsap="section-header">
+      <p class="section-label">02 // SUBCONTRACTOR WORKFLOW</p>
+      <h2 class="section-title" data-cms-field="how-it-works.heading">How the Business Portal Accelerates Contract Flow</h2>
+      <p class="section-subtitle">From SAM.gov alignment to prime RFQ bidding and field crew recruitment.</p>
     </div>
-    <div class="hiw-grid">
-      <div class="hiw-card">
-        <div class="hiw-step">01</div>
-        <h3>Register &amp; Profile</h3>
-        <p>Create your business profile with company info, NAICS codes, certifications, and service capabilities.</p>
+    <div class="hiw-grid evo-pipeline-grid">
+      <div class="hiw-card spotlight-card" data-gsap="hiw-step">
+        <div class="hiw-card-head">
+          <div class="hiw-step">01</div>
+          <span class="hiw-phase">ENTITY PROFILE</span>
+        </div>
+        <h3>Register Company &amp; UEI</h3>
+        <p>Establish your corporate profile with entity structure, SAM.gov UEI, bonding capacity, six-digit NAICS codes, and active certifications.</p>
       </div>
-      <div class="hiw-card">
-        <div class="hiw-step">02</div>
-        <h3>Get Certified</h3>
-        <p>Follow our certification checklist to achieve DBE, MBE, HUB, or other designations relevant to your market.</p>
+      <div class="hiw-card spotlight-card" data-gsap="hiw-step">
+        <div class="hiw-card-head">
+          <div class="hiw-step">02</div>
+          <span class="hiw-phase">CERTIFICATION</span>
+        </div>
+        <h3>Complete Compliance Tracks</h3>
+        <p>Follow guided checklists to obtain or renew DBE, MBE, HUB, WOSB, SDVOSB, or 8(a) designations for your target market.</p>
       </div>
-      <div class="hiw-card">
-        <div class="hiw-step">03</div>
-        <h3>Build Your Cap Statement</h3>
-        <p>Use our built-in generator to create a professional capability statement — the #1 tool for winning sub work.</p>
+      <div class="hiw-card spotlight-card" data-gsap="hiw-step">
+        <div class="hiw-card-head">
+          <div class="hiw-step">03</div>
+          <span class="hiw-phase">DOCUMENTATION</span>
+        </div>
+        <h3>Generate Capability Statement</h3>
+        <p>Instantly compile an executive, print-ready One-Page Capability Statement formatted to federal contracting officer standards.</p>
       </div>
-      <div class="hiw-card">
-        <div class="hiw-step">04</div>
-        <h3>Get Connected</h3>
-        <p>Prime contractors search and connect with you when your NAICS codes and certifications match their project needs.</p>
+      <div class="hiw-card spotlight-card" data-gsap="hiw-step">
+        <div class="hiw-card-head">
+          <div class="hiw-step">04</div>
+          <span class="hiw-phase">BID &amp; STAFF</span>
+        </div>
+        <h3>Respond to Primes &amp; Hire Labor</h3>
+        <p>Submit bids on prime contractor RFQs and post trade jobs to recruit verified workers directly from the EVOConnect Labor Directory.</p>
       </div>
     </div>
   </div>
@@ -99,29 +136,34 @@
 <!-- Benefits -->
 <section class="wfc-section">
   <div class="wfc-section-inner">
-    <div class="section-header text-center">
-      <h2 class="section-title">Why Register on EvoConnect?</h2>
+    <div class="section-header text-center" data-gsap="section-header">
+      <p class="section-label">03 // COMPETITIVE ADVANTAGE</p>
+      <h2 class="section-title" data-cms-field="benefits.heading">Built for Subcontractors Scaling in the Public Sector</h2>
     </div>
     <div class="benefits-grid">
-      <div class="benefit-card">
-        <div class="benefit-icon">&#128269;</div>
-        <h3>Be Found</h3>
-        <p>Prime contractors search our verified business directory when they need certified subs for government projects.</p>
+      <div class="benefit-card spotlight-card" data-gsap="benefit-card">
+        <div class="benefit-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></div>
+        <div class="bento-tag">PRIME VISIBILITY</div>
+        <h3>High-Intent Prime Discovery</h3>
+        <p>Prime estimators and diversity compliance officers search our verified business directory when assembling bid teams for government awards.</p>
       </div>
-      <div class="benefit-card">
-        <div class="benefit-icon">&#128196;</div>
-        <h3>Capability Statement Generator</h3>
-        <p>Automatically generate a print-ready capability statement from your profile data — no design skills needed.</p>
+      <div class="benefit-card spotlight-card" data-gsap="benefit-card">
+        <div class="benefit-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg></div>
+        <div class="bento-tag">AUTOMATED BRIEFINGS</div>
+        <h3>Capability Statement Engine</h3>
+        <p>Generate a polished, procurement-standard capability statement directly from your profile data—ready for PDF export or prime review.</p>
       </div>
-      <div class="benefit-card">
-        <div class="benefit-icon">&#127919;</div>
-        <h3>NAICS Matching</h3>
-        <p>We map your services to NAICS codes and alert you when relevant contract opportunities are posted.</p>
+      <div class="benefit-card spotlight-card" data-gsap="benefit-card">
+        <div class="benefit-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg></div>
+        <div class="bento-tag">PRECISION ALERTS</div>
+        <h3>NAICS Solicitation Matching</h3>
+        <p>Your six-digit NAICS codes automatically match your firm to active prime RFQs and public sector subcontracting opportunities.</p>
       </div>
-      <div class="benefit-card">
-        <div class="benefit-icon">&#127942;</div>
-        <h3>Certification Tracking</h3>
-        <p>Track all your certifications in one place with expiration reminders and renewal guidance.</p>
+      <div class="benefit-card spotlight-card" data-gsap="benefit-card">
+        <div class="benefit-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/></svg></div>
+        <div class="bento-tag">WORKFORCE PIPELINE</div>
+        <h3>Integrated Labor Dispatch</h3>
+        <p>When you win a subcontract, post trade jobs directly to our skilled labor directory to staff OSHA- and CDL-verified field crews.</p>
       </div>
     </div>
   </div>
@@ -129,9 +171,10 @@
 
 <!-- CTA -->
 <section class="wfc-cta-banner">
-  <div class="wfc-cta-banner-inner">
-    <h2 class="section-title">Ready to Get Found by Prime Contractors?</h2>
-    <p>Register your business free. Build your profile. Start connecting.</p>
-    <a href="/business/register" class="btn-white">Register Your Business</a>
+  <div class="wfc-cta-banner-inner" data-gsap="cta-banner">
+    <p class="section-label" style="margin-bottom:0.75rem;">EXPAND YOUR CONTRACT PIPELINE</p>
+    <h2 class="section-title" data-cms-field="cta.heading">Position Your Firm in Front of Prime Contractors.</h2>
+    <p>Register your business free, generate your capability statement, and start receiving matched prime solicitations.</p>
+    <a href="/business/register" class="btn-white">Register Your Business Free</a>
   </div>
 </section>

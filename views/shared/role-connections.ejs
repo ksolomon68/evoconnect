@@ -1,11 +1,86 @@
-<% locals.layout='layouts/dashboard'; %>
 <%- include('../partials/flash') %>
-<section class="hero-section"><div class="hero-content"><h1>Connections</h1><p><%= user.type==='worker'?'Connect with small businesses that hire labor.':user.type==='prime'?'Connect with small businesses and subcontractors.':'Connect with labor workers and prime contractors.' %></p></div></section>
-<section class="recommendations-list" style="padding:var(--space-xl)">
-<p>Recipients accept or decline requests. Contact details and direct messaging become available after acceptance.</p>
-<p><% if(user.type==='business') { %><a class="btn btn-secondary" href="/business/directory/worker">Find labor</a> <a class="btn btn-secondary" href="/business/directory/prime">Find primes</a><% } else { %><a class="btn btn-secondary" href="/<%= user.type==='worker'?'labor':'prime' %>/directory/business">Find small businesses</a><% } %></p>
-<% if(!connections.length) { %><p>No connections yet. Find a member in the directory to send a request.</p><% } %>
-<% for(const connection of connections) { %><article class="card" style="padding:1.25rem;margin:1rem 0"><h2><a href="/directory/<%= connection.peer.type %>/<%= connection.peer.id %>"><%= connection.peer.name %></a></h2><p><%= connection.peer.type==='worker'?'Labor':connection.peer.type==='prime'?'Prime contractor':'Small business' %> · <%= connection.incoming?'Incoming':'Sent' %> · <strong><%= connection.status %></strong></p><% if(connection.message) { %><p><%= connection.message %></p><% } %>
-<% if(connection.status==='pending') { for(const action of (connection.incoming?['accept','decline']:['withdraw'])) { %><form method="post" action="<%= basePath %>/connections/<%= connection.id %>/<%= action %>" style="display:inline-block;margin-right:.5rem"><input type="hidden" name="_csrf" value="<%= csrfToken %>"><button class="btn btn-secondary"><%= action[0].toUpperCase()+action.slice(1) %></button></form><% } } %>
-<% if(connection.status==='accepted') { %><p><% if(connection.peer.email) { %><a href="mailto:<%= connection.peer.email %>"><%= connection.peer.email %></a><% } %> <% if(connection.peer.phone) { %> · <%= connection.peer.phone %><% } %></p><a class="btn btn-primary" href="<%= basePath %>/messages">Send a message</a><% } %></article><% } %>
+<section class="hero-section">
+    <div class="hero-content hero-welcome">
+        <div class="wfc-eyebrow">
+            <span class="eyebrow-dot" aria-hidden="true"></span>
+            <span>Network &amp; Subcontracting Relations</span>
+        </div>
+        <h1>Connection <span>Requests</span></h1>
+        <p><%= user.type === 'worker' ? 'Connect directly with hiring subcontractors and prime general contractors across Texas.' : user.type === 'prime' ? 'Connect with certified small business subcontractors and specialty trade contractors.' : 'Connect with trade workers, subcontractors, and prime contractors.' %></p>
+        <div class="hero-telemetry-chips">
+            <span class="telemetry-chip"><span class="chip-dot chip-success"></span> Privacy Protected: Encrypted</span>
+            <span class="telemetry-chip"><span class="chip-dot chip-cyan"></span> Total Connections: <%= connections.length %></span>
+            <span class="telemetry-chip"><span class="chip-dot chip-info"></span> Direct Messaging: Enabled</span>
+        </div>
+    </div>
+</section>
+
+<section class="dash-card recommendations-list" style="padding:var(--space-xl)">
+    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem;margin-bottom:1.5rem;padding-bottom:1rem;border-bottom:1px solid #F1F5F9;">
+        <p style="margin:0;color:#64748B;font-size:0.9rem;">
+            Both parties must accept before contact details and direct chat become active.
+        </p>
+        <div style="display:flex;gap:0.5rem;flex-wrap:wrap;">
+            <% if(user.type === 'business') { %>
+                <a class="btn btn-secondary btn-sm" href="/business/directory/worker">Find Labor Workers</a>
+                <a class="btn btn-secondary btn-sm" href="/business/directory/prime">Find Prime Contractors</a>
+            <% } else { %>
+                <a class="btn btn-secondary btn-sm" href="/<%= user.type === 'worker' ? 'labor' : 'prime' %>/directory/business">Browse Small Businesses</a>
+            <% } %>
+        </div>
+    </div>
+
+    <% if(!connections.length) { %>
+        <div class="empty-state-inline" style="padding:2.5rem;text-align:center;background:#F8FAFC;border:1px dashed #CBD5E1;border-radius:14px;">
+            <p style="margin:0 0 0.75rem 0;font-size:1.05rem;font-weight:600;color:#334155;">No connections requested yet</p>
+            <p style="margin:0;color:#64748B;font-size:0.88rem;">Search member profiles in the directory to initiate a verified connection request.</p>
+        </div>
+    <% } %>
+
+    <div style="display:grid;gap:1rem;">
+        <% for(const connection of connections) { %>
+            <article class="dash-card" style="padding:1.35rem 1.5rem;margin:0;border:1px solid #E2E8F0;border-radius:14px;box-shadow:0 1px 3px rgba(15,23,42,0.03);">
+                <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:0.75rem;margin-bottom:0.6rem;">
+                    <div>
+                        <h2 style="font-size:1.15rem;font-weight:700;margin:0 0 0.25rem 0;">
+                            <a href="/directory/<%= connection.peer.type %>/<%= connection.peer.id %>" style="color:#0F172A;text-decoration:none;"><%= connection.peer.name %></a>
+                        </h2>
+                        <div style="display:flex;gap:0.5rem;align-items:center;font-size:0.82rem;color:#64748B;">
+                            <span><%= connection.peer.type === 'worker' ? '👷 Labor' : connection.peer.type === 'prime' ? '🏗️ Prime Contractor' : '🏢 Small Business' %></span>
+                            <span>•</span>
+                            <span><%= connection.incoming ? '📥 Incoming Request' : '📤 Sent Request' %></span>
+                        </div>
+                    </div>
+                    <span class="status-badge <%= connection.status === 'accepted' ? 'badge-success' : connection.status === 'pending' ? 'badge-amber' : 'badge-danger' %>" style="text-transform:capitalize;">
+                        ● <%= connection.status %>
+                    </span>
+                </div>
+
+                <% if(connection.message) { %>
+                    <p style="background:#F8FAFC;border:1px solid #E2E8F0;border-radius:8px;padding:0.75rem 1rem;font-size:0.88rem;color:#334155;line-height:1.5;margin:0.75rem 0;">
+                        <%= connection.message %>
+                    </p>
+                <% } %>
+
+                <div style="margin-top:0.75rem;display:flex;gap:0.5rem;align-items:center;flex-wrap:wrap;">
+                    <% if(connection.status === 'pending') { 
+                        for(const action of (connection.incoming ? ['accept', 'decline'] : ['withdraw'])) { 
+                    %>
+                        <form method="post" action="<%= basePath %>/connections/<%= connection.id %>/<%= action %>" style="display:inline-block;margin:0;">
+                            <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                            <button class="btn btn-sm <%= action === 'accept' ? 'btn-primary' : 'btn-secondary' %>"><%= action.charAt(0).toUpperCase() + action.slice(1) %></button>
+                        </form>
+                    <% } } %>
+
+                    <% if(connection.status === 'accepted') { %>
+                        <div style="font-size:0.88rem;color:#0F172A;margin-right:auto;display:flex;gap:0.75rem;flex-wrap:wrap;">
+                            <% if(connection.peer.email) { %><span>✉️ <a href="mailto:<%= connection.peer.email %>" style="color:#0284C7;"><%= connection.peer.email %></a></span><% } %>
+                            <% if(connection.peer.phone) { %><span>📞 <%= connection.peer.phone %></span><% } %>
+                        </div>
+                        <a class="btn btn-primary btn-sm" href="<%= basePath %>/messages">Send Message &rarr;</a>
+                    <% } %>
+                </div>
+            </article>
+        <% } %>
+    </div>
 </section>

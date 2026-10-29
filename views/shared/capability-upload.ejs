@@ -1,13 +1,50 @@
+<% const isWorker = locals.user && locals.user.type === 'worker'; %>
 <% if(document) { %>
-<h2>Current statement</h2><p><%= document.original_name %> · <%= (document.size_bytes / 1024).toFixed(0) %> KB · Uploaded <%= new Date(document.created_at).toLocaleDateString() %></p>
-<p><a class="btn btn-primary" href="/capabilities/<%= document.id %>">View PDF</a> <a class="btn btn-secondary" href="/capabilities/<%= document.id %>?download=1">Download PDF</a></p>
-<form method="post" action="<%= basePath %>/documents/delete"><input type="hidden" name="_csrf" value="<%= csrfToken %>"><button class="btn btn-secondary">Remove statement</button></form>
-<% } else { %><div class="empty-state-inline"><p>No uploaded statement yet. Upload a PDF to make it available from your directory profile.</p></div><% } %>
-<h2 style="margin-top:2rem"><%= document ? 'Replace statement' : 'Upload statement' %></h2>
-<p>PDF only, up to <%= locals.uploadLimitMB || 10 %> MB. Signed-in members can view and download your statement. Include only information you want to share with potential partners. Uploading a replacement removes the previous PDF.</p>
-<form method="post" action="<%= basePath %>/documents" enctype="multipart/form-data">
-<input type="hidden" name="_csrf" value="<%= csrfToken %>">
-<label for="statement">Capability statement PDF</label><input id="statement" type="file" name="statement" accept="application/pdf,.pdf" required class="form-control">
-<button class="btn btn-primary" style="margin-top:1rem">Upload PDF</button></form>
-<% if(user.type === 'business') { %><p style="margin-top:1rem">Need a statement? <a href="/business/capability-statement">Generate a statement</a>, print it to PDF, then upload it here.</p><% } %>
-<p><a href="<%= basePath %>/analytics">See statement views and downloads</a></p>
+<div class="dash-card-header" style="margin-top:0;">
+    <h2><%= isWorker ? 'Current Resume on File' : 'Current Capability Statement' %></h2>
+</div>
+<p style="color:var(--color-text-secondary);margin-bottom:1.25rem;">
+    📄 <strong><%= document.original_name %></strong> · <%= (document.size_bytes / 1024).toFixed(0) %> KB · Uploaded on <%= new Date(document.created_at).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' }) %>
+</p>
+<div style="display:flex;gap:0.75rem;align-items:center;flex-wrap:wrap;margin-bottom:1.5rem;">
+    <a class="btn btn-primary" href="/capabilities/<%= document.id %>" target="_blank" rel="noopener noreferrer">View <%= isWorker ? 'Resume' : 'Statement' %> PDF</a>
+    <a class="btn btn-secondary" href="/capabilities/<%= document.id %>?download=1">Download PDF</a>
+    <form method="post" action="<%= basePath %>/documents/delete" style="display:inline-block;margin:0;">
+        <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+        <button class="btn btn-danger" onclick="return confirm('Are you sure you want to remove this document?')">Remove <%= isWorker ? 'Resume' : 'Statement' %></button>
+    </form>
+</div>
+<% } else { %>
+<div class="empty-state-inline" style="padding:1.5rem;background:#F8FAFC;border:1px dashed #CBD5E1;border-radius:12px;margin-bottom:1.5rem;">
+    <p style="margin:0;color:#64748B;">No uploaded <%= isWorker ? 'resume' : 'statement' %> yet. Upload a PDF <%= isWorker ? 'resume to showcase your trade experience and certifications' : 'to make your capabilities available' %> from your directory profile.</p>
+</div>
+<% } %>
+
+<div class="dash-card-header" style="margin-top:2rem;">
+    <h2><%= document ? (isWorker ? 'Replace Resume' : 'Replace Statement') : (isWorker ? 'Upload Resume' : 'Upload Statement') %></h2>
+</div>
+<p style="color:var(--color-text-secondary);font-size:0.92rem;line-height:1.6;margin-bottom:1.25rem;">
+    PDF format only, up to <%= locals.uploadLimitMB || 10 %> MB. Verified members can review and download your <%= isWorker ? 'resume for trade jobs and subcontracting dispatch' : 'capability statement for contracting opportunities' %>. <%= document ? 'Uploading a new file safely replaces your previous document.' : '' %>
+</p>
+<form method="post" action="<%= basePath %>/documents" enctype="multipart/form-data" style="max-width:540px;">
+    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+    <div class="form-group" style="margin-bottom:1.25rem;">
+        <label for="statement" style="font-weight:700;display:block;margin-bottom:0.5rem;color:#0F172A;"><%= isWorker ? 'Resume PDF File' : 'Capability Statement PDF' %></label>
+        <input id="statement" type="file" name="statement" accept="application/pdf,.pdf" required class="form-control" style="width:100%;padding:0.6rem 0.85rem;">
+    </div>
+    <button class="btn btn-primary" style="padding:0.75rem 1.75rem;border-radius:10px;font-weight:700;">
+        <%= isWorker ? 'Upload Resume PDF' : 'Upload Capability PDF' %>
+    </button>
+</form>
+
+<% if(user && user.type === 'business') { %>
+<p style="margin-top:1.5rem;font-size:0.92rem;color:var(--color-text-secondary);">
+    Need a statement? <a href="/business/capability-statement" style="color:var(--color-primary);font-weight:600;">Generate a one-page statement</a>, print it to PDF, then upload it here.
+</p>
+<% } %>
+
+<div style="margin-top:2rem;padding-top:1.25rem;border-top:1px solid #E2E8F0;">
+    <a href="<%= basePath %>/analytics" style="display:inline-flex;align-items:center;gap:0.4rem;color:#0284C7;font-weight:600;font-size:0.92rem;text-decoration:none;">
+        📊 See <%= isWorker ? 'resume' : 'statement' %> views and downloads analytics &rarr;
+    </a>
+</div>

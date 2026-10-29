@@ -1,4 +1,4 @@
-# EvoConnect Platform
+# EVOConnect Platform
 
 A mission-critical digital platform connecting Small Businesses (Small Businesses) with contracting opportunities and Prime Contractors/Prime Contractors with qualified partners.
 
@@ -83,7 +83,7 @@ Antig2/
 
 ## Getting Started
 
-EvoConnect uses Node.js and MySQL for its role-based portals. See [feature coverage and development instructions](docs/FLAGSHIP-PARITY.md) for capability uploads, opportunity management, analytics, database setup, and integration tests.
+EVOConnect uses Node.js and MySQL for its role-based portals. See [feature coverage and development instructions](docs/FLAGSHIP-PARITY.md) for capability uploads, opportunity management, analytics, database setup, and integration tests.
 
 ### For Development
 1. Run `npm ci` and configure the local database using `.env.example`.

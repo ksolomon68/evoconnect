@@ -1,4 +1,3 @@
-<% if (locals.user) { locals.layout = 'layouts/dashboard'; } %>
 <% const title = locals.title || 'Prime Contractor Dashboard' %>
 
 <%
@@ -12,11 +11,20 @@ const acceptedConns = connList.filter(c => c.status === 'accepted').length;
 
 <%- include('../partials/flash') %>
 
-<!-- Hero Section -->
-<section class="hero-section">
+<!-- Executive Command Center Hero -->
+<section class="hero-section evo-dashboard-hero" data-gsap="hero-banner">
     <div class="hero-content hero-welcome">
-        <h1>🏢 Prime Contractor Dashboard</h1>
-        <p>Welcome, <%= prime.company_name || prime.contact_name || 'Prime Partner' %>! Manage RFQs, track small business engagement, and monitor performance.</p>
+        <div class="wfc-eyebrow">
+            <span class="eyebrow-dot" aria-hidden="true"></span>
+            <span>Prime Contractor Enterprise Console</span>
+        </div>
+        <h1>Prime Contractor <span>Sourcing Hub</span></h1>
+        <p>Welcome, <%= prime.company_name || prime.contact_name || 'Prime Partner' %>! Streamline good-faith diversity outreach, evaluate RFQ bids from certified small businesses, and audit DBE/HUB participation goals.</p>
+        <div class="hero-telemetry-chips">
+            <span class="telemetry-chip"><span class="chip-dot chip-success"></span> Tier: <%= prime.tier ? prime.tier.toUpperCase() : 'ENTERPRISE' %></span>
+            <span class="telemetry-chip"><span class="chip-dot chip-cyan"></span> UEI Status: Verified</span>
+            <span class="telemetry-chip"><span class="chip-dot chip-info"></span> Directory: <%= totalSubcontractors %> Subcontractors</span>
+        </div>
     </div>
 </section>
 
@@ -47,21 +55,50 @@ const acceptedConns = connList.filter(c => c.status === 'accepted').length;
 <!-- Summary Cards (Stats Grid) -->
 <section class="quick-stats">
     <div class="summary-grid">
-        <div class="summary-card primary">
+        <div class="summary-card spotlight-card primary">
+            <div class="summary-card-top">
+                <span class="summary-label">Active RFQs</span>
+                <span class="summary-icon">📂</span>
+            </div>
             <div class="summary-value"><%= oppsCount %></div>
-            <div class="summary-label">My RFQs</div>
+            <div class="summary-footer">
+                <span class="trend-badge trend-success">● Published solicitations</span>
+            </div>
         </div>
-        <div class="summary-card success">
+
+        <div class="summary-card spotlight-card success">
+            <div class="summary-card-top">
+                <span class="summary-label">Subcontractor Directory</span>
+                <span class="summary-icon">🏢</span>
+            </div>
             <div class="summary-value"><%= totalSubcontractors %></div>
-            <div class="summary-label">Registered Small Businesses</div>
+            <div class="summary-footer">
+                <span class="trend-badge trend-neutral">Verified DBE/HUB firms</span>
+            </div>
         </div>
-        <div class="summary-card <%= pendingApps > 0 ? 'warning' : 'primary' %>">
+
+        <div class="summary-card spotlight-card <%= pendingApps > 0 ? 'warning' : 'primary' %>">
+            <div class="summary-card-top">
+                <span class="summary-label">Pending Applications</span>
+                <span class="summary-icon">📋</span>
+            </div>
             <div class="summary-value"><%= pendingApps %></div>
-            <div class="summary-label">Pending Applications</div>
+            <div class="summary-footer">
+                <span class="trend-badge <%= pendingApps > 0 ? 'trend-warning' : 'trend-success' %>">
+                    <%= pendingApps > 0 ? '● Proposals await evaluation' : '✓ All bids reviewed' %>
+                </span>
+            </div>
         </div>
-        <div class="summary-card success">
+
+        <div class="summary-card spotlight-card success">
+            <div class="summary-card-top">
+                <span class="summary-label">Active Partnerships</span>
+                <span class="summary-icon">🤝</span>
+            </div>
             <div class="summary-value"><%= acceptedConns %></div>
-            <div class="summary-label">Accepted Connections</div>
+            <div class="summary-footer">
+                <span class="trend-badge trend-success">● Subcontractor network</span>
+            </div>
         </div>
     </div>
 </section>
@@ -72,41 +109,69 @@ const acceptedConns = connList.filter(c => c.status === 'accepted').length;
         <h2>🚀 Quick Actions</h2>
     </div>
     <div class="action-grid">
-        <a href="/prime/post-rfq" class="action-card">
-            <div class="icon-box" style="background:var(--color-bg-secondary);">📝</div>
-            <h3>Post Request for Qualifications</h3>
-            <p>Request qualifications for small businesses and subcontractors.</p>
+        <a href="/prime/post-rfq" class="action-card spotlight-card">
+            <div class="action-card-header">
+                <div class="icon-box">📝</div>
+                <span class="action-card-arrow" aria-hidden="true">&rarr;</span>
+            </div>
+            <h3>Post RFQ / Solicitation</h3>
+            <p>Publish targeted subcontracting scopes matching 58 federal NAICS codes.</p>
         </a>
-        <a href="/prime/opportunities" class="action-card">
-            <div class="icon-box" style="background:var(--color-bg-secondary);">📋</div>
+        <a href="/prime/opportunities" class="action-card spotlight-card">
+            <div class="action-card-header">
+                <div class="icon-box">📋</div>
+                <span class="action-card-arrow" aria-hidden="true">&rarr;</span>
+            </div>
             <h3>Manage RFQs</h3>
-            <p>Review applications, update status, and manage active postings.</p>
+            <p>Review proposal submissions, update milestones, and manage active scopes.</p>
         </a>
-        <a href="/prime/applications" class="action-card">
-            <div class="icon-box" style="background:var(--color-bg-secondary);">📂</div>
+        <a href="/prime/applications" class="action-card spotlight-card">
+            <div class="action-card-header">
+                <div class="icon-box">📂</div>
+                <span class="action-card-arrow" aria-hidden="true">&rarr;</span>
+            </div>
             <h3>View Applications</h3>
-            <p>Evaluate proposals and award contracts to qualified subcontractors.</p>
+            <p>Evaluate subcontractor capabilities, pricing proposals, and award contract scopes.</p>
         </a>
-        <a href="/prime/search/businesses" class="action-card">
-            <div class="icon-box" style="background:var(--color-bg-secondary);">🏢</div>
+        <a href="/prime/search/businesses" class="action-card spotlight-card">
+            <div class="action-card-header">
+                <div class="icon-box">🏢</div>
+                <span class="action-card-arrow" aria-hidden="true">&rarr;</span>
+            </div>
             <h3>Search Small Businesses</h3>
-            <p>Find certified DBE, HUB, 8(a), WBE, and SDVOSB subcontractors by NAICS code.</p>
+            <p>Discover certified DBE, HUB, 8(a), WBE, and SDVOSB subcontractors by NAICS code.</p>
         </a>
-
-        <a href="/prime/search/businesses?invite=true" class="action-card">
-            <div class="icon-box" style="background:rgba(245,158,11,0.15);">✉️</div>
-            <h3>Invite to Apply</h3>
-            <p>Search for a qualified small business and send a direct invitation.</p>
+        <a href="/prime/search/businesses?invite=true" class="action-card spotlight-card">
+            <div class="action-card-header">
+                <div class="icon-box">✉️</div>
+                <span class="action-card-arrow" aria-hidden="true">&rarr;</span>
+            </div>
+            <h3>Invite to Bid</h3>
+            <p>Send direct RFQ invitations to pre-screened subcontractors for good-faith compliance.</p>
         </a>
-        <a href="/prime/analytics" class="action-card">
-            <div class="icon-box" style="background:var(--color-bg-secondary);">📈</div>
-            <h3>View Analytics</h3>
-            <p>Monitor engagement metrics, outreach compliance, and performance analytics.</p>
+        <a href="/prime/analytics" class="action-card spotlight-card">
+            <div class="action-card-header">
+                <div class="icon-box">📈</div>
+                <span class="action-card-arrow" aria-hidden="true">&rarr;</span>
+            </div>
+            <h3>Diversity Analytics</h3>
+            <p>Monitor outreach compliance metrics, bidding rates, and subcontracting goal attainment.</p>
         </a>
-        <a href="/prime/settings" class="action-card">
-            <div class="icon-box" style="background:var(--color-bg-secondary);">⚙️</div>
+        <a href="/prime/resources" class="action-card spotlight-card">
+            <div class="action-card-header">
+                <div class="icon-box">📚</div>
+                <span class="action-card-arrow" aria-hidden="true">&rarr;</span>
+            </div>
+            <h3>Resource Library</h3>
+            <p>Access federal set-aside regulations, prompt pay standards, and procurement templates.</p>
+        </a>
+        <a href="/prime/settings" class="action-card spotlight-card">
+            <div class="action-card-header">
+                <div class="icon-box">⚙️</div>
+                <span class="action-card-arrow" aria-hidden="true">&rarr;</span>
+            </div>
             <h3>Prime Settings</h3>
-            <p>Update organization profile, subscription tier, and account settings.</p>
+            <p>Update SAM UEI verification, subscription tier, and corporate dispatch preferences.</p>
         </a>
     </div>
 </section>

@@ -1,36 +1,44 @@
 <% const title = locals.title || 'Create Your Account' %>
 
 <section class="reg-selector-section">
-  <div class="container">
-    <div class="section-header text-center">
-      <div class="hero-badge">Registration Portal</div>
-      <h1>Select Your Account Type</h1>
-      <p class="section-sub">Choose the role that fits your goals and join the EvoConnect government contract workforce ecosystem.</p>
+  <div class="evo-grid-backdrop" aria-hidden="true"></div>
+  <div class="container" style="position:relative;z-index:1;">
+    <div class="section-header text-center" data-gsap="section-header">
+      <div class="wfc-eyebrow" style="margin-bottom:1rem;">
+        <span class="eyebrow-dot" aria-hidden="true"></span>
+        <span>ONBOARDING GATEWAY // SELECT YOUR ECOSYSTEM ROLE</span>
+      </div>
+      <h1 style="color:#F8FAFC;font-size:clamp(2rem,4vw,2.85rem);margin-bottom:0.75rem;">Initialize Your EVOConnect Account</h1>
+      <p class="section-sub" style="color:#94A3B8;max-width:600px;margin:0 auto;">Select the portal aligned with your operational role in the government contracting supply chain.</p>
     </div>
 
     <%- include('./partials/flash') %>
 
     <div class="reg-selector-grid">
       <!-- Worker Account -->
-      <div class="reg-selector-card card-worker">
-        <div class="reg-card-icon">👷‍♂️</div>
-        <h2 class="reg-card-title">Worker Account</h2>
-        <span class="reg-card-badge badge-blue">Free Profile</span>
+      <div class="reg-selector-card card-worker spotlight-card" data-gsap="pathway-card">
+        <div class="reg-card-icon-svg" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        </div>
+        <span class="reg-card-badge badge-blue">Division 01 &bull; Free Profile</span>
+        <h2 class="reg-card-title">Skilled Trade Worker</h2>
         <p class="reg-card-desc">
-          Create a professional profile, showcase your trade skills and experience, upload certifications (OSHA, CDL, etc.), and get discovered directly by major prime contractors looking for qualified local labor.
+          Build a verified operator profile, map your trade skills to federal NAICS codes, log OSHA/CDL credentials, and get recruited by certified subcontractors for prevailing-wage work.
         </p>
         <div class="reg-card-action">
-          <a href="/labor/register" class="btn btn-primary btn-full">Register as a Worker</a>
+          <a href="/labor/register" class="btn btn-primary btn-full">Register as Skilled Labor</a>
         </div>
       </div>
 
       <!-- Business Account -->
-      <div class="reg-selector-card card-business">
-        <div class="reg-card-icon">🏢</div>
-        <h2 class="reg-card-title">Subcontractor Business</h2>
-        <span class="reg-card-badge badge-green">Free Profile</span>
+      <div class="reg-selector-card card-business spotlight-card" data-gsap="pathway-card">
+        <div class="reg-card-icon-svg icon-emerald" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
+        </div>
+        <span class="reg-card-badge badge-green">Division 02 &bull; Free Profile</span>
+        <h2 class="reg-card-title">Certified Small Business</h2>
         <p class="reg-card-desc">
-          Expand your government contracting pipeline. Highlight DBE, HUB, or diverse certifications, construct capabilities statements, NAICS match automatically, and receive direct bid requests from general contractors.
+          Scale your public sector subcontracting pipeline. Highlight DBE, HUB, 8(a), or SDVOSB certifications, generate capability statements, respond to prime RFQs, and hire verified trade labor.
         </p>
         <div class="reg-card-action">
           <a href="/business/register" class="btn btn-secondary btn-full">Register Your Business</a>
@@ -38,21 +46,23 @@
       </div>
 
       <!-- Prime Contractor -->
-      <div class="reg-selector-card card-prime">
-        <div class="reg-card-icon">🤝</div>
-        <h2 class="reg-card-title">Prime Contractor</h2>
-        <span class="reg-card-badge badge-amber">Enterprise Portal</span>
+      <div class="reg-selector-card card-prime spotlight-card" data-gsap="pathway-card">
+        <div class="reg-card-icon-svg icon-amber" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>
+        </div>
+        <span class="reg-card-badge badge-amber">Division 03 &bull; Enterprise Console</span>
+        <h2 class="reg-card-title">Prime Contractor / GC</h2>
         <p class="reg-card-desc">
-          Streamline diverse workforce compliance and supplier sourcing. Discover qualified certified individuals, verify trade capacities, manage subcontractor directories, and dispatch custom RFQ notifications.
+          Accelerate socioeconomic compliance and subcontractor sourcing. Filter verified firms by six-digit NAICS code and set-aside status, inspect capability statements, and broadcast targeted RFQs.
         </p>
         <div class="reg-card-action">
-          <a href="/prime/register" class="btn btn-amber btn-full">Register as Prime</a>
+          <a href="/prime/register" class="btn btn-amber btn-full">Register as Prime Contractor</a>
         </div>
       </div>
     </div>
 
-    <p class="text-center text-muted" style="margin-top: 3rem;">
-      Already have an account? <a href="/login" style="color: var(--accent-primary, #00d2ff); text-decoration: none;">Log in here</a>.
+    <p class="text-center text-muted" style="margin-top: 3rem; color: #94A3B8;">
+      Already registered on EVOConnect? <a href="/login" style="color: #06B6D4; font-weight: 600; text-decoration: none;">Sign in to your portal &rarr;</a>
     </p>
   </div>
 </section>

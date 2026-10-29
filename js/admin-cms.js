@@ -1,5 +1,5 @@
 /**
- * Admin CMS JavaScript — WorkForce Connect
+ * Admin CMS JavaScript — EVOConnect
  *
  * Provides the full single-page admin interface for:
  *  • Editing page content (sections, fields, images)
@@ -32,6 +32,8 @@ let globalData  = null;
 let schemaData  = null;
 /** @type {string|null} id of currently edited section */
 let activeSection = null;
+/** @type {object|null} Sortable.js instance for the page editor's section list */
+let sectionSortable = null;
 
 // ── Bootstrap ──────────────────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', async () => {
@@ -61,8 +63,8 @@ function showLoginScreen() {
     <div class="cms-login-screen" role="main">
       <div class="cms-login-card">
         <div style="display:flex;align-items:center;justify-content:center;gap:0.6rem;margin-bottom:0.75rem;">
-          <img src="/images/favicon.png" alt="EvoConnect" style="height:40px;width:auto;">
-          <span style="font-size:1.6rem;font-weight:800;color:#0F172A;letter-spacing:-0.02em;">EvoConnect</span>
+          <img src="/images/favicon.png" alt="EVOConnect" style="height:40px;width:auto;">
+          <span style="font-size:1.6rem;font-weight:800;color:#0F172A;letter-spacing:-0.02em;">EVOConnect</span>
         </div>
         <h1>CMS Admin</h1>
         <p>Sign in with your admin account to manage site content.</p>
@@ -82,7 +84,7 @@ function showLoginScreen() {
           </button>
         </form>
         <div style="margin-top:1.25rem;padding-top:1rem;border-top:1px solid #E2E8F0;display:flex;justify-content:space-between;font-size:0.9rem;">
-          <a href="/admin/dashboard" style="color:#005A8C;text-decoration:none;font-weight:600;">← Admin Dashboard</a>
+          <a href="/admin/dashboard" style="color:#0284C7;text-decoration:none;font-weight:600;">← Admin Dashboard</a>
           <a href="/?public=1" style="color:#5a6472;text-decoration:none;">Public Site</a>
         </div>
       </div>
@@ -130,8 +132,8 @@ async function showShell() {
       <!-- Header -->
       <header class="cms-header" role="banner">
         <a href="/admin/dashboard" class="cms-header-brand">
-          <img src="/images/favicon.png" alt="EvoConnect" style="height:28px;width:auto;background:#fff;padding:3px;border-radius:6px;">
-          <span>EvoConnect CMS Admin</span>
+          <img src="/images/favicon.png" alt="EVOConnect" style="height:28px;width:auto;background:#fff;padding:3px;border-radius:6px;">
+          <span>EVOConnect CMS Admin</span>
         </a>
         <div class="cms-header-actions">
           <a href="/admin/dashboard" class="cms-btn cms-btn-sm"
@@ -145,7 +147,7 @@ async function showShell() {
                   style="background:rgba(255,255,255,.15);color:#fff;border-color:transparent">
             Change Password
           </button>
-          <a href="/cms-tutorial.html" target="_blank" rel="noopener" class="cms-btn cms-btn-sm"
+          <a href="/cms-tutorial" target="_blank" rel="noopener" class="cms-btn cms-btn-sm"
                   style="background:rgba(255,255,255,.15);color:#fff;border-color:transparent;text-decoration:none;display:inline-flex;align-items:center;gap:4px">
             <span aria-hidden="true">❔</span> Help
           </a>
@@ -180,13 +182,13 @@ async function showShell() {
         <div class="cms-nav-section">
           <span class="cms-nav-label">Support</span>
           <ul class="cms-page-list">
-            <li><a href="cms-tutorial.html" target="_blank" rel="noopener">
+            <li><a href="/cms-tutorial" target="_blank" rel="noopener">
               <span aria-hidden="true">📘</span> CMS Admin Guide
             </a></li>
           </ul>
         </div>
         <div class="cms-nav-section" style="padding:0 1rem;margin-top:1rem">
-          <a href="index.html" target="_blank" rel="noopener"
+          <a href="/?public=1" target="_blank" rel="noopener"
              class="cms-btn cms-btn-secondary cms-btn-sm cms-w100"
              style="justify-content:center">
             ↗ View Live Site
@@ -249,10 +251,13 @@ function showChangePasswordModal() {
 
     const modal = document.createElement('div');
     modal.id = 'cms-change-pw-modal';
+    modal.setAttribute('role', 'dialog');
+    modal.setAttribute('aria-modal', 'true');
+    modal.setAttribute('aria-labelledby', 'cp-modal-title');
     modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:9999;display:flex;align-items:center;justify-content:center;';
     modal.innerHTML = `
         <div style="background:#fff;border-radius:8px;padding:2rem;width:360px;max-width:90vw;box-shadow:0 8px 32px rgba(0,0,0,.2);">
-            <h2 style="margin:0 0 1.5rem;font-size:1.2rem;">Change CMS Password</h2>
+            <h2 id="cp-modal-title" style="margin:0 0 1.5rem;font-size:1.2rem;">Change CMS Password</h2>
             <div style="margin-bottom:1rem;">
                 <label style="display:block;font-size:.85rem;font-weight:600;margin-bottom:.25rem;">Current Password</label>
                 <input type="password" id="cp-current" class="cms-input" style="width:100%;box-sizing:border-box;" autocomplete="current-password">
@@ -274,8 +279,11 @@ function showChangePasswordModal() {
     `;
     document.body.appendChild(modal);
 
-    document.getElementById('cp-cancel').onclick = () => modal.remove();
-    modal.addEventListener('click', e => { if (e.target === modal) modal.remove(); });
+    const closeModal = () => { ModalTrap.close(modal); modal.remove(); };
+    ModalTrap.open(modal);
+
+    document.getElementById('cp-cancel').onclick = closeModal;
+    modal.addEventListener('click', e => { if (e.target === modal) closeModal(); });
 
     document.getElementById('cp-submit').onclick = async () => {
         const current = document.getElementById('cp-current').value;
@@ -299,7 +307,7 @@ function showChangePasswordModal() {
 
         try {
             await apiFetch('POST', '/cms/change-password', { currentPassword: current, newPassword: newPw });
-            modal.remove();
+            closeModal();
             showToast('Password updated successfully.', 'success');
         } catch (err) {
             errorEl.textContent = err.message; errorEl.style.display = 'block';
@@ -388,7 +396,7 @@ function renderTutorialsTab(container) {
     </div>
     <div class="cms-panel">
       <div class="cms-panel-body">
-        <p class="cms-text-muted mb-md">Watch these tutorial videos to learn how to manage content, pages, and administration in the WorkForce Connect CMS.</p>
+        <p class="cms-text-muted mb-md">Watch these tutorial videos to learn how to manage content, pages, and administration in the EVOConnect CMS.</p>
         
         <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(320px, 1fr));gap:2rem;">
           
@@ -415,7 +423,7 @@ function renderTutorialsTab(container) {
               <iframe src="https://www.youtube.com/embed/eXEldHlPpZQ" title="Tutorial Video 3" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen style="position:absolute;top:0;left:0;width:100%;height:100%;"></iframe>
             </div>
             <div style="padding:1rem;">
-              <h3 style="font-size:1.05rem;margin:0;color:var(--color-primary)">Scaling WorkForce Connect</h3>
+              <h3 style="font-size:1.05rem;margin:0;color:var(--color-primary)">Scaling EVOConnect</h3>
             </div>
           </div>
 
@@ -498,11 +506,16 @@ async function renderPageEditor(container, slug) {
         document.getElementById('add-section-btn').addEventListener('click', () => navigateTab('builder', slug));
 
         document.getElementById('preview-page-btn').addEventListener('click', () => {
-            // Save current in-memory state to localStorage for preview
             localStorage.setItem('cms_preview_' + activeSlug, JSON.stringify(activePage));
-            // Open the page in a new tab with the preview query parameter
-            const url = `/${activeSlug === 'index' ? 'index' : activeSlug}.html?preview=true`;
-            window.open(url, '_blank');
+            let route = '/?public=1';
+            if (activeSlug === 'labor') route = '/labor';
+            else if (activeSlug === 'for-small-businesses' || activeSlug === 'business') route = '/business';
+            else if (activeSlug === 'for-prime-contractors' || activeSlug === 'prime') route = '/prime';
+            else if (activeSlug === 'contact') route = '/contact';
+            else if (activeSlug === 'resources') route = '/resources';
+            else if (activeSlug !== 'index') route = '/pages/' + activeSlug;
+            const sep = route.includes('?') ? '&' : '?';
+            window.open(route + sep + 'preview=true', '_blank');
         });
 
         container.querySelectorAll('[data-section-edit]').forEach(btn => {
@@ -514,6 +527,21 @@ async function renderPageEditor(container, slug) {
         container.querySelectorAll('[data-section-move-down]').forEach(btn => {
             btn.addEventListener('click', () => moveSectionDown(btn.getAttribute('data-section-move-down')));
         });
+
+        // Drag-and-drop reordering (mouse/touch). The ↑/↓ buttons stay as
+        // the keyboard-accessible way to reorder, since Sortable.js drag
+        // alone isn't operable without a pointer.
+        if (sectionSortable) { sectionSortable.destroy(); sectionSortable = null; }
+        const sectionListEl = document.getElementById('section-list');
+        if (window.Sortable && sectionListEl && (page.sections || []).length > 1) {
+            sectionSortable = window.Sortable.create(sectionListEl, {
+                animation: 150,
+                handle: '.cms-section-handle',
+                ghostClass: 'cms-section-ghost',
+                onEnd: reorderSectionsFromDOM
+            });
+        }
+
         document.getElementById('delete-section-btn').addEventListener('click', () => {
             if (activeSection) deleteSection(activeSection);
         });
@@ -532,11 +560,19 @@ async function renderPageEditor(container, slug) {
 
 function renderSectionItem(section) {
     const typeLabel = getSectionTypeLabel(section.type);
+    const schema    = schemaData?.componentTypes?.find(c => c.type === section.type);
     const title     = section.fields?.heading || section.fields?.title || section.id;
+    const preview   = getSectionPreviewText(section, schema);
+    const thumb     = getSectionThumbnail(section, schema);
     return `
-    <li class="cms-section-item" id="si-${section.id}" role="listitem">
+    <li class="cms-section-item" id="si-${section.id}" data-section-id="${escHtml(section.id)}" role="listitem">
+      <span class="cms-section-handle" title="Drag to reorder" aria-hidden="true">⠿</span>
+      ${thumb ? `<img class="cms-section-thumb" src="${escHtml(thumb)}" alt="" loading="lazy">` : ''}
       <span class="cms-section-badge">${escHtml(typeLabel)}</span>
-      <span class="cms-section-item-title">${escHtml(String(title))}</span>
+      <div class="cms-section-body">
+        <div class="cms-section-item-title">${escHtml(String(title))}</div>
+        ${preview ? `<div class="cms-section-preview">${escHtml(preview)}</div>` : ''}
+      </div>
       <div class="cms-section-actions">
         <button class="cms-btn cms-btn-sm cms-btn-outline" aria-label="Move up"
                 data-section-move-up="${escHtml(section.id)}">↑</button>
@@ -546,6 +582,36 @@ function renderSectionItem(section) {
                 data-section-edit="${escHtml(section.id)}">Edit</button>
       </div>
     </li>`;
+}
+
+/**
+ * Picks a short text snippet that best represents a section's content,
+ * for the section-list preview line. Prefers a heading/title field (used
+ * as the list item's title already, so falls back to the next text-ish
+ * field) and otherwise the first non-empty text/textarea field.
+ */
+function getSectionPreviewText(section, schema) {
+    const fields = schema?.fields || [];
+    const titleKeys = new Set(['heading', 'title']);
+    const candidate = fields.find(f =>
+        !titleKeys.has(f.key) &&
+        (f.inputType === 'text' || f.inputType === 'textarea') &&
+        typeof section.fields?.[f.key] === 'string' &&
+        section.fields[f.key].trim()
+    );
+    if (!candidate) return '';
+    return truncateFAQ(section.fields[candidate.key].trim(), 90);
+}
+
+/** Returns the first populated media-field image path for a thumbnail, if any. */
+function getSectionThumbnail(section, schema) {
+    const fields = schema?.fields || [];
+    const mediaField = fields.find(f =>
+        f.inputType === 'media' &&
+        typeof section.fields?.[f.key] === 'string' &&
+        section.fields[f.key].trim()
+    );
+    return mediaField ? section.fields[mediaField.key].trim() : '';
 }
 
 function openSectionEditor(sectionId) {
@@ -889,6 +955,14 @@ function moveSectionDown(sectionId) {
     }
 }
 
+/** Syncs activePage.sections to match the list's current DOM order after a drag. */
+function reorderSectionsFromDOM() {
+    const ids = Array.from(document.querySelectorAll('#section-list .cms-section-item'))
+        .map(el => el.getAttribute('data-section-id'));
+    const byId = new Map(activePage.sections.map(s => [s.id, s]));
+    activePage.sections = ids.map(id => byId.get(id)).filter(Boolean);
+}
+
 function deleteSection(sectionId) {
     if (!confirm(`Delete section "${sectionId}"? This cannot be undone.`)) return;
     activePage.sections = activePage.sections.filter(s => s.id !== sectionId);
@@ -1150,7 +1224,7 @@ async function renderMediaLibrary(container, onSelect) {
           <div class="cms-panel-header"><h3 class="cms-panel-title">Upload Image</h3></div>
           <div class="cms-panel-body">
             <div class="cms-alert cms-alert-warning cms-mb">
-              ⚠️ Caltrans Accessibility Policy: Alt text is <strong>required</strong> for every uploaded image.
+              ⚠️ Section 508 Accessibility Policy: Alt text is <strong>required</strong> for every uploaded image.
             </div>
             <label class="cms-upload-zone" id="upload-zone" for="media-file-input" tabindex="0"
                    role="button" aria-label="Upload image — click or drag & drop">
@@ -1335,8 +1409,10 @@ function openMediaPicker(fieldKey, sectionId) {
     </div>`;
 
     document.body.appendChild(backdrop);
-    document.getElementById('close-media-picker').addEventListener('click', () => backdrop.remove());
-    backdrop.addEventListener('click', e => { if (e.target === backdrop) backdrop.remove(); });
+    const closeMediaPicker = () => { ModalTrap.close(backdrop); backdrop.remove(); };
+    ModalTrap.open(backdrop);
+    document.getElementById('close-media-picker').addEventListener('click', closeMediaPicker);
+    backdrop.addEventListener('click', e => { if (e.target === backdrop) closeMediaPicker(); });
 
     renderMediaLibrary(document.getElementById('media-picker-body'), (url) => {
         // Escape fieldKey for CSS selector (handles brackets like cards[0].image)
@@ -1364,7 +1440,7 @@ function openMediaPicker(fieldKey, sectionId) {
             activePage.header[fieldKey.slice(7)] = url;
         }
 
-        backdrop.remove();
+        closeMediaPicker();
         showToast('Image selected. Remember to Save All Changes.', 'info');
     });
 }
@@ -1742,6 +1818,7 @@ function openFAQModal(faq) {
         .join('');
 
     // Remove any existing modal
+    ModalTrap.close();
     document.querySelectorAll('.cms-modal-backdrop').forEach(el => el.remove());
 
     const backdrop = document.createElement('div');
@@ -1799,6 +1876,7 @@ function openFAQModal(faq) {
     </div>`;
 
     document.body.appendChild(backdrop);
+    ModalTrap.open(backdrop);
 
     // Focus first field
     setTimeout(() => {
@@ -1807,7 +1885,7 @@ function openFAQModal(faq) {
     }, 50);
 
     // Close handlers
-    const closeFn = () => backdrop.remove();
+    const closeFn = () => { ModalTrap.close(backdrop); backdrop.remove(); };
     document.getElementById('faq-modal-close').addEventListener('click', closeFn);
     document.getElementById('faq-modal-cancel').addEventListener('click', closeFn);
     backdrop.addEventListener('click', e => { if (e.target === backdrop) closeFn(); });
@@ -1865,6 +1943,7 @@ async function saveFAQ(faqId) {
             await apiFetch('POST', '/cms/faqs', { category, question, answer, status });
             showToast('FAQ created', 'success');
         }
+        ModalTrap.close();
         document.querySelectorAll('.cms-modal-backdrop').forEach(el => el.remove());
         await loadFAQs();
     } catch (err) {
@@ -1879,13 +1958,14 @@ async function deleteFAQ(faqId) {
     if (!faq) return;
 
     // Confirm dialog
+    ModalTrap.close();
     document.querySelectorAll('.cms-modal-backdrop').forEach(el => el.remove());
     const backdrop = document.createElement('div');
     backdrop.className = 'cms-modal-backdrop';
     backdrop.innerHTML = `
-    <div class="cms-modal" role="dialog" aria-modal="true" style="max-width:440px;text-align:center">
+    <div class="cms-modal" role="dialog" aria-modal="true" aria-labelledby="del-faq-title" style="max-width:440px;text-align:center">
       <div class="cms-modal-header" style="justify-content:center">
-        <h2 class="cms-modal-title">Delete FAQ?</h2>
+        <h2 class="cms-modal-title" id="del-faq-title">Delete FAQ?</h2>
       </div>
       <p class="cms-text-muted" style="margin:.5rem 0 1.25rem">
         "<strong>${escHtml(truncateFAQ(faq.question, 80))}</strong>"
@@ -1897,14 +1977,16 @@ async function deleteFAQ(faqId) {
       </div>
     </div>`;
     document.body.appendChild(backdrop);
+    ModalTrap.open(backdrop);
+    const closeDeleteModal = () => { ModalTrap.close(backdrop); backdrop.remove(); };
 
-    document.getElementById('del-cancel').addEventListener('click', () => backdrop.remove());
-    backdrop.addEventListener('click', e => { if (e.target === backdrop) backdrop.remove(); });
+    document.getElementById('del-cancel').addEventListener('click', closeDeleteModal);
+    backdrop.addEventListener('click', e => { if (e.target === backdrop) closeDeleteModal(); });
 
     document.getElementById('del-confirm').addEventListener('click', async () => {
         try {
             await apiFetch('DELETE', `/cms/faqs/${faqId}`);
-            backdrop.remove();
+            closeDeleteModal();
             showToast('FAQ deleted', 'success');
             await loadFAQs();
         } catch (err) {
@@ -2152,7 +2234,7 @@ async function renderAdminsTab(container) {
             <div class="cms-tab-header">
                 <div>
                     <h1 class="cms-page-title">👥 Admin Accounts</h1>
-                    <p class="cms-page-subtitle">Manage administrators with access to the EvoConnect CMS and admin dashboards.</p>
+                    <p class="cms-page-subtitle">Manage administrators with access to the EVOConnect CMS and admin dashboards.</p>
                 </div>
                 <button class="cms-btn cms-btn-primary" onclick="showAdminModal()">+ Add New Admin</button>
             </div>

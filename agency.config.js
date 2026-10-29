@@ -9,12 +9,12 @@
 
 window.AGENCY = {
 
-  name:      'EvoConnect',
-  shortName: 'EvoConnect',
+  name:      'EVOConnect',
+  shortName: 'EVOConnect',
   appId:     'net.evobrand.evoconnect',
   domain:    (typeof window !== 'undefined' ? window.location.hostname : 'evoconnect.evobrand.net'),
   logoPath:  '/images/logo-light.png',
-  logoAlt:   'EvoConnect Logo',
+  logoAlt:   'EVOConnect Logo',
 
   colors: {
     primary:        '#0F172A', // Background base

@@ -1,5 +1,4 @@
-<% if (locals.user) { locals.layout = 'layouts/dashboard'; } %>
-<% const title = locals.title || 'Account Settings | EvoConnect' %>
+<% const title = locals.title || 'Account Settings | EVOConnect' %>
 <% const basePath = locals.basePath || (locals.user?.type === 'business' ? '/business' : (locals.user?.type === 'prime' ? '/prime' : '/labor')) %>
 
 <%- include('../partials/flash') %>

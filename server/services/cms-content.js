@@ -30,3 +30,60 @@ module.exports={read,
         return pages.filter(p=>p.data);
     }
 };
+
+const SLUG_ALIASES={home:'index',business:'for-small-businesses',prime:'for-prime-contractors'};
+function resolveSlug(slug){const value=String(slug||'index').toLowerCase().trim();return SLUG_ALIASES[value]||value;}
+async function getGlobal(){return await read(path.join(root,'global.json'))||{};}
+async function getPage(slug){
+    const resolved=resolveSlug(slug);
+    if(!/^[a-z0-9][a-z0-9-]{0,79}$/.test(resolved))return null;
+    return read(path.join(root,'pages',resolved+'.json'));
+}
+function getFieldValue(pageData, fieldPath) {
+    if (!pageData || !fieldPath) return undefined;
+    const parts = String(fieldPath).split('.');
+
+    // Handle meta and header top-level namespaces
+    if (parts[0] === 'meta' && pageData.meta) {
+        let cur = pageData.meta;
+        for (let i = 1; i < parts.length; i++) {
+            if (cur == null) return undefined;
+            cur = cur[parts[i]];
+        }
+        return cur;
+    }
+    if (parts[0] === 'header' && pageData.header) {
+        let cur = pageData.header;
+        for (let i = 1; i < parts.length; i++) {
+            if (cur == null) return undefined;
+            cur = cur[parts[i]];
+        }
+        return cur;
+    }
+
+    // Handle section fields: "sectionId.fieldKey"
+    const sectionId = parts[0];
+    const section = (pageData.sections || []).find(s => s.id === sectionId);
+    if (!section || !section.fields) return undefined;
+
+    let cur = section.fields;
+    for (let i = 1; i < parts.length; i++) {
+        if (cur == null) return undefined;
+        cur = cur[parts[i]];
+    }
+    return cur;
+}
+
+
+async function cmsMiddleware(req,res,next){
+    try {
+        const paths={'/':'index','/labor':'labor','/business':'for-small-businesses','/prime':'for-prime-contractors','/contact':'contact','/resources':'resources'};
+        const slug=paths[req.path]||'';
+        const skip=/^\/(?:api|css|js|images|assets|uploads)\//.test(req.path);
+        const [globalData,pageData]=skip?[{},null]:await Promise.all([getGlobal(),slug?getPage(slug):null]);
+        res.locals.cmsGlobal=globalData;res.locals.cmsPageSlug=slug;res.locals.cmsPageData=pageData;
+        res.locals.cmsVal=(fieldPath,fallback)=>{const value=getFieldValue(pageData,fieldPath);return value!==undefined && value!==null && value!==''?value:fallback;};
+        next();
+    }catch(err){next(err);}
+}
+Object.assign(module.exports,{getGlobal,getPage,getFieldValue,resolveSlug,cmsMiddleware});

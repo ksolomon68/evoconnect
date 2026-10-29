@@ -50,12 +50,12 @@ function wrap(content) {
 <body>
   <div class="container">
     <div class="header">
-      <h1>EvoConnect</h1>
+      <h1>EVOConnect</h1>
       <p>Connect the Contract. Build the Future.</p>
     </div>
     <div class="body">${content}</div>
     <div class="footer">
-      <p>© 2026 EvoConnect — a PrimeReach Brand by EVOBRAND Concepts<br>
+      <p>© 2026 EVOConnect — a PrimeReach Brand by EVOBRAND Concepts<br>
          <a href="${BASE_URL}" style="color:#06B6D4">${BASE_URL}</a> | 214-531-4427
       </p>
     </div>
@@ -68,26 +68,26 @@ async function sendEmail({ to, subject, html, text }) {
     const transporter = createTransport();
     try {
         const info = await transporter.sendMail({
-            from: `"EvoConnect" <${process.env.EMAIL_FROM || cfg.email}>`,
+            from: `"EVOConnect" <${process.env.EMAIL_FROM || cfg.email}>`,
             to,
             subject,
             html: html || wrap(`<p>${text}</p>`),
             text: text || subject,
         });
-        console.log(`EvoConnect Email sent: ${subject} → ${to}`);
+        console.log(`EVOConnect Email sent: ${subject} → ${to}`);
         return info;
     } catch (err) {
-        console.error('EvoConnect Email error:', err.message);
+        console.error('EVOConnect Email error:', err.message);
         throw err;
     }
 }
 
 async function sendWorkerWelcome({ to, name }) {
     return sendEmail({
-        to, subject: "Welcome to EvoConnect — here's what happens next",
+        to, subject: "Welcome to EVOConnect — here's what happens next",
         html: wrap(`
           <p>Hi ${name},</p>
-          <p>You're registered on <strong>EvoConnect</strong>. Here's your roadmap:</p>
+          <p>You're registered on <strong>EVOConnect</strong>. Here's your roadmap:</p>
           <ol>
             <li style="margin-bottom:8px"><strong>Check your NAICS matches</strong> — we matched your trade to federal contract codes.</li>
             <li style="margin-bottom:8px"><strong>Complete the Vendor Readiness Checklist</strong> — start with the SAM.gov Federal track.</li>
@@ -102,10 +102,10 @@ async function sendWorkerWelcome({ to, name }) {
 
 async function sendBusinessWelcome({ to, companyName }) {
     return sendEmail({
-        to, subject: 'Your EvoConnect Business profile is live',
+        to, subject: 'Your EVOConnect Business profile is live',
         html: wrap(`
           <p>Hi ${companyName},</p>
-          <p>Your business profile on <strong>EvoConnect</strong> is now live.</p>
+          <p>Your business profile on <strong>EVOConnect</strong> is now live.</p>
           <ul>
             <li>Review your NAICS code matches</li>
             <li>Generate your Capability Statement</li>
@@ -118,10 +118,10 @@ async function sendBusinessWelcome({ to, companyName }) {
 
 async function sendPrimeWelcomePending({ to, companyName }) {
     return sendEmail({
-        to, subject: 'Welcome to EvoConnect Prime — your account is pending approval',
+        to, subject: 'Welcome to EVOConnect Prime — your account is pending approval',
         html: wrap(`
           <p>Hi ${companyName},</p>
-          <p>Your <strong>EvoConnect Prime</strong> account is under review. Our team will verify your information within <strong>24 business hours</strong>.</p>
+          <p>Your <strong>EVOConnect Prime</strong> account is under review. Our team will verify your information within <strong>24 business hours</strong>.</p>
           <p>Once approved, you'll receive a confirmation email with full directory access.</p>
           <p>Questions? Contact <a href="mailto:${cfg.supportEmail}">${cfg.supportEmail}</a></p>
         `)
@@ -130,10 +130,10 @@ async function sendPrimeWelcomePending({ to, companyName }) {
 
 async function sendPrimeApproved({ to, companyName }) {
     return sendEmail({
-        to, subject: 'Your EvoConnect Prime account is approved',
+        to, subject: 'Your EVOConnect Prime account is approved',
         html: wrap(`
           <p>Hi ${companyName},</p>
-          <p>Your <strong>EvoConnect Prime</strong> account has been approved.</p>
+          <p>Your <strong>EVOConnect Prime</strong> account has been approved.</p>
           <p><a href="${BASE_URL}/prime/dashboard" class="btn">Access Prime Dashboard</a></p>
         `)
     });
@@ -141,10 +141,10 @@ async function sendPrimeApproved({ to, companyName }) {
 
 async function sendPrimeDenied({ to, companyName, reason }) {
     return sendEmail({
-        to, subject: 'EvoConnect Prime — account application update',
+        to, subject: 'EVOConnect Prime — account application update',
         html: wrap(`
           <p>Hi ${companyName},</p>
-          <p>After review, we are unable to approve your EvoConnect Prime account at this time.</p>
+          <p>After review, we are unable to approve your EVOConnect Prime account at this time.</p>
           ${reason ? `<p><strong>Reason:</strong> ${reason}</p>` : ''}
           <p>Contact <a href="mailto:${cfg.supportEmail}">${cfg.supportEmail}</a> with questions.</p>
         `)
@@ -166,7 +166,7 @@ async function sendConnectionRequest({ to, recipientName, primeCompany, message,
         to, subject: `New Connection Request from ${primeCompany}`,
         html: wrap(`
           <p>Hi ${recipientName},</p>
-          <p><strong>${primeCompany}</strong> sent you a connection request on EvoConnect.</p>
+          <p><strong>${primeCompany}</strong> sent you a connection request on EVOConnect.</p>
           ${message ? `<blockquote style="border-left:3px solid #06B6D4;padding-left:12px;margin:16px 0;color:#334155">${message}</blockquote>` : ''}
           <p><a href="${dashboardUrl || BASE_URL}" class="btn">View Request</a></p>
         `)
@@ -199,9 +199,9 @@ async function sendChecklistMilestone({ to, name, track, pct }) {
 
 async function sendPasswordReset({ to, resetUrl }) {
     return sendEmail({
-        to, subject: 'Reset your EvoConnect password',
+        to, subject: 'Reset your EVOConnect password',
         html: wrap(`
-          <p>You requested a password reset for your EvoConnect account.</p>
+          <p>You requested a password reset for your EVOConnect account.</p>
           <p>Click below to set a new password. This link expires in <strong>1 hour</strong>.</p>
           <p><a href="${resetUrl}" class="btn">Reset Password</a></p>
           <p style="font-size:.85rem;color:#64748B">If you didn't request this, ignore this email.</p>

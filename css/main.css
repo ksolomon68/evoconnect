@@ -88,25 +88,49 @@ body {
 .site-logo {
     display: flex;
     align-items: center;
-    height: 50px;
-    transition: all 0.3s ease;
+    gap: 0.6rem;
+    text-decoration: none;
+    transition: opacity 0.3s ease;
     position: relative;
     z-index: 1001;
 }
 
-.site-logo img {
-    height: 100%;
-    width: auto;
-    max-width: 300px;
+.site-logo-icon {
+    height: 36px;
+    width: 36px;
+    flex-shrink: 0;
+    border-radius: 50%;
     filter: brightness(1.1);
     transition: filter 0.3s ease;
 }
 
-.site-logo:hover img {
+.site-logo:hover .site-logo-icon {
     filter: brightness(1.2) drop-shadow(0 0 8px rgba(255, 255, 255, 0.3));
 }
 
-.site-logo:focus {
+.site-logo-text {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.15;
+}
+
+.site-logo-name {
+    font-size: 1.2rem;
+    font-weight: 800;
+    letter-spacing: -0.01em;
+    color: var(--color-text-primary);
+}
+
+.site-logo-tagline {
+    margin-top: 2px;
+    font-size: 0.62rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--color-text-muted);
+}
+
+.site-logo:focus-visible {
     outline: 2px solid var(--color-secondary);
     outline-offset: 4px;
     border-radius: 4px;
@@ -480,19 +504,29 @@ body {
     color: var(--color-primary-dark);
 }
 
+/* Marketing-page section headers (label/title/subtitle) must stack, even
+   though dashboard-new.css's bare .section-header is a flex row for panel
+   titles. This file loads after it on every layout, so this wins and
+   fixes every "How It Works" / "Benefits" / pathway-style header at once. */
+.section-header.text-center {
+    display: block;
+}
+
 /* Pathway Cards (Home Page) */
 .pathway-cards {
     display: grid;
-    grid-template-columns: repeat(2, minmax(0, 420px));
+    grid-template-columns: repeat(auto-fit, minmax(260px, 340px));
     gap: var(--space-xl);
-    margin-top: var(--space-2xl);
     justify-content: center;
 }
 
 .pathway-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
     background-color: var(--color-bg-primary);
     border-radius: var(--border-radius-lg);
-    padding: var(--space-2xl);
+    padding: var(--space-xl);
     text-align: center;
     box-shadow: var(--shadow-lg);
     transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
@@ -548,20 +582,25 @@ body {
 }
 
 .pathway-title {
-    font-size: var(--font-size-2xl);
-    margin-bottom: var(--space-md);
+    font-size: var(--font-size-xl);
+    line-height: 1.3;
+    min-height: 2.6em;
+    display: flex;
+    align-items: center;
+    margin-bottom: var(--space-sm);
     color: var(--color-primary);
 }
 
 .pathway-description {
+    flex: 1;
     font-size: var(--font-size-base);
     margin-bottom: var(--space-lg);
     color: var(--color-text-secondary);
 }
 
 .pathway-arrow {
-    font-size: var(--font-size-xl);
-    color: var(--color-secondary);
+    font-size: var(--font-size-base);
+    color: var(--color-primary);
     font-weight: var(--font-weight-bold);
 }
 
@@ -1335,7 +1374,7 @@ body {
 }
 
 /* ==========================================================================
-   EvoConnect Premium Styles — Forms, Pricing Tiers, and Footers
+   EVOConnect Premium Styles — Forms, Pricing Tiers, and Footers
    ========================================================================== */
 
 :root {
@@ -1653,9 +1692,9 @@ body {
   gap: 1rem !important;
   flex-wrap: wrap !important;
   font-size: .82rem !important;
-  color: #64748B !important;
+  color: var(--slate-500) !important;
 }
-.footer-bottom a { color: #64748B !important; text-decoration: none !important; }
+.footer-bottom a { color: var(--slate-500) !important; text-decoration: none !important; }
 .footer-bottom a:hover { color: var(--cyan) !important; }
 
 @media (max-width: 768px) {
@@ -2101,8 +2140,9 @@ body {
   background: rgba(255, 255, 255, 0.05);
   transform: translateY(-50%) scale(1.08);
 }
-.toggle-password:focus {
-  outline: none;
+.toggle-password:focus-visible {
+  outline: 2px solid var(--cyan);
+  outline-offset: 2px;
   color: var(--cyan);
 }
 

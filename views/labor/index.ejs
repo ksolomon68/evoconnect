@@ -1,14 +1,36 @@
 <% const title = locals.title || 'Labor Portal' %>
 
-<!-- Hero -->
-<section class="wfc-hero">
+<!-- Executive Hero -->
+<section class="wfc-hero evo-role-hero">
+  <div class="evo-grid-backdrop" aria-hidden="true"></div>
+  <div class="shape shape-1" aria-hidden="true"></div>
+  <div class="shape shape-2" aria-hidden="true"></div>
   <div class="wfc-hero-inner">
-    <span class="wfc-eyebrow">Labor Portal</span>
-    <h1>Your Trade Is<br>Government Contract Ready.</h1>
-    <p>EvoConnect matches skilled tradespeople with small businesses working on government-funded projects. Build your profile, get vendor-ready, and get paid for what you know.</p>
-    <div class="wfc-hero-cta">
-      <a href="/labor/register" class="btn-primary">Register Free</a>
-      <a href="/login" class="btn-secondary-outline">Already a Member? Log In</a>
+    <div class="wfc-eyebrow" data-gsap="hero-eyebrow" data-cms-field="hero.eyebrow" data-cms-type="eyebrow">
+      <span class="eyebrow-dot" aria-hidden="true"></span>
+      <span>DIVISION 01 // SKILLED LABOR &amp; FIELD OPERATORS</span>
+    </div>
+    <h1 data-gsap="hero-title" data-cms-field="hero.title">Your Trade Credentials Are<br><span>Government Contract Ready.</span></h1>
+    <p data-gsap="hero-lead" data-cms-field="hero.subtitle">EVOConnect maps skilled tradespeople to 55+ federal and state NAICS codes across 22 trade classifications, connects you directly with certified subcontractors and prime contractors, and positions you for prevailing-wage infrastructure projects.</p>
+    <div class="wfc-hero-cta" data-gsap="hero-cta">
+      <a href="/labor/register" class="btn-primary">Initialize Worker Profile &mdash; Free</a>
+      <a href="#naics-directory" class="btn-secondary-outline">Explore NAICS Code Matrix</a>
+    </div>
+    <div class="wfc-hero-stats" data-gsap="hero-stats">
+      <div class="hero-stat">
+        <span class="num" data-count-to="22">22</span>
+        <span class="lbl">Eligible Trade Tracks</span>
+      </div>
+      <div class="hero-stat-divider" aria-hidden="true"></div>
+      <div class="hero-stat">
+        <span class="num" data-count-to="55" data-count-suffix="+">55+</span>
+        <span class="lbl">Mapped NAICS Codes</span>
+      </div>
+      <div class="hero-stat-divider" aria-hidden="true"></div>
+      <div class="hero-stat">
+        <span class="num">Davis-Bacon</span>
+        <span class="lbl">Prevailing Wage Focus</span>
+      </div>
     </div>
   </div>
 </section>
@@ -16,86 +38,835 @@
 <!-- How It Works -->
 <section class="wfc-section">
   <div class="wfc-section-inner">
-    <div class="section-header text-center">
-      <h2 class="section-title">How It Works</h2>
-      <p class="section-subtitle">Four simple steps from sign-up to getting paid on government work.</p>
+    <div class="section-header text-center" data-gsap="section-header">
+      <p class="section-label">01 // ONBOARDING SEQUENCE</p>
+      <h2 class="section-title" data-cms-field="how-it-works.heading">Four Steps to Public Infrastructure Deployment</h2>
+      <p class="section-subtitle" data-cms-field="how-it-works.intro">A streamlined pathway from trade verification to active project mobilization.</p>
     </div>
-    <div class="hiw-grid">
-      <div class="hiw-card">
-        <div class="hiw-step">01</div>
-        <h3>Create Your Profile</h3>
-        <p>Sign up free. Enter your trade, skills, certifications, and location. Takes about 5 minutes.</p>
+    <div class="hiw-grid evo-pipeline-grid">
+      <div class="hiw-card spotlight-card" data-gsap="hiw-step">
+        <div class="hiw-card-head">
+          <div class="hiw-step">01</div>
+          <span class="hiw-phase">CREDENTIALS</span>
+        </div>
+        <h3>Build Your Trade Profile</h3>
+        <p>Log your primary trade classification, OSHA/CDL certifications, equipment experience, and deployment radius in under 5 minutes.</p>
       </div>
-      <div class="hiw-card">
-        <div class="hiw-step">02</div>
-        <h3>Get Vendor Ready</h3>
-        <p>Follow our step-by-step checklist to get SAM.gov registered, HUB certified, and fully qualified.</p>
+      <div class="hiw-card spotlight-card" data-gsap="hiw-step">
+        <div class="hiw-card-head">
+          <div class="hiw-step">02</div>
+          <span class="hiw-phase">COMPLIANCE</span>
+        </div>
+        <h3>Complete Vendor Readiness</h3>
+        <p>Use our interactive checklist to obtain your SAM.gov UEI, structure independent contractor compliance, or qualify for set-asides.</p>
       </div>
-      <div class="hiw-card">
-        <div class="hiw-step">03</div>
-        <h3>Get Discovered</h3>
-        <p>Small businesses search our directory by trade, location, and certifications. Your profile shows up when it matches.</p>
+      <div class="hiw-card spotlight-card" data-gsap="hiw-step">
+        <div class="hiw-card-head">
+          <div class="hiw-step">03</div>
+          <span class="hiw-phase">DISCOVERY</span>
+        </div>
+        <h3>Algorithmic NAICS Match</h3>
+        <p>Certified small businesses and prime contractors filter our directory by trade, 6-digit NAICS code, and ZIP radius to source field talent.</p>
       </div>
-      <div class="hiw-card">
-        <div class="hiw-step">04</div>
-        <h3>Connect &amp; Work</h3>
-        <p>Accept connection requests, discuss opportunities, and start earning on government contracts.</p>
+      <div class="hiw-card spotlight-card" data-gsap="hiw-step">
+        <div class="hiw-card-head">
+          <div class="hiw-step">04</div>
+          <span class="hiw-phase">MOBILIZATION</span>
+        </div>
+        <h3>Accept Direct Dispatches</h3>
+        <p>Approve connection requests, apply directly to small-business trade jobs, and mobilize on funded public projects.</p>
       </div>
     </div>
   </div>
 </section>
 
-<!-- Trade Categories -->
-<section class="wfc-section" style="background:#0B1220;">
+<!-- Trade Categories (22 Researched Classifications) -->
+<section class="wfc-section evo-section-alt">
   <div class="wfc-section-inner">
-    <div class="section-header text-center">
-      <h2 class="section-title">Trades We Support</h2>
-      <p class="section-subtitle">Government contracts need workers across every skilled trade. If your work builds or maintains infrastructure, there's a place for you.</p>
+    <div class="section-header text-center" data-gsap="section-header">
+      <p class="section-label">02 // ELIGIBLE DISCIPLINES &amp; TRADE CLASSIFICATIONS</p>
+      <h2 class="section-title" data-cms-field="trade-categories.heading">Supported Infrastructure &amp; Trade Categories</h2>
+      <p class="section-subtitle">Select your primary trade below to pre-configure your worker profile with its corresponding federal and state NAICS codes.</p>
     </div>
     <div class="trades-grid">
-      <div class="trade-card"><div class="trade-card-body"><h4>&#128241; Telecommunications &amp; Fiber</h4></div></div>
-      <div class="trade-card"><div class="trade-card-body"><h4>&#9889; Electrical</h4></div></div>
-      <div class="trade-card"><div class="trade-card-body"><h4>&#128295; Civil Construction</h4></div></div>
-      <div class="trade-card"><div class="trade-card-body"><h4>&#128260; IT / Network Infrastructure</h4></div></div>
-      <div class="trade-card"><div class="trade-card-body"><h4>&#128268; Underground Utilities</h4></div></div>
-      <div class="trade-card"><div class="trade-card-body"><h4>&#129521; Plumbing</h4></div></div>
-      <div class="trade-card"><div class="trade-card-body"><h4>&#10052; HVAC / Mechanical</h4></div></div>
-      <div class="trade-card"><div class="trade-card-body"><h4>&#128167; Concrete / Masonry</h4></div></div>
-      <div class="trade-card"><div class="trade-card-body"><h4>&#127959; Carpentry / Framing</h4></div></div>
-      <div class="trade-card"><div class="trade-card-body"><h4>&#127881; Roofing</h4></div></div>
-      <div class="trade-card"><div class="trade-card-body"><h4>&#127776; Painting / Finishing</h4></div></div>
-      <div class="trade-card"><div class="trade-card-body"><h4>&#128663; Equipment Operation</h4></div></div>
-      <div class="trade-card"><div class="trade-card-body"><h4>&#127959; General Laborer</h4></div></div>
+      <!-- 1. Fiber & Broadband -->
+      <a href="/labor/register?trade=fiber-broadband" class="trade-card spotlight-card" data-gsap="trade-card">
+        <span class="trade-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><path d="M2 12h4l3-9 4 18 3-9h6"/></svg></span>
+        <div class="trade-card-body">
+          <h4>Telecommunications, Fiber &amp; Broadband</h4>
+          <span class="mono-naics">NAICS 237130 &bull; 517111 &bull; 517311</span>
+          <p class="trade-card-desc">OSP/ISP fiber splicing, OTDR testing, aerial/underground drops, and BEAD broadband deployment.</p>
+          <div><span class="trade-demand">BEAD Priority Demand</span></div>
+        </div>
+      </a>
+
+      <!-- 2. Wireless, 5G & Cell Site Tech -->
+      <a href="/labor/register?trade=cell-site-tech" class="trade-card spotlight-card" data-gsap="trade-card">
+        <span class="trade-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><path d="M4.9 19.1C1 15.2 1 8.8 4.9 4.9"/><path d="M7.8 16.2c-2.3-2.3-2.3-6.1 0-8.5"/><circle cx="12" cy="12" r="2"/><path d="M16.2 7.8c2.3 2.3 2.3 6.1 0 8.5"/><path d="M19.1 4.9C23 8.8 23 15.1 19.1 19"/><path d="M12 14v8"/></svg></span>
+        <div class="trade-card-body">
+          <h4>Wireless, 5G &amp; Cell Tower Infrastructure</h4>
+          <span class="mono-naics">NAICS 517112 &bull; 517210 &bull; 237130</span>
+          <p class="trade-card-desc">Tower climbing, RF antenna rigging, microwave backhaul, and public-safety radio networks.</p>
+          <div><span class="trade-demand">Priority Demand</span></div>
+        </div>
+      </a>
+
+      <!-- 3. Structured Cabling & Low-Voltage -->
+      <a href="/labor/register?trade=structured-cabling" class="trade-card spotlight-card" data-gsap="trade-card">
+        <span class="trade-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><rect x="2" y="4" width="20" height="6" rx="1"/><rect x="2" y="14" width="20" height="6" rx="1"/><circle cx="6" cy="7" r="1"/><circle cx="10" cy="7" r="1"/><circle cx="6" cy="17" r="1"/><circle cx="10" cy="17" r="1"/></svg></span>
+        <div class="trade-card-body">
+          <h4>Structured Cabling &amp; Low-Voltage Systems</h4>
+          <span class="mono-naics">NAICS 238210 &bull; 517410 &bull; 561621</span>
+          <p class="trade-card-desc">Cat6A/fiber patch panels, CCTV security systems, access control, and satellite comms.</p>
+        </div>
+      </a>
+
+      <!-- 4. Electrical & High-Voltage -->
+      <a href="/labor/register?trade=electrical" class="trade-card spotlight-card" data-gsap="trade-card">
+        <span class="trade-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></span>
+        <div class="trade-card-body">
+          <h4>Electrical &amp; High-Voltage Power Systems</h4>
+          <span class="mono-naics">NAICS 238210 &bull; 237130</span>
+          <p class="trade-card-desc">Commercial switchgear, highway lighting, intelligent traffic signals, EV charging, and substations.</p>
+          <div><span class="trade-demand">Priority Demand</span></div>
+        </div>
+      </a>
+
+      <!-- 5. Highway, Street & Bridge Civil -->
+      <a href="/labor/register?trade=civil-construction" class="trade-card spotlight-card" data-gsap="trade-card">
+        <span class="trade-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><path d="M2 20h20"/><path d="M5 20V8l7-4 7 4v12"/><path d="M12 4v16"/></svg></span>
+        <div class="trade-card-body">
+          <h4>Highway, Street, Bridge &amp; Heavy Civil</h4>
+          <span class="mono-naics">NAICS 237310 &bull; 237990 &bull; 541370</span>
+          <p class="trade-card-desc">DOT roadway paving, bridge rehabilitation, civil grading, flood control, and land surveying.</p>
+          <div><span class="trade-demand">DOT Priority</span></div>
+        </div>
+      </a>
+
+      <!-- 6. Underground Utilities & Directional Boring -->
+      <a href="/labor/register?trade=underground-utilities" class="trade-card spotlight-card" data-gsap="trade-card">
+        <span class="trade-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><circle cx="12" cy="12" r="9"/><path d="M3.6 9h16.8"/><path d="M3.6 15h16.8"/></svg></span>
+        <div class="trade-card-body">
+          <h4>Underground Utilities &amp; Directional Boring</h4>
+          <span class="mono-naics">NAICS 237110 &bull; 237120 &bull; 237130</span>
+          <p class="trade-card-desc">HDD boring, trenching, municipal water/sewer mains, storm drainage, and pipeline installation.</p>
+          <div><span class="trade-demand">Priority Demand</span></div>
+        </div>
+      </a>
+
+      <!-- 7. Structural Concrete, Cement & Masonry -->
+      <a href="/labor/register?trade=concrete-cement" class="trade-card spotlight-card" data-gsap="trade-card">
+        <span class="trade-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/><path d="M3 15h18"/><path d="M9 3v6"/><path d="M15 9v6"/></svg></span>
+        <div class="trade-card-body">
+          <h4>Structural Concrete, Cement &amp; Masonry</h4>
+          <span class="mono-naics">NAICS 238110 &bull; 238140 &bull; 237310</span>
+          <p class="trade-card-desc">Poured concrete foundations, rebar tying, flatwork, retaining walls, curb/gutter, and CMU masonry.</p>
+        </div>
+      </a>
+
+      <!-- 8. Heavy Equipment Operation & Site Prep -->
+      <a href="/labor/register?trade=equipment-operation" class="trade-card spotlight-card" data-gsap="trade-card">
+        <span class="trade-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><path d="M3 17h14l3-5h-5V7H6v5L3 17z"/><circle cx="7" cy="19" r="2"/><circle cx="15" cy="19" r="2"/><path d="M17 12l4-4"/></svg></span>
+        <div class="trade-card-body">
+          <h4>Heavy Equipment Operation &amp; Excavation</h4>
+          <span class="mono-naics">NAICS 238910 &bull; 237310 &bull; 237990</span>
+          <p class="trade-card-desc">Excavators, dozers, motor graders, backhoes, crane rigging, earthmoving, and site demolition.</p>
+        </div>
+      </a>
+
+      <!-- 9. Structural Welding, Steel & Fabrication -->
+      <a href="/labor/register?trade=welding-fabrication" class="trade-card spotlight-card" data-gsap="trade-card">
+        <span class="trade-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><path d="M12 2v4"/><path d="m16.2 7.8 2.9-2.9"/><path d="M18 12h4"/><path d="m16.2 16.2 2.9 2.9"/><path d="M12 18v4"/><path d="m4.9 19.1 2.9-2.9"/><path d="M2 12h4"/><path d="m4.9 4.9 2.9 2.9"/><circle cx="12" cy="12" r="3"/></svg></span>
+        <div class="trade-card-body">
+          <h4>Structural Welding, Steel &amp; Fabrication</h4>
+          <span class="mono-naics">NAICS 238120 &bull; 332312 &bull; 332313 &bull; 811310</span>
+          <p class="trade-card-desc">AWS-certified structural steel erection, pipe welding (MIG/TIG/Stick), plate work, and machinery repair.</p>
+        </div>
+      </a>
+
+      <!-- 10. CDL Trucking, Dump & Heavy Haul -->
+      <a href="/labor/register?trade=cdl-trucking" class="trade-card spotlight-card" data-gsap="trade-card">
+        <span class="trade-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><rect x="1" y="3" width="15" height="13" rx="1"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg></span>
+        <div class="trade-card-body">
+          <h4>CDL Trucking, Dump &amp; Heavy Haul Logistics</h4>
+          <span class="mono-naics">NAICS 484110 &bull; 484220 &bull; 484121 &bull; 488490</span>
+          <p class="trade-card-desc">Class A/B aggregate dump trucks, lowboy equipment hauling, Hazmat freight, and highway flagging/MOT.</p>
+          <div><span class="trade-demand">Priority Demand</span></div>
+        </div>
+      </a>
+
+      <!-- 11. Commercial Plumbing & Piping -->
+      <a href="/labor/register?trade=plumbing-hvac" class="trade-card spotlight-card" data-gsap="trade-card">
+        <span class="trade-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg></span>
+        <div class="trade-card-body">
+          <h4>Commercial Plumbing, Piping &amp; Suppression</h4>
+          <span class="mono-naics">NAICS 238220 &bull; 237110</span>
+          <p class="trade-card-desc">Institutional plumbing, medical gas piping, backflow prevention, and fire sprinkler installation.</p>
+        </div>
+      </a>
+
+      <!-- 12. HVAC, Mechanical & Building Controls -->
+      <a href="/labor/register?trade=hvac-mechanical" class="trade-card spotlight-card" data-gsap="trade-card">
+        <span class="trade-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><path d="M14 14.76V3.5a2.5 2.5 0 0 0-5 0v11.26a4.5 4.5 0 1 0 5 0z"/></svg></span>
+        <div class="trade-card-body">
+          <h4>HVAC, Mechanical &amp; Building Automation</h4>
+          <span class="mono-naics">NAICS 238220 &bull; 238290</span>
+          <p class="trade-card-desc">Commercial chillers, boilers, sheet metal ductwork, EPA 608 refrigeration, and BAS controls.</p>
+        </div>
+      </a>
+
+      <!-- 13. Carpentry, Framing, Drywall & Interior -->
+      <a href="/labor/register?trade=carpentry-framing" class="trade-card spotlight-card" data-gsap="trade-card">
+        <span class="trade-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg></span>
+        <div class="trade-card-body">
+          <h4>Carpentry, Metal Framing, Drywall &amp; Insulation</h4>
+          <span class="mono-naics">NAICS 238130 &bull; 238310 &bull; 238350 &bull; 238330</span>
+          <p class="trade-card-desc">Structural metal stud framing, commercial drywall, acoustical ceilings, millwork, and flooring.</p>
+        </div>
+      </a>
+
+      <!-- 14. Commercial & Industrial Roofing -->
+      <a href="/labor/register?trade=roofing" class="trade-card spotlight-card" data-gsap="trade-card">
+        <span class="trade-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/></svg></span>
+        <div class="trade-card-body">
+          <h4>Commercial Roofing, Sheet Metal &amp; Waterproofing</h4>
+          <span class="mono-naics">NAICS 238160 &bull; 238170</span>
+          <p class="trade-card-desc">TPO/EPDM membrane roofing, standing seam metal roofs, building envelope sealing, and flashing.</p>
+        </div>
+      </a>
+
+      <!-- 15. Industrial Coatings, Bridge Painting & Glazing -->
+      <a href="/labor/register?trade=painting-finishing" class="trade-card spotlight-card" data-gsap="trade-card">
+        <span class="trade-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><rect x="2" y="3" width="20" height="6" rx="2"/><path d="M12 9v12"/></svg></span>
+        <div class="trade-card-body">
+          <h4>Industrial Coatings, Bridge Painting &amp; Glazing</h4>
+          <span class="mono-naics">NAICS 238320 &bull; 238150</span>
+          <p class="trade-card-desc">SSPC/AMPP corrosion-control coatings, abrasive blasting, pavement striping, and commercial glazing.</p>
+        </div>
+      </a>
+
+      <!-- 16. Commercial & Institutional General Construction -->
+      <a href="/labor/register?trade=construction-general" class="trade-card spotlight-card" data-gsap="trade-card">
+        <span class="trade-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><rect x="4" y="2" width="16" height="20" rx="2"/><path d="M9 22v-4h6v4"/><path d="M8 6h.01"/><path d="M16 6h.01"/><path d="M12 6h.01"/><path d="M12 10h.01"/><path d="M12 14h.01"/><path d="M16 10h.01"/><path d="M16 14h.01"/><path d="M8 10h.01"/><path d="M8 14h.01"/></svg></span>
+        <div class="trade-card-body">
+          <h4>Commercial &amp; Institutional Building Trades</h4>
+          <span class="mono-naics">NAICS 236220 &bull; 236210 &bull; 236118 &bull; 238990</span>
+          <p class="trade-card-desc">Federal/municipal vertical building construction, facility modernization, SCIF retrofits, and specialty trades.</p>
+        </div>
+      </a>
+
+      <!-- 17. Environmental Remediation & Hazmat Abatement -->
+      <a href="/labor/register?trade=environmental" class="trade-card spotlight-card" data-gsap="trade-card">
+        <span class="trade-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg></span>
+        <div class="trade-card-body">
+          <h4>Environmental Remediation &amp; Hazmat Abatement</h4>
+          <span class="mono-naics">NAICS 562910 &bull; 541620 &bull; 562112</span>
+          <p class="trade-card-desc">HAZWOPER 40 soil/groundwater cleanup, asbestos/lead abatement, SWPPP compliance, and storm remediation.</p>
+          <div><span class="trade-demand">EPA / DOT Priority</span></div>
+        </div>
+      </a>
+
+      <!-- 18. Cloud, Network Engineering & Data Center Infra -->
+      <a href="/labor/register?trade=cloud-network-infra" class="trade-card spotlight-card" data-gsap="trade-card">
+        <span class="trade-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><rect x="2" y="2" width="20" height="8" rx="2"/><rect x="2" y="14" width="20" height="8" rx="2"/><line x1="6" y1="6" x2="6.01" y2="6"/><line x1="6" y1="18" x2="6.01" y2="18"/></svg></span>
+        <div class="trade-card-body">
+          <h4>Cloud, Network &amp; Data Center Infrastructure</h4>
+          <span class="mono-naics">NAICS 541512 &bull; 541513 &bull; 541330</span>
+          <p class="trade-card-desc">Enterprise network architecture, data center rack/stack, cybersecurity integration, and systems engineering.</p>
+        </div>
+      </a>
+
+      <!-- 19. IT Field Support & Precision Equipment Repair -->
+      <a href="/labor/register?trade=it-support" class="trade-card spotlight-card" data-gsap="trade-card">
+        <span class="trade-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg></span>
+        <div class="trade-card-body">
+          <h4>IT Field Support &amp; Electronic Equipment Repair</h4>
+          <span class="mono-naics">NAICS 541511 &bull; 541519 &bull; 811212 &bull; 811210</span>
+          <p class="trade-card-desc">Agency helpdesk deployment, workstation rollout, POS/kiosk maintenance, and precision electronics repair.</p>
+        </div>
+      </a>
+
+      <!-- 20. Landscaping, Right-of-Way & Erosion Control -->
+      <a href="/labor/register?trade=landscaping" class="trade-card spotlight-card" data-gsap="trade-card">
+        <span class="trade-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><path d="M12 22v-7l-2-2"/><path d="M17 8v.8A6 6 0 0 1 13.8 20v0H10v0A6.5 6.5 0 0 1 7 8h0a5 5 0 0 1 10 0Z"/></svg></span>
+        <div class="trade-card-body">
+          <h4>Right-of-Way Clearing, Grounds &amp; Erosion Control</h4>
+          <span class="mono-naics">NAICS 561730 &bull; 238910</span>
+          <p class="trade-card-desc">Utility corridor vegetation management, hydroseeding, silt fencing, tree clearing, and grounds maintenance.</p>
+        </div>
+      </a>
+
+      <!-- 21. Facilities Support, Custodial & Site Security -->
+      <a href="/labor/register?trade=facilities-maintenance" class="trade-card spotlight-card" data-gsap="trade-card">
+        <span class="trade-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><path d="M3 21h18"/><path d="M5 21V7l8-4v18"/><path d="M19 21V11l-6-4"/></svg></span>
+        <div class="trade-card-body">
+          <h4>Facilities Support, Janitorial &amp; Site Security</h4>
+          <span class="mono-naics">NAICS 561210 &bull; 561720 &bull; 561612</span>
+          <p class="trade-card-desc">Base operations support, post-construction cleanup, federal building maintenance, and site patrol.</p>
+        </div>
+      </a>
+
+      <!-- 22. Project Administration, Payroll & Trade Staffing -->
+      <a href="/labor/register?trade=admin-clerical" class="trade-card spotlight-card" data-gsap="trade-card">
+        <span class="trade-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></span>
+        <div class="trade-card-body">
+          <h4>Project Controls, Certified Payroll &amp; Site Support</h4>
+          <span class="mono-naics">NAICS 561110 &bull; 561320 &bull; 238990</span>
+          <p class="trade-card-desc">WH-347 certified payroll administration, safety compliance clerks, document control, and general site labor.</p>
+        </div>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- Interactive Federal NAICS Code Directory & Classification Matrix -->
+<section class="wfc-section" id="naics-directory">
+  <div class="wfc-section-inner">
+    <div class="section-header text-center" data-gsap="section-header">
+      <p class="section-label">03 // FEDERAL NAICS CLASSIFICATION MATRIX</p>
+      <h2 class="section-title">Official 6-Digit NAICS Codes for Skilled Labor &amp; Infrastructure</h2>
+      <p class="section-subtitle">North American Industry Classification System (NAICS) codes used by SAM.gov, state DOTs, and prime contractors to award set-aside subcontracts and labor dispatches.</p>
+    </div>
+
+    <!-- Filter Controls -->
+    <div class="naics-matrix-controls">
+      <div class="naics-sector-tabs" role="tablist" aria-label="Filter NAICS codes by sector">
+        <button type="button" class="naics-tab active" data-sector="all">All Sectors (58 Codes)</button>
+        <button type="button" class="naics-tab" data-sector="23">Sector 23 &mdash; Construction &amp; Civil</button>
+        <button type="button" class="naics-tab" data-sector="51-54">Sector 51 &amp; 54 &mdash; Broadband, IT &amp; Eng</button>
+        <button type="button" class="naics-tab" data-sector="48">Sector 48 &mdash; CDL Trucking &amp; Haul</button>
+        <button type="button" class="naics-tab" data-sector="33-81">Sector 33 &amp; 81 &mdash; Welding &amp; Repair</button>
+        <button type="button" class="naics-tab" data-sector="56">Sector 56 &mdash; Env, Facilities &amp; Ops</button>
+      </div>
+      <div class="naics-search-wrap">
+        <input type="search" id="naics-matrix-search" class="naics-search-input" placeholder="Search by 6-digit code, trade, or keyword (e.g., 237130, fiber, concrete, CDL)..." aria-label="Search NAICS codes">
+      </div>
+    </div>
+
+    <!-- NAICS Table Matrix -->
+    <div class="naics-table-container">
+      <table class="naics-matrix-table">
+        <thead>
+          <tr>
+            <th>NAICS Code</th>
+            <th>Official Federal Classification &amp; Scope</th>
+            <th>EVOConnect Trade Track</th>
+            <th>Typical Subcontract</th>
+            <th>Set-Aside</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody id="naics-matrix-tbody">
+          <!-- Sector 23: Construction & Specialty Trades -->
+          <tr data-sector="23">
+            <td><span class="naics-code-pill">237130</span></td>
+            <td><strong>Power and Communication Line and Related Structures Construction</strong><span class="naics-subscope">Underground/aerial fiber optic lines, cell towers, high-voltage transmission, and substation construction.</span></td>
+            <td><span class="naics-track-tag">Telecom &amp; Electrical</span></td>
+            <td class="mono-val">$500K&ndash;$5M</td>
+            <td><span class="naics-sa-badge">Eligible</span></td>
+            <td><a href="/labor/register?trade=fiber-broadband" class="naics-action-link">Select &rarr;</a></td>
+          </tr>
+          <tr data-sector="23">
+            <td><span class="naics-code-pill">237310</span></td>
+            <td><strong>Highway, Street, and Bridge Construction</strong><span class="naics-subscope">DOT roadway paving, concrete bridge rehabilitation, guardrail installation, and highway striping.</span></td>
+            <td><span class="naics-track-tag">Heavy Civil</span></td>
+            <td class="mono-val">$1M&ndash;$50M</td>
+            <td><span class="naics-sa-badge">Eligible</span></td>
+            <td><a href="/labor/register?trade=civil-construction" class="naics-action-link">Select &rarr;</a></td>
+          </tr>
+          <tr data-sector="23">
+            <td><span class="naics-code-pill">237110</span></td>
+            <td><strong>Water and Sewer Line and Related Structures Construction</strong><span class="naics-subscope">Municipal water mains, storm sewers, directional drilling (HDD), utility vaults, and pump stations.</span></td>
+            <td><span class="naics-track-tag">Underground Utilities</span></td>
+            <td class="mono-val">$250K&ndash;$5M</td>
+            <td><span class="naics-sa-badge">Eligible</span></td>
+            <td><a href="/labor/register?trade=underground-utilities" class="naics-action-link">Select &rarr;</a></td>
+          </tr>
+          <tr data-sector="23">
+            <td><span class="naics-code-pill">237120</span></td>
+            <td><strong>Oil and Gas Pipeline and Related Structures Construction</strong><span class="naics-subscope">Natural gas distribution mains, pipeline welding, trenching, and right-of-way restoration.</span></td>
+            <td><span class="naics-track-tag">Underground Utilities</span></td>
+            <td class="mono-val">$500K&ndash;$10M</td>
+            <td><span class="naics-sa-badge">Eligible</span></td>
+            <td><a href="/labor/register?trade=underground-utilities" class="naics-action-link">Select &rarr;</a></td>
+          </tr>
+          <tr data-sector="23">
+            <td><span class="naics-code-pill">237990</span></td>
+            <td><strong>Other Heavy and Civil Engineering Construction</strong><span class="naics-subscope">Flood control levees, marine/port construction, tunneling, and stormwater retention basins.</span></td>
+            <td><span class="naics-track-tag">Heavy Civil</span></td>
+            <td class="mono-val">$500K&ndash;$15M</td>
+            <td><span class="naics-sa-badge">Eligible</span></td>
+            <td><a href="/labor/register?trade=civil-construction" class="naics-action-link">Select &rarr;</a></td>
+          </tr>
+          <tr data-sector="23">
+            <td><span class="naics-code-pill">238210</span></td>
+            <td><strong>Electrical Contractors and Other Wiring Installation Contractors</strong><span class="naics-subscope">Commercial power distribution, traffic signal cabinets, fiber/structured wiring, and EV charging stations.</span></td>
+            <td><span class="naics-track-tag">Electrical / Cabling</span></td>
+            <td class="mono-val">$100K&ndash;$1M</td>
+            <td><span class="naics-sa-badge">Eligible</span></td>
+            <td><a href="/labor/register?trade=electrical" class="naics-action-link">Select &rarr;</a></td>
+          </tr>
+          <tr data-sector="23">
+            <td><span class="naics-code-pill">238220</span></td>
+            <td><strong>Plumbing, Heating, and Air-Conditioning Contractors</strong><span class="naics-subscope">Commercial HVAC systems, chillers, institutional plumbing, fire suppression, and process piping.</span></td>
+            <td><span class="naics-track-tag">Plumbing &amp; HVAC</span></td>
+            <td class="mono-val">$75K&ndash;$750K</td>
+            <td><span class="naics-sa-badge">Eligible</span></td>
+            <td><a href="/labor/register?trade=plumbing-hvac" class="naics-action-link">Select &rarr;</a></td>
+          </tr>
+          <tr data-sector="23">
+            <td><span class="naics-code-pill">238290</span></td>
+            <td><strong>Other Building Equipment Contractors</strong><span class="naics-subscope">Commercial boilers, elevators, industrial mechanical equipment rigging, and automated controls.</span></td>
+            <td><span class="naics-track-tag">HVAC &amp; Mechanical</span></td>
+            <td class="mono-val">$100K&ndash;$1M</td>
+            <td><span class="naics-sa-badge">Eligible</span></td>
+            <td><a href="/labor/register?trade=hvac-mechanical" class="naics-action-link">Select &rarr;</a></td>
+          </tr>
+          <tr data-sector="23">
+            <td><span class="naics-code-pill">238110</span></td>
+            <td><strong>Poured Concrete Foundation and Structure Contractors</strong><span class="naics-subscope">Structural slabs, bridge abutments, retaining walls, rebar placement, and ADA curb/sidewalk ramps.</span></td>
+            <td><span class="naics-track-tag">Concrete &amp; Masonry</span></td>
+            <td class="mono-val">$75K&ndash;$750K</td>
+            <td><span class="naics-sa-badge">Eligible</span></td>
+            <td><a href="/labor/register?trade=concrete-cement" class="naics-action-link">Select &rarr;</a></td>
+          </tr>
+          <tr data-sector="23">
+            <td><span class="naics-code-pill">238140</span></td>
+            <td><strong>Masonry Contractors</strong><span class="naics-subscope">CMU block walls, brick veneer, structural stone work, and refractory masonry.</span></td>
+            <td><span class="naics-track-tag">Concrete &amp; Masonry</span></td>
+            <td class="mono-val">$75K&ndash;$500K</td>
+            <td><span class="naics-sa-badge">Eligible</span></td>
+            <td><a href="/labor/register?trade=concrete-cement" class="naics-action-link">Select &rarr;</a></td>
+          </tr>
+          <tr data-sector="23">
+            <td><span class="naics-code-pill">238910</span></td>
+            <td><strong>Site Preparation Contractors</strong><span class="naics-subscope">Heavy excavation, earthmoving, land clearing, trenching, grading, and structure demolition.</span></td>
+            <td><span class="naics-track-tag">Heavy Equipment</span></td>
+            <td class="mono-val">$100K&ndash;$1M</td>
+            <td><span class="naics-sa-badge">Eligible</span></td>
+            <td><a href="/labor/register?trade=equipment-operation" class="naics-action-link">Select &rarr;</a></td>
+          </tr>
+          <tr data-sector="23">
+            <td><span class="naics-code-pill">238120</span></td>
+            <td><strong>Structural Steel and Precast Concrete Contractors</strong><span class="naics-subscope">Ironworking, structural steel erection, precast panel installation, and reinforcing steel assemblies.</span></td>
+            <td><span class="naics-track-tag">Welding &amp; Steel</span></td>
+            <td class="mono-val">$150K&ndash;$2M</td>
+            <td><span class="naics-sa-badge">Eligible</span></td>
+            <td><a href="/labor/register?trade=welding-fabrication" class="naics-action-link">Select &rarr;</a></td>
+          </tr>
+          <tr data-sector="23">
+            <td><span class="naics-code-pill">238130</span></td>
+            <td><strong>Framing Contractors</strong><span class="naics-subscope">Commercial cold-formed metal stud framing, structural wood framing, and roof truss installation.</span></td>
+            <td><span class="naics-track-tag">Carpentry &amp; Framing</span></td>
+            <td class="mono-val">$50K&ndash;$500K</td>
+            <td><span class="naics-sa-badge">Eligible</span></td>
+            <td><a href="/labor/register?trade=carpentry-framing" class="naics-action-link">Select &rarr;</a></td>
+          </tr>
+          <tr data-sector="23">
+            <td><span class="naics-code-pill">238310</span></td>
+            <td><strong>Drywall and Insulation Contractors</strong><span class="naics-subscope">Gypsum board installation, fire-rated shaft walls, acoustical grid ceilings, and mechanical insulation.</span></td>
+            <td><span class="naics-track-tag">Carpentry &amp; Framing</span></td>
+            <td class="mono-val">$50K&ndash;$500K</td>
+            <td><span class="naics-sa-badge">Eligible</span></td>
+            <td><a href="/labor/register?trade=carpentry-framing" class="naics-action-link">Select &rarr;</a></td>
+          </tr>
+          <tr data-sector="23">
+            <td><span class="naics-code-pill">238350</span></td>
+            <td><strong>Finish Carpentry Contractors</strong><span class="naics-subscope">Architectural millwork, commercial doors/hardware, casework, and interior trim installation.</span></td>
+            <td><span class="naics-track-tag">Carpentry &amp; Framing</span></td>
+            <td class="mono-val">$50K&ndash;$400K</td>
+            <td><span class="naics-sa-badge">Eligible</span></td>
+            <td><a href="/labor/register?trade=carpentry-framing" class="naics-action-link">Select &rarr;</a></td>
+          </tr>
+          <tr data-sector="23">
+            <td><span class="naics-code-pill">238330</span></td>
+            <td><strong>Flooring Contractors</strong><span class="naics-subscope">Commercial VCT, epoxy resinous flooring, ceramic tile, and raised access data-center flooring.</span></td>
+            <td><span class="naics-track-tag">Carpentry &amp; Framing</span></td>
+            <td class="mono-val">$35K&ndash;$350K</td>
+            <td><span class="naics-sa-badge">Eligible</span></td>
+            <td><a href="/labor/register?trade=carpentry-framing" class="naics-action-link">Select &rarr;</a></td>
+          </tr>
+          <tr data-sector="23">
+            <td><span class="naics-code-pill">238160</span></td>
+            <td><strong>Roofing Contractors</strong><span class="naics-subscope">Commercial TPO/EPDM single-ply roofing, built-up roofs, architectural sheet metal, and waterproofing.</span></td>
+            <td><span class="naics-track-tag">Commercial Roofing</span></td>
+            <td class="mono-val">$50K&ndash;$500K</td>
+            <td><span class="naics-sa-badge">Eligible</span></td>
+            <td><a href="/labor/register?trade=roofing" class="naics-action-link">Select &rarr;</a></td>
+          </tr>
+          <tr data-sector="23">
+            <td><span class="naics-code-pill">238170</span></td>
+            <td><strong>Siding Contractors</strong><span class="naics-subscope">Architectural metal wall panels, exterior cladding, soffits, and continuous air/moisture barriers.</span></td>
+            <td><span class="naics-track-tag">Commercial Roofing</span></td>
+            <td class="mono-val">$50K&ndash;$350K</td>
+            <td><span class="naics-sa-badge">Eligible</span></td>
+            <td><a href="/labor/register?trade=roofing" class="naics-action-link">Select &rarr;</a></td>
+          </tr>
+          <tr data-sector="23">
+            <td><span class="naics-code-pill">238320</span></td>
+            <td><strong>Painting and Wall Covering Contractors</strong><span class="naics-subscope">Industrial protective coatings, bridge sandblasting/painting, epoxy coatings, and commercial painting.</span></td>
+            <td><span class="naics-track-tag">Coatings &amp; Painting</span></td>
+            <td class="mono-val">$50K&ndash;$500K</td>
+            <td><span class="naics-sa-badge">Eligible</span></td>
+            <td><a href="/labor/register?trade=painting-finishing" class="naics-action-link">Select &rarr;</a></td>
+          </tr>
+          <tr data-sector="23">
+            <td><span class="naics-code-pill">238150</span></td>
+            <td><strong>Glass and Glazing Contractors</strong><span class="naics-subscope">Commercial curtain walls, blast-resistant federal windows, storefront framing, and security glazing.</span></td>
+            <td><span class="naics-track-tag">Coatings &amp; Glazing</span></td>
+            <td class="mono-val">$50K&ndash;$500K</td>
+            <td><span class="naics-sa-badge">Eligible</span></td>
+            <td><a href="/labor/register?trade=painting-finishing" class="naics-action-link">Select &rarr;</a></td>
+          </tr>
+          <tr data-sector="23">
+            <td><span class="naics-code-pill">236220</span></td>
+            <td><strong>Commercial and Institutional Building Construction</strong><span class="naics-subscope">Schools, courthouses, VA clinics, municipal buildings, airports, and military base facilities.</span></td>
+            <td><span class="naics-track-tag">Commercial Building</span></td>
+            <td class="mono-val">$500K&ndash;$10M</td>
+            <td><span class="naics-sa-badge">Eligible</span></td>
+            <td><a href="/labor/register?trade=construction-general" class="naics-action-link">Select &rarr;</a></td>
+          </tr>
+          <tr data-sector="23">
+            <td><span class="naics-code-pill">236210</span></td>
+            <td><strong>Industrial Building Construction</strong><span class="naics-subscope">Water treatment plants, manufacturing facilities, power generation plants, and logistics warehouses.</span></td>
+            <td><span class="naics-track-tag">Commercial Building</span></td>
+            <td class="mono-val">$1M&ndash;$25M</td>
+            <td><span class="naics-sa-badge">Eligible</span></td>
+            <td><a href="/labor/register?trade=construction-general" class="naics-action-link">Select &rarr;</a></td>
+          </tr>
+          <tr data-sector="23">
+            <td><span class="naics-code-pill">236116</span></td>
+            <td><strong>New Multifamily Housing Construction (except For-Sale Builders)</strong><span class="naics-subscope">HUD-funded affordable housing, military barracks, and public housing authority developments.</span></td>
+            <td><span class="naics-track-tag">Commercial Building</span></td>
+            <td class="mono-val">$500K&ndash;$15M</td>
+            <td><span class="naics-sa-badge">Eligible</span></td>
+            <td><a href="/labor/register?trade=construction-general" class="naics-action-link">Select &rarr;</a></td>
+          </tr>
+          <tr data-sector="23">
+            <td><span class="naics-code-pill">236118</span></td>
+            <td><strong>Residential and Facility Remodelers</strong><span class="naics-subscope">Disaster recovery housing rehabilitation, weatherization programs, and ADA facility retrofits.</span></td>
+            <td><span class="naics-track-tag">Commercial Building</span></td>
+            <td class="mono-val">$100K&ndash;$2.5M</td>
+            <td><span class="naics-sa-badge">Eligible</span></td>
+            <td><a href="/labor/register?trade=construction-general" class="naics-action-link">Select &rarr;</a></td>
+          </tr>
+          <tr data-sector="23">
+            <td><span class="naics-code-pill">238990</span></td>
+            <td><strong>All Other Specialty Trade Contractors</strong><span class="naics-subscope">Security fencing, guardrail installation, crane operation, core drilling, and specialized site support.</span></td>
+            <td><span class="naics-track-tag">General Construction</span></td>
+            <td class="mono-val">$50K&ndash;$500K</td>
+            <td><span class="naics-sa-badge">Eligible</span></td>
+            <td><a href="/labor/register?trade=construction-general" class="naics-action-link">Select &rarr;</a></td>
+          </tr>
+
+          <!-- Sector 51 & 54: Telecom, Broadband, IT & Engineering -->
+          <tr data-sector="51-54">
+            <td><span class="naics-code-pill">517111</span></td>
+            <td><strong>Wired Telecommunications Carriers (2022 NAICS Revision)</strong><span class="naics-subscope">Fiber-to-the-premises (FTTP) deployment, broadband network splicing, and carrier-grade wired infrastructure.</span></td>
+            <td><span class="naics-track-tag">Telecom &amp; Fiber</span></td>
+            <td class="mono-val">$250K&ndash;$2.5M</td>
+            <td><span class="naics-sa-badge">Eligible</span></td>
+            <td><a href="/labor/register?trade=fiber-broadband" class="naics-action-link">Select &rarr;</a></td>
+          </tr>
+          <tr data-sector="51-54">
+            <td><span class="naics-code-pill">517311</span></td>
+            <td><strong>Wired Telecommunications Carriers (Legacy Federal Vehicle Code)</strong><span class="naics-subscope">Active on multi-year federal IDIQs and state BEAD grants for coaxial and fiber optic broadband networks.</span></td>
+            <td><span class="naics-track-tag">Telecom &amp; Fiber</span></td>
+            <td class="mono-val">$250K&ndash;$2M</td>
+            <td><span class="naics-sa-badge">Eligible</span></td>
+            <td><a href="/labor/register?trade=fiber-broadband" class="naics-action-link">Select &rarr;</a></td>
+          </tr>
+          <tr data-sector="51-54">
+            <td><span class="naics-code-pill">517112</span></td>
+            <td><strong>Wireless Telecommunications Carriers (except Satellite)</strong><span class="naics-subscope">5G small-cell deployment, macro tower equipment installation, DAS, and FirstNet public safety wireless.</span></td>
+            <td><span class="naics-track-tag">Wireless &amp; 5G</span></td>
+            <td class="mono-val">$250K&ndash;$3M</td>
+            <td><span class="naics-sa-badge">Eligible</span></td>
+            <td><a href="/labor/register?trade=cell-site-tech" class="naics-action-link">Select &rarr;</a></td>
+          </tr>
+          <tr data-sector="51-54">
+            <td><span class="naics-code-pill">517210</span></td>
+            <td><strong>Wireless Telecommunications Carriers (Legacy Federal Vehicle Code)</strong><span class="naics-subscope">RF site testing, microwave alignment, and wireless base station integration on federal contracts.</span></td>
+            <td><span class="naics-track-tag">Wireless &amp; 5G</span></td>
+            <td class="mono-val">$250K&ndash;$3M</td>
+            <td><span class="naics-sa-badge">Eligible</span></td>
+            <td><a href="/labor/register?trade=cell-site-tech" class="naics-action-link">Select &rarr;</a></td>
+          </tr>
+          <tr data-sector="51-54">
+            <td><span class="naics-code-pill">517410</span></td>
+            <td><strong>Satellite Telecommunications</strong><span class="naics-subscope">VSAT terminal installation, ground station cabling, and remote rural satellite broadband links.</span></td>
+            <td><span class="naics-track-tag">Structured Cabling</span></td>
+            <td class="mono-val">$250K&ndash;$2M</td>
+            <td><span class="naics-sa-badge">Eligible</span></td>
+            <td><a href="/labor/register?trade=structured-cabling" class="naics-action-link">Select &rarr;</a></td>
+          </tr>
+          <tr data-sector="51-54">
+            <td><span class="naics-code-pill">541512</span></td>
+            <td><strong>Computer Systems Design Services</strong><span class="naics-subscope">Enterprise LAN/WAN integration, cloud migration, network security architecture, and systems integration.</span></td>
+            <td><span class="naics-track-tag">Cloud &amp; Network</span></td>
+            <td class="mono-val">$150K&ndash;$1.5M</td>
+            <td><span class="naics-sa-badge">Eligible</span></td>
+            <td><a href="/labor/register?trade=cloud-network-infra" class="naics-action-link">Select &rarr;</a></td>
+          </tr>
+          <tr data-sector="51-54">
+            <td><span class="naics-code-pill">541513</span></td>
+            <td><strong>Computer Facilities Management Services</strong><span class="naics-subscope">On-site data center operations, server rack deployment, NOC monitoring, and hardware lifecycle management.</span></td>
+            <td><span class="naics-track-tag">Cloud &amp; Network</span></td>
+            <td class="mono-val">$200K&ndash;$2M</td>
+            <td><span class="naics-sa-badge">Eligible</span></td>
+            <td><a href="/labor/register?trade=cloud-network-infra" class="naics-action-link">Select &rarr;</a></td>
+          </tr>
+          <tr data-sector="51-54">
+            <td><span class="naics-code-pill">541511</span></td>
+            <td><strong>Custom Computer Programming Services</strong><span class="naics-subscope">Application development, database engineering, automation scripting, and agency software modernization.</span></td>
+            <td><span class="naics-track-tag">IT Field Support</span></td>
+            <td class="mono-val">$100K&ndash;$1M</td>
+            <td><span class="naics-sa-badge">Eligible</span></td>
+            <td><a href="/labor/register?trade=it-support" class="naics-action-link">Select &rarr;</a></td>
+          </tr>
+          <tr data-sector="51-54">
+            <td><span class="naics-code-pill">541519</span></td>
+            <td><strong>Other Computer Related Services</strong><span class="naics-subscope">Field workstation deployment, disaster recovery IT setup, hardware imaging, and technical rollouts.</span></td>
+            <td><span class="naics-track-tag">IT Field Support</span></td>
+            <td class="mono-val">$75K&ndash;$750K</td>
+            <td><span class="naics-sa-badge">Eligible</span></td>
+            <td><a href="/labor/register?trade=it-support" class="naics-action-link">Select &rarr;</a></td>
+          </tr>
+          <tr data-sector="51-54">
+            <td><span class="naics-code-pill">541330</span></td>
+            <td><strong>Engineering Services</strong><span class="naics-subscope">Civil, electrical, mechanical, and telecommunications field engineering, QA/QC inspection, and CAD drafting.</span></td>
+            <td><span class="naics-track-tag">Cloud / Engineering</span></td>
+            <td class="mono-val">$250K&ndash;$5M</td>
+            <td><span class="naics-sa-badge">Eligible</span></td>
+            <td><a href="/labor/register?trade=cloud-network-infra" class="naics-action-link">Select &rarr;</a></td>
+          </tr>
+          <tr data-sector="51-54">
+            <td><span class="naics-code-pill">541370</span></td>
+            <td><strong>Surveying and Mapping (except Geophysical) Services</strong><span class="naics-subscope">Construction staking, right-of-way boundary surveying, GIS mapping, and LiDAR topographic surveys.</span></td>
+            <td><span class="naics-track-tag">Heavy Civil</span></td>
+            <td class="mono-val">$75K&ndash;$750K</td>
+            <td><span class="naics-sa-badge">Eligible</span></td>
+            <td><a href="/labor/register?trade=civil-construction" class="naics-action-link">Select &rarr;</a></td>
+          </tr>
+
+          <!-- Sector 48: CDL Trucking, Heavy Haul & Road Support -->
+          <tr data-sector="48">
+            <td><span class="naics-code-pill">484220</span></td>
+            <td><strong>Specialized Freight (except Used Goods) Trucking, Local</strong><span class="naics-subscope">Dump truck aggregate hauling, asphalt/dirt transport, water trucks, and lowboy construction equipment moves.</span></td>
+            <td><span class="naics-track-tag">CDL Trucking &amp; Haul</span></td>
+            <td class="mono-val">$75K&ndash;$750K</td>
+            <td><span class="naics-sa-badge">Eligible</span></td>
+            <td><a href="/labor/register?trade=cdl-trucking" class="naics-action-link">Select &rarr;</a></td>
+          </tr>
+          <tr data-sector="48">
+            <td><span class="naics-code-pill">484110</span></td>
+            <td><strong>General Freight Trucking, Local</strong><span class="naics-subscope">Local jobsite material delivery, palletized supply transport, and municipal depot logistics.</span></td>
+            <td><span class="naics-track-tag">CDL Trucking &amp; Haul</span></td>
+            <td class="mono-val">$50K&ndash;$500K</td>
+            <td><span class="naics-sa-badge">Eligible</span></td>
+            <td><a href="/labor/register?trade=cdl-trucking" class="naics-action-link">Select &rarr;</a></td>
+          </tr>
+          <tr data-sector="48">
+            <td><span class="naics-code-pill">484121</span></td>
+            <td><strong>General Freight Trucking, Long-Distance, Truckload (TL)</strong><span class="naics-subscope">FEMA disaster relief freight, interstate infrastructure material transport, and dedicated flatbed corridors.</span></td>
+            <td><span class="naics-track-tag">CDL Trucking &amp; Haul</span></td>
+            <td class="mono-val">$100K&ndash;$1M</td>
+            <td><span class="naics-sa-badge">Eligible</span></td>
+            <td><a href="/labor/register?trade=cdl-trucking" class="naics-action-link">Select &rarr;</a></td>
+          </tr>
+          <tr data-sector="48">
+            <td><span class="naics-code-pill">484122</span></td>
+            <td><strong>General Freight Trucking, Long-Distance, Less Than Truckload (LTL)</strong><span class="naics-subscope">Scheduled multi-stop regional equipment distribution and government supply chain freight.</span></td>
+            <td><span class="naics-track-tag">CDL Trucking &amp; Haul</span></td>
+            <td class="mono-val">$100K&ndash;$1M</td>
+            <td><span class="naics-sa-badge">Eligible</span></td>
+            <td><a href="/labor/register?trade=cdl-trucking" class="naics-action-link">Select &rarr;</a></td>
+          </tr>
+          <tr data-sector="48">
+            <td><span class="naics-code-pill">484230</span></td>
+            <td><strong>Specialized Freight (except Used Goods) Trucking, Long-Distance</strong><span class="naics-subscope">Oversize/overweight structural beam transport, transformer hauling, and hazmat tanker logistics.</span></td>
+            <td><span class="naics-track-tag">CDL Trucking &amp; Haul</span></td>
+            <td class="mono-val">$100K&ndash;$1.2M</td>
+            <td><span class="naics-sa-badge">Eligible</span></td>
+            <td><a href="/labor/register?trade=cdl-trucking" class="naics-action-link">Select &rarr;</a></td>
+          </tr>
+          <tr data-sector="48">
+            <td><span class="naics-code-pill">488490</span></td>
+            <td><strong>Other Support Activities for Road Transportation</strong><span class="naics-subscope">Highway work-zone traffic control (MOT), certified flagging crews, crash-attenuator trucks, and pilot cars.</span></td>
+            <td><span class="naics-track-tag">CDL / Traffic Control</span></td>
+            <td class="mono-val">$50K&ndash;$250K</td>
+            <td><span class="naics-sa-badge">Eligible</span></td>
+            <td><a href="/labor/register?trade=cdl-trucking" class="naics-action-link">Select &rarr;</a></td>
+          </tr>
+
+          <!-- Sector 33 & 81: Welding, Fabrication & Equipment Repair -->
+          <tr data-sector="33-81">
+            <td><span class="naics-code-pill">332312</span></td>
+            <td><strong>Fabricated Structural Metal Manufacturing</strong><span class="naics-subscope">Custom steel girders, bridge expansion joints, communication tower components, and structural weldments.</span></td>
+            <td><span class="naics-track-tag">Welding &amp; Fabrication</span></td>
+            <td class="mono-val">$100K&ndash;$1M</td>
+            <td><span class="naics-sa-badge">Eligible</span></td>
+            <td><a href="/labor/register?trade=welding-fabrication" class="naics-action-link">Select &rarr;</a></td>
+          </tr>
+          <tr data-sector="33-81">
+            <td><span class="naics-code-pill">332313</span></td>
+            <td><strong>Plate Work Manufacturing</strong><span class="naics-subscope">Heavy steel plate fabrication, pressure vessels, water storage tanks, and industrial weld assemblies.</span></td>
+            <td><span class="naics-track-tag">Welding &amp; Fabrication</span></td>
+            <td class="mono-val">$100K&ndash;$1M</td>
+            <td><span class="naics-sa-badge">Eligible</span></td>
+            <td><a href="/labor/register?trade=welding-fabrication" class="naics-action-link">Select &rarr;</a></td>
+          </tr>
+          <tr data-sector="33-81">
+            <td><span class="naics-code-pill">332322</span></td>
+            <td><strong>Sheet Metal Work Manufacturing</strong><span class="naics-subscope">Custom HVAC ductwork fabrication, electrical enclosures, architectural flashing, and metal louvers.</span></td>
+            <td><span class="naics-track-tag">Welding &amp; Fabrication</span></td>
+            <td class="mono-val">$75K&ndash;$750K</td>
+            <td><span class="naics-sa-badge">Eligible</span></td>
+            <td><a href="/labor/register?trade=welding-fabrication" class="naics-action-link">Select &rarr;</a></td>
+          </tr>
+          <tr data-sector="33-81">
+            <td><span class="naics-code-pill">811310</span></td>
+            <td><strong>Commercial and Industrial Machinery and Equipment Repair and Maintenance</strong><span class="naics-subscope">Mobile welding repair, heavy construction equipment maintenance, generator servicing, and pump overhaul.</span></td>
+            <td><span class="naics-track-tag">Welding &amp; Repair</span></td>
+            <td class="mono-val">$75K&ndash;$750K</td>
+            <td><span class="naics-sa-badge">Eligible</span></td>
+            <td><a href="/labor/register?trade=welding-fabrication" class="naics-action-link">Select &rarr;</a></td>
+          </tr>
+          <tr data-sector="33-81">
+            <td><span class="naics-code-pill">811210</span></td>
+            <td><strong>Electronic and Precision Equipment Repair and Maintenance</strong><span class="naics-subscope">Calibration and repair of communication radios, traffic control sensors, and diagnostic instrumentation.</span></td>
+            <td><span class="naics-track-tag">IT &amp; Electronics</span></td>
+            <td class="mono-val">$50K&ndash;$400K</td>
+            <td><span class="naics-sa-badge">Eligible</span></td>
+            <td><a href="/labor/register?trade=it-support" class="naics-action-link">Select &rarr;</a></td>
+          </tr>
+          <tr data-sector="33-81">
+            <td><span class="naics-code-pill">811212</span></td>
+            <td><strong>Computer and Office Machine Repair and Maintenance</strong><span class="naics-subscope">Break/fix hardware maintenance for public schools, municipal offices, and federal field offices.</span></td>
+            <td><span class="naics-track-tag">IT Field Support</span></td>
+            <td class="mono-val">$25K&ndash;$250K</td>
+            <td><span class="naics-sa-badge">Eligible</span></td>
+            <td><a href="/labor/register?trade=it-support" class="naics-action-link">Select &rarr;</a></td>
+          </tr>
+
+          <!-- Sector 56: Environmental Remediation, Facilities, Grounds & Staffing -->
+          <tr data-sector="56">
+            <td><span class="naics-code-pill">562910</span></td>
+            <td><strong>Remediation Services</strong><span class="naics-subscope">Environmental soil/water cleanup, asbestos/lead paint abatement, mold remediation, and storm debris removal.</span></td>
+            <td><span class="naics-track-tag">Environmental</span></td>
+            <td class="mono-val">$100K&ndash;$1M</td>
+            <td><span class="naics-sa-badge">Eligible</span></td>
+            <td><a href="/labor/register?trade=environmental" class="naics-action-link">Select &rarr;</a></td>
+          </tr>
+          <tr data-sector="56">
+            <td><span class="naics-code-pill">541620</span></td>
+            <td><strong>Environmental Consulting Services</strong><span class="naics-subscope">NEPA compliance field assessments, SWPPP stormwater inspections, wetland delineation, and Phase I/II ESA.</span></td>
+            <td><span class="naics-track-tag">Environmental</span></td>
+            <td class="mono-val">$85K&ndash;$500K</td>
+            <td><span class="naics-sa-badge">Eligible</span></td>
+            <td><a href="/labor/register?trade=environmental" class="naics-action-link">Select &rarr;</a></td>
+          </tr>
+          <tr data-sector="56">
+            <td><span class="naics-code-pill">562112</span></td>
+            <td><strong>Hazardous Waste Collection</strong><span class="naics-subscope">Containerized hazmat transport prep, jobsite spill containment, and regulated waste disposal support.</span></td>
+            <td><span class="naics-track-tag">Environmental</span></td>
+            <td class="mono-val">$100K&ndash;$1M</td>
+            <td><span class="naics-sa-badge">Eligible</span></td>
+            <td><a href="/labor/register?trade=environmental" class="naics-action-link">Select &rarr;</a></td>
+          </tr>
+          <tr data-sector="56">
+            <td><span class="naics-code-pill">561730</span></td>
+            <td><strong>Landscaping Services</strong><span class="naics-subscope">Highway right-of-way mowing, utility line tree clearance, hydroseeding, and erosion control blanket installation.</span></td>
+            <td><span class="naics-track-tag">Landscaping &amp; ROW</span></td>
+            <td class="mono-val">$25K&ndash;$250K</td>
+            <td><span class="naics-sa-badge">Eligible</span></td>
+            <td><a href="/labor/register?trade=landscaping" class="naics-action-link">Select &rarr;</a></td>
+          </tr>
+          <tr data-sector="56">
+            <td><span class="naics-code-pill">561210</span></td>
+            <td><strong>Facilities Support Services</strong><span class="naics-subscope">Turnkey base operations, building maintenance, groundskeeping, and integrated facility management.</span></td>
+            <td><span class="naics-track-tag">Facilities Support</span></td>
+            <td class="mono-val">$150K&ndash;$2.5M</td>
+            <td><span class="naics-sa-badge">Eligible</span></td>
+            <td><a href="/labor/register?trade=facilities-maintenance" class="naics-action-link">Select &rarr;</a></td>
+          </tr>
+          <tr data-sector="56">
+            <td><span class="naics-code-pill">561720</span></td>
+            <td><strong>Janitorial Services</strong><span class="naics-subscope">Post-construction final clean, medical facility sanitization, and municipal building custodial contracts.</span></td>
+            <td><span class="naics-track-tag">Facilities Support</span></td>
+            <td class="mono-val">$25K&ndash;$300K</td>
+            <td><span class="naics-sa-badge">Eligible</span></td>
+            <td><a href="/labor/register?trade=facilities-maintenance" class="naics-action-link">Select &rarr;</a></td>
+          </tr>
+          <tr data-sector="56">
+            <td><span class="naics-code-pill">561612</span></td>
+            <td><strong>Security Guards and Patrol Services</strong><span class="naics-subscope">Infrastructure laydown yard security, access gate control, and TWIC-credentialed facility patrol.</span></td>
+            <td><span class="naics-track-tag">Facilities &amp; Security</span></td>
+            <td class="mono-val">$50K&ndash;$500K</td>
+            <td><span class="naics-sa-badge">Eligible</span></td>
+            <td><a href="/labor/register?trade=facilities-maintenance" class="naics-action-link">Select &rarr;</a></td>
+          </tr>
+          <tr data-sector="56">
+            <td><span class="naics-code-pill">561621</span></td>
+            <td><strong>Security Systems Services (except Locksmiths)</strong><span class="naics-subscope">IP surveillance camera installation, badge access control panels, perimeter intrusion sensors, and fire alarms.</span></td>
+            <td><span class="naics-track-tag">Structured Cabling</span></td>
+            <td class="mono-val">$75K&ndash;$750K</td>
+            <td><span class="naics-sa-badge">Eligible</span></td>
+            <td><a href="/labor/register?trade=structured-cabling" class="naics-action-link">Select &rarr;</a></td>
+          </tr>
+          <tr data-sector="56">
+            <td><span class="naics-code-pill">561320</span></td>
+            <td><strong>Temporary Help Services (Skilled Trade &amp; Field Staffing)</strong><span class="naics-subscope">Prevailing-wage supplemental trade crews, surge disaster-response labor, and project staffing.</span></td>
+            <td><span class="naics-track-tag">Project &amp; Site Support</span></td>
+            <td class="mono-val">$25K&ndash;$250K</td>
+            <td><span class="naics-sa-badge">Eligible</span></td>
+            <td><a href="/labor/register?trade=admin-clerical" class="naics-action-link">Select &rarr;</a></td>
+          </tr>
+          <tr data-sector="56">
+            <td><span class="naics-code-pill">561110</span></td>
+            <td><strong>Office Administrative Services</strong><span class="naics-subscope">WH-347 certified payroll compliance, DBE/HUB utilization reporting, and field office project coordination.</span></td>
+            <td><span class="naics-track-tag">Project Administration</span></td>
+            <td class="mono-val">$50K&ndash;$500K</td>
+            <td><span class="naics-sa-badge">Eligible</span></td>
+            <td><a href="/labor/register?trade=admin-clerical" class="naics-action-link">Select &rarr;</a></td>
+          </tr>
+        </tbody>
+      </table>
     </div>
   </div>
 </section>
 
 <!-- Benefits -->
-<section class="wfc-section">
+<section class="wfc-section evo-section-alt">
   <div class="wfc-section-inner">
-    <div class="section-header text-center">
-      <h2 class="section-title">Why Join EvoConnect?</h2>
+    <div class="section-header text-center" data-gsap="section-header">
+      <p class="section-label">04 // WORKER ADVANTAGES</p>
+      <h2 class="section-title">Why Skilled Operators Choose EVOConnect</h2>
     </div>
     <div class="benefits-grid">
-      <div class="benefit-card">
-        <div class="benefit-icon">&#127919;</div>
-        <h3>Matched Opportunities</h3>
-        <p>We map your trade to active NAICS codes and surface government contract opportunities relevant to your skills.</p>
+      <div class="benefit-card spotlight-card" data-gsap="benefit-card">
+        <div class="benefit-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg></div>
+        <div class="bento-tag">PRECISION MATCHING</div>
+        <h3>Automated NAICS Alignment</h3>
+        <p>We map your trade credentials to active federal NAICS codes and surface matching job opportunities posted by certified subcontractors.</p>
       </div>
-      <div class="benefit-card">
-        <div class="benefit-icon">&#9989;</div>
-        <h3>Vendor Readiness Guide</h3>
-        <p>Our built-in checklist walks you through every step to become fully eligible for government contract work.</p>
+      <div class="benefit-card spotlight-card" data-gsap="benefit-card">
+        <div class="benefit-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg></div>
+        <div class="bento-tag">GUIDED COMPLIANCE</div>
+        <h3>Vendor Readiness Blueprint</h3>
+        <p>Step-by-step milestones walk you through OSHA verification, SAM.gov registration, and transitioning into an independent sub-vendor.</p>
       </div>
-      <div class="benefit-card">
-        <div class="benefit-icon">&#128101;</div>
-        <h3>Real Connections</h3>
-        <p>Get direct connection requests from small businesses actively bidding on projects that need your trade.</p>
+      <div class="benefit-card spotlight-card" data-gsap="benefit-card">
+        <div class="benefit-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
+        <div class="bento-tag">DIRECT RECRUITMENT</div>
+        <h3>Verified Subcontractor Network</h3>
+        <p>Receive direct connection requests from certified small businesses actively mobilizing crews for awarded public contracts.</p>
       </div>
-      <div class="benefit-card">
-        <div class="benefit-icon">&#128176;</div>
-        <h3>Government Pay Rates</h3>
-        <p>Government contracts typically pay prevailing wages — often higher than private sector work in the same trade.</p>
+      <div class="benefit-card spotlight-card" data-gsap="benefit-card">
+        <div class="benefit-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div>
+        <div class="bento-tag">COMPENSATION STANDARDS</div>
+        <h3>Prevailing Wage &amp; Scale</h3>
+        <p>Federal and state infrastructure contracts typically mandate Davis-Bacon prevailing wage rates—maximizing compensation for your trade expertise.</p>
       </div>
     </div>
   </div>
@@ -103,9 +874,43 @@
 
 <!-- CTA -->
 <section class="wfc-cta-banner">
-  <div class="wfc-cta-banner-inner">
-    <h2 class="section-title">Your Next Contract Starts Here.</h2>
-    <p>Register free and be discoverable by small businesses in minutes.</p>
-    <a href="/labor/register" class="btn-white">Create Your Free Profile</a>
+  <div class="wfc-cta-banner-inner" data-gsap="cta-banner">
+    <p class="section-label" style="margin-bottom:0.75rem;">MOBILIZE YOUR TRADE</p>
+    <h2 class="section-title">Your Next Public Infrastructure Contract Starts Here.</h2>
+    <p>Register free in under 5 minutes and make your trade credentials discoverable by certified subcontractors.</p>
+    <a href="/labor/register" class="btn-white">Create Your Free Worker Profile</a>
   </div>
 </section>
+
+<script>
+(function () {
+  const tabs = document.querySelectorAll('.naics-tab');
+  const searchInput = document.getElementById('naics-matrix-search');
+  const rows = document.querySelectorAll('#naics-matrix-tbody tr');
+  if (!tabs.length || !rows.length) return;
+
+  let activeSector = 'all';
+
+  function filterRows() {
+    const q = (searchInput ? searchInput.value : '').trim().toLowerCase();
+    rows.forEach((row) => {
+      const sectorMatch = activeSector === 'all' || row.getAttribute('data-sector') === activeSector;
+      const textMatch = !q || row.textContent.toLowerCase().includes(q);
+      row.style.display = (sectorMatch && textMatch) ? '' : 'none';
+    });
+  }
+
+  tabs.forEach((tab) => {
+    tab.addEventListener('click', () => {
+      tabs.forEach((t) => t.classList.remove('active'));
+      tab.classList.add('active');
+      activeSector = tab.getAttribute('data-sector') || 'all';
+      filterRows();
+    });
+  });
+
+  if (searchInput) {
+    searchInput.addEventListener('input', filterRows);
+  }
+})();
+</script>

@@ -1,5 +1,4 @@
-<% if (locals.user) { locals.layout = 'layouts/dashboard'; } %>
-<% const title = locals.title || 'Saved Opportunities | EvoConnect' %>
+<% const title = locals.title || 'Saved Opportunities | EVOConnect' %>
 <% const basePath = locals.basePath || (locals.user?.type === 'business' ? '/business' : '/labor') %>
 <% const oppList = locals.opportunities || [] %>
 <% const appliedIds = (locals.appliedIds || []).map(String) %>

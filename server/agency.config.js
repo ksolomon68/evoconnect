@@ -1,6 +1,6 @@
 module.exports = {
-    name:            'EvoConnect',
-    shortName:       'EvoConnect',
+    name:            'EVOConnect',
+    shortName:       'EVOConnect',
     tagline:         'Connect the Contract. Build the Future.',
     domain:          process.env.DOMAIN || (process.env.URL ? new URL(process.env.URL).hostname : 'evoconnect.evobrand.net'),
     appId:           'net.evobrand.evoconnect',

@@ -1,94 +1,136 @@
 {
   "slug": "for-small-businesses",
   "isSystem": true,
-  "updatedAt": "2026-03-17T00:00:00.000Z",
+  "updatedAt": "2026-10-29T01:30:00.000Z",
   "meta": {
-    "title": "For Small Businesses - PrimeReach",
-    "description": "Small Businesses: Find contracting opportunities, upload your capability statement, and connect with Caltrans agencies."
+    "title": "Certified Small Business & Subcontractor Portal | EVOConnect",
+    "description": "Small, disadvantaged, and certified firms get discovered by prime contractors fulfilling mandated diversity participation goals. Showcase your NAICS capabilities, respond to targeted RFQs, and post jobs to hire verified field labor."
   },
   "header": {
     "backgroundImage": "",
-    "logoImage": "images/logo.png",
-    "logoAlt": "Caltrans"
+    "logoImage": "/images/favicon.png",
+    "logoAlt": "EVOConnect Logo"
   },
   "sections": [
     {
       "id": "hero",
       "type": "hero-inner",
       "fields": {
-        "title": "For Small Businesses",
-        "subtitle": "Connect with Caltrans contracting opportunities, showcase your capabilities, and grow your business through our streamlined platform.",
-        "primaryButton": { "label": "Create Your Account", "href": "register-small-business.html" },
-        "secondaryButton": { "label": "Browse Opportunities", "href": "opportunities.html" }
+        "eyebrow": "DIVISION 02 // CERTIFIED SMALL BUSINESS & SUBCONTRACTORS",
+        "title": "Your Socioeconomic Certification Unlocks Prime Contract Flow.",
+        "subtitle": "Small, disadvantaged, and certified firms get discovered by prime contractors fulfilling mandated diversity participation goals. Showcase your NAICS capabilities, respond to targeted RFQs, and post jobs to hire verified field labor.",
+        "primaryButton": {
+          "label": "Register Your Business — Free",
+          "href": "/business/register"
+        },
+        "secondaryButton": {
+          "label": "Member Sign In",
+          "href": "/login"
+        }
       }
     },
     {
-      "id": "how-we-help",
+      "id": "certifications",
       "type": "card-grid",
       "fields": {
-        "heading": "How PrimeReach Helps You Succeed",
+        "heading": "Supported Federal & State Certifications",
+        "intro": "These designations qualify your firm for sole-source awards, set-aside solicitations, and prime contractor diversity spend mandates.",
         "cards": [
           {
-            "id": "find-opportunities",
-            "title": "Find Opportunities",
-            "body": "Search and filter contracting opportunities across all Caltrans districts. Receive notifications for opportunities matching your expertise and service areas."
+            "id": "cert-dbe",
+            "title": "Disadvantaged Business Enterprise (DBE)",
+            "body": "Mandated participation goals across US DOT, highway, transit, airport, and federally-assisted infrastructure programs."
           },
           {
-            "id": "showcase-capabilities",
-            "title": "Showcase Your Capabilities",
-            "body": "Upload your capability statement and profile to demonstrate your core competencies, past performance, and qualifications to prime contractors seeking partners."
+            "id": "cert-mbe",
+            "title": "Minority Business Enterprise (MBE)",
+            "body": "Recognized by state, municipal, and institutional procurement authorities for diversity spend tracking and set-aside awards."
           },
           {
-            "id": "streamlined-process",
-            "title": "Streamlined Process",
-            "body": "Our platform guides you through every step, from account creation to opportunity application, eliminating confusion and decision fatigue."
+            "id": "cert-wbe",
+            "title": "Women-Owned Business Enterprise (WBE / WOSB)",
+            "body": "Qualifies for federal WOSB/EDWOSB set-aside solicitations and state/local prime diversity participation goals."
+          },
+          {
+            "id": "cert-hub",
+            "title": "Historically Underutilized Business (HUB)",
+            "body": "Statewide procurement preference program with statutory good-faith subcontracting goals across state agency contracts."
+          },
+          {
+            "id": "cert-sdvosb",
+            "title": "Service-Disabled Veteran-Owned (SDVOSB)",
+            "body": "Priority federal set-aside and sole-source eligibility across VA, DoD, and civilian agency infrastructure procurements."
+          },
+          {
+            "id": "cert-8a",
+            "title": "SBA 8(a) Business Development",
+            "body": "Premier nine-year federal program providing direct access to sole-source contracts and mentor-protégé joint ventures."
+          },
+          {
+            "id": "cert-sbe",
+            "title": "Small Business Enterprise (SBE)",
+            "body": "Race- and gender-neutral small business designation prioritized on municipal, county, and regional transit procurements."
+          },
+          {
+            "id": "cert-aabe",
+            "title": "African American Business Enterprise (AABE)",
+            "body": "Recognized by municipal and regional contracting authorities committed to equitable subcontracting utilization."
           }
         ]
       }
     },
     {
-      "id": "journey",
+      "id": "how-it-works",
       "type": "steps",
       "fields": {
-        "heading": "Your Journey to Success",
+        "heading": "How the Business Portal Accelerates Contract Flow",
+        "intro": "From SAM.gov alignment to prime RFQ bidding and field crew recruitment.",
         "steps": [
-          { "label": "Create Your Account",            "detail": "Register as a Small Business with your business information and contact details." },
-          { "label": "Complete Your Profile",           "detail": "Add your business details, certifications, and service areas to help prime contractors find you." },
-          { "label": "Upload Capability Statement",     "detail": "Showcase your core competencies, past performance, key personnel, and qualifications." },
-          { "label": "Select Districts and Categories", "detail": "Choose the Caltrans districts and work categories that match your expertise." },
-          { "label": "Search and Apply",                "detail": "Browse opportunities, filter by your preferences, and submit proposals directly through the platform." }
+          {
+            "label": "Register Company & UEI",
+            "detail": "Establish your corporate profile with entity structure, SAM.gov UEI, bonding capacity, six-digit NAICS codes, and active certifications."
+          },
+          {
+            "label": "Complete Compliance Tracks",
+            "detail": "Follow guided checklists to obtain or renew DBE, MBE, HUB, WOSB, SDVOSB, or 8(a) designations for your target market."
+          },
+          {
+            "label": "Generate Capability Statement",
+            "detail": "Instantly compile an executive, print-ready One-Page Capability Statement formatted to federal contracting officer standards."
+          },
+          {
+            "label": "Respond to Primes & Hire Labor",
+            "detail": "Submit bids on prime contractor RFQs and post trade jobs to recruit verified workers directly from the EVOConnect Labor Directory."
+          }
         ]
       }
     },
     {
-      "id": "requirements",
-      "type": "alert",
-      "fields": {
-        "heading": "What You Need to Get Started",
-        "alertType": "info",
-        "alertLabel": "Required Information:",
-        "items": [
-          "Business name and legal structure",
-          "Federal Tax ID (EIN)",
-          "Business address and contact information",
-          "Small Business certification number (if applicable)",
-          "Capability statement (PDF format, maximum 10MB)"
-        ]
-      }
-    },
-    {
-      "id": "capability-cards",
+      "id": "benefits",
       "type": "card-grid",
       "fields": {
-        "heading": "Capability Statement Requirements",
-        "intro": "Your capability statement must include the following information to help prime contractors evaluate your qualifications:",
+        "heading": "Built for Subcontractors Scaling in the Public Sector",
         "cards": [
-          { "id": "core-competencies", "title": "Core Competencies",    "body": "Detailed description of your primary services and areas of expertise" },
-          { "id": "past-performance",  "title": "Past Performance",     "body": "Examples of completed projects with scope, value, and outcomes" },
-          { "id": "key-personnel",     "title": "Key Personnel",        "body": "Qualifications and experience of your leadership team" },
-          { "id": "equipment",         "title": "Equipment & Facilities","body": "Resources available to complete contract work" },
-          { "id": "financial",         "title": "Financial Capacity",   "body": "Bonding capacity and financial stability indicators" },
-          { "id": "certifications",    "title": "Certifications",       "body": "Current certifications, licenses, and insurance coverage" }
+          {
+            "id": "biz-visibility",
+            "title": "High-Intent Prime Discovery",
+            "body": "Prime estimators and diversity compliance officers search our verified business directory when assembling bid teams for government awards."
+          },
+          {
+            "id": "biz-cap-statement",
+            "title": "Capability Statement Engine",
+            "body": "Generate a polished, procurement-standard capability statement directly from your profile data—ready for PDF export or prime review."
+          },
+          {
+            "id": "biz-naics-alerts",
+            "title": "NAICS Solicitation Matching",
+            "body": "Your six-digit NAICS codes automatically match your firm to active prime RFQs and public sector subcontracting opportunities."
+          },
+          {
+            "id": "biz-labor-dispatch",
+            "title": "Integrated Labor Dispatch",
+            "body": "When you win a subcontract, post trade jobs directly to our skilled labor directory to staff OSHA- and CDL-verified field crews."
+          }
         ]
       }
     },
@@ -96,11 +138,13 @@
       "id": "cta",
       "type": "cta-banner",
       "fields": {
-        "heading": "Ready to Get Started?",
-        "text": "Create your account today and start connecting with opportunities.",
+        "heading": "Position Your Firm in Front of Prime Contractors.",
+        "text": "Register your business free, generate your capability statement, and start receiving matched prime solicitations.",
         "columns": [
-          { "buttonLabel": "Create Account",    "buttonHref": "register-small-business.html" },
-          { "buttonLabel": "Check Eligibility", "buttonHref": "eligibility.html"     }
+          {
+            "buttonLabel": "Register Your Business Free",
+            "buttonHref": "/business/register"
+          }
         ]
       }
     }

@@ -150,9 +150,10 @@ async function requireAdmin(req, res, next) {
 }
 
 const content = require('../services/cms-content');
+const {resolveSlug}=content;
 const files = require('../services/file-storage');
 const wrap = fn => (req,res,next)=>Promise.resolve(fn(req,res,next)).catch(next);
-const NAV_ORDER = ['index','for-small-businesses','for-prime-contractors','opportunities','how-it-works','resources','faq','support-services','eligibility','contact'];
+const NAV_ORDER = ['index','labor','for-small-businesses','for-prime-contractors','contact','resources','opportunities','how-it-works','faq','support-services','eligibility'];
 const isValidSlug = slug => /^[a-z0-9][a-z0-9-]{0,79}$/.test(slug);
 router.get('/global',wrap(async(req,res)=>{
     const data=await content.read(GLOBAL_FILE);
@@ -173,14 +174,14 @@ router.get('/pages',wrap(async(req,res)=>{
     });res.json(pages);
 }));
 router.get('/pages/:slug',wrap(async(req,res)=>{
-    if(!isValidSlug(req.params.slug))return res.status(400).json({error:'Invalid page slug'});
-    const data=await content.read(path.join(PAGES_DIR,req.params.slug+'.json'));
+    if(!isValidSlug(resolveSlug(req.params.slug)))return res.status(400).json({error:'Invalid page slug'});
+    const data=await content.read(path.join(PAGES_DIR,resolveSlug(req.params.slug)+'.json'));
     return data?res.json(data):res.status(404).json({error:'Page not found'});
 }));
 router.put('/pages/:slug',requireAdmin,wrap(async(req,res)=>{
-    if(!isValidSlug(req.params.slug))return res.status(400).json({error:'Invalid page slug'});
+    if(!isValidSlug(resolveSlug(req.params.slug)))return res.status(400).json({error:'Invalid page slug'});
     if(!req.body || typeof req.body!=='object')return res.status(400).json({error:'JSON body required'});
-    const file=path.join(PAGES_DIR,req.params.slug+'.json');
+    const file=path.join(PAGES_DIR,resolveSlug(req.params.slug)+'.json');
     const updated=mergeDeep(await content.read(file)||{},req.body);
     updated.updatedAt=new Date().toISOString();await content.write(file,updated);
     res.json({success:true,data:updated});
@@ -190,12 +191,12 @@ router.post('/pages',requireAdmin,wrap(async(req,res)=>{
     if(!slug || !isValidSlug(slug))return res.status(400).json({error:'A valid slug is required'});
     const file=path.join(PAGES_DIR,slug+'.json');
     if(await content.read(file))return res.status(409).json({error:'Page already exists'});
-    const data={slug,isSystem:false,meta:{title:meta?.title||slug,description:meta?.description||''},header:{backgroundImage:'',logoImage:'/images/logo-light.png',logoAlt:'EvoConnect'},sections:sections||[],createdAt:new Date().toISOString(),updatedAt:new Date().toISOString()};
+    const data={slug,isSystem:false,meta:{title:meta?.title||slug,description:meta?.description||''},header:{backgroundImage:'',logoImage:'/images/favicon.png',logoAlt:'EVOConnect'},sections:sections||[],createdAt:new Date().toISOString(),updatedAt:new Date().toISOString()};
     await content.write(file,data);res.status(201).json({success:true,data});
 }));
 router.delete('/pages/:slug',requireAdmin,wrap(async(req,res)=>{
-    if(!isValidSlug(req.params.slug))return res.status(400).json({error:'Invalid page slug'});
-    const file=path.join(PAGES_DIR,req.params.slug+'.json'),data=await content.read(file);
+    if(!isValidSlug(resolveSlug(req.params.slug)))return res.status(400).json({error:'Invalid page slug'});
+    const file=path.join(PAGES_DIR,resolveSlug(req.params.slug)+'.json'),data=await content.read(file);
     if(!data)return res.status(404).json({error:'Page not found'});
     if(data.isSystem)return res.status(403).json({error:'System pages cannot be deleted'});
     await content.remove(file);res.json({success:true});

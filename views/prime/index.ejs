@@ -1,111 +1,139 @@
 <% const title = locals.title || 'Prime Contractor Portal' %>
 
-<!-- Hero -->
-<section class="wfc-hero">
+<!-- Executive Hero -->
+<section class="wfc-hero evo-role-hero">
+  <div class="evo-grid-backdrop" aria-hidden="true"></div>
+  <div class="shape shape-1" aria-hidden="true"></div>
+  <div class="shape shape-2" aria-hidden="true"></div>
   <div class="wfc-hero-inner">
-    <span class="wfc-eyebrow">Prime Contractor Portal</span>
-    <h1>Your Diversity Pipeline.<br>Built and Ready.</h1>
-    <p>EvoConnect gives prime contractors and GCs instant access to a searchable directory of pre-profiled, certified subcontractors and small businesses — all built for government contract compliance.</p>
-    <div class="wfc-hero-cta">
-      <a href="/prime/register" class="btn-amber">Get Started</a>
-      <a href="/login" class="btn-secondary-outline">Already a Member? Log In</a>
+    <div class="wfc-eyebrow" data-gsap="hero-eyebrow" data-cms-field="hero.eyebrow" data-cms-type="eyebrow">
+      <span class="eyebrow-dot" aria-hidden="true"></span>
+      <span>DIVISION 03 // PRIME CONTRACTORS &amp; GENERAL CONTRACTORS</span>
+    </div>
+    <h1 data-gsap="hero-title" data-cms-field="hero.title">Audit-Ready Subcontractor &amp;<br><span>Diversity Compliance Pipeline.</span></h1>
+    <p data-gsap="hero-lead" data-cms-field="hero.subtitle">EVOConnect gives prime contractors, estimators, and compliance executives instant access to a searchable directory of pre-profiled, SAM-aligned, and socioeconomic-certified subcontractors built for government contract execution.</p>
+    <div class="wfc-hero-cta" data-gsap="hero-cta">
+      <a href="/prime/register" class="btn-amber">Initialize Prime Console</a>
+      <a href="/login" class="btn-secondary-outline">Executive Sign In</a>
+    </div>
+    <div class="wfc-hero-stats" data-gsap="hero-stats">
+      <div class="hero-stat">
+        <span class="num">6-Digit</span>
+        <span class="lbl">NAICS Filtering</span>
+      </div>
+      <div class="hero-stat-divider" aria-hidden="true"></div>
+      <div class="hero-stat">
+        <span class="num" data-count-to="8" data-count-suffix="+">8+</span>
+        <span class="lbl">Diversity Set-Asides</span>
+      </div>
+      <div class="hero-stat-divider" aria-hidden="true"></div>
+      <div class="hero-stat">
+        <span class="num">Direct</span>
+        <span class="lbl">RFQ Broadcast Engine</span>
+      </div>
     </div>
   </div>
 </section>
 
-<!-- Why Prime Contractors Choose EvoConnect -->
+<!-- Why Prime Contractors Choose EVOConnect -->
 <section class="wfc-section">
   <div class="wfc-section-inner">
-    <div class="section-header text-center">
-      <h2 class="section-title">Built for Primes Who Need to Move Fast</h2>
-      <p class="section-subtitle">Government projects have diversity requirements, short timelines, and specific trade demands. EvoConnect delivers the workforce pipeline you need — searchable in seconds.</p>
+    <div class="section-header text-center" data-gsap="section-header">
+      <p class="section-label">01 // ENTERPRISE SOURCING CAPABILITIES</p>
+      <h2 class="section-title" data-cms-field="benefits.heading">Engineered for Primes Operating on Compressed Bid Timelines</h2>
+      <p class="section-subtitle">Federal and state solicitations mandate strictDBE/HUB/8(a) participation goals and verified trade capacity. EVOConnect delivers an actionable subcontractor pipeline searchable in seconds.</p>
     </div>
     <div class="benefits-grid">
-      <div class="benefit-card">
-        <div class="benefit-icon">&#128269;</div>
-        <h3>Verified Directories</h3>
-        <p>Search small businesses by trade, certification type, NAICS code, location, and travel willingness.</p>
+      <div class="benefit-card spotlight-card" data-gsap="benefit-card">
+        <div class="benefit-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></div>
+        <div class="bento-tag">GRANULAR DISCOVERY</div>
+        <h3>Multi-Parameter Vendor Search</h3>
+        <p>Filter small businesses by six-digit NAICS code, trade specialization, SAM.gov registration status, bonding capacity, and mobilization radius.</p>
       </div>
-      <div class="benefit-card">
-        <div class="benefit-icon">&#127942;</div>
-        <h3>Certification-Filtered Search</h3>
-        <p>Find DBE, MBE, WBE, HUB, SDVOSB, and 8(a) certified subcontractors in seconds. Document your diversity spend.</p>
+      <div class="benefit-card spotlight-card" data-gsap="benefit-card">
+        <div class="benefit-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
+        <div class="bento-tag">DIVERSITY COMPLIANCE</div>
+        <h3>Set-Aside &amp; Good-Faith Tracking</h3>
+        <p>Isolate DBE, MBE, WBE, Texas HUB, SDVOSB, and SBA 8(a) subcontractors immediately to meet statutory participation goals and document outreach.</p>
       </div>
-      <div class="benefit-card">
-        <div class="benefit-icon">&#128196;</div>
-        <h3>Post RFQs (Enterprise)</h3>
-        <p>Push Request for Qualifications directly to matched small-business subcontractors in your project area.</p>
+      <div class="benefit-card spotlight-card" data-gsap="benefit-card">
+        <div class="benefit-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="15" y2="15"/></svg></div>
+        <div class="bento-tag">SOLICITATION DISPATCH</div>
+        <h3>Targeted RFQ Broadcasting</h3>
+        <p>Publish Request for Qualifications (RFQs) directly to NAICS-matched small-business subcontractors in your project corridor and review bids in one console.</p>
       </div>
-      <div class="benefit-card">
-        <div class="benefit-icon">&#128101;</div>
-        <h3>Direct Connections</h3>
-        <p>Send connection requests to small businesses. Once accepted, get their full contact info instantly.</p>
+      <div class="benefit-card spotlight-card" data-gsap="benefit-card">
+        <div class="benefit-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg></div>
+        <div class="bento-tag">DIRECT ENGAGEMENT</div>
+        <h3>Verified Capability &amp; Contact Access</h3>
+        <p>Inspect standardized capability statements, initiate direct connection requests, and export vetted subcontractor rosters for bid packages.</p>
       </div>
     </div>
   </div>
 </section>
 
 <!-- Pricing Tiers -->
-<section class="wfc-section" style="background:#0B1220;">
+<section class="wfc-section evo-section-alt">
   <div class="wfc-section-inner">
-    <div class="section-header text-center">
-      <h2 class="section-title">Choose Your Plan</h2>
-      <p class="section-subtitle">Simple, transparent pricing. No long-term contracts.</p>
+    <div class="section-header text-center" data-gsap="section-header">
+      <p class="section-label">02 // INSTITUTIONAL ACCESS TIERS</p>
+      <h2 class="section-title" data-cms-field="pricing.heading">Transparent Prime Licensing</h2>
+      <p class="section-subtitle">Flexible monthly access scaled to your estimating volume and compliance requirements.</p>
     </div>
     <div class="pricing-grid">
 
       <!-- Basic -->
-      <div class="pricing-card">
+      <div class="pricing-card spotlight-card" data-gsap="pricing-card">
         <div class="pricing-tier">Basic</div>
         <div class="pricing-price"><span class="price-amount">$49</span><span class="price-period">/month</span></div>
-        <p class="pricing-tagline">For smaller primes getting started with subcontractor outreach.</p>
+        <p class="pricing-tagline">For regional primes initiating structured subcontractor outreach.</p>
         <ul class="pricing-features">
-          <li>&#10003; Labor Directory access</li>
-          <li>&#10003; Business Directory access</li>
-          <li>&#10003; Up to 10 connection requests/month</li>
-          <li>&#10003; Filter by trade &amp; location</li>
-          <li>&#10003; Filter by SAM.gov status</li>
-          <li class="disabled">&#215; RFQ posting</li>
-          <li class="disabled">&#215; Certification filtering</li>
-          <li class="disabled">&#215; Unlimited connections</li>
+          <li>Business Directory access</li>
+          <li>Labor Directory visibility</li>
+          <li>Up to 10 connection requests/month</li>
+          <li>Filter by trade &amp; project corridor</li>
+          <li>Filter by SAM.gov UEI status</li>
+          <li class="disabled">Targeted RFQ broadcasting</li>
+          <li class="disabled">Advanced certification filtering</li>
+          <li class="disabled">Unlimited vendor connections</li>
         </ul>
-        <a href="/prime/register?tier=basic" class="btn-secondary btn-full">Get Started</a>
+        <a href="/prime/register?tier=basic" class="btn-secondary btn-full">Select Basic Plan</a>
       </div>
 
       <!-- Pro -->
-      <div class="pricing-card pricing-featured">
+      <div class="pricing-card pricing-featured spotlight-card" data-gsap="pricing-card">
         <div class="pricing-best-value">Most Popular</div>
         <div class="pricing-tier">Pro</div>
         <div class="pricing-price"><span class="price-amount">$149</span><span class="price-period">/month</span></div>
-        <p class="pricing-tagline">For active primes who need certified sub pipelines on multiple projects.</p>
+        <p class="pricing-tagline">For active primes assembling certified sub pipelines across multiple bids.</p>
         <ul class="pricing-features">
-          <li>&#10003; Everything in Basic</li>
-          <li>&#10003; Unlimited connection requests</li>
-          <li>&#10003; Certification filtering (DBE, MBE, HUB, etc.)</li>
-          <li>&#10003; NAICS code search</li>
-          <li>&#10003; Export contact lists</li>
-          <li>&#10003; Priority support</li>
-          <li class="disabled">&#215; RFQ posting</li>
-          <li class="disabled">&#215; Dedicated account manager</li>
+          <li>Everything in Basic</li>
+          <li>Unlimited vendor connection requests</li>
+          <li>Full certification filtering (DBE, MBE, HUB, 8a, SDVOSB)</li>
+          <li>6-digit NAICS code search</li>
+          <li>Export vetted contact rosters (CSV)</li>
+          <li>Priority compliance desk support</li>
+          <li class="disabled">Targeted RFQ broadcasting</li>
+          <li class="disabled">Dedicated account executive</li>
         </ul>
-        <a href="/prime/register?tier=pro" class="btn-primary btn-full">Get Started</a>
+        <a href="/prime/register?tier=pro" class="btn-primary btn-full">Select Pro Plan</a>
       </div>
 
       <!-- Enterprise -->
-      <div class="pricing-card">
+      <div class="pricing-card spotlight-card" data-gsap="pricing-card">
         <div class="pricing-tier">Enterprise</div>
         <div class="pricing-price"><span class="price-amount">$399</span><span class="price-period">/month</span></div>
-        <p class="pricing-tagline">For large primes and GCs managing major government contract portfolios.</p>
+        <p class="pricing-tagline">For national primes and GCs managing major government infrastructure portfolios.</p>
         <ul class="pricing-features">
-          <li>&#10003; Everything in Pro</li>
-          <li>&#10003; RFQ posting to matched subs</li>
-          <li>&#10003; Multiple team seats</li>
-          <li>&#10003; Dedicated account manager</li>
-          <li>&#10003; Custom NAICS/project reporting</li>
-          <li>&#10003; API access (coming soon)</li>
-          <li>&#10003; White-glove onboarding</li>
+          <li>Everything in Pro</li>
+          <li>Unlimited RFQ posting to matched subs</li>
+          <li>Multi-seat estimating team access</li>
+          <li>Dedicated account executive</li>
+          <li>Custom NAICS &amp; good-faith reporting</li>
+          <li>Enterprise API integration (coming soon)</li>
+          <li>White-glove vendor onboarding</li>
         </ul>
-        <a href="/prime/register?tier=enterprise" class="btn-amber btn-full">Get Started</a>
+        <a href="/prime/register?tier=enterprise" class="btn-amber btn-full">Select Enterprise Plan</a>
       </div>
 
     </div>
@@ -114,9 +142,10 @@
 
 <!-- CTA -->
 <section class="wfc-cta-banner">
-  <div class="wfc-cta-banner-inner">
-    <h2 class="section-title">Ready to Build Your Sub Pipeline?</h2>
-    <p>Join EvoConnect and start finding qualified, certified subcontractors today.</p>
+  <div class="wfc-cta-banner-inner" data-gsap="cta-banner">
+    <p class="section-label" style="margin-bottom:0.75rem;">ACCELERATE SUBCONTRACTOR SOURCING</p>
+    <h2 class="section-title" data-cms-field="cta.heading">Ready to Mobilize Your Certified Subcontractor Pipeline?</h2>
+    <p>Join EVOConnect and start sourcing qualified, SAM-aligned, and diversity-certified subcontractors today.</p>
     <a href="/prime/register" class="btn-amber btn-lg">Register as Prime Contractor</a>
   </div>
 </section>

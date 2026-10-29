@@ -129,7 +129,7 @@ test('analytics are real, scoped by role and owner, and all role navigation work
     assert.equal((await clients.business.request(`/directory/business/${clients.businessId}`)).status,200);
     const [[profile]]=await db.execute("SELECT COUNT(*) n FROM performance_events WHERE owner_type='business' AND owner_id=? AND entity_type='profile'",[clients.businessId]);assert.equal(profile.n,1);
     for(const [type,portal] of [['business','business'],['worker','labor'],['prime','prime'],['admin','admin']]) {
-        for(const days of [7,30,90]) {const {res,text}=await clients[type].page(`/${portal}/analytics?days=${days}`);assert.equal(res.status,200,serverLog);assert.match(text,/Profile views/);assert.match(text,/Statement downloads/);assert.match(text,/Daily activity/);}
+        for(const days of [7,30,90]) {const {res,text}=await clients[type].page(`/${portal}/analytics?days=${days}`);assert.equal(res.status,200,serverLog);assert.match(text,/Profile views/i);assert.match(text,/(?:Statement|Resume|Document) downloads/i);assert.match(text,/Daily activity/i);}
         assert.equal((await clients[type].page(`/${portal}/opportunities`)).res.status,type==='business'||type==='worker'?404:200);
     }
     assert.doesNotMatch((await clients.other.page('/prime/analytics')).text,/Flagship prime opportunity/);
@@ -253,7 +253,7 @@ test('NAICS auto-match refreshes for code edits and publication changes, with no
     await insert('auto-test-expired','["237130"]','published','2020-01-01');
     let page=await clients.business.page('/business/matches');assert.equal(page.res.status,200);
     assert.ok(page.text.indexOf('Auto auto-test-full')<page.text.indexOf('Auto auto-test-partial'));
-    assert.match(page.text,/100% code coverage/);assert.match(page.text,/50% code coverage/);
+    assert.match(page.text,/100% (?:code coverage|Code Match)/i);assert.match(page.text,/50% (?:code coverage|Code Match)/i);
     for(const hidden of ['prefix','draft','expired'])assert.ok(!page.text.includes(`Auto auto-test-${hidden}`));
     assert.match((await clients.business.page('/business/dashboard')).text,/Auto auto-test-full/);
     assert.equal((await clients.worker.page('/business/matches')).res.status,403);
@@ -270,12 +270,12 @@ test('NAICS auto-match refreshes for code edits and publication changes, with no
     assert.equal((await clients.worker.post('/labor/matches/codes',{naics_codes:'999999'})).status,400);
     assert.equal((await clients.worker.post('/labor/matches/codes',{naics_codes:'237130',_csrf:'wrong'})).status,403);
     await db.execute("UPDATE businesses SET naics_codes='[]' WHERE id=?",[clients.businessId]);
-    page=await clients.business.page('/business/matches');assert.doesNotMatch(page.text,/Auto auto-test-full/);assert.match(page.text,/enable automatic matching/);
+    page=await clients.business.page('/business/matches');assert.doesNotMatch(page.text,/Auto auto-test-full/);assert.match(page.text,/No codes configured/);
     await db.execute("UPDATE businesses SET naics_codes='[\"237130\"]' WHERE id=?",[clients.businessId]);
     await db.execute("UPDATE opportunities SET status='closed' WHERE id='auto-test-full'");
     assert.doesNotMatch((await clients.business.page('/business/matches')).text,/Auto auto-test-full/);
     await clients.worker.post('/labor/matches/codes',{naics_codes:''});
-    assert.match((await clients.worker.page('/labor/matches')).text,/enable automatic matching/);
+    assert.match((await clients.worker.page('/labor/matches')).text,/No codes configured/);
     await db.execute("DELETE FROM opportunities WHERE id LIKE 'auto-test-%'");
 });
 test('FAQs are public, discoverable, and readable through every dashboard route',async()=>{
@@ -486,7 +486,7 @@ test('prime opportunities accept businesses and business jobs accept labor, with
 
 test('RFQs use the shared posting workflow and retain legacy records exactly once',async()=>{
     const editor=await clients.prime.page('/prime/post-rfq');
-    assert.equal(editor.res.status,200);assert.match(editor.text,/Request for Qualifications \(RFQ\)/);
+    assert.equal(editor.res.status,200);assert.match(editor.text.replace(/<[^>]*>/g,''),/Request for Qualifications \(RFQ\)/);
     assert.match(editor.text,/action="\/prime\/post-rfq"/);assert.doesNotMatch(editor.text,/Subcontractor RFQs/);
     const legacy=await clients.prime.request('/prime/rfq');assert.equal(legacy.status,302);assert.equal(legacy.headers.get('location'),'/prime/opportunities');
     const stale=await clients.prime.post('/prime/rfq',{title:'Stale form'});assert.equal(stale.status,303);assert.equal(stale.headers.get('location'),'/prime/post-rfq');

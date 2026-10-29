@@ -42,12 +42,12 @@ test('native Netlify requests retain sessions, CMS edits, media and private PDFs
             for(const entry of result.cookies){const [pair]=entry.split(';');const i=pair.indexOf('=');cookie.set(pair.slice(0,i),pair.slice(i+1));}
             return {...result,text:Buffer.from(result.body,'base64').toString('utf8')};
         }
-        const home=await request('/');assert.equal(home.status,200);assert.match(home.text,/EvoConnect/);
+        const home=await request('/');assert.equal(home.status,200);assert.match(home.text,/EVOConnect/i);
         assert.equal((await request('/login')).status,200);
         assert.equal((await request('/.netlify/functions/app/login')).status,200);
         cookie.set('evo_token',token);
         const login=await request('/login',{method:'POST',headers:{'content-type':'application/x-www-form-urlencoded'},body:Buffer.from(new URLSearchParams({email:env.ADMIN_EMAIL,password:env.ADMIN_DEFAULT_PASSWORD,userType:'admin'}).toString()).toString('base64')});assert.equal(login.status,302,login.text);assert.equal(login.headers.location,'/admin/dashboard');
-        const page=await request('/admin/documents');assert.equal(page.status,200);
+        const page=await request('/admin/documents');assert.equal(page.status,200);assert.match(page.text,/4 MB/);
         const csrf=page.text.match(/name="_csrf" value="([^"]+)"/)[1];assert.ok(cookie.has('connect.sid'));
         const put=await request('/api/cms/global',{method:'PUT',headers:{'content-type':'application/json'},body:Buffer.from(JSON.stringify({netlifyPersistenceTest:'saved in MySQL'})).toString('base64')});assert.equal(put.status,200,put.text);
         const createdPage=await request('/api/cms/pages',{method:'POST',headers:{'content-type':'application/json'},body:Buffer.from(JSON.stringify({slug:'netlify-persistence',meta:{title:'Persistent custom page'},sections:[]})).toString('base64')});assert.equal(createdPage.status,201,createdPage.text);
@@ -68,6 +68,8 @@ test('native Netlify requests retain sessions, CMS edits, media and private PDFs
         const restored=await request('/admin/documents');assert.equal(restored.status,200);assert.match(restored.text,/serverless.pdf/);assert.match(restored.text,new RegExp(csrf));
         assert.equal(JSON.parse((await request('/api/cms/global')).text).netlifyPersistenceTest,'saved in MySQL');
         assert.equal(JSON.parse((await request('/api/cms/pages/netlify-persistence')).text).meta.title,'Persistent custom page');
+        const customPage=await request('/pages/netlify-persistence');assert.equal(customPage.status,200);assert.match(customPage.text,/Persistent custom page/);assert.equal((await request('/pages/netlify-persistence.html')).status,200);
+        assert.equal((await request('/api/cms/pages/home')).status,200);
         assert.equal((await request('/api/cms/pages/netlify-persistence',{method:'DELETE'})).status,200);
         assert.equal((await request('/api/cms/pages/netlify-persistence')).status,404);
         assert.doesNotMatch((await request('/api/cms/pages')).text,/netlify-persistence/);
@@ -78,7 +80,7 @@ test('native Netlify requests retain sessions, CMS edits, media and private PDFs
         const mediaGet=await request(image.url);assert.equal(mediaGet.status,200);assert.equal(mediaGet.text,'test-image-bytes');
         assert.match((await request('/api/cms/media')).text,/Persistent test image/);
         const badCsrf=await multipart('/admin/documents',{_csrf:'wrong'},'statement',pdf,'bad.pdf','application/pdf');assert.equal(badCsrf.status,403);
-        const formPage=await request('/admin/post-opportunity');assert.match(formPage.text,/up to 4 MB|Create opportunity/);
+        const formPage=await request('/admin/post-opportunity');assert.equal(formPage.status,200);assert.match(formPage.text,/name="title"/);
         const anonymousCookie=cookie.get('evo_token');cookie.delete('evo_token');assert.equal((await request('/capabilities/'+doc.id)).status,302);cookie.set('evo_token',anonymousCookie);
         const remove=await request('/api/cms/media/'+image.filename,{method:'DELETE'});assert.equal(remove.status,200);assert.equal((await request(image.url)).status,404);
         assert.equal((await request('/api/health')).status,200);

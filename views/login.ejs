@@ -2,12 +2,16 @@
 
 <section class="auth-section">
   <div class="container">
-    <div class="auth-card">
-      <div class="auth-logo" style="display:flex;align-items:center;justify-content:center;gap:0.6rem;margin-bottom:0.5rem;">
-        <img src="/images/favicon.png" alt="EvoConnect" height="36">
-        <span style="font-size:1.5rem;font-weight:800;letter-spacing:-0.02em;color:var(--color-text-primary, #F8FAFC);">EvoConnect</span>
+    <div class="auth-card spotlight-card" data-gsap="auth-card">
+      <div class="auth-logo" style="display:flex;align-items:center;justify-content:center;gap:0.65rem;margin-bottom:0.75rem;">
+        <img src="/images/favicon.png" alt="EVOConnect" height="36" style="border-radius:8px;">
+        <span style="font-family:var(--font-family-secondary, 'Plus Jakarta Sans', sans-serif);font-size:1.5rem;font-weight:800;letter-spacing:-0.02em;color:var(--color-text-primary, #F8FAFC);">EVO<span style="color:#06B6D4;">Connect</span></span>
       </div>
-      <h1 class="auth-title">Log In to EvoConnect</h1>
+      <div style="text-align:center;margin-bottom:1.75rem;">
+        <span class="mono-code" style="display:inline-block;margin-bottom:0.5rem;">AUTHENTICATION GATEWAY</span>
+        <h1 class="auth-title" style="margin-bottom:0.35rem;">Access Your Portal</h1>
+        <p style="font-size:0.9rem;color:var(--color-text-muted);margin:0;">Sign in to manage your contracting profile, solicitations, and compliance tracks.</p>
+      </div>
 
       <%- include('./partials/flash') %>
 
@@ -22,6 +26,7 @@
             name="email"
             class="form-control<%= locals.errors?.email ? ' is-invalid' : '' %>"
             value="<%= locals.values?.email || '' %>"
+            placeholder="name@company.com"
             required
             autocomplete="email"
             aria-describedby="<%= locals.errors?.email ? 'email-error' : '' %>"
@@ -38,38 +43,51 @@
               id="password"
               name="password"
               class="form-control<%= locals.errors?.password ? ' is-invalid' : '' %>"
+              placeholder="Enter your password"
               required
               autocomplete="current-password"
               aria-describedby="<%= locals.errors?.password ? 'password-error' : '' %>"
             >
-            <button type="button" class="toggle-password" aria-label="Toggle password visibility">&#128065;</button>
+            <button type="button" class="toggle-password" aria-label="Show password" aria-pressed="false">&#128065;</button>
           </div>
           <% if (locals.errors?.password) { %><span class="field-error" id="password-error" role="alert"><%= errors.password %></span><% } %>
         </div>
 
-        <button type="submit" class="btn-primary btn-full">Log In</button>
+        <button type="submit" class="btn-primary btn-full" style="margin-top:0.5rem;">Authenticate &amp; Sign In</button>
 
-        <div class="auth-links">
-          <a href="/forgot-password">Forgot your password?</a>
+        <div class="auth-links" style="text-align:center;margin-top:1rem;">
+          <a href="/forgot-password" style="font-size:0.85rem;color:var(--color-text-muted);">Forgot your password?</a>
         </div>
 
       </form>
 
-      <div class="auth-divider"><span>1-Click Demo Logins</span></div>
-      <p style="margin-bottom:1rem">Explore each portal with sample data in a read-only preview.</p>
+      <div class="auth-divider"><span>Instant Executive Sandbox Demos</span></div>
+      <p style="margin-bottom:1rem;text-align:center;font-size:0.85rem;color:var(--color-text-muted);">Explore each role's live operational console with pre-populated sample data.</p>
 
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.5rem;margin-bottom:1.25rem;">
-        <a href="/auth/demo/worker" class="btn btn-outline btn-sm" style="text-align:center;">👷 Labor Demo</a>
-        <a href="/auth/demo/business" class="btn btn-outline btn-sm" style="text-align:center;">🏢 Business Demo</a>
-        <a href="/auth/demo/prime" class="btn btn-outline btn-sm" style="text-align:center;">🏗️ Prime Demo</a>
-        <a href="/auth/demo/admin" class="btn btn-outline btn-sm" style="text-align:center;">🛡️ Admin Demo</a>
+      <div class="demo-login-grid">
+        <a href="/auth/demo/worker" class="demo-pill-btn">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+          <span>Labor Portal</span>
+        </a>
+        <a href="/auth/demo/business" class="demo-pill-btn">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
+          <span>Business Portal</span>
+        </a>
+        <a href="/auth/demo/prime" class="demo-pill-btn">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>
+          <span>Prime Console</span>
+        </a>
+        <a href="/auth/demo/admin" class="demo-pill-btn">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          <span>Admin Console</span>
+        </a>
       </div>
 
-      <div class="auth-divider"><span>Don't have an account?</span></div>
+      <div class="auth-divider"><span>Initialize a New Account</span></div>
 
       <div class="auth-register-links">
-        <a href="/labor/register" class="btn btn-outline btn-sm">Register as Worker</a>
-        <a href="/business/register" class="btn btn-outline btn-sm">Register as Business</a>
+        <a href="/labor/register" class="btn btn-outline btn-sm">Skilled Worker</a>
+        <a href="/business/register" class="btn btn-outline btn-sm">Small Business</a>
         <a href="/prime/register" class="btn btn-outline btn-sm">Prime Contractor</a>
       </div>
 

@@ -1,0 +1,119 @@
+<% const title = locals.page?.meta?.title || 'EVOConnect' %>
+
+<div class="cms-custom-page-container">
+  <% (locals.page?.sections || []).forEach(function(section) { %>
+    <% const f = section.fields || {}; %>
+
+    <% if (section.type === 'hero' || section.type === 'hero-inner') { %>
+      <section class="wfc-hero evo-role-hero" id="<%= section.id %>">
+        <div class="evo-grid-backdrop" aria-hidden="true"></div>
+        <div class="shape shape-1" aria-hidden="true"></div>
+        <div class="shape shape-2" aria-hidden="true"></div>
+        <div class="wfc-hero-inner">
+          <% if (f.eyebrow) { %>
+            <div class="wfc-eyebrow" data-cms-field="<%= section.id %>.eyebrow" data-cms-type="eyebrow">
+              <span class="eyebrow-dot" aria-hidden="true"></span>
+              <span><%= f.eyebrow %></span>
+            </div>
+          <% } %>
+          <h1 data-cms-field="<%= section.id %>.title"><%= f.title || '' %></h1>
+          <% if (f.subtitle) { %>
+            <p data-cms-field="<%= section.id %>.subtitle"><%= f.subtitle %></p>
+          <% } %>
+          <% if (f.primaryButton?.label || f.secondaryButton?.label) { %>
+            <div class="wfc-hero-cta">
+              <% if (f.primaryButton?.label) { %>
+                <a href="<%= f.primaryButton.href || '#' %>" class="btn-primary" data-cms-field="<%= section.id %>.primaryButton.label"><%= f.primaryButton.label %></a>
+              <% } %>
+              <% if (f.secondaryButton?.label) { %>
+                <a href="<%= f.secondaryButton.href || '#' %>" class="btn-secondary-outline" data-cms-field="<%= section.id %>.secondaryButton.label"><%= f.secondaryButton.label %></a>
+              <% } %>
+            </div>
+          <% } %>
+        </div>
+      </section>
+    <% } else if (section.type === 'text-block') { %>
+      <section class="wfc-section" id="<%= section.id %>">
+        <div class="wfc-section-inner" style="max-width: 840px;">
+          <% if (f.eyebrow) { %>
+            <div class="wfc-eyebrow" style="margin-bottom: 1rem;">
+              <span class="eyebrow-dot" aria-hidden="true"></span>
+              <span><%= f.eyebrow %></span>
+            </div>
+          <% } %>
+          <h2 class="section-title" data-cms-field="<%= section.id %>.heading"><%= f.heading %></h2>
+          <div class="section-text" data-cms-field="<%= section.id %>.body" data-cms-type="html" style="color: #94A3B8; font-size: 1.05rem; line-height: 1.75; white-space: pre-line;">
+            <%- f.body %>
+          </div>
+        </div>
+      </section>
+    <% } else if (section.type === 'card-grid') { %>
+      <section class="wfc-section" id="<%= section.id %>">
+        <div class="wfc-section-inner">
+          <% if (f.heading) { %>
+            <div class="section-header text-center">
+              <h2 class="section-title" data-cms-field="<%= section.id %>.heading"><%= f.heading %></h2>
+              <% if (f.intro) { %>
+                <p class="section-subtitle" data-cms-field="<%= section.id %>.intro"><%= f.intro %></p>
+              <% } %>
+            </div>
+          <% } %>
+          <div class="benefits-grid" data-cms-list="<%= section.id %>.cards" data-cms-list-type="card">
+            <% (f.cards || []).forEach(function(card, idx) { %>
+              <div class="benefit-card spotlight-card" <%= card.buttonHref ? 'onclick="window.location.href=\'' + card.buttonHref + '\'" style="cursor:pointer;"' : '' %>>
+                <% if (card.image) { %>
+                  <img src="<%= card.image %>" alt="<%= card.imageAlt || '' %>" style="width: 100%; border-radius: 8px; margin-bottom: 1rem;">
+                <% } %>
+                <h3 data-cms-field="<%= section.id %>.cards[<%= idx %>].title"><%= card.title %></h3>
+                <p data-cms-field="<%= section.id %>.cards[<%= idx %>].body"><%= card.body %></p>
+                <% if (card.buttonLabel && card.buttonHref) { %>
+                  <a href="<%= card.buttonHref %>" class="btn-primary" style="display:inline-block;padding:0.45rem 1.2rem;font-size:0.85rem;margin-top:0.75rem;"><%= card.buttonLabel %> &rarr;</a>
+                <% } %>
+              </div>
+            <% }); %>
+          </div>
+        </div>
+      </section>
+    <% } else if (section.type === 'steps') { %>
+      <section class="wfc-section evo-section-alt" id="<%= section.id %>">
+        <div class="wfc-section-inner">
+          <% if (f.heading) { %>
+            <div class="section-header text-center">
+              <h2 class="section-title" data-cms-field="<%= section.id %>.heading"><%= f.heading %></h2>
+              <% if (f.intro) { %>
+                <p class="section-subtitle" data-cms-field="<%= section.id %>.intro"><%= f.intro %></p>
+              <% } %>
+            </div>
+          <% } %>
+          <div class="hiw-grid evo-pipeline-grid">
+            <% (f.steps || []).forEach(function(step, idx) { %>
+              <div class="hiw-card spotlight-card">
+                <div class="hiw-card-head">
+                  <div class="hiw-step">0<%= idx + 1 %></div>
+                </div>
+                <h3 data-cms-field="<%= section.id %>.steps[<%= idx %>].label"><%= step.label %></h3>
+                <p data-cms-field="<%= section.id %>.steps[<%= idx %>].detail"><%= step.detail %></p>
+              </div>
+            <% }); %>
+          </div>
+        </div>
+      </section>
+    <% } else if (section.type === 'cta-banner') { %>
+      <section class="wfc-cta-banner" id="<%= section.id %>">
+        <div class="wfc-cta-banner-inner">
+          <h2 class="section-title" data-cms-field="<%= section.id %>.heading"><%= f.heading %></h2>
+          <% if (f.text) { %>
+            <p data-cms-field="<%= section.id %>.text"><%= f.text %></p>
+          <% } %>
+          <% if (f.columns && f.columns.length) { %>
+            <div style="display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;">
+              <% f.columns.forEach(function(col) { %>
+                <a href="<%= col.buttonHref || '#' %>" class="btn-white"><%= col.buttonLabel %></a>
+              <% }); %>
+            </div>
+          <% } %>
+        </div>
+      </section>
+    <% } %>
+  <% }); %>
+</div>

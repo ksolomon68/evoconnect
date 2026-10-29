@@ -57,7 +57,7 @@ router.post('/:portal(labor)/matches/codes', ...portalAuth, csrf, wrap(async(req
     const codes = matching.codes(parts);
     if(codes.length) {
         const [known]=await getDb().execute(`SELECT code FROM naics_codes WHERE code IN (${codes.map(()=>'?').join(',')})`,codes);
-        if(known.length !== codes.length)return res.status(400).send('Choose codes from the EvoConnect NAICS directory.');
+        if(known.length !== codes.length)return res.status(400).send('Choose codes from the EVOConnect NAICS directory.');
     }
     const connection=await getDb().getConnection();
     try {
@@ -74,7 +74,8 @@ router.post('/:portal(labor)/matches/codes', ...portalAuth, csrf, wrap(async(req
 // Private PDF storage: filenames and owners never come from a submitted user ID.
 router.get('/:portal(labor|business|prime|admin)/documents', ...portalAuth, wrap(async (req,res) => {
     const [docs] = await getDb().execute('SELECT * FROM capability_documents WHERE owner_type = ? AND owner_id = ?', [req.user.type, req.user.id]);
-    res.render('shared/documents', { title: 'Capability Statement | EvoConnect', basePath: `/${req.params.portal}`, document: docs[0], flash: req.session.flash || null });
+    const isWorker = req.params.portal === 'labor' || req.user.type === 'worker';
+    res.render('shared/documents', { title: isWorker ? 'Upload Resume | EVOConnect' : 'Capability Statement | EVOConnect', basePath: `/${req.params.portal}`, document: docs[0], flash: req.session.flash || null });
     delete req.session.flash;
 }));
 router.post('/:portal(labor|business|prime|admin)/documents', ...portalAuth, (req,res,next) => {
@@ -95,7 +96,8 @@ router.post('/:portal(labor|business|prime|admin)/documents', ...portalAuth, (re
         [id, req.user.type, req.user.id, storage, path.basename(file.originalname).slice(0,255), file.size]);
     } catch (err) { await fileStorage.remove('capabilities',storage); throw err; }
     for(const doc of old) await fileStorage.remove('capabilities',doc.storage_name).catch(err => { if(err.code !== 'ENOENT') console.error('Old capability cleanup failed:', err.code); });
-    flash(req, 'Capability statement uploaded. Your profile now links to this PDF.');
+    const isWorker = req.params.portal === 'labor' || req.user.type === 'worker';
+    flash(req, isWorker ? 'Resume uploaded. Your profile now links to this PDF.' : 'Capability statement uploaded. Your profile now links to this PDF.');
     res.redirect(req.params.portal === 'business' ? '/business/profile#capability-statement' : `/${req.params.portal}/documents`);
 }));
 router.post('/:portal(labor|business|prime|admin)/documents/delete', ...portalAuth, csrf, wrap(async (req,res) => {
@@ -104,7 +106,8 @@ router.post('/:portal(labor|business|prime|admin)/documents/delete', ...portalAu
         await getDb().execute('DELETE FROM capability_documents WHERE id = ? AND owner_type = ? AND owner_id = ?', [docs[0].id,req.user.type,req.user.id]);
         await fileStorage.remove('capabilities',docs[0].storage_name).catch(err => { if(err.code !== 'ENOENT') throw err; });
     }
-    flash(req, 'Uploaded statement removed.');res.redirect(req.params.portal === 'business' ? '/business/profile#capability-statement' : `/${req.params.portal}/documents`);
+    const isWorker = req.params.portal === 'labor' || req.user.type === 'worker';
+    flash(req, isWorker ? 'Uploaded resume removed.' : 'Uploaded statement removed.');res.redirect(req.params.portal === 'business' ? '/business/profile#capability-statement' : `/${req.params.portal}/documents`);
 }));
 router.get('/capabilities/:id', requireAuth, wrap(async (req,res,next) => {
     const [docs] = await getDb().execute('SELECT * FROM capability_documents WHERE id = ?', [req.params.id]);
@@ -128,7 +131,7 @@ router.get('/directory/:type(worker|business|prime)/:id', requireAuth, wrap(asyn
     const [documents] = await getDb().execute('SELECT id FROM capability_documents WHERE owner_type = ? AND owner_id = ?', [req.params.type,account.id]);
     await record(req,req.params.type,account.id,'profile',`${req.params.type}:${account.id}`,'view');
     res.set('Cache-Control','private, no-store');
-    res.render('shared/directory-profile',{title:'Profile | EvoConnect', profile:{id:account.id,type:req.params.type,name:account.company_name || account.full_name, city:account.city,state:account.state,description:account.service_description || account.experience_summary || account.contract_vehicles,naics:account.naics_codes,certifications:account.certifications}, document:documents[0]});
+    res.render('shared/directory-profile',{title:'Profile | EVOConnect', profile:{id:account.id,type:req.params.type,name:account.company_name || account.full_name, city:account.city,state:account.state,description:account.service_description || account.experience_summary || account.contract_vehicles,naics:account.naics_codes,certifications:account.certifications}, document:documents[0]});
 }));
 router.get(['/opportunities/:id','/jobs/:id'], requireAuth, wrap(async (req,res) => {
     const opp=await opportunity(req);if(!opp || (!open(opp) && !managed(req,opp))) return notFound(res);
@@ -160,7 +163,7 @@ async function saveOpportunity(req,res) {
     const db=getDb();
     const id=existing?.id || crypto.randomUUID();
     if(existing) await db.execute(`UPDATE opportunities SET ${keys.map(k=>`${k} = ?`).join(',')}, category_name = ?, description = ? WHERE id = ?`,[...Object.values(data),data.category,data.scope_summary,existing.id]);
-    else await db.execute(`INSERT INTO opportunities (id, ${keys.join(',')}, category_name, description, posted_by, posted_by_type, posted_by_name) VALUES (${Array(keys.length+6).fill('?').join(',')})`,[id,...Object.values(data),data.category,data.scope_summary,req.user.id,req.user.type,req.account.company_name || req.account.name || 'EvoConnect Admin']);
+    else await db.execute(`INSERT INTO opportunities (id, ${keys.join(',')}, category_name, description, posted_by, posted_by_type, posted_by_name) VALUES (${Array(keys.length+6).fill('?').join(',')})`,[id,...Object.values(data),data.category,data.scope_summary,req.user.id,req.user.type,req.account.company_name || req.account.name || 'EVOConnect Admin']);
     if(existing) await lifecycle.statusChanged(db,existing,data.status,req.user);
     if(data.status === 'pending' && existing?.status !== 'pending')await lifecycle.submittedForReview(db,{id,title:data.title},req.user);
     flash(req, req.user.type==='prime' ? (existing?'RFQ updated.':'RFQ created.') : (existing?'Opportunity updated.':'Opportunity created.'));res.redirect(`/${req.params.portal}/opportunities`);
@@ -324,7 +327,7 @@ router.post('/:portal(prime|business|admin)/opportunities/:id/invite', ...portal
 }));
 
 router.use((err,req,res,next)=>{
-    console.error('EvoConnect feature error:',err);
+    console.error('EVOConnect feature error:',err);
     if(res.headersSent)return next(err);
     res.status(500).send('Unable to complete this request. Please try again.');
 });

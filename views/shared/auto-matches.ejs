@@ -1,10 +1,94 @@
-<% locals.layout='layouts/dashboard'; %>
-<section class="hero-section"><div class="hero-content"><h1>Automatic NAICS matches</h1><p><%= user.type==='worker'?'Open labor jobs':'Prime opportunities' %> matched to the NAICS codes on your profile.</p></div></section>
-<section class="recommendations-list" style="padding:var(--space-xl)">
-<p>Matches refresh whenever you visit, using your current profile and currently published, unexpired opportunities. No search filters are needed.</p>
-<p>The percentage is the share of the opportunity’s NAICS codes that match yours exactly. It is not a qualification or award prediction. Review the scope, location, certifications, and requirements before applying.</p>
-<% if(user.type==='worker') { %><details><summary>Update my NAICS matching codes</summary><form method="post" action="/labor/matches/codes"><input type="hidden" name="_csrf" value="<%= csrfToken %>"><label for="match-codes">NAICS codes, separated by commas</label><input class="form-control" id="match-codes" name="naics_codes" value="<%= result.codes.join(', ') %>"><button class="btn btn-primary">Update automatic matches</button></form><p>Available codes:</p><ul><% for(const row of directory) { %><li><%= row.code %> — <%= row.description %></li><% } %></ul></details><% } %>
-<p>Your codes: <%= result.codes.join(', ') || 'None yet' %> · <a href="<%= basePath %>/profile">Update profile</a></p>
-<% if(!result.codes.length) { %><div class="empty-state-inline"><p><%= user.type==='worker' ? 'Use Update my NAICS matching codes above to enable automatic matching.' : 'Add NAICS codes to your profile to enable automatic matching.' %></p></div><% } else if(!result.matches.length) { %><div class="empty-state-inline"><p>No matching open opportunities yet. New opportunities will appear here automatically when they match your codes.</p></div><% } %>
-<% for(const match of result.matches) { %><article class="card" style="padding:1.25rem;margin:1rem 0"><h2><a href="/opportunities/<%= encodeURIComponent(match.id) %>"><%= match.title %></a></h2><p><strong><%= match.score %>% code coverage</strong> · Matching NAICS: <%= match.matched.join(', ') %></p><p><%= match.posted_by_name || 'EvoConnect' %> · <%= match.district_name %> · Deadline: <%= match.due_date || 'Open until filled' %></p><p><%= match.scope_summary.slice(0,300) %></p><a class="btn btn-primary" href="/opportunities/<%= encodeURIComponent(match.id) %>">View opportunity and apply</a></article><% } %>
+<section class="hero-section">
+    <div class="hero-content hero-welcome">
+        <div class="wfc-eyebrow">
+            <span class="eyebrow-dot" aria-hidden="true"></span>
+            <span>Algorithmic Procurement Engine</span>
+        </div>
+        <h1>Automatic <span>NAICS Matches</span></h1>
+        <p><%= user.type === 'worker' ? 'Verified trade jobs and prevailing wage contracts matched automatically to your active NAICS codes and skills.' : 'Prime contractor RFQs and subcontracting solicitations matched to your registered NAICS codes.' %></p>
+        <div class="hero-telemetry-chips">
+            <span class="telemetry-chip"><span class="chip-dot chip-success"></span> NAICS Engine: Active</span>
+            <span class="telemetry-chip"><span class="chip-dot chip-cyan"></span> Auto-Sync: Realtime</span>
+            <span class="telemetry-chip"><span class="chip-dot chip-info"></span> Matched Records: <%= result.matches ? result.matches.length : 0 %></span>
+        </div>
+    </div>
+</section>
+
+<section class="dash-card recommendations-list" style="padding:var(--space-xl)">
+    <div style="background:#F8FAFC;border:1px solid #E2E8F0;border-radius:12px;padding:1.25rem 1.5rem;margin-bottom:1.75rem;">
+        <p style="margin:0 0 0.5rem 0;color:#334155;font-weight:600;font-size:0.95rem;">💡 How Automatic Matching Works</p>
+        <p style="margin:0;color:#64748B;font-size:0.88rem;line-height:1.6;">Matches update live from your profile's NAICS classifications against active procurement postings. The coverage percentage indicates code overlap. Always verify specific scope, certifications, and bonding requirements before applying.</p>
+    </div>
+
+    <% if(user.type === 'worker') { %>
+        <details style="background:#FFFFFF;border:1px solid #CBD5E1;border-radius:12px;padding:1rem 1.25rem;margin-bottom:1.5rem;">
+            <summary style="font-weight:700;color:#0F172A;cursor:pointer;">⚙️ Customize My NAICS Matching Codes</summary>
+            <form method="post" action="/labor/matches/codes" style="margin-top:1rem;">
+                <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                <div class="form-group" style="margin-bottom:1rem;">
+                    <label for="match-codes" style="font-weight:600;display:block;margin-bottom:0.4rem;font-size:0.88rem;">Active NAICS Codes (comma-separated):</label>
+                    <input class="form-control" id="match-codes" name="naics_codes" value="<%= result.codes.join(', ') %>" style="width:100%;max-width:600px;">
+                </div>
+                <button class="btn btn-primary btn-sm">Save Match Codes</button>
+            </form>
+            <div style="margin-top:1rem;font-size:0.82rem;color:#64748B;max-height:160px;overflow-y:auto;border-top:1px solid #F1F5F9;padding-top:0.75rem;">
+                <strong>Available Reference Codes:</strong>
+                <ul style="margin:0.5rem 0 0;padding-left:1.25rem;display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:0.35rem;">
+                    <% for(const row of directory) { %>
+                        <li><code><%= row.code %></code> — <%= row.description %></li>
+                    <% } %>
+                </ul>
+            </div>
+        </details>
+    <% } %>
+
+    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:0.75rem;margin-bottom:1.5rem;padding-bottom:1rem;border-bottom:1px solid #F1F5F9;">
+        <div style="font-size:0.9rem;color:#475569;">
+            Active Codes: <strong style="color:#0F172A;"><%= result.codes.join(', ') || 'No codes configured' %></strong>
+        </div>
+        <a href="<%= basePath %>/profile" class="btn btn-sm btn-secondary">Edit Trade Profile</a>
+    </div>
+
+    <% if(!result.codes.length) { %>
+        <div class="empty-state-inline" style="padding:2rem;text-align:center;background:#F8FAFC;border:1px dashed #CBD5E1;border-radius:14px;">
+            <p style="margin:0;color:#64748B;"><%= user.type === 'worker' ? 'Update your NAICS matching codes above to begin seeing automated job matches.' : 'Add your registered NAICS codes to your business profile to activate the auto-match engine.' %></p>
+        </div>
+    <% } else if(!result.matches.length) { %>
+        <div class="empty-state-inline" style="padding:2rem;text-align:center;background:#F8FAFC;border:1px dashed #CBD5E1;border-radius:14px;">
+            <p style="margin:0;color:#64748B;">No open opportunities match your current codes today. New contracts that match your trade codes will appear here automatically.</p>
+        </div>
+    <% } %>
+
+    <div style="display:grid;gap:1.25rem;">
+        <% for(const match of result.matches) { %>
+            <article class="dash-card spotlight-card" style="padding:1.5rem;margin:0;border:1px solid #E2E8F0;border-radius:14px;">
+                <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:1rem;margin-bottom:0.75rem;">
+                    <div>
+                        <h2 style="font-size:1.25rem;font-weight:800;margin:0 0 0.35rem 0;">
+                            <a href="/opportunities/<%= encodeURIComponent(match.id) %>" style="color:#0F172A;text-decoration:none;"><%= match.title %></a>
+                        </h2>
+                        <div style="display:flex;gap:0.5rem;flex-wrap:wrap;align-items:center;font-size:0.82rem;color:#64748B;">
+                            <span>🏢 <%= match.posted_by_name || 'EVOConnect' %></span>
+                            <span>•</span>
+                            <span>📍 <%= match.district_name || 'Texas' %></span>
+                            <span>•</span>
+                            <span>⏳ Deadline: <%= match.due_date || 'Open until filled' %></span>
+                        </div>
+                    </div>
+                    <span class="status-badge badge-cyan" style="font-size:0.82rem;padding:0.35rem 0.8rem;">
+                        ⚡ <%= match.score %>% Code Match
+                    </span>
+                </div>
+                <div style="margin-bottom:1rem;font-size:0.85rem;color:#0369A1;background:#F0F9FF;padding:0.4rem 0.75rem;border-radius:8px;display:inline-block;">
+                    Matching NAICS: <strong><%= match.matched.join(', ') %></strong>
+                </div>
+                <p style="color:#475569;font-size:0.92rem;line-height:1.6;margin:0 0 1.25rem 0;">
+                    <%= match.scope_summary ? match.scope_summary.slice(0, 260) + (match.scope_summary.length > 260 ? '…' : '') : 'Review complete scope and qualifications.' %>
+                </p>
+                <div>
+                    <a class="btn btn-primary btn-sm" href="/opportunities/<%= encodeURIComponent(match.id) %>">View Details &amp; Apply &rarr;</a>
+                </div>
+            </article>
+        <% } %>
+    </div>
 </section>

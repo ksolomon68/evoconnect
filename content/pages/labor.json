@@ -1,0 +1,184 @@
+{
+  "slug": "labor",
+  "isSystem": true,
+  "updatedAt": "2026-10-29T01:30:00.000Z",
+  "meta": {
+    "title": "Skilled Labor Portal & Federal NAICS Taxonomy | EVOConnect",
+    "description": "Register your skilled trade on EVOConnect, automatically map your field capabilities to 58 federal 6-digit NAICS codes, and get recruited directly for prevailing-wage government contracts."
+  },
+  "header": {
+    "backgroundImage": "",
+    "logoImage": "/images/favicon.png",
+    "logoAlt": "EVOConnect Logo"
+  },
+  "sections": [
+    {
+      "id": "hero",
+      "type": "hero-inner",
+      "fields": {
+        "eyebrow": "DIVISION 01 // SKILLED LABOR & FIELD OPERATIONS",
+        "title": "Your Trade Credentials Belong on Government Contracts.",
+        "subtitle": "Federal, state, and municipal infrastructure programs require thousands of verified tradesmen, heavy equipment operators, broadband technicians, and CDL drivers. EVOConnect maps your skills directly to 6-digit federal NAICS codes and connects you with subcontractors and prime contractors—at zero cost.",
+        "primaryButton": {
+          "label": "Register as a Worker — Free",
+          "href": "/labor/register"
+        },
+        "secondaryButton": {
+          "label": "Explore NAICS Directory ↓",
+          "href": "#naics-directory"
+        }
+      }
+    },
+    {
+      "id": "how-it-works",
+      "type": "steps",
+      "fields": {
+        "heading": "How EVOConnect Mobilizes Skilled Labor",
+        "intro": "Four steps from trade registration to prevailing-wage government contract placement.",
+        "steps": [
+          {
+            "label": "Create Your Trade Profile",
+            "detail": "Register your trade specialty, equipment credentials, OSHA/CDL certifications, and mobilization radius in under 5 minutes."
+          },
+          {
+            "label": "Get NAICS-Matched",
+            "detail": "Our taxonomy engine maps your trade to official 6-digit federal NAICS codes used on SAM.gov, DOT, BEAD, and DoD contracts."
+          },
+          {
+            "label": "Complete Readiness Track",
+            "detail": "Follow our step-by-step checklist for SAM.gov UEI registration, independent contractor setup, and safety compliance."
+          },
+          {
+            "label": "Connect & Deploy",
+            "detail": "Certified subcontractors and prime contractors search by NAICS and certification to recruit you directly for active awards."
+          }
+        ]
+      }
+    },
+    {
+      "id": "trade-categories",
+      "type": "card-grid",
+      "fields": {
+        "heading": "Supported Infrastructure & Trade Categories",
+        "intro": "Every trade category below is pre-mapped to official 2022/2026 U.S. Census & SBA 6-digit NAICS codes. Click any trade to initialize your worker profile with those NAICS codes pre-selected.",
+        "cards": [
+          {
+            "id": "fiber-broadband",
+            "title": "Fiber & Broadband Installer",
+            "body": "OSP/ISP fiber optic splicing, OTDR testing, aerial strand/lashing, FTTH drops, and BEAD middle-mile deployment. Mapped to NAICS 237130, 517111, 238210.",
+            "buttonLabel": "Register Trade →",
+            "buttonHref": "/labor/register?trade=fiber-broadband"
+          },
+          {
+            "id": "cell-site-tech",
+            "title": "Cell Site & Tower Technician",
+            "body": "5G macro tower rigging, PIM/sweep testing, microwave backhaul, DAS/small cell installation, and FirstNet public safety nodes. Mapped to NAICS 237130, 517112, 517810.",
+            "buttonLabel": "Register Trade →",
+            "buttonHref": "/labor/register?trade=cell-site-tech"
+          },
+          {
+            "id": "hdd-trenching",
+            "title": "HDD & Directional Boring",
+            "body": "Horizontal directional drilling, mud mixing, sonde locating, vibratory plowing, and hydro-excavation potholing. Mapped to NAICS 237130, 238910, 237110.",
+            "buttonLabel": "Register Trade →",
+            "buttonHref": "/labor/register?trade=hdd-trenching"
+          },
+          {
+            "id": "structured-cabling",
+            "title": "Structured Cabling & Low Voltage",
+            "body": "Cat6A/fiber backbone, MDF/IDF rack buildouts,SCIF/federal facility cabling, access control, and IP surveillance. Mapped to NAICS 238210, 541513, 561621.",
+            "buttonLabel": "Register Trade →",
+            "buttonHref": "/labor/register?trade=structured-cabling"
+          },
+          {
+            "id": "electrical",
+            "title": "Electrical & Power Systems",
+            "body": "Commercial/industrial power distribution, switchgear, substation wiring, backup generators, and airfield lighting. Mapped to NAICS 238210, 237130, 811310.",
+            "buttonLabel": "Register Trade →",
+            "buttonHref": "/labor/register?trade=electrical"
+          },
+          {
+            "id": "solar-ev-energy",
+            "title": "Solar, EV Charging & Grid Tech",
+            "body": "Utility-scale solar PV arrays, NEVI Level 3 DC fast chargers, battery energy storage systems (BESS), and microgrids. Mapped to NAICS 237130, 238210, 221114.",
+            "buttonLabel": "Register Trade →",
+            "buttonHref": "/labor/register?trade=solar-ev-energy"
+          },
+          {
+            "id": "underground-utilities",
+            "title": "Underground Utilities & Pipe",
+            "body": "Water mains, storm/sanitary sewer trunk lines, duct banks, manhole setting, and municipal pipeline rehabilitation. Mapped to NAICS 237110, 237120, 237130.",
+            "buttonLabel": "Register Trade →",
+            "buttonHref": "/labor/register?trade=underground-utilities"
+          },
+          {
+            "id": "highway-civil",
+            "title": "Highway, Street & Bridge Civil",
+            "body": "DOT roadway paving, bridge deck construction, guardrails, airport runways, and Work Zone traffic control. Mapped to NAICS 237310, 237990, 238910.",
+            "buttonLabel": "Register Trade →",
+            "buttonHref": "/labor/register?trade=highway-civil"
+          },
+          {
+            "id": "cdl-trucking",
+            "title": "CDL Trucking & Heavy Haul",
+            "body": "Class A/B commercial freight, lowboy equipment transport, aggregate dump trucking, water tankers, and hazmat logistics. Mapped to NAICS 484110, 484220, 484230.",
+            "buttonLabel": "Register Trade →",
+            "buttonHref": "/labor/register?trade=cdl-trucking"
+          }
+        ]
+      }
+    },
+    {
+      "id": "naics-directory",
+      "type": "text-block",
+      "fields": {
+        "heading": "Complete Skilled Labor NAICS Directory",
+        "body": "Filter by sector or search by code, trade keyword, or federal program (BEAD, IIJA, DOT, DoD, VA). Every code below is seeded in the EVOConnect matching engine."
+      }
+    },
+    {
+      "id": "benefits",
+      "type": "card-grid",
+      "fields": {
+        "heading": "Why Skilled Tradesmen Register on EVOConnect",
+        "cards": [
+          {
+            "id": "worker-free",
+            "title": "Free Worker Registration",
+            "body": "Skilled trade registration, NAICS mapping, and readiness tracking are 100% free for workers—forever."
+          },
+          {
+            "id": "worker-naics",
+            "title": "58+ Mapped NAICS Codes",
+            "body": "Select your trade and let our engine automatically align your profile with the exact 6-digit federal codes primes use to source crews."
+          },
+          {
+            "id": "worker-direct",
+            "title": "Direct Subcontractor & Prime Outreach",
+            "body": "Skip staffing markups—get contacted directly by certified subcontractors and prime contractors staffing active awards."
+          },
+          {
+            "id": "worker-readiness",
+            "title": "Subcontractor Readiness Path",
+            "body": "Ready to transition from 1099 crew member to registered vendor? Follow our guided checklist for LLC setup and SAM.gov UEI issuance."
+          }
+        ]
+      }
+    },
+    {
+      "id": "cta",
+      "type": "cta-banner",
+      "fields": {
+        "heading": "Initialize Your Free Worker Profile.",
+        "text": "Takes less than 5 minutes. Map your trade to federal NAICS codes and get discovered by contractors in your corridor.",
+        "columns": [
+          {
+            "buttonLabel": "Create My Free Profile",
+            "buttonHref": "/labor/register"
+          }
+        ]
+      }
+    }
+  ]
+}
+

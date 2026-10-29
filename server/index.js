@@ -113,6 +113,8 @@ app.use((req, res, next) => {
     next();
 });
 
+app.use(require('./services/cms-content').cmsMiddleware);
+
 // ── No-cache for HTML ─────────────────────────────────────────────
 app.use((req, res, next) => {
     if (req.path.endsWith('.html') || req.path === '/' || !req.path.includes('.')) {
@@ -238,10 +240,23 @@ async function startServer({ listen = true } = {}) {
 
         // CMS & Admin tutorial routes (both clean URLs and legacy .html URLs)
         app.get(['/cms-tutorial', '/cms-tutorial.html'], (req, res) => {
-            res.render('admin/tutorial', { title: 'CMS Admin Guide | EvoConnect', guideType: 'cms', layout: req.user ? 'layouts/dashboard' : 'layouts/default' });
+            res.render('admin/tutorial', { title: 'CMS Admin Guide | EVOConnect', guideType: 'cms', layout: req.user ? 'layouts/dashboard' : 'layouts/default' });
         });
         app.get(['/admin-tutorial', '/admin-tutorial.html'], (req, res) => {
-            res.render('admin/tutorial', { title: 'Platform Admin Guide | EvoConnect', guideType: 'platform', layout: req.user ? 'layouts/dashboard' : 'layouts/default' });
+            res.render('admin/tutorial', { title: 'Platform Admin Guide | EVOConnect', guideType: 'platform', layout: req.user ? 'layouts/dashboard' : 'layouts/default' });
+        });
+
+        // Custom CMS Pages created in Page Builder
+        app.get(['/pages/:slug', '/pages/:slug.html'], async (req, res, next) => {
+            try {
+            const pageData = await require('./services/cms-content').getPage(req.params.slug.replace(/\.html$/, ''));
+            if (!pageData) return next();
+            res.render('shared/cms-page', {
+                title: pageData.meta?.title || 'EVOConnect',
+                page: pageData,
+                layout: 'layouts/default'
+            });
+            }catch(err){next(err);}
         });
 
         // Public home
@@ -269,7 +284,7 @@ async function startServer({ listen = true } = {}) {
                 );
                 req.session.flash = { type: 'success', message: 'Thank you! Your message has been received by our team.' };
             } catch (err) {
-                console.error('EvoConnect [/contact POST]:', err);
+                console.error('EVOConnect [/contact POST]:', err);
             }
             res.redirect('/contact');
         });
@@ -330,7 +345,7 @@ async function startServer({ listen = true } = {}) {
 
         // 500
         app.use((err, req, res, next) => {
-            console.error('EvoConnect Server Error:', err);
+            console.error('EVOConnect Server Error:', err);
             res.status(500).render('errors/500', {
                 title: 'Server Error',
                 errMsg: isLive ? null : (err.message || String(err))

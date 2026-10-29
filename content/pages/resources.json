@@ -1,51 +1,81 @@
 {
   "slug": "resources",
   "isSystem": true,
-  "updatedAt": "2026-03-17T00:00:00.000Z",
+  "updatedAt": "2026-10-29T01:30:00.000Z",
   "meta": {
-    "title": "Resources - PrimeReach",
-    "description": "Access templates, guides, and resources for Small Businesses and prime contractors using PrimeReach."
+    "title": "Compliance & Readiness Resources | EVOConnect",
+    "description": "Access federal and state contracting guides, SAM.gov UEI checklists, capability statement templates, and NAICS classification directories on EVOConnect."
   },
   "header": {
     "backgroundImage": "",
-    "logoImage": "images/logo.png",
-    "logoAlt": "Caltrans"
+    "logoImage": "/images/favicon.png",
+    "logoAlt": "EVOConnect Logo"
   },
   "sections": [
     {
       "id": "hero",
       "type": "hero-inner",
       "fields": {
-        "title": "Resources & Tools",
-        "subtitle": "Templates, guides, and resources to help you succeed"
+        "title": "Vendor Readiness & Compliance Library",
+        "subtitle": "Templates, checklists, and procurement references engineered to prepare workers, subcontractors, and primes for government contract awards."
+      }
+    },
+    {
+      "id": "labor-resources",
+      "type": "card-grid",
+      "fields": {
+        "heading": "For Skilled Trade Workers",
+        "cards": [
+          {
+            "id": "worker-readiness-checklist",
+            "title": "Worker & Independent Subcontractor Checklist",
+            "body": "Step-by-step protocol for OSHA/CDL credential verification, LLC formation, EIN issuance, and SAM.gov UEI registration.",
+            "buttonLabel": "Open Checklist",
+            "buttonHref": "/labor/checklist"
+          },
+          {
+            "id": "naics-classification-matrix",
+            "title": "Federal NAICS Classification Matrix",
+            "body": "Explore all 58 federal 6-digit NAICS codes mapped to 22 infrastructure and skilled trade categories.",
+            "buttonLabel": "Explore Matrix",
+            "buttonHref": "/labor#naics-directory"
+          },
+          {
+            "id": "labor-faq",
+            "title": "Worker Readiness FAQ",
+            "body": "Answers to common questions about prevailing wage (Davis-Bacon), NAICS matching, and prime contractor recruitment.",
+            "buttonLabel": "Read Worker FAQ",
+            "buttonHref": "/labor/faq"
+          }
+        ]
       }
     },
     {
       "id": "small-business-resources",
       "type": "card-grid",
       "fields": {
-        "heading": "For Small Businesses",
+        "heading": "For Certified Small Businesses",
         "cards": [
           {
-            "id": "capability-guide",
-            "title": "Capability Statement Guide",
-            "body": "Step-by-step guide to building a compelling capability statement that gets noticed by agencies.",
-            "buttonLabel": "View Guide",
-            "buttonHref": "for-small-businesses.html#get-started"
+            "id": "capability-statement-builder",
+            "title": "One-Page Capability Statement Builder",
+            "body": "Generate a print-ready, federal contracting officer-compliant capability statement directly from your business profile.",
+            "buttonLabel": "Open Builder",
+            "buttonHref": "/business/capability-statement"
           },
           {
-            "id": "eligibility-checklist",
-            "title": "Small Business Eligibility Checklist",
-            "body": "Review all eligibility requirements for Small Business certification with Caltrans.",
-            "buttonLabel": "View Checklist",
-            "buttonHref": "eligibility.html"
+            "id": "business-compliance-checklist",
+            "title": "Subcontractor Certification & SAM.gov Track",
+            "body": "Guided checklist covering SAM.gov UEI activation, DBE/MBE/WBE/HUB/SDVOSB/8(a) filings, and bonding readiness.",
+            "buttonLabel": "View Track",
+            "buttonHref": "/business/checklist"
           },
           {
-            "id": "bid-toolkit",
-            "title": "Bid Readiness Toolkit",
-            "body": "Templates, checklists, and guides designed to prepare your business for the bidding process.",
-            "buttonLabel": "Get Support",
-            "buttonHref": "support-services.html"
+            "id": "business-faq",
+            "title": "Subcontractor Compliance FAQ",
+            "body": "Detailed guidance on socioeconomic set-asides, prime RFQ responses, and hiring verified labor crews.",
+            "buttonLabel": "Read Business FAQ",
+            "buttonHref": "/business/faq"
           }
         ]
       }
@@ -57,42 +87,18 @@
         "heading": "For Prime Contractors",
         "cards": [
           {
-            "id": "posting-guidelines",
-            "title": "Opportunity Posting Guidelines",
-            "body": "Best practices for creating clear, complete opportunity postings that attract qualified small businesses.",
-            "buttonLabel": "View Guidelines",
-            "buttonHref": "for-prime-contractors.html#posting-requirements"
+            "id": "rfq-dispatch-guide",
+            "title": "Targeted RFQ & Solicitation Standards",
+            "body": "Best practices for publishing NAICS-targeted RFQs and documenting good-faith socioeconomic outreach.",
+            "buttonLabel": "Prime Console",
+            "buttonHref": "/prime"
           },
           {
-            "id": "small-business-checklist",
-            "title": "Small Business Evaluation Checklist",
-            "body": "Use this checklist to evaluate small business qualifications and capability statements.",
-            "buttonLabel": "View Checklist",
-            "buttonHref": "for-small-businesses.html#get-started"
-          },
-          {
-            "id": "small business-overview",
-            "title": "Small Business Program Overview",
-            "body": "Learn about the Small Business program goals, requirements, and benefits.",
-            "buttonLabel": "View Overview",
-            "buttonHref": "index.html#why-choose"
-          }
-        ]
-      }
-    },
-    {
-      "id": "general-resources",
-      "type": "card-grid",
-      "fields": {
-        "heading": "General Resources",
-        "cards": [
-          {
-            "id": "district-map",
-            "title": "Caltrans District Map",
-            "body": "View the map of all 12 Caltrans districts and their coverage areas.",
-            "buttonLabel": "View Map",
-            "buttonHref": "https://dot.ca.gov/caltrans-near-me",
-            "external": true
+            "id": "prime-faq",
+            "title": "Prime Diversity Spend FAQ",
+            "body": "Learn how EVOConnect streamlines DBE, HUB, SDVOSB, and 8(a) subcontractor discovery and compliance reporting.",
+            "buttonLabel": "Read Prime FAQ",
+            "buttonHref": "/prime/faq"
           }
         ]
       }
@@ -101,12 +107,12 @@
       "id": "additional-support",
       "type": "cta-banner",
       "fields": {
-        "heading": "Need Additional Support?",
-        "text": "Our team offers training sessions, workshops, and one-on-one consultations to help you succeed.",
+        "heading": "Need Direct Compliance Assistance?",
+        "text": "Our Executive Support & Compliance Desk assists workers, small businesses, and primes with onboarding and NAICS alignment.",
         "columns": [
-          { "buttonLabel": "View Support Services", "buttonHref": "support-services.html" },
-          { "buttonLabel": "Upcoming Events",       "buttonHref": "index.html#events"     },
-          { "buttonLabel": "Contact Us",            "buttonHref": "contact.html"          }
+          { "buttonLabel": "Browse Solicitations", "buttonHref": "/opportunities" },
+          { "buttonLabel": "Knowledge Base & FAQ", "buttonHref": "/faq"           },
+          { "buttonLabel": "Contact Support Desk", "buttonHref": "/contact"       }
         ]
       }
     }

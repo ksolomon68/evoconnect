@@ -1,4 +1,3 @@
-<% if (locals.user) { locals.layout = 'layouts/dashboard'; } %>
 <% const title = locals.title || 'Edit My Profile' %>
 <% const pct = locals.worker?.profile_pct || 0 %>
 <% const pctColor = pct >= 100 ? '#10B981' : pct >= 50 ? '#00D2FF' : '#F59E0B' %>
@@ -60,24 +59,45 @@
       </div>
 
       <div class="form-group">
-        <label for="trade_category" class="form-label">Trade Category <span class="required">*</span></label>
+        <label for="trade_category" class="form-label">Trade Category &amp; Primary NAICS Alignment <span class="required">*</span></label>
+        <% const selectedTrade = locals.worker?.trade_category || '' %>
         <select id="trade_category" name="trade_category" class="form-control" required>
-          <option value="">-- Select your primary trade --</option>
-          <option value="telecom_fiber"       <%= locals.worker?.trade_category === 'telecom_fiber'       ? 'selected' : '' %>>Telecommunications &amp; Fiber</option>
-          <option value="electrical"          <%= locals.worker?.trade_category === 'electrical'          ? 'selected' : '' %>>Electrical</option>
-          <option value="civil_construction"  <%= locals.worker?.trade_category === 'civil_construction'  ? 'selected' : '' %>>Civil Construction</option>
-          <option value="it_network"          <%= locals.worker?.trade_category === 'it_network'          ? 'selected' : '' %>>IT / Network Infrastructure</option>
-          <option value="underground_utilities" <%= locals.worker?.trade_category === 'underground_utilities' ? 'selected' : '' %>>Underground Utilities</option>
-          <option value="plumbing"            <%= locals.worker?.trade_category === 'plumbing'            ? 'selected' : '' %>>Plumbing</option>
-          <option value="hvac_mechanical"     <%= locals.worker?.trade_category === 'hvac_mechanical'     ? 'selected' : '' %>>HVAC / Mechanical</option>
-          <option value="concrete_masonry"    <%= locals.worker?.trade_category === 'concrete_masonry'    ? 'selected' : '' %>>Concrete / Masonry</option>
-          <option value="carpentry_framing"   <%= locals.worker?.trade_category === 'carpentry_framing'   ? 'selected' : '' %>>Carpentry / Framing</option>
-          <option value="roofing"             <%= locals.worker?.trade_category === 'roofing'             ? 'selected' : '' %>>Roofing</option>
-          <option value="painting_finishing"  <%= locals.worker?.trade_category === 'painting_finishing'  ? 'selected' : '' %>>Painting / Finishing</option>
-          <option value="equipment_operation" <%= locals.worker?.trade_category === 'equipment_operation' ? 'selected' : '' %>>Equipment Operation</option>
-          <option value="general_labor"       <%= locals.worker?.trade_category === 'general_labor'       ? 'selected' : '' %>>General Laborer</option>
-          <option value="other"               <%= locals.worker?.trade_category === 'other'               ? 'selected' : '' %>>Other</option>
+          <option value="">-- Select your primary trade classification --</option>
+          <optgroup label="Telecommunications, Broadband &amp; Digital Infrastructure">
+            <option value="fiber-broadband" <%= selectedTrade === 'fiber-broadband' || selectedTrade === 'telecom_fiber' ? 'selected' : '' %>>Fiber / Broadband Installer (NAICS 237130 · 517111 · 238210)</option>
+            <option value="cell-site-tech" <%= selectedTrade === 'cell-site-tech' ? 'selected' : '' %>>Cell Site &amp; Tower Technician (NAICS 237130 · 517112 · 517810)</option>
+            <option value="structured-cabling" <%= selectedTrade === 'structured-cabling' ? 'selected' : '' %>>Structured Cabling / Digital Infrastructure (NAICS 238210 · 541513)</option>
+            <option value="cloud-network-infra" <%= selectedTrade === 'cloud-network-infra' || selectedTrade === 'it_network' ? 'selected' : '' %>>Cloud / Network Infrastructure (NAICS 541512 · 541513 · 518210)</option>
+            <option value="it-support" <%= selectedTrade === 'it-support' ? 'selected' : '' %>>IT Support &amp; Field Systems (NAICS 541513 · 541519 · 811210)</option>
+          </optgroup>
+          <optgroup label="Heavy Civil, Underground &amp; Site Construction (Sector 23)">
+            <option value="hdd-trenching" <%= selectedTrade === 'hdd-trenching' ? 'selected' : '' %>>HDD / Directional Boring &amp; Trenching (NAICS 237130 · 238910 · 237110)</option>
+            <option value="underground-utilities" <%= selectedTrade === 'underground-utilities' || selectedTrade === 'underground_utilities' ? 'selected' : '' %>>Underground Utilities &amp; Water/Sewer (NAICS 237110 · 237120 · 237130)</option>
+            <option value="highway-civil" <%= selectedTrade === 'highway-civil' || selectedTrade === 'civil_construction' ? 'selected' : '' %>>Highway, Street &amp; Bridge Civil (NAICS 237310 · 237990 · 238910)</option>
+            <option value="heavy-equipment" <%= selectedTrade === 'heavy-equipment' || selectedTrade === 'equipment_operation' ? 'selected' : '' %>>Heavy Equipment &amp; Crane Operation (NAICS 238910 · 238990 · 237310)</option>
+            <option value="concrete-cement" <%= selectedTrade === 'concrete-cement' || selectedTrade === 'concrete_masonry' ? 'selected' : '' %>>Concrete, Foundation &amp; Masonry (NAICS 238110 · 238140 · 238990)</option>
+            <option value="construction-general" <%= selectedTrade === 'construction-general' || selectedTrade === 'general_labor' ? 'selected' : '' %>>Commercial &amp; Institutional Construction (NAICS 236220 · 236210 · 238990)</option>
+          </optgroup>
+          <optgroup label="Power, Renewable Energy &amp; Specialty Building Trades">
+            <option value="electrical" <%= selectedTrade === 'electrical' ? 'selected' : '' %>>Electrical &amp; Low-Voltage Systems (NAICS 238210 · 237130 · 811310)</option>
+            <option value="solar-ev-energy" <%= selectedTrade === 'solar-ev-energy' ? 'selected' : '' %>>Solar, EV Charging &amp; Grid Modernization (NAICS 237130 · 238210 · 221114)</option>
+            <option value="plumbing-hvac" <%= selectedTrade === 'plumbing-hvac' || selectedTrade === 'hvac_mechanical' || selectedTrade === 'plumbing' ? 'selected' : '' %>>Plumbing, HVAC &amp; Mechanical Systems (NAICS 238220 · 238290 · 561210)</option>
+            <option value="welding-fabrication" <%= selectedTrade === 'welding-fabrication' ? 'selected' : '' %>>Structural Steel, Welding &amp; Fabrication (NAICS 238120 · 332312 · 811310)</option>
+            <option value="carpentry-framing" <%= selectedTrade === 'carpentry-framing' || selectedTrade === 'carpentry_framing' ? 'selected' : '' %>>Carpentry, Framing &amp; Interior Systems (NAICS 238130 · 238350 · 238310)</option>
+            <option value="roofing-waterproofing" <%= selectedTrade === 'roofing-waterproofing' || selectedTrade === 'roofing' ? 'selected' : '' %>>Roofing, Siding &amp; Building Envelope (NAICS 238160 · 238170 · 238390)</option>
+            <option value="painting-coatings" <%= selectedTrade === 'painting-coatings' || selectedTrade === 'painting_finishing' ? 'selected' : '' %>>Industrial Painting &amp; Protective Coatings (NAICS 238320 · 237310 · 238390)</option>
+          </optgroup>
+          <optgroup label="Logistics, Environmental, Engineering &amp; Base Operations">
+            <option value="cdl-trucking" <%= selectedTrade === 'cdl-trucking' ? 'selected' : '' %>>CDL Trucking, Heavy Haul &amp; Logistics (NAICS 484110 · 484220 · 484230)</option>
+            <option value="environmental-remediation" <%= selectedTrade === 'environmental-remediation' ? 'selected' : '' %>>Environmental Remediation &amp; Abatement (NAICS 562910 · 541620 · 238910)</option>
+            <option value="surveying-gis-inspection" <%= selectedTrade === 'surveying-gis-inspection' ? 'selected' : '' %>>Surveying, GIS Mapping &amp; Utility Locating (NAICS 541370 · 541380 · 541330)</option>
+            <option value="landscaping" <%= selectedTrade === 'landscaping' ? 'selected' : '' %>>Right-of-Way Clearing, Landscaping &amp; Forestry (NAICS 561730 · 238910 · 561790)</option>
+            <option value="facilities-maintenance" <%= selectedTrade === 'facilities-maintenance' ? 'selected' : '' %>>Facilities Support &amp; Base Operations (NAICS 561210 · 561720 · 236220)</option>
+            <option value="admin-clerical" <%= selectedTrade === 'admin-clerical' ? 'selected' : '' %>>Project Admin, QA/QC &amp; Document Control (NAICS 561110 · 541611 · 561320)</option>
+            <option value="other" <%= selectedTrade === 'other' ? 'selected' : '' %>>Other Multi-Trade / General Subcontractor</option>
+          </optgroup>
         </select>
+        <span class="field-hint">Saving your trade classification automatically refreshes your matched federal NAICS codes on your dashboard.</span>
       </div>
 
       <div class="form-group">

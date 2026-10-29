@@ -1,98 +1,86 @@
 {
-  "updatedAt": "2026-04-13T00:00:00.000Z",
+  "updatedAt": "2026-10-29T01:30:00.000Z",
   "site": {
-    "name": "WorkForce Connect",
-    "tagline": "Connecting Primes with Qualified Small Businesses",
-    "logoImage": "images/logo.png",
-    "logoAlt": "WorkForce Connect Logo",
-    "faviconPath": "assets/favicon.ico",
-    "contactEmail": "info@workforceconnect.io",
-    "copyrightText": "© 2026 WorkForce Connect. All rights reserved.",
-    "programName": "WorkForce Connect — Government Contract Pipeline for Skilled Workers"
+    "name": "EVOConnect",
+    "tagline": "Connect the Contract. Build the Future.",
+    "logoImage": "/images/favicon.png",
+    "logoAlt": "EVOConnect Logo",
+    "faviconPath": "/images/favicon.png",
+    "contactEmail": "info@evoconnect.evobrand.net",
+    "contactPhone": "214-531-4427",
+    "contactPhoneHours": "Monday – Friday, 8:00 AM – 6:00 PM CST",
+    "copyrightText": "© 2026 EVOConnect. Engineered by EVOBRAND Concepts. All rights reserved.",
+    "programName": "Institutional government contract workforce & subcontractor intelligence ecosystem engineered by EVOBRAND Concepts.",
+    "mailingAddress": {
+      "org": "EVOConnect — EVOBRAND Concepts",
+      "dept": "Executive Support & Compliance Desk",
+      "street": "",
+      "cityStateZip": "Dallas, TX"
+    }
   },
   "navigation": {
     "items": [
-      { "label": "Home",                  "href": "index.html",                "active": true  },
-      { "label": "For Small Businesses",  "href": "for-small-businesses.html", "active": true  },
-      { "label": "For Prime Contractors", "href": "for-prime-contractors.html","active": true  },
-      { "label": "Opportunities",         "href": "opportunities.html",        "active": true  },
-      { "label": "How It Works",          "href": "how-it-works.html",         "active": true  },
-      { "label": "Resources",             "href": "resources.html",            "active": true  },
-      { "label": "FAQ",                   "href": "faq.html",                  "active": true  },
-      { "label": "Contact",               "href": "contact.html",              "active": true  }
+      { "label": "Home",          "href": "/",              "active": true },
+      { "label": "For Labor",     "href": "/labor",         "active": true },
+      { "label": "For Business",  "href": "/business",      "active": true },
+      { "label": "For Primes",    "href": "/prime",         "active": true },
+      { "label": "Opportunities", "href": "/opportunities", "active": true },
+      { "label": "FAQ",           "href": "/faq",           "active": true },
+      { "label": "Contact",       "href": "/contact",       "active": false }
     ],
-    "loginButton": { "label": "Log In", "href": "login.html" }
+    "loginButton": { "label": "Log In", "href": "/login" }
   },
   "footer": {
     "columns": [
       {
-        "heading": "For Small Businesses",
+        "heading": "Ecosystem Portals",
         "links": [
-          { "label": "Getting Started",  "href": "for-small-businesses.html"     },
-          { "label": "Create Account",   "href": "register-small-business.html" },
-          { "label": "Eligibility",      "href": "eligibility.html"     },
-          { "label": "Resources",        "href": "resources.html"       }
+          { "label": "Executive Overview",       "href": "/"              },
+          { "label": "Skilled Labor Division",   "href": "/labor"         },
+          { "label": "Certified Small Business", "href": "/business"      },
+          { "label": "Prime Contractor Console", "href": "/prime"         },
+          { "label": "Solicitations & Jobs",     "href": "/opportunities" }
         ]
       },
       {
-        "heading": "For Prime Contractors",
+        "heading": "Compliance & Guides",
         "links": [
-          { "label": "Getting Started",  "href": "for-prime-contractors.html"    },
-          { "label": "Create Account",   "href": "register-prime-contractor.html" },
-          { "label": "Post Opportunity", "href": "opportunities.html"   }
+          { "label": "Knowledge Base & FAQs",        "href": "/faq"          },
+          { "label": "Worker Readiness FAQ",         "href": "/labor/faq"    },
+          { "label": "Subcontractor Compliance FAQ", "href": "/business/faq" },
+          { "label": "Prime Diversity Spend FAQ",    "href": "/prime/faq"    }
         ]
       },
       {
-        "heading": "Information",
+        "heading": "Governance",
         "links": [
-          { "label": "How It Works",     "href": "how-it-works.html"    },
-          { "label": "Support Services", "href": "support-services.html"},
-          { "label": "FAQ",              "href": "faq.html"             }
-        ]
-      },
-      {
-        "heading": "Contact",
-        "links": [
-          { "label": "Contact Us",              "href": "contact.html"                       },
-          { "label": "Report Site Issue",       "href": "report-issue.html"                  },
-          { "label": "info@workforceconnect.io",  "href": "mailto:info@workforceconnect.io"      }
-        ]
-      },
-      {
-        "heading": "Legal",
-        "links": [
-          { "label": "Terms of Service",        "href": "terms-of-service.html"              },
-          { "label": "Privacy Policy",          "href": "privacy-policy.html"                },
-          { "label": "Accessibility Statement", "href": "accessibility-statement.html"       }
+          { "label": "Executive Support Desk",  "href": "/contact"                 },
+          { "label": "Section 508 & WCAG 2.1 AA", "href": "/accessibility-statement" },
+          { "label": "Data Security & Privacy", "href": "/privacy-policy"          },
+          { "label": "Terms of Service",        "href": "/terms-of-service"        }
         ]
       }
     ]
   },
   "externalPortals": {
-    "platformHome":  "https://workforceconnect.io",
-    "caOsba":        "https://calosba.ca.gov/",
-    "federalRegs":   "https://www.ecfr.gov/current/title-49/subtitle-A/part-26"
+    "platformHome": "https://evobrand.net",
+    "samGov":       "https://sam.gov",
+    "sbaGov":       "https://www.sba.gov/federal-contracting"
   },
   "announcement": {
-    "enabled": true,
-    "version": "v1",
-    "message": "PrimeReach is currently accepting new worker registrations. For questions, contact <a href=\"mailto:info@workforceconnect.io\">info@workforceconnect.io</a>.",
-    "linkText": "",
-    "linkUrl": ""
+    "enabled": false,
+    "version": "v2",
+    "message": "EVOConnect is actively onboarding verified skilled trade workers, certified small businesses, and prime contractors for FY2026 federal and state infrastructure programs.",
+    "linkText": "Initialize Free Profile",
+    "linkUrl": "/register"
   },
   "districtLookahead": [
-    { "label": "All Districts", "value": "" },
-    { "label": "District 1",    "value": "1" },
-    { "label": "District 2",    "value": "2" },
-    { "label": "District 3",    "value": "3" },
-    { "label": "District 4",    "value": "4" },
-    { "label": "District 5",    "value": "5" },
-    { "label": "District 6",    "value": "6" },
-    { "label": "District 7",    "value": "7" },
-    { "label": "District 8",    "value": "8" },
-    { "label": "District 9",    "value": "9" },
-    { "label": "District 10",   "value": "10" },
-    { "label": "District 11",   "value": "11" },
-    { "label": "District 12",   "value": "12" }
+    { "label": "All Regions / Nationwide", "value": "" },
+    { "label": "Texas (TX)",               "value": "TX" },
+    { "label": "California (CA)",          "value": "CA" },
+    { "label": "Florida (FL)",             "value": "FL" },
+    { "label": "New York (NY)",            "value": "NY" },
+    { "label": "Georgia (GA)",             "value": "GA" },
+    { "label": "Virginia (VA)",            "value": "VA" }
   ]
 }

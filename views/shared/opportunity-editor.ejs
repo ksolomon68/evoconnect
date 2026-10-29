@@ -1,5 +1,14 @@
 <% locals.layout = 'layouts/dashboard'; const isRfq=user.type==='prime'; const isJob=opp.listing_type==='job' || user.type==='business'; const collection=user.type==='business'?'jobs':'opportunities'; %>
-<section class="hero-section"><div class="hero-content"><h1><%= opp.id ? (isJob?'Edit job':(isRfq?'Edit Request for Qualifications':'Edit opportunity')) : (isJob?'Post a job':(isRfq?'Request for Qualifications (RFQ)':'Create opportunity')) %></h1><p><%= isRfq ? 'Describe the work, required qualifications, and deadline so small businesses can submit their qualifications.' : 'Describe the work, qualifications, and deadline so applicants can apply.' %></p></div></section>
+<section class="hero-section">
+    <div class="hero-content hero-welcome">
+        <div class="wfc-eyebrow">
+            <span class="eyebrow-dot" aria-hidden="true"></span>
+            <span><%= isJob ? 'Trade Workforce Listing' : (isRfq ? 'Prime Contractor RFQ' : 'Procurement Solicitation') %></span>
+        </div>
+        <h1><%= opp.id ? (isJob ? 'Edit' : 'Edit') : (isJob ? 'Post a' : (isRfq ? 'Request for' : 'Publish')) %> <span><%= opp.id ? (isJob ? 'Trade Job' : (isRfq ? 'RFQ Solicitation' : 'Opportunity')) : (isJob ? 'Trade Job' : (isRfq ? 'Qualifications (RFQ)' : 'Opportunity')) %></span></h1>
+        <p><%= isRfq ? 'Describe scope of work, required trade classifications, bonding, and submittal deadlines so small businesses can respond.' : 'Describe scope of work, trade certifications, prevailing wage/compensation, and application instructions.' %></p>
+    </div>
+</section>
 <section class="recommendations-list" style="padding:var(--space-xl)">
 <% if(error) { %><p role="alert" class="alert alert-error"><%= error %></p><% } %>
 <form method="post" action="<%= basePath %>/<%= opp.id ? collection+'/'+encodeURIComponent(opp.id)+'/edit' : (isJob && user.type==='business'?'post-job':(isRfq?'post-rfq':'post-opportunity')) %>" style="display:grid;gap:1rem">

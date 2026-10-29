@@ -1,20 +1,26 @@
-<% if(locals.user) locals.layout='layouts/dashboard'; %>
-<section class="faq-section">
-  <div class="container">
-    <div class="section-header text-center">
-      <h1>Frequently Asked Questions</h1>
-      <p class="section-sub">Help for workers, small businesses, and prime contractors. No account is needed to read these answers.</p>
+<section class="faq-section" style="position:relative;overflow:hidden;">
+  <div class="evo-grid-backdrop" aria-hidden="true"></div>
+  <div class="container" style="position:relative;z-index:1;">
+    <div class="section-header text-center" data-gsap="section-header">
+      <div class="wfc-eyebrow" style="margin-bottom:1rem;">
+        <span class="eyebrow-dot" aria-hidden="true"></span>
+        <span>DOCUMENTATION &amp; COMPLIANCE BRIEFINGS</span>
+      </div>
+      <h1 style="color:var(--color-text-primary);font-size:clamp(2rem,4vw,2.75rem);margin-bottom:0.75rem;">Frequently Asked Questions</h1>
+      <p class="section-sub" style="color:var(--color-text-muted);max-width:580px;margin:0 auto;">Operational guidance for skilled trade workers, certified small businesses, and prime contractors.</p>
     </div>
-    <nav class="faq-topics" aria-label="FAQ topics">
-      <% for(const group of groups) { %><a href="#faq-<%= group.id %>"><%= group.title %></a><% } %>
+    <nav class="faq-topics" aria-label="FAQ topics" style="display:flex;flex-wrap:wrap;justify-content:center;gap:0.65rem;margin:2rem 0 3rem;">
+      <% for(const group of groups) { %>
+        <a href="#faq-<%= group.id %>" style="padding:0.45rem 1rem;border-radius:999px;background:rgba(6,182,212,0.08);border:1px solid rgba(6,182,212,0.24);color:var(--color-primary);font-size:0.82rem;font-weight:600;text-decoration:none;transition:all 0.2s;"><%= group.title %></a>
+      <% } %>
     </nav>
-    <% if(!groups.length) { %><p>No published FAQs are available yet.</p><% } %>
+    <% if(!groups.length) { %><p class="text-center">No published FAQs are available yet.</p><% } %>
     <% for(const group of groups) { %>
-    <section class="faq-group" id="faq-<%= group.id %>" aria-labelledby="faq-title-<%= group.id %>">
-      <h2 id="faq-title-<%= group.id %>"><%= group.title %></h2>
-      <div class="faq-list">
+    <section class="faq-group" id="faq-<%= group.id %>" aria-labelledby="faq-title-<%= group.id %>" style="max-width:860px;margin:0 auto 3.5rem;">
+      <h2 id="faq-title-<%= group.id %>" style="font-size:1.35rem;font-weight:800;color:var(--color-text-primary);margin-bottom:1.25rem;padding-bottom:0.65rem;border-bottom:1px solid rgba(255,255,255,0.08);"><%= group.title %></h2>
+      <div class="faq-list" style="margin:0;">
         <% for(const faq of group.items) { %>
-        <details class="faq-item">
+        <details class="faq-item spotlight-card" data-gsap="faq-item">
           <summary class="faq-question"><%= faq.q %></summary>
           <div class="faq-answer"><%- faq.a %></div>
         </details>
@@ -22,6 +28,10 @@
       </div>
     </section>
     <% } %>
-    <div class="faq-cta text-center"><p>Still need help?</p><a href="/contact" class="btn-primary">Contact Support</a></div>
+    <div class="faq-cta text-center spotlight-card">
+      <p style="font-weight:600;color:var(--color-text-primary);margin-bottom:0.5rem;">Require dedicated onboarding or compliance assistance?</p>
+      <p style="font-size:0.92rem;color:var(--color-text-muted);margin-bottom:1.5rem;">Connect directly with the EVOConnect operations desk.</p>
+      <a href="/contact" class="btn-primary">Contact Executive Support</a>
+    </div>
   </div>
 </section>
