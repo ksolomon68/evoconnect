@@ -314,6 +314,19 @@
     if (type === 'success') setTimeout(() => el.remove(), 4000);
   }
 
+  // ── Password show/hide toggle ────────────────────────────────────
+  document.querySelectorAll('.toggle-password').forEach(btn => {
+    const input = btn.closest('.input-with-toggle')?.querySelector('input');
+    if (!input) return;
+    btn.setAttribute('aria-pressed', 'false');
+    btn.addEventListener('click', () => {
+      const shown = input.type === 'text';
+      input.type = shown ? 'password' : 'text';
+      btn.setAttribute('aria-pressed', String(!shown));
+      btn.setAttribute('aria-label', shown ? 'Show password' : 'Hide password');
+    });
+  });
+
   // ── Password match validation ──────────────────────────────────
   const confirmPwd = document.getElementById('confirm_password');
   const pwd        = document.getElementById('password');

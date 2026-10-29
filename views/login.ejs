@@ -42,7 +42,7 @@
               autocomplete="current-password"
               aria-describedby="<%= locals.errors?.password ? 'password-error' : '' %>"
             >
-            <button type="button" class="toggle-password" aria-label="Toggle password visibility">&#128065;</button>
+            <button type="button" class="toggle-password" aria-label="Show password" aria-pressed="false">&#128065;</button>
           </div>
           <% if (locals.errors?.password) { %><span class="field-error" id="password-error" role="alert"><%= errors.password %></span><% } %>
         </div>

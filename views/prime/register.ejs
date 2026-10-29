@@ -189,7 +189,7 @@
               class="form-control<%= locals.errors?.password ? ' is-invalid' : '' %>"
               required minlength="8" autocomplete="new-password"
               aria-describedby="password-hint<%= locals.errors?.password ? ' password-error' : '' %>">
-            <button type="button" class="toggle-password" aria-label="Toggle password visibility">&#128065;</button>
+            <button type="button" class="toggle-password" aria-label="Show password" aria-pressed="false">&#128065;</button>
           </div>
           <span id="password-hint" class="field-hint">Minimum 8 characters</span>
           <% if (locals.errors?.password) { %><span class="field-error" id="password-error" role="alert"><%= errors.password %></span><% } %>
