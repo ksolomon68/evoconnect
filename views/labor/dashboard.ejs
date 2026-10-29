@@ -49,11 +49,20 @@ const checklistPct = Math.round((totalDone / totalItems) * 100) || 0;
 <%- include('../partials/flash') %>
 <%- include('../shared/match-preview', { result: autoMatches, basePath: '/labor' }) %>
 
-<!-- Hero Section -->
-<section class="hero-section">
+<!-- Executive Command Center Hero -->
+<section class="hero-section evo-dashboard-hero" data-gsap="hero-banner">
     <div class="hero-content hero-welcome">
-        <h1>💼 Worker Dashboard</h1>
-        <p>Welcome back, <%= worker.full_name ? worker.full_name.split(' ')[0] : 'there' %>! Find jobs posted by small businesses and manage your applications.</p>
+        <div class="wfc-eyebrow">
+            <span class="eyebrow-dot" aria-hidden="true"></span>
+            <span>Skilled Trade Workforce Portal</span>
+        </div>
+        <h1>Labor &amp; Subcontractor <span>Command Center</span></h1>
+        <p>Welcome back, <%= worker.full_name ? worker.full_name.split(' ')[0] : 'Professional' %>! Access government-ready prevailing wage jobs, track your 58-NAICS trade certifications, and connect with certified subcontracting firms.</p>
+        <div class="hero-telemetry-chips">
+            <span class="telemetry-chip"><span class="chip-dot chip-success"></span> Status: Active</span>
+            <span class="telemetry-chip"><span class="chip-dot chip-cyan"></span> Profile: <%= pct %>% Complete</span>
+            <span class="telemetry-chip"><span class="chip-dot chip-info"></span> Readiness: <%= checklistPct %>% Verified</span>
+        </div>
     </div>
 </section>
 
@@ -79,21 +88,52 @@ const checklistPct = Math.round((totalDone / totalItems) * 100) || 0;
 <!-- Summary Cards (Stats Grid) -->
 <section class="quick-stats">
     <div class="summary-grid">
-        <div class="summary-card primary">
+        <div class="summary-card spotlight-card primary">
+            <div class="summary-card-top">
+                <span class="summary-label">Profile Completion</span>
+                <span class="summary-icon">👤</span>
+            </div>
             <div class="summary-value"><%= pct %>%</div>
-            <div class="summary-label">Profile Completion</div>
+            <div class="summary-footer">
+                <span class="trend-badge <%= pct >= 80 ? 'trend-success' : 'trend-warning' %>">
+                    <%= pct >= 100 ? '✓ Complete &amp; Searchable' : 'Finish profile for visibility' %>
+                </span>
+            </div>
         </div>
-        <div class="summary-card <%= naicsMatches.length > 0 ? 'success' : 'primary' %>">
+
+        <div class="summary-card spotlight-card <%= naicsMatches.length > 0 ? 'success' : 'primary' %>">
+            <div class="summary-card-top">
+                <span class="summary-label">Matched Contracts</span>
+                <span class="summary-icon">🎯</span>
+            </div>
             <div class="summary-value"><%= naicsMatches.length %></div>
-            <div class="summary-label">Matched Contracts</div>
+            <div class="summary-footer">
+                <span class="trend-badge trend-success">● Direct NAICS matches</span>
+            </div>
         </div>
-        <div class="summary-card <%= pendingConns.length > 0 ? 'warning' : 'primary' %>">
+
+        <div class="summary-card spotlight-card <%= pendingConns.length > 0 ? 'warning' : 'primary' %>">
+            <div class="summary-card-top">
+                <span class="summary-label">Pending Connections</span>
+                <span class="summary-icon">🤝</span>
+            </div>
             <div class="summary-value"><%= pendingConns.length %></div>
-            <div class="summary-label">Pending Connections</div>
+            <div class="summary-footer">
+                <span class="trend-badge <%= pendingConns.length > 0 ? 'trend-warning' : 'trend-success' %>">
+                    <%= pendingConns.length > 0 ? '● Inquiries waiting' : '✓ No pending requests' %>
+                </span>
+            </div>
         </div>
-        <div class="summary-card success">
+
+        <div class="summary-card spotlight-card success">
+            <div class="summary-card-top">
+                <span class="summary-label">Checklist Progress</span>
+                <span class="summary-icon">✅</span>
+            </div>
             <div class="summary-value"><%= checklistPct %>%</div>
-            <div class="summary-label">Checklist Progress</div>
+            <div class="summary-footer">
+                <span class="trend-badge trend-success">● Government ready milestones</span>
+            </div>
         </div>
     </div>
 </section>
@@ -104,45 +144,69 @@ const checklistPct = Math.round((totalDone / totalItems) * 100) || 0;
         <h2>🚀 Quick Actions</h2>
     </div>
     <div class="action-grid">
-        <a href="/labor/search" class="action-card">
-            <div class="icon-box" style="background:var(--color-bg-secondary);">🔍</div>
+        <a href="/labor/search" class="action-card spotlight-card">
+            <div class="action-card-header">
+                <div class="icon-box">🔍</div>
+                <span class="action-card-arrow" aria-hidden="true">&rarr;</span>
+            </div>
             <h3>Search Opportunities</h3>
-            <p>Browse and apply to open contracting opportunities.</p>
+            <p>Browse and apply to prevailing wage infrastructure contracts and crew jobs.</p>
         </a>
-        <a href="/labor/saved" class="action-card">
-            <div class="icon-box" style="background:var(--color-bg-secondary);">⭐</div>
+        <a href="/labor/saved" class="action-card spotlight-card">
+            <div class="action-card-header">
+                <div class="icon-box">⭐</div>
+                <span class="action-card-arrow" aria-hidden="true">&rarr;</span>
+            </div>
             <h3>Saved Opportunities</h3>
-            <p>View opportunities you have bookmarked for later.</p>
+            <p>View bookmarked contracting opportunities and upcoming bid deadlines.</p>
         </a>
-        <a href="/labor/applications" class="action-card">
-            <div class="icon-box" style="background:var(--color-bg-secondary);">📋</div>
+        <a href="/labor/applications" class="action-card spotlight-card">
+            <div class="action-card-header">
+                <div class="icon-box">📋</div>
+                <span class="action-card-arrow" aria-hidden="true">&rarr;</span>
+            </div>
             <h3>My Applications</h3>
-            <p>Track the status of your submitted bids and applications.</p>
+            <p>Track the status of your submitted proposals, wage rates, and applications.</p>
         </a>
-        <a href="/labor/messages" class="action-card">
-            <div class="icon-box" style="background:var(--color-bg-secondary);">💬</div>
+        <a href="/labor/messages" class="action-card spotlight-card">
+            <div class="action-card-header">
+                <div class="icon-box">💬</div>
+                <span class="action-card-arrow" aria-hidden="true">&rarr;</span>
+            </div>
             <h3>Messages</h3>
-            <p>Communicate with your connected small businesses.</p>
+            <p>Direct communication channel with verified small businesses and prime contractors.</p>
         </a>
-        <a href="/labor/profile" class="action-card">
-            <div class="icon-box" style="background:var(--color-bg-secondary);">👤</div>
+        <a href="/labor/profile" class="action-card spotlight-card">
+            <div class="action-card-header">
+                <div class="icon-box">👤</div>
+                <span class="action-card-arrow" aria-hidden="true">&rarr;</span>
+            </div>
             <h3>My Profile</h3>
-            <p>Update your business information and skills.</p>
+            <p>Update your trade classifications, OSHA/CDL licenses, and contractor profile.</p>
         </a>
-        <a href="/labor/checklist" class="action-card">
-            <div class="icon-box" style="background:var(--color-bg-secondary);">✅</div>
+        <a href="/labor/checklist" class="action-card spotlight-card">
+            <div class="action-card-header">
+                <div class="icon-box">✅</div>
+                <span class="action-card-arrow" aria-hidden="true">&rarr;</span>
+            </div>
             <h3>Readiness Checklist</h3>
-            <p>Complete steps to become government contract ready.</p>
+            <p>Complete step-by-step milestones to become government contract certified.</p>
         </a>
-        <a href="/labor/resources" class="action-card">
-            <div class="icon-box" style="background:var(--color-bg-secondary);">📚</div>
-            <h3>Resources</h3>
-            <p>Access templates and guides for your business.</p>
+        <a href="/labor/resources" class="action-card spotlight-card">
+            <div class="action-card-header">
+                <div class="icon-box">📚</div>
+                <span class="action-card-arrow" aria-hidden="true">&rarr;</span>
+            </div>
+            <h3>Resource Library</h3>
+            <p>Access federal prevailing wage guides, SAM.gov templates, and career resources.</p>
         </a>
-        <a href="/labor/settings" class="action-card">
-            <div class="icon-box" style="background:var(--color-bg-secondary);">⚙️</div>
+        <a href="/labor/settings" class="action-card spotlight-card">
+            <div class="action-card-header">
+                <div class="icon-box">⚙️</div>
+                <span class="action-card-arrow" aria-hidden="true">&rarr;</span>
+            </div>
             <h3>Account Settings</h3>
-            <p>Manage password, notifications, and visibility.</p>
+            <p>Manage account security, password, notification preferences, and privacy.</p>
         </a>
     </div>
 </section>

@@ -2,36 +2,81 @@
 
 <%- include('../partials/flash') %>
 
-<!-- Hero Section -->
-<section class="hero-section">
+<!-- Executive Command Center Hero -->
+<section class="hero-section evo-dashboard-hero" data-gsap="hero-banner">
     <div class="hero-content hero-welcome">
-        <h1>🛡️ Admin Dashboard</h1>
-        <p>Welcome back, <%= locals.user?.name ? locals.user.name.split(' ')[0] : 'Admin' %>! Manage users, opportunities, approvals, and platform settings.</p>
+        <div class="wfc-eyebrow">
+            <span class="eyebrow-dot" aria-hidden="true"></span>
+            <span>Platform Governance &amp; Executive Oversight</span>
+        </div>
+        <h1>Executive <span>Admin Console</span></h1>
+        <p>Welcome back, <%= locals.user?.name ? locals.user.name.split(' ')[0] : 'Administrator' %>! Real-time command center for verifying prime contractor UEIs, auditing NAICS classifications, and orchestrating workforce compliance across the EVOConnect ecosystem.</p>
+        <div class="hero-telemetry-chips">
+            <span class="telemetry-chip"><span class="chip-dot chip-success"></span> Core Engine: Active</span>
+            <span class="telemetry-chip"><span class="chip-dot chip-cyan"></span> SAM.gov Sync: Live</span>
+            <span class="telemetry-chip"><span class="chip-dot chip-info"></span> Security: Audit-Ready</span>
+        </div>
     </div>
 </section>
 
-<!-- Summary Cards -->
+<!-- Executive Summary Metric Cards -->
 <section class="quick-stats">
-    <div class="summary-grid" style="grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));">
-        <div class="summary-card primary">
+    <div class="summary-grid">
+        <div class="summary-card spotlight-card primary">
+            <div class="summary-card-top">
+                <span class="summary-label">Total Users</span>
+                <span class="summary-icon">👥</span>
+            </div>
             <div class="summary-value"><%= (locals.stats?.workerCount || 0) + (locals.stats?.bizCount || 0) + (locals.stats?.primeCount || 0) %></div>
-            <div class="summary-label">Total Registered Users</div>
+            <div class="summary-footer">
+                <span class="trend-badge trend-success">● Cross-portal verified</span>
+            </div>
         </div>
-        <div class="summary-card success">
+
+        <div class="summary-card spotlight-card success">
+            <div class="summary-card-top">
+                <span class="summary-label">Labor / Business Ratio</span>
+                <span class="summary-icon">⚖️</span>
+            </div>
             <div class="summary-value"><%= locals.stats?.workerCount || 0 %> / <%= locals.stats?.bizCount || 0 %></div>
-            <div class="summary-label">Workers / Businesses</div>
+            <div class="summary-footer">
+                <span class="trend-badge trend-neutral">Workers &amp; Subcontractors</span>
+            </div>
         </div>
-        <div class="summary-card primary">
+
+        <div class="summary-card spotlight-card primary">
+            <div class="summary-card-top">
+                <span class="summary-label">Prime Contractors</span>
+                <span class="summary-icon">🏗️</span>
+            </div>
             <div class="summary-value"><%= locals.stats?.primeCount || 0 %></div>
-            <div class="summary-label">Prime Contractors</div>
+            <div class="summary-footer">
+                <span class="trend-badge trend-neutral">Active Prime Accounts</span>
+            </div>
         </div>
-        <div class="summary-card <%= (locals.stats?.pendingPrimes || 0) > 0 ? 'warning' : 'success' %>">
+
+        <div class="summary-card spotlight-card <%= (locals.stats?.pendingPrimes || 0) > 0 ? 'warning' : 'success' %>">
+            <div class="summary-card-top">
+                <span class="summary-label">Pending Approvals</span>
+                <span class="summary-icon">🛡️</span>
+            </div>
             <div class="summary-value"><%= locals.stats?.pendingPrimes || 0 %></div>
-            <div class="summary-label">Pending Approvals</div>
+            <div class="summary-footer">
+                <span class="trend-badge <%= (locals.stats?.pendingPrimes || 0) > 0 ? 'trend-warning' : 'trend-success' %>">
+                    <%= (locals.stats?.pendingPrimes || 0) > 0 ? '● Requires verification' : '✓ All queues cleared' %>
+                </span>
+            </div>
         </div>
-        <div class="summary-card primary">
+
+        <div class="summary-card spotlight-card primary">
+            <div class="summary-card-top">
+                <span class="summary-label">Total Connections</span>
+                <span class="summary-icon">🤝</span>
+            </div>
             <div class="summary-value"><%= locals.stats?.connectionCount || 0 %></div>
-            <div class="summary-label">Total Connections</div>
+            <div class="summary-footer">
+                <span class="trend-badge trend-success">● Active Partnerships</span>
+            </div>
         </div>
     </div>
 </section>
@@ -42,65 +87,101 @@
         <h2>🚀 Global Administration</h2>
     </div>
     <div class="action-grid">
-        <a href="/admin/users" class="action-card">
-            <div class="icon-box" style="background:var(--color-bg-secondary);">👥</div>
+        <a href="/admin/users" class="action-card spotlight-card">
+            <div class="action-card-header">
+                <div class="icon-box">👥</div>
+                <span class="action-card-arrow" aria-hidden="true">&rarr;</span>
+            </div>
             <h3>User Management</h3>
-            <p>View, filter, and manage workers, businesses, and prime contractors.</p>
+            <p>View, filter, and manage workers, certified businesses, and prime contractors.</p>
         </a>
-        <a href="/admin/approvals" class="action-card">
-            <div class="icon-box" style="background:var(--color-bg-secondary);">✅</div>
+        <a href="/admin/approvals" class="action-card spotlight-card">
+            <div class="action-card-header">
+                <div class="icon-box">✅</div>
+                <span class="action-card-arrow" aria-hidden="true">&rarr;</span>
+            </div>
             <h3>Prime Approvals</h3>
-            <p>Review and approve pending prime contractor applications.</p>
+            <p>Review and verify SAM.gov UEI credentials for pending prime contractor applications.</p>
         </a>
-        <a href="/admin/opportunities" class="action-card">
-            <div class="icon-box" style="background:var(--color-bg-secondary);">📋</div>
+        <a href="/admin/opportunities" class="action-card spotlight-card">
+            <div class="action-card-header">
+                <div class="icon-box">📋</div>
+                <span class="action-card-arrow" aria-hidden="true">&rarr;</span>
+            </div>
             <h3>Opportunity Manager</h3>
-            <p>Approve, edit, or close contracting opportunities across the portal.</p>
+            <p>Approve, publish, edit, or close contracting RFQs and solicitations portal-wide.</p>
         </a>
-        <a href="/admin/naics" class="action-card">
-            <div class="icon-box" style="background:var(--color-bg-secondary);">🏷️</div>
+        <a href="/admin/naics" class="action-card spotlight-card">
+            <div class="action-card-header">
+                <div class="icon-box">🏷️</div>
+                <span class="action-card-arrow" aria-hidden="true">&rarr;</span>
+            </div>
             <h3>NAICS Codes</h3>
-            <p>Manage NAICS contract matching codes and set-aside eligibility.</p>
+            <p>Maintain the 58-code federal NAICS classification matrix and set-aside categories.</p>
         </a>
-        <a href="/admin/resources" class="action-card">
-            <div class="icon-box" style="background:var(--color-bg-secondary);">📚</div>
+        <a href="/admin/resources" class="action-card spotlight-card">
+            <div class="action-card-header">
+                <div class="icon-box">📚</div>
+                <span class="action-card-arrow" aria-hidden="true">&rarr;</span>
+            </div>
             <h3>Resource Library</h3>
-            <p>Add or update downloadable guides, templates, and videos.</p>
+            <p>Publish and organize downloadable guides, federal templates, and compliance links.</p>
         </a>
-        <a href="/admin/announcements" class="action-card">
-            <div class="icon-box" style="background:var(--color-bg-secondary);">📢</div>
+        <a href="/admin/announcements" class="action-card spotlight-card">
+            <div class="action-card-header">
+                <div class="icon-box">📢</div>
+                <span class="action-card-arrow" aria-hidden="true">&rarr;</span>
+            </div>
             <h3>Announcements</h3>
-            <p>Send email broadcasts to workers, businesses, or primes.</p>
+            <p>Send targeted ecosystem broadcasts to workers, small businesses, or primes.</p>
         </a>
-        <a href="/admin/analytics" class="action-card">
-            <div class="icon-box" style="background:var(--color-bg-secondary);">📊</div>
+        <a href="/admin/analytics" class="action-card spotlight-card">
+            <div class="action-card-header">
+                <div class="icon-box">📊</div>
+                <span class="action-card-arrow" aria-hidden="true">&rarr;</span>
+            </div>
             <h3>Platform Analytics</h3>
-            <p>Track weekly registrations, connections, and checklist metrics.</p>
+            <p>Track weekly registrations, contract connections, and readiness checklist velocity.</p>
         </a>
-        <a href="/admin/issues" class="action-card">
-            <div class="icon-box" style="background:var(--color-bg-secondary);">🚩</div>
+        <a href="/admin/issues" class="action-card spotlight-card">
+            <div class="action-card-header">
+                <div class="icon-box">🚩</div>
+                <span class="action-card-arrow" aria-hidden="true">&rarr;</span>
+            </div>
             <h3>Reported Issues</h3>
-            <p>Review technical reports and contact form submissions.</p>
+            <p>Triage technical reports, support tickets, and executive contact desk submissions.</p>
         </a>
-        <a href="/admin-cms" class="action-card">
-            <div class="icon-box" style="background:var(--color-bg-secondary);">⚙️</div>
+        <a href="/admin-cms" class="action-card spotlight-card">
+            <div class="action-card-header">
+                <div class="icon-box">⚙️</div>
+                <span class="action-card-arrow" aria-hidden="true">&rarr;</span>
+            </div>
             <h3>Content Management (CMS)</h3>
-            <p>Update public site copy, FAQs, and homepage sections.</p>
+            <p>Manage public pages, global branding, announcement banners, and live website copy.</p>
         </a>
-        <a href="/admin/tutorial" class="action-card">
-            <div class="icon-box" style="background:var(--color-bg-secondary);">📖</div>
+        <a href="/admin/tutorial" class="action-card spotlight-card">
+            <div class="action-card-header">
+                <div class="icon-box">📖</div>
+                <span class="action-card-arrow" aria-hidden="true">&rarr;</span>
+            </div>
             <h3>Platform Admin Guide</h3>
-            <p>Step-by-step instructions for managing the EVOConnect platform.</p>
+            <p>Comprehensive step-by-step documentation for managing the EVOConnect ecosystem.</p>
         </a>
-        <a href="/admin/cms-tutorial" class="action-card">
-            <div class="icon-box" style="background:var(--color-bg-secondary);">📝</div>
+        <a href="/admin/cms-tutorial" class="action-card spotlight-card">
+            <div class="action-card-header">
+                <div class="icon-box">📝</div>
+                <span class="action-card-arrow" aria-hidden="true">&rarr;</span>
+            </div>
             <h3>CMS Admin Guide</h3>
-            <p>Documentation for editing public website content and FAQs.</p>
+            <p>Instructions for editing public website layouts, schemas, and live previews.</p>
         </a>
-        <a href="/admin/export/csv" class="action-card">
-            <div class="icon-box" style="background:var(--color-bg-secondary);">⬇️</div>
+        <a href="/admin/export/csv" class="action-card spotlight-card">
+            <div class="action-card-header">
+                <div class="icon-box">⬇️</div>
+                <span class="action-card-arrow" aria-hidden="true">&rarr;</span>
+            </div>
             <h3>Export CSV</h3>
-            <p>Download complete platform registration and profile data.</p>
+            <p>Download complete platform member directories, registrations, and profile datasets.</p>
         </a>
     </div>
 </section>
@@ -109,16 +190,16 @@
 <div class="dashboard-grid" style="display: grid; grid-template-columns: 1fr; gap: var(--space-xl); margin-top: var(--space-xl);">
 
     <!-- Pending Prime Approvals -->
-    <div class="recommendations-list" style="padding: var(--space-xl);">
+    <div class="recommendations-list">
         <div class="section-header">
             <h2>Pending Prime Contractor Approvals</h2>
             <% if (locals.stats?.pendingPrimes > 0) { %>
-                <span class="status-badge badge-construction"><%= locals.stats.pendingPrimes %> pending</span>
+                <span class="status-badge badge-construction"><%= locals.stats.pendingPrimes %> pending verification</span>
             <% } %>
         </div>
         <% if (locals.pendingList && pendingList.length > 0) { %>
             <div style="overflow-x:auto">
-                <table class="data-table" style="width:100%">
+                <table class="data-table">
                     <thead>
                         <tr>
                             <th>Company</th>
@@ -135,17 +216,17 @@
                         <tr>
                             <td><strong><%= prime.company_name || '—' %></strong></td>
                             <td><%= prime.contact_name || '—' %></td>
-                            <td><a href="mailto:<%= prime.email %>" style="color:var(--color-primary)"><%= prime.email %></a></td>
-                            <td style="font-family:monospace;font-size:.85rem"><%= prime.sam_uei || '—' %></td>
-                            <td><span class="status-badge badge-consulting" style="text-transform:capitalize;margin:0;"><%= prime.subscription_tier || 'basic' %></span></td>
+                            <td><a href="mailto:<%= prime.email %>" style="color:var(--color-primary);font-weight:600;"><%= prime.email %></a></td>
+                            <td><code style="font-family:'JetBrains Mono',monospace;font-size:.85rem;background:#F1F5F9;padding:.2rem .4rem;border-radius:4px;"><%= prime.sam_uei || '—' %></code></td>
+                            <td><span class="status-badge badge-cyan" style="text-transform:capitalize;margin:0;"><%= prime.subscription_tier || 'basic' %></span></td>
                             <td><%= new Date(prime.created_at).toLocaleDateString() %></td>
                             <td style="white-space:nowrap">
                                 <form method="POST" action="/admin/primes/<%= prime.id %>/approve" style="display:inline">
-                                    <button type="submit" class="btn btn-sm btn-primary" style="margin-right:0.35rem;">Approve</button>
+                                    <button type="submit" class="btn btn-sm btn-primary" style="margin-right:0.35rem;padding:0.35rem 0.85rem;font-size:0.8rem;">Approve</button>
                                 </form>
                                 <form method="POST" action="/admin/primes/<%= prime.id %>/deny" style="display:inline">
                                     <input type="hidden" name="reason" value="">
-                                    <button type="submit" class="btn btn-sm btn-secondary" onclick="return confirm('Deny this application? This will notify the applicant.')">Deny</button>
+                                    <button type="submit" class="btn btn-sm btn-secondary" style="padding:0.35rem 0.85rem;font-size:0.8rem;" onclick="return confirm('Deny this application? This will notify the applicant.')">Deny</button>
                                 </form>
                             </td>
                         </tr>
@@ -154,57 +235,57 @@
                 </table>
             </div>
         <% } else { %>
-            <div style="padding:2rem;text-align:center;color:var(--text-muted)">
-                <p>No pending approvals. All prime contractor applications are reviewed.</p>
+            <div style="padding:2.5rem;text-align:center;color:#64748B">
+                <p style="margin:0;font-size:0.95rem;">✓ No pending approvals. All prime contractor credentials and SAM UEIs are reviewed.</p>
             </div>
         <% } %>
     </div>
 
-    <!-- Checklist Completion & Weekly Registrations -->
+    <!-- Checklist Completion & Weekly Activity -->
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:var(--space-xl);">
-        <div class="recommendations-list" style="padding: var(--space-xl);">
+        <div class="recommendations-list">
             <div class="section-header">
                 <h2>Checklist Completion by Track</h2>
             </div>
             <% if (locals.checklistStats && checklistStats.length > 0) { %>
-                <table class="data-table" style="width:100%">
+                <table class="data-table">
                     <thead>
-                        <tr><th>User Type</th><th>Track</th><th>Total Completions</th></tr>
+                        <tr><th>User Role</th><th>Track</th><th>Total Completions</th></tr>
                     </thead>
                     <tbody>
                         <% checklistStats.forEach(function(row) { %>
                         <tr>
-                            <td style="text-transform:capitalize"><%= row.user_type %></td>
-                            <td style="text-transform:capitalize"><%= row.track %></td>
-                            <td><strong><%= row.total_completions %></strong></td>
+                            <td style="text-transform:capitalize;font-weight:600;"><%= row.user_type %></td>
+                            <td style="text-transform:capitalize"><span class="badge badge-cyan"><%= row.track %></span></td>
+                            <td><strong style="font-family:'JetBrains Mono',monospace;font-size:0.95rem;"><%= row.total_completions %></strong></td>
                         </tr>
                         <% }) %>
                     </tbody>
                 </table>
             <% } else { %>
-                <p style="color:var(--text-muted);text-align:center;padding:1rem;">No checklist data recorded yet.</p>
+                <p style="color:#64748B;text-align:center;padding:1.5rem;margin:0;">No checklist milestones recorded yet.</p>
             <% } %>
         </div>
 
-        <div class="recommendations-list" style="padding: var(--space-xl);">
+        <div class="recommendations-list">
             <div class="section-header">
-                <h2>Weekly Activity (Last 8 Weeks)</h2>
+                <h2>Weekly Ecosystem Activity (Last 8 Weeks)</h2>
             </div>
             <% if (locals.weeklyRegistrations && weeklyRegistrations.length > 0) { %>
-                <table class="data-table" style="width:100%">
-                    <thead><tr><th>Week</th><th>Registrations</th><th>Connections</th></tr></thead>
+                <table class="data-table">
+                    <thead><tr><th>Period</th><th>Registrations</th><th>Connections</th></tr></thead>
                     <tbody>
                         <% weeklyRegistrations.forEach(function(row, i) { %>
                         <tr>
-                            <td style="font-family:monospace">Wk <%= row.week %></td>
-                            <td><strong><%= row.count %></strong></td>
-                            <td><%= locals.weeklyConnections?.[i]?.count || 0 %></td>
+                            <td><code style="font-family:'JetBrains Mono',monospace;font-size:.85rem;">Week <%= row.week %></code></td>
+                            <td><strong style="color:#0284C7;font-family:'JetBrains Mono',monospace;"><%= row.count %></strong></td>
+                            <td><strong style="color:#10B981;font-family:'JetBrains Mono',monospace;"><%= locals.weeklyConnections?.[i]?.count || 0 %></strong></td>
                         </tr>
                         <% }) %>
                     </tbody>
                 </table>
             <% } else { %>
-                <p style="color:var(--text-muted);text-align:center;padding:1rem;">No weekly registration metrics recorded yet.</p>
+                <p style="color:#64748B;text-align:center;padding:1.5rem;margin:0;">No weekly registration metrics recorded yet.</p>
             <% } %>
         </div>
     </div>

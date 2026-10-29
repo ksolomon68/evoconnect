@@ -73,7 +73,7 @@ const allResources = dbResources.concat(BUILTIN_RESOURCES.filter(b => !seenTitle
     <% allResources.forEach(function(res) { 
        const isExternal = res.url.startsWith('http://') || res.url.startsWith('https://');
     %>
-      <a href="<%= res.url %>" <%= isExternal ? 'target="_blank" rel="noopener noreferrer"' : '' %> class="resource-card">
+      <a href="<%= res.url %>" <%= isExternal ? 'target="_blank" rel="noopener noreferrer"' : '' %> class="resource-card spotlight-card">
         <div style="display:flex;align-items:center;justify-content:space-between;width:100%;margin-bottom:0.75rem;">
           <div class="resource-icon" style="margin-bottom:0;"><%= res.icon || '📚' %></div>
           <% if (res.category) { %>

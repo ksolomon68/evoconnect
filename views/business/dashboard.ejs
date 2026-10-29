@@ -40,14 +40,26 @@ const appsCount = locals.appsCount ?? 0;
 %>
 
 <%- include('../partials/flash') %>
-<p><a class="btn btn-primary" href="/business/post-job">Post a job</a> <a class="btn btn-secondary" href="/business/job-applications">Review labor applications</a></p>
+<div style="display:flex;gap:0.75rem;margin-bottom:1.5rem;flex-wrap:wrap;">
+    <a class="btn btn-primary" href="/business/post-job" style="display:inline-flex;align-items:center;gap:0.5rem;padding:0.6rem 1.25rem;border-radius:10px;font-weight:700;">➕ Post a Trade Job</a>
+    <a class="btn btn-secondary" href="/business/job-applications" style="display:inline-flex;align-items:center;gap:0.5rem;padding:0.6rem 1.25rem;border-radius:10px;font-weight:600;">📝 Review Labor Applications</a>
+</div>
 <%- include('../shared/match-preview', { result: autoMatches, basePath: '/business' }) %>
 
-<!-- Hero Section -->
-<section class="hero-section">
+<!-- Executive Command Center Hero -->
+<section class="hero-section evo-dashboard-hero" data-gsap="hero-banner">
     <div class="hero-content hero-welcome">
-        <h1>💼 Small Business Dashboard</h1>
-        <p>Welcome back, <%= business.company_name || business.contact_name || 'there' %>! Track your business growth and discover new contracting opportunities.</p>
+        <div class="wfc-eyebrow">
+            <span class="eyebrow-dot" aria-hidden="true"></span>
+            <span>Subcontractor Command Center</span>
+        </div>
+        <h1>Small Business <span>Procurement Portal</span></h1>
+        <p>Welcome back, <%= business.company_name || business.contact_name || 'Subcontractor' %>! Track socioeconomic contract matching, respond to prime contractor RFQs, and dispatch verified skilled trade labor.</p>
+        <div class="hero-telemetry-chips">
+            <span class="telemetry-chip"><span class="chip-dot chip-success"></span> NAICS Match Engine: Active</span>
+            <span class="telemetry-chip"><span class="chip-dot chip-cyan"></span> Profile: <%= pct %>% Complete</span>
+            <span class="telemetry-chip"><span class="chip-dot chip-info"></span> Readiness: Federal &amp; State</span>
+        </div>
     </div>
 </section>
 
@@ -73,21 +85,52 @@ const appsCount = locals.appsCount ?? 0;
 <!-- Summary Cards (Stats Grid) -->
 <section class="quick-stats">
     <div class="summary-grid">
-        <div class="summary-card primary">
+        <div class="summary-card spotlight-card primary">
+            <div class="summary-card-top">
+                <span class="summary-label">Open Opportunities</span>
+                <span class="summary-icon">🏢</span>
+            </div>
             <div class="summary-value"><%= openOpps %></div>
-            <div class="summary-label">Open Opportunities</div>
+            <div class="summary-footer">
+                <span class="trend-badge trend-success">● Active solicitations</span>
+            </div>
         </div>
-        <div class="summary-card success">
+
+        <div class="summary-card spotlight-card success">
+            <div class="summary-card-top">
+                <span class="summary-label">Saved Opportunities</span>
+                <span class="summary-icon">⭐</span>
+            </div>
             <div class="summary-value"><%= savedCount %></div>
-            <div class="summary-label">Saved Opportunities</div>
+            <div class="summary-footer">
+                <span class="trend-badge trend-neutral">Bookmarked deadlines</span>
+            </div>
         </div>
-        <div class="summary-card <%= (pendingBizConns.length + appsCount) > 0 ? 'warning' : 'primary' %>">
+
+        <div class="summary-card spotlight-card <%= (pendingBizConns.length + appsCount) > 0 ? 'warning' : 'primary' %>">
+            <div class="summary-card-top">
+                <span class="summary-label">Connections &amp; Apps</span>
+                <span class="summary-icon">🤝</span>
+            </div>
             <div class="summary-value"><%= pendingBizConns.length + appsCount %></div>
-            <div class="summary-label">Connections &amp; Applications</div>
+            <div class="summary-footer">
+                <span class="trend-badge <%= (pendingBizConns.length + appsCount) > 0 ? 'trend-warning' : 'trend-success' %>">
+                    <%= pendingBizConns.length %> pending requests
+                </span>
+            </div>
         </div>
-        <div class="summary-card <%= pct >= 80 ? 'success' : 'primary' %>">
+
+        <div class="summary-card spotlight-card <%= pct >= 80 ? 'success' : 'primary' %>">
+            <div class="summary-card-top">
+                <span class="summary-label">Profile Readiness</span>
+                <span class="summary-icon">🎯</span>
+            </div>
             <div class="summary-value"><%= pct %>%</div>
-            <div class="summary-label">Profile Completion</div>
+            <div class="summary-footer">
+                <span class="trend-badge <%= pct >= 80 ? 'trend-success' : 'trend-warning' %>">
+                    <%= pct >= 100 ? '✓ Complete &amp; Visible' : 'Complete for prime discovery' %>
+                </span>
+            </div>
         </div>
     </div>
 </section>
@@ -98,45 +141,69 @@ const appsCount = locals.appsCount ?? 0;
         <h2>🚀 Quick Actions</h2>
     </div>
     <div class="action-grid">
-        <a href="/business/search" class="action-card">
-            <div class="icon-box" style="background:var(--color-bg-secondary);">🏢</div>
+        <a href="/business/search" class="action-card spotlight-card">
+            <div class="action-card-header">
+                <div class="icon-box">🏢</div>
+                <span class="action-card-arrow" aria-hidden="true">&rarr;</span>
+            </div>
             <h3>Search Opportunities</h3>
             <p>Find and filter contracting opportunities that match your NAICS profile.</p>
         </a>
-        <a href="/business/saved" class="action-card">
-            <div class="icon-box" style="background:var(--color-bg-secondary);">⭐</div>
+        <a href="/business/saved" class="action-card spotlight-card">
+            <div class="action-card-header">
+                <div class="icon-box">⭐</div>
+                <span class="action-card-arrow" aria-hidden="true">&rarr;</span>
+            </div>
             <h3>Saved Opportunities</h3>
-            <p>View your bookmarked contracting opportunities and deadlines.</p>
+            <p>View your bookmarked contracting opportunities and submission deadlines.</p>
         </a>
-        <a href="/business/applications" class="action-card">
-            <div class="icon-box" style="background:var(--color-bg-secondary);">📋</div>
+        <a href="/business/applications" class="action-card spotlight-card">
+            <div class="action-card-header">
+                <div class="icon-box">📋</div>
+                <span class="action-card-arrow" aria-hidden="true">&rarr;</span>
+            </div>
             <h3>My Applications</h3>
-            <p>Track submitted proposals and prime contractor review status.</p>
+            <p>Track submitted proposals and prime contractor evaluation status.</p>
         </a>
-        <a href="/business/profile" class="action-card">
-            <div class="icon-box" style="background:var(--color-bg-secondary);">👤</div>
+        <a href="/business/profile" class="action-card spotlight-card">
+            <div class="action-card-header">
+                <div class="icon-box">👤</div>
+                <span class="action-card-arrow" aria-hidden="true">&rarr;</span>
+            </div>
             <h3>My Profile</h3>
-            <p>Update your business information, NAICS codes, certifications, and capability statement PDF.</p>
+            <p>Update your business info, 58 NAICS codes, socioeconomic certifications, and PDF statement.</p>
         </a>
-        <a href="/business/checklist" class="action-card">
-            <div class="icon-box" style="background:var(--color-bg-secondary);">✅</div>
+        <a href="/business/checklist" class="action-card spotlight-card">
+            <div class="action-card-header">
+                <div class="icon-box">✅</div>
+                <span class="action-card-arrow" aria-hidden="true">&rarr;</span>
+            </div>
             <h3>Readiness Checklist</h3>
-            <p>Track Federal, State, and Subcontractor readiness milestones.</p>
+            <p>Complete Federal (SAM.gov), Texas State HUB, and Subcontractor readiness milestones.</p>
         </a>
-        <a href="/business/messages" class="action-card">
-            <div class="icon-box" style="background:var(--color-bg-secondary);">✉️</div>
+        <a href="/business/messages" class="action-card spotlight-card">
+            <div class="action-card-header">
+                <div class="icon-box">✉️</div>
+                <span class="action-card-arrow" aria-hidden="true">&rarr;</span>
+            </div>
             <h3>Messages</h3>
-            <p>Communicate with connected labor workers and prime contractors.</p>
+            <p>Direct communication desk with connected trade labor and prime contractors.</p>
         </a>
-                <a href="/business/resources" class="action-card">
-            <div class="icon-box" style="background:var(--color-bg-secondary);">📚</div>
+        <a href="/business/resources" class="action-card spotlight-card">
+            <div class="action-card-header">
+                <div class="icon-box">📚</div>
+                <span class="action-card-arrow" aria-hidden="true">&rarr;</span>
+            </div>
             <h3>Resource Library</h3>
-            <p>Access downloadable guides, capability statement tools, and federal templates.</p>
+            <p>Access downloadable federal guides, capability statement generators, and templates.</p>
         </a>
-<a href="/business/settings" class="action-card">
-            <div class="icon-box" style="background:var(--color-bg-secondary);">🔧</div>
+        <a href="/business/settings" class="action-card spotlight-card">
+            <div class="action-card-header">
+                <div class="icon-box">🔧</div>
+                <span class="action-card-arrow" aria-hidden="true">&rarr;</span>
+            </div>
             <h3>Settings</h3>
-            <p>Manage account security, password, and directory visibility.</p>
+            <p>Manage account credentials, two-factor authentication, and directory privacy.</p>
         </a>
     </div>
 </section>
