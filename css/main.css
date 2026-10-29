@@ -65,9 +65,14 @@
     border-bottom: 1px solid #1E3A4A;
 }
 
-html,
+/* Clip horizontal overflow without creating nested vertical scroll containers. */
+html {
+    overflow-x: clip;
+    width: 100%;
+}
+
 body {
-    overflow-x: hidden;
+    overflow-x: clip;
     width: 100%;
     position: relative;
 }

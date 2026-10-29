@@ -395,7 +395,7 @@ textarea {
 @media (max-width: 767px) {
     /* Clip overflow at the page container level */
     .dashboard-container {
-        overflow-x: hidden;
+        overflow-x: clip;
     }
 
     /* Header: hide portal title to prevent left-side overflow */
