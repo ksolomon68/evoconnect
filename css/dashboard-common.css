@@ -23,12 +23,38 @@
 }
 
 /* Sidebar Sidebar width must be consistent */
+/* Declared fully here (not just `position`) because dashboard-new.css's
+   .sidebar also sets top/height and loads first: CSS cascades per
+   property, so a partial override here would keep dashboard-new.css's
+   top/height while this file's position won — silently mismatched. */
 .sidebar {
     width: var(--sidebar-width);
     background: var(--color-bg-primary);
     border-right: 2px solid var(--color-border);
-    position: relative;
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
     box-shadow: var(--shadow-sm);
+}
+
+/* The nav list scrolls inside the sticky sidebar instead of overflowing
+   its box — without this, .sidebar-footer (a flex child pinned to the
+   bottom) would end up overlapping whichever nav items happen to render
+   past the viewport edge. */
+.sidebar-nav {
+    flex: 1;
+    overflow-y: auto;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+.sidebar-nav::-webkit-scrollbar {
+    display: none;
+    width: 0;
+    height: 0;
 }
 
 /* Typography Enforcement */
@@ -326,9 +352,7 @@ textarea {
 }
 
 .sidebar-footer {
-    position: absolute;
-    bottom: 0;
-    width: 100%;
+    flex-shrink: 0;
     padding: 0.5rem 0;
     border-top: 1px solid var(--color-border);
 }

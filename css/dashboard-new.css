@@ -437,6 +437,9 @@ body.dashboard-v2 {
 }
 
 .action-card {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
     background-color: var(--card-bg);
     border: var(--border-width) solid var(--color-border-light);
     border-radius: var(--border-radius-lg);
