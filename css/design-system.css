@@ -176,7 +176,10 @@
    DASHBOARD THEME
    Logged-in portals (labor/business/prime/admin) use a light theme
    while the public marketing site stays dark. Applied via
-   <body data-theme="dashboard">; every component elsewhere in the
+   <html data-theme="dashboard"> — on <html>, not <body>, because :root
+   (where this file's --text-muted/--card-bg/etc. aliases resolve) only
+   matches <html>; putting the attribute on <body> leaves those aliases
+   frozen at the dark-theme values. Every component elsewhere in the
    system keeps referencing the same --color-* tokens, so this block
    is the single place the light palette is defined.
    ============================================ */

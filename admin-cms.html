@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dashboard">
 
 <head>
   <meta charset="UTF-8">
@@ -23,11 +23,12 @@
   <link rel="stylesheet" href="css/admin-cms.css?v=3.4.0">
 </head>
 
-<body data-theme="dashboard">
-  <!-- data-theme="dashboard": the CMS is a logged-in admin surface like the
-       role dashboards, so it inherits the same light design-system.css
-       token values (dark text on white) rather than the public site's
-       dark-theme defaults — see css/design-system.css [data-theme="dashboard"]. -->
+<body>
+  <!-- data-theme="dashboard" lives on <html> above, not here: :root (where
+       design-system.css's --text-muted/--card-bg/etc. aliases resolve)
+       matches <html>, not <body>, so the attribute has to be on <html> for
+       those aliases to pick up the light theme instead of silently
+       resolving to the dark-theme values at :root and inheriting that in. -->
   <!-- Application mount point — content injected by admin-cms.js -->
   <div id="cms-app" role="application" aria-label="WorkForce Connect CMS">
     <!-- Login screen or shell will be rendered here -->
