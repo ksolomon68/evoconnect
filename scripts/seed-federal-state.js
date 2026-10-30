@@ -534,6 +534,10 @@ async function seed() {
         if (demoTable.length) tablesToSeed.push('demo_opportunities');
     } catch (e) {}
 
+    try {
+        await db.execute("DELETE FROM opportunities WHERE id IN ('OPP-2026-001', 'OPP-2026-002', 'OPP-2026-003', 'OPP-2026-004')");
+    } catch (e) {}
+
     for (const tableName of tablesToSeed) {
         console.log(`\n── Upserting authentic listings into ${tableName}...`);
         let inserted = 0;
@@ -624,3 +628,4 @@ module.exports = {
     federalAndStateOpportunities,
     seed
 };
+

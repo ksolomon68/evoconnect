@@ -1,221 +1,204 @@
-<% if (locals.user) { locals.layout='layouts/dashboard' ; } %>
-    <% const title=locals.title || ((locals.user?.type==='worker'?'Find Labor Jobs':'Search Contracting Opportunities')+' | EVOConnected') %>
-        <% const basePath=locals.basePath || (locals.user?.type==='business' ? '/business' : '/labor' ) %>
-            <% const oppList=locals.opportunities || [] %>
-                <% const savedIds=(locals.savedIds || []).map(String) %>
-                    <% const appliedIds=(locals.appliedIds || []).map(String) %>
-                        <% const filters=locals.filters || {} %>
+<% if (locals.user) { locals.layout = 'layouts/dashboard'; } %>
+<% const title = locals.title || ((locals.user?.type === 'worker' ? 'Find Labor Jobs' : 'Search Contracting Opportunities') + ' | EVOConnected') %>
+<% const basePath = locals.basePath || (locals.user?.type === 'business' ? '/business' : '/labor') %>
+<% const oppList = locals.opportunities || [] %>
+<% const savedIds = (locals.savedIds || []).map(String) %>
+<% const appliedIds = (locals.appliedIds || []).map(String) %>
+<% const filters = locals.filters || {} %>
 
-                            <%- include('../partials/flash') %>
+<%- include('../partials/flash') %>
 
-                                <section class="hero-section">
-                                    <div class="hero-content hero-welcome">
-                                        <h1>🔍 <%= locals.user?.type==='worker'?'Labor Jobs':'Contracting Opportunities' %></h1>
-                                        <p><%= locals.user?.type==='worker' ? 'Browse jobs posted by small businesses, save jobs for later, or submit your application directly.' : 'Browse active government and prime contractor solicitations, save opportunities for later, or submit your application directly.' %></p>
-                                    </div>
-                                </section>
+<section class="hero-section" style="padding: 2.5rem 0 1.75rem 0;">
+    <div class="hero-content hero-welcome">
+        <h1 style="font-family: var(--font-display, 'Plus Jakarta Sans', sans-serif); font-size: clamp(1.85rem, 3.5vw, 2.5rem); font-weight: 800; color: #F8FAFC !important; margin: 0 0 0.5rem 0; letter-spacing: -0.02em;">
+            🔍 <%= locals.user?.type === 'worker' ? 'Verified Trade Jobs & Dispatch' : 'Active Federal & State Solicitations' %>
+        </h1>
+        <p style="font-size: 1.05rem; color: #CBD5E1 !important; max-width: 760px; line-height: 1.6; margin: 0;">
+            <%= locals.user?.type === 'worker' 
+                ? 'Browse high-demand prevailing wage and certified payroll trade jobs posted by contractors and small businesses.' 
+                : 'Search authentic Federal (USACE, NTIA/BEAD, DoD, GSA, VA) and Texas State (TxDOT, DIR, TFC) prime contracting solicitations and subcontracting opportunities.' %>
+        </p>
+    </div>
+</section>
 
-                                <!-- Filter Form -->
-                                <div class="recommendations-list"
-                                    style="padding: var(--space-xl); margin-bottom: var(--space-xl);">
-                                    <form method="GET" action="<%= locals.user ? basePath + '/search' : '/opportunities' %>"
-                                        style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:1rem;align-items:end;">
-                                        <div>
-                                            <label
-                                                style="display:block;font-weight:600;margin-bottom:.35rem;font-size:.9rem;">Keyword
-                                                / Project Title</label>
-                                            <input type="text" name="q" value="<%= filters.q || '' %>"
-                                                placeholder="Search title, scope, agency..." class="form-control">
-                                        </div>
-                                        <div>
-                                            <label
-                                                style="display:block;font-weight:600;margin-bottom:.35rem;font-size:.9rem;">Category</label>
-                                            <select name="category" class="form-control">
-                                                <option value="">All Categories</option>
-                                                <% [ { val: 'electrical' , label: 'Electrical & Lighting' }, {
-                                                    val: 'fiber-broadband' , label: 'Fiber & Broadband' }, {
-                                                    val: 'environmental' , label: 'Environmental Services' }, {
-                                                    val: 'concrete-cement' , label: 'Concrete & Civil Construction' }, {
-                                                    val: 'IT & Cloud Infrastructure' ,
-                                                    label: 'IT & Cloud Infrastructure' }, {
-                                                    val: 'Transportation & Logistics' ,
-                                                    label: 'Transportation & Logistics' } ].forEach(function(cat) { %>
-                                                    <option value="<%= cat.val %>" <%=filters.category===cat.val
-                                                        ? 'selected' : '' %>><%= cat.label %>
-                                                    </option>
-                                                    <% }) %>
-                                            </select>
-                                        </div>
-                                        <div>
-                                            <label
-                                                style="display:block;font-weight:600;margin-bottom:.35rem;font-size:.9rem;">NAICS
-                                                Code</label>
-                                            <input type="text" name="naics" value="<%= filters.naics || '' %>"
-                                                placeholder="e.g. 237130" class="form-control">
-                                        </div>
-                                        <div style="display:flex;gap:.5rem;">
-                                            <button type="submit" class="btn btn-primary"
-                                                style="flex:1;">Filter</button>
-                                            <a href="<%= locals.user ? basePath + '/search' : '/opportunities' %>" class="btn btn-secondary">Reset</a>
-                                        </div>
-                                    <input type="hidden" name="_csrf" value="<%= csrfToken %>"></form>
+<!-- Filter Form Card -->
+<div class="recommendations-list" style="background:#FFFFFF !important; border:1px solid #E2E8F0 !important; border-radius:18px !important; padding:1.75rem 2rem !important; margin-bottom:1.75rem !important; box-shadow:0 4px 12px rgba(15,23,42,0.04) !important;">
+    <form method="GET" action="<%= locals.user ? basePath + '/search' : '/opportunities' %>" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1.25rem;align-items:end;">
+        <div>
+            <label style="display:block;font-weight:700;margin-bottom:.4rem;font-size:.9rem;color:#0F172A !important;">Keyword / Solicitation Title</label>
+            <input type="text" name="q" value="<%= filters.q || '' %>" placeholder="e.g. Fiber, Pavement, TxDOT, USACE..." class="form-control" style="background:#FFFFFF;color:#0F172A;border:1px solid #CBD5E1;border-radius:10px;padding:0.6rem 0.85rem;font-size:0.92rem;width:100%;">
+        </div>
+        <div>
+            <label style="display:block;font-weight:700;margin-bottom:.4rem;font-size:.9rem;color:#0F172A !important;">Trade Discipline / Category</label>
+            <select name="category" class="form-control" style="background:#FFFFFF;color:#0F172A;border:1px solid #CBD5E1;border-radius:10px;padding:0.6rem 0.85rem;font-size:0.92rem;width:100%;">
+                <option value="">All 13 Federal & State Disciplines</option>
+                <% [ 
+                    { val: 'fiber-broadband', label: 'Fiber & Broadband (NAICS 237130 / 517311)' },
+                    { val: 'electrical', label: 'Electrical & Power Systems (NAICS 238210)' },
+                    { val: 'concrete-cement', label: 'Concrete, Civil & Bridge (NAICS 237310 / 238110)' },
+                    { val: 'cell-site-tech', label: 'Cell Site & Tower Tech (NAICS 517311)' },
+                    { val: 'cdl-trucking', label: 'CDL Freight & Heavy Haul (NAICS 484110 / 484220)' },
+                    { val: 'welding-fabrication', label: 'Structural Welding & Fabrication (NAICS 332312)' },
+                    { val: 'heavy-civil-equipment', label: 'Heavy Civil & Directional Boring (NAICS 238910)' },
+                    { val: 'plumbing-hvac', label: 'Commercial Mechanical & HVAC (NAICS 238220)' },
+                    { val: 'structured-cabling', label: 'Structured Cabling & Low-Voltage (NAICS 541512)' },
+                    { val: 'environmental', label: 'Environmental Services & NEPA (NAICS 541620)' }
+                ].forEach(function(cat) { %>
+                    <option value="<%= cat.val %>" <%= filters.category === cat.val ? 'selected' : '' %>><%= cat.label %></option>
+                <% }) %>
+            </select>
+        </div>
+        <div>
+            <label style="display:block;font-weight:700;margin-bottom:.4rem;font-size:.9rem;color:#0F172A !important;">6-Digit NAICS Code</label>
+            <input type="text" name="naics" value="<%= filters.naics || '' %>" placeholder="e.g. 237130, 238210, 237310..." class="form-control" style="background:#FFFFFF;color:#0F172A;border:1px solid #CBD5E1;border-radius:10px;padding:0.6rem 0.85rem;font-size:0.92rem;width:100%;">
+        </div>
+        <div style="display:flex;gap:.6rem;">
+            <button type="submit" class="btn btn-primary" style="flex:1;font-weight:700;padding:0.65rem 1.25rem;">Filter Solicitations</button>
+            <a href="<%= locals.user ? basePath + '/search' : '/opportunities' %>" class="btn btn-secondary" style="font-weight:600;padding:0.65rem 1rem;background:#F1F5F9;color:#334155;border:1px solid #CBD5E1;text-decoration:none;display:inline-flex;align-items:center;">Reset</a>
+        </div>
+        <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+    </form>
+</div>
+
+<!-- Opportunities List -->
+<div style="display:grid;gap:1.5rem;">
+    <% if (oppList.length > 0) { %>
+        <% oppList.forEach(function(opp) { 
+            const oppIdStr = String(opp.id);
+            const isSaved = savedIds.includes(oppIdStr);
+            const isApplied = appliedIds.includes(oppIdStr);
+        %>
+            <article class="recommendations-list spotlight-card" style="background:#FFFFFF !important; border:1px solid #E2E8F0 !important; border-radius:18px !important; padding:1.85rem 2rem !important; margin:0 !important; box-shadow:0 3px 10px rgba(15,23,42,0.03) !important;">
+                <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:1.25rem;margin-bottom:0.85rem;">
+                    <div style="flex:1;min-width:280px;">
+                        <div style="display:flex;align-items:center;gap:0.5rem;flex-wrap:wrap;margin-bottom:0.5rem;">
+                            <span class="status-badge" style="background:#EFF6FF;color:#0284C7;border:1px solid #BFDBFE;font-size:0.78rem;font-weight:700;padding:0.25rem 0.65rem;border-radius:6px;margin:0;">
+                                <%= opp.category_name || opp.category || 'Infrastructure Solicitation' %>
+                            </span>
+                            <% if (opp.naics_codes) { %>
+                                <span style="font-size:0.78rem;font-family:var(--font-mono, monospace);background:#F1F5F9;padding:0.25rem 0.6rem;border-radius:6px;color:#0F172A;font-weight:600;border:1px solid #E2E8F0;">
+                                    NAICS: <%= opp.naics_codes %>
+                                </span>
+                            <% } %>
+                            <% if (opp.certifications || opp.certifications_required) { %>
+                                <span class="status-badge" style="background:#ECFDF5;color:#059669;border:1px solid #A7F3D0;font-size:0.78rem;font-weight:700;padding:0.25rem 0.65rem;border-radius:6px;margin:0;">
+                                    <%= opp.certifications || opp.certifications_required %>
+                                </span>
+                            <% } %>
+                        </div>
+
+                        <h3 style="margin:0 0 0.4rem 0;font-size:1.32rem;font-weight:800;color:#0F172A !important;font-family:var(--font-display,'Plus Jakarta Sans',sans-serif);line-height:1.35;letter-spacing:-0.02em;">
+                            <%= opp.title %>
+                        </h3>
+
+                        <% if (opp.listing_type !== 'job' && opp.posted_by_type === 'prime') { %>
+                            <div style="margin-bottom:0.4rem;">
+                                <span style="display:inline-block;font-size:0.78rem;font-weight:700;color:#0369A1;background:#E0F2FE;padding:0.2rem 0.55rem;border-radius:4px;letter-spacing:0.03em;">
+                                    📋 Request for Qualifications (RFQ) / Subcontract Bid
+                                </span>
+                            </div>
+                        <% } %>
+
+                        <div style="color:#475569 !important;font-size:0.92rem;margin-top:0.35rem;font-weight:500;">
+                            <strong style="color:#0F172A !important;font-weight:700;"><%= opp.posted_by_name || 'Prime Contractor / Government Agency' %></strong>
+                            <% if (opp.district_name || opp.location) { %> 
+                                • 📍 <span style="color:#334155;"><%= opp.district_name || opp.location %></span>
+                            <% } %>
+                            • Ref: <code style="font-family:var(--font-mono, monospace);background:#F1F5F9;color:#0F172A;padding:0.15rem 0.45rem;border-radius:4px;border:1px solid #CBD5E1;font-weight:600;"><%= opp.project_ref || opp.id %></code>
+                        </div>
+
+                        <div style="margin-top:0.4rem;">
+                            <a href="/opportunities/<%= encodeURIComponent(opp.id) %>" style="color:#0284C7;font-weight:700;text-decoration:underline;font-size:0.92rem;">
+                                View full solicitation scope &amp; specifications &rarr;
+                            </a>
+                        </div>
+                    </div>
+
+                    <div style="text-align:right;min-width:180px;">
+                        <div style="font-size:1.25rem;font-weight:800;color:#0284C7 !important;font-family:var(--font-mono, monospace);">
+                            <%= opp.estimated_value || 'TBD' %>
+                        </div>
+                        <% if (opp.due_date) { %>
+                            <div style="font-size:0.88rem;color:#475569 !important;font-weight:600;margin-top:0.3rem;">
+                                ⏳ Due: <span style="color:#0F172A;"><%= opp.due_date %></span> <%= opp.due_time || '' %>
+                            </div>
+                        <% } %>
+                    </div>
+                </div>
+
+                <p style="color:#334155 !important;line-height:1.68;margin:0.85rem 0 1.25rem;font-size:0.96rem;font-weight:400;">
+                    <%= opp.scope_summary %>
+                </p>
+
+                <% if (locals.user && (locals.user.type === 'worker' || locals.user.type === 'business')) { %>
+                    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:0.75rem;border-top:1px solid #E2E8F0;padding-top:1rem;margin-top:1rem;">
+                        <div style="display:flex;gap:0.5rem;align-items:center;">
+                            <form method="POST" action="<%= basePath %>/saved/toggle" style="display:inline;">
+                                <input type="hidden" name="opportunity_id" value="<%= opp.id %>">
+                                <button type="submit" class="btn btn-sm <%= isSaved ? 'btn-primary' : 'btn-outline' %>" style="font-weight:600;">
+                                    <%= isSaved ? '⭐ Saved' : '☆ Save Opportunity' %>
+                                </button>
+                                <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                            </form>
+                            <% if (opp.submission_method) { %>
+                                <span style="font-size:0.85rem;color:#64748B;">Submission: <strong style="color:#0F172A;"><%= opp.submission_method %></strong></span>
+                            <% } %>
+                        </div>
+
+                        <div>
+                            <% if (isApplied) { %>
+                                <span class="status-badge" style="background:#ECFDF5;color:#059669;border:1px solid #A7F3D0;font-weight:700;padding:0.45rem 0.95rem;border-radius:6px;">
+                                    ✓ Application Submitted
+                                </span>
+                            <% } else { %>
+                                <button type="button" class="btn btn-sm btn-primary" style="font-weight:700;padding:0.5rem 1.15rem;"
+                                    onclick="document.getElementById('apply-form-<%= oppIdStr %>').style.display = document.getElementById('apply-form-<%= oppIdStr %>').style.display === 'none' ? 'block' : 'none'">
+                                    <%= locals.user?.type === 'worker' ? 'Apply for Job' : 'Apply / Submit Bid' %>
+                                </button>
+                            <% } %>
+                        </div>
+                    </div>
+
+                    <% if (!isApplied) { %>
+                        <div id="apply-form-<%= oppIdStr %>" style="display:none;margin-top:1rem;padding:1.5rem;background:#F8FAFC;border:1px solid #E2E8F0;border-radius:12px;">
+                            <h4 style="margin:0 0 0.85rem;color:#0F172A;font-weight:800;font-size:1.1rem;">
+                                Submit Proposal / Application for: <%= opp.title %>
+                            </h4>
+                            <form method="POST" action="<%= basePath %>/applications/apply">
+                                <input type="hidden" name="opportunity_id" value="<%= opp.id %>">
+                                <div class="form-group" style="margin-bottom:0.85rem;">
+                                    <label style="display:block;font-weight:700;margin-bottom:0.35rem;font-size:0.9rem;color:#0F172A;">Proposed Rate / Bid Amount (Optional)</label>
+                                    <input type="text" name="proposed_amount" class="form-control" style="background:#FFFFFF;color:#0F172A;border:1px solid #CBD5E1;border-radius:8px;" placeholder="e.g. $85,000 fixed price or $42.50/hr">
                                 </div>
-
-                                <!-- Opportunities List -->
-                                <div style="display:grid;gap:var(--space-lg);">
-                                    <% if (oppList.length> 0) { %>
-                                        <% oppList.forEach(function(opp) { const oppIdStr=String(opp.id); const
-                                            isSaved=savedIds.includes(oppIdStr); const
-                                            isApplied=appliedIds.includes(oppIdStr); %>
-                                            <div class="recommendations-list" style="padding: var(--space-xl);">
-                                                <div
-                                                    style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:1rem;margin-bottom:0.75rem;">
-                                                    <div>
-                                                        <div
-                                                            style="display:flex;align-items:center;gap:0.5rem;flex-wrap:wrap;margin-bottom:0.35rem;">
-                                                            <span class="status-badge badge-consulting"
-                                                                style="margin:0;">
-                                                                <%= opp.category_name || opp.category
-                                                                    || 'General Contracting' %>
-                                                            </span>
-                                                            <% if (opp.naics_codes) { %>
-                                                                <span
-                                                                    style="font-size:0.8rem;font-family:monospace;background:#f1f5f9;padding:0.2rem 0.5rem;border-radius:4px;color:#334155;">NAICS:
-                                                                    <%= opp.naics_codes %></span>
-                                                                <% } %>
-                                                                    <% if (opp.certifications ||
-                                                                        opp.certifications_required) { %>
-                                                                        <span class="status-badge badge-construction"
-                                                                            style="margin:0;">
-                                                                            <%= opp.certifications ||
-                                                                                opp.certifications_required %>
-                                                                        </span>
-                                                                        <% } %>
-                                                        </div>
-                                                        <h3
-                                                            style="margin:0;font-size:1.25rem;color:var(--color-text-primary);">
-                                                            <%= opp.title %>
-                                                        </h3><% if(opp.listing_type!=='job' && opp.posted_by_type==='prime') { %><p>Request for Qualifications (RFQ)</p><% } %><a href="/opportunities/<%= encodeURIComponent(opp.id) %>">View full details &amp; contractor</a>
-                                                        <div
-                                                            style="color:var(--text-muted);font-size:0.9rem;margin-top:0.25rem;">
-                                                            <strong>
-                                                                <%= opp.posted_by_name || 'Prime Contractor' %>
-                                                            </strong>
-                                                            <% if (opp.district_name || opp.location) { %> • 📍 <%=
-                                                                    opp.district_name || opp.location %>
-                                                                    <% } %>
-                                                                        • Ref:
-                                                                        <code><%= opp.project_ref || opp.id %></code>
-                                                        </div>
-                                                    </div>
-                                                    <div style="text-align:right;">
-                                                        <div
-                                                            style="font-size:1.1rem;font-weight:700;color:var(--color-primary);">
-                                                            <%= opp.estimated_value || 'TBD' %>
-                                                        </div>
-                                                        <% if (opp.due_date) { %>
-                                                            <div style="font-size:0.85rem;color:var(--text-muted);">Due:
-                                                                <%= opp.due_date %>
-                                                                    <%= opp.due_time || '' %>
-                                                            </div>
-                                                            <% } %>
-                                                    </div>
-                                                </div>
-
-                                                <p
-                                                    style="color:var(--color-text-secondary);line-height:1.6;margin:0.75rem 0 1.25rem;">
-                                                    <%= opp.scope_summary %>
-                                                </p>
-
-                                                <% if (locals.user && (locals.user.type==='worker' ||
-                                                    locals.user.type==='business' )) { %>
-                                                    <div
-                                                        style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:0.75rem;border-top:1px solid var(--border-color);padding-top:1rem;">
-                                                        <div style="display:flex;gap:0.5rem;align-items:center;">
-                                                            <form method="POST" action="<%= basePath %>/saved/toggle"
-                                                                style="display:inline;">
-                                                                <input type="hidden" name="opportunity_id"
-                                                                    value="<%= opp.id %>">
-                                                                <button type="submit"
-                                                                    class="btn btn-sm <%= isSaved ? 'btn-primary' : 'btn-outline' %>">
-                                                                    <%= isSaved ? '⭐ Saved' : '☆ Save Opportunity' %>
-                                                                </button>
-                                                            <input type="hidden" name="_csrf" value="<%= csrfToken %>"></form>
-                                                            <% if (opp.submission_method) { %>
-                                                                <span
-                                                                    style="font-size:0.8rem;color:var(--text-muted);">Submission:
-                                                                    <%= opp.submission_method %></span>
-                                                                <% } %>
-                                                        </div>
-
-                                                        <div>
-                                                            <% if (isApplied) { %>
-                                                                <span class="status-badge badge-consulting"
-                                                                    style="margin:0;padding:0.45rem 0.9rem;">✓
-                                                                    Application Submitted</span>
-                                                                <% } else { %>
-                                                                    <button type="button" class="btn btn-sm btn-primary"
-                                                                        onclick="document.getElementById('apply-form-<%= oppIdStr %>').style.display = document.getElementById('apply-form-<%= oppIdStr %>').style.display === 'none' ? 'block' : 'none'">
-                                                                        <%= locals.user?.type==='worker'?'Apply for Job':'Apply / Submit Bid' %>
-                                                                    </button>
-                                                                    <% } %>
-                                                        </div>
-                                                    </div>
-
-                                                    <% if (!isApplied) { %>
-                                                        <div id="apply-form-<%= oppIdStr %>"
-                                                            style="display:none;margin-top:1rem;padding:1.25rem;background:var(--color-bg-secondary);border-radius:var(--border-radius-md);">
-                                                            <h4 style="margin:0 0 0.75rem;">Submit Application for <%=
-                                                                    opp.title %>
-                                                            </h4>
-                                                            <form method="POST"
-                                                                action="<%= basePath %>/applications/apply">
-                                                                <input type="hidden" name="opportunity_id"
-                                                                    value="<%= opp.id %>">
-                                                                <div class="form-group" style="margin-bottom:0.75rem;">
-                                                                    <label
-                                                                        style="display:block;font-weight:600;margin-bottom:0.25rem;font-size:0.9rem;">Proposed
-                                                                        Bid / Rate (Optional)</label>
-                                                                    <input type="text" name="proposed_amount"
-                                                                        class="form-control"
-                                                                        placeholder="e.g. $85,000 fixed price or $75/hr">
-                                                                </div>
-                                                                <div class="form-group" style="margin-bottom:0.75rem;">
-                                                                    <label
-                                                                        style="display:block;font-weight:600;margin-bottom:0.25rem;font-size:0.9rem;">Capability
-                                                                        Summary & Cover Note *</label>
-                                                                    <textarea name="notes" rows="3" class="form-control"
-                                                                        required
-                                                                        placeholder="Describe your relevant experience, certifications, and availability for this scope of work..."></textarea>
-                                                                </div>
-                                                                <div style="display:flex;gap:0.5rem;">
-                                                                    <button type="submit"
-                                                                        class="btn btn-sm btn-primary">Submit
-                                                                        Application</button>
-                                                                    <button type="button"
-                                                                        class="btn btn-sm btn-secondary"
-                                                                        onclick="document.getElementById('apply-form-<%= oppIdStr %>').style.display='none'">Cancel</button>
-                                                                </div>
-                                                            <input type="hidden" name="_csrf" value="<%= csrfToken %>"></form>
-                                                        </div>
-                                                        <% } %>
-                                                            <% } else if (!locals.user) { %>
-                                                                <div
-                                                                    style="border-top:1px solid var(--border-color);padding-top:1rem;display:flex;justify-content:flex-end;">
-                                                                    <a href="/login" class="btn btn-sm btn-primary">Log
-                                                                        In to Apply</a>
-                                                                </div>
-                                                                <% } %>
-                                            </div>
-                                            <% }) %>
-                                                <% } else { %>
-                                                    <div class="recommendations-list"
-                                                        style="padding: var(--space-2xl); text-align:center; color:var(--text-muted);">
-                                                        <p style="font-size:1.1rem;margin-bottom:0.5rem;">No
-                                                            opportunities matched your search filters.</p>
-                                                        <a href="<%= locals.user ? basePath + '/search' : '/opportunities' %>"
-                                                            class="btn btn-sm btn-secondary">View All Open
-                                                            Opportunities</a>
-                                                    </div>
-                                                    <% } %>
+                                <div class="form-group" style="margin-bottom:0.85rem;">
+                                    <label style="display:block;font-weight:700;margin-bottom:0.35rem;font-size:0.9rem;color:#0F172A;">Capability Summary &amp; Qualifications *</label>
+                                    <textarea name="notes" rows="3" class="form-control" required style="background:#FFFFFF;color:#0F172A;border:1px solid #CBD5E1;border-radius:8px;" placeholder="Describe your relevant experience, licenses, certifications, and availability for this project scope..."></textarea>
                                 </div>
+                                <div style="display:flex;gap:0.6rem;">
+                                    <button type="submit" class="btn btn-sm btn-primary" style="font-weight:700;">Submit Application</button>
+                                    <button type="button" class="btn btn-sm btn-secondary" onclick="document.getElementById('apply-form-<%= oppIdStr %>').style.display='none'">Cancel</button>
+                                </div>
+                                <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                            </form>
+                        </div>
+                    <% } %>
+                <% } else if (!locals.user) { %>
+                    <div style="border-top:1px solid #E2E8F0;padding-top:1.1rem;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:0.75rem;">
+                        <span style="font-size:0.88rem;color:#64748B;">
+                            Submission Method: <strong style="color:#0F172A;"><%= opp.submission_method || 'Online Portal' %></strong>
+                        </span>
+                        <a href="/login" class="btn btn-sm btn-primary" style="font-weight:700;padding:0.55rem 1.25rem;">
+                            Log In to Apply &rarr;
+                        </a>
+                    </div>
+                <% } %>
+            </article>
+        <% }) %>
+    <% } else { %>
+        <div class="recommendations-list" style="background:#FFFFFF !important; border:1px solid #E2E8F0 !important; border-radius:18px !important; padding:3rem !important; text-align:center;">
+            <p style="font-size:1.15rem;color:#0F172A;font-weight:700;margin-bottom:0.5rem;">No contracting opportunities matched your search criteria.</p>
+            <p style="color:#64748B;margin-bottom:1.5rem;">Try adjusting your keyword, category, or NAICS code filter.</p>
+            <a href="<%= locals.user ? basePath + '/search' : '/opportunities' %>" class="btn btn-primary" style="font-weight:700;">View All Solicitations</a>
+        </div>
+    <% } %>
+</div>

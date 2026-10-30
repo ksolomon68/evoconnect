@@ -2116,3 +2116,35 @@ table.data-table tbody tr:last-child td {
     }
 }
 
+
+
+/* ── Opportunities Search Card Contrast Enforcement ──────────────── */
+.recommendations-list {
+  background: #FFFFFF !important;
+  color: #0F172A !important;
+}
+
+.recommendations-list h1,
+.recommendations-list h2,
+.recommendations-list h3,
+.recommendations-list h4,
+.recommendations-list h5 {
+  color: #0F172A !important;
+}
+
+.recommendations-list p {
+  color: #334155 !important;
+}
+
+.recommendations-list label {
+  color: #0F172A !important;
+}
+
+.recommendations-list strong {
+  color: #0F172A !important;
+}
+
+.recommendations-list code {
+  color: #0F172A !important;
+  background: #F1F5F9 !important;
+}

@@ -725,6 +725,7 @@ async function initDatabase() {
         await require('./services/faqs').migrate(db);
         await require('./services/branding-migration')(db);
         await require('./services/ecosystem-schema')(db);
+        await require('./services/seed-migration')(db);
         await require('./services/opportunity-lifecycle').archiveExpired(db);
         setInterval(() => require('./services/opportunity-lifecycle').archiveExpired(db).catch(err => console.error('Opportunity expiry:', err)), 60 * 1000).unref();
 
