@@ -195,6 +195,13 @@ async function initDatabase() {
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
         `);
 
+        // Stripe billing fields. subscription_status drives which tier's
+        // limits actually apply — subscription_tier alone just records the
+        // plan a prime most recently selected/paid for.
+        await db.execute(`ALTER TABLE primes ADD COLUMN IF NOT EXISTS stripe_customer_id VARCHAR(255) DEFAULT NULL`).catch(() => {});
+        await db.execute(`ALTER TABLE primes ADD COLUMN IF NOT EXISTS stripe_subscription_id VARCHAR(255) DEFAULT NULL`).catch(() => {});
+        await db.execute(`ALTER TABLE primes ADD COLUMN IF NOT EXISTS subscription_status VARCHAR(20) NOT NULL DEFAULT 'none'`).catch(() => {});
+
         // ── 4. NAICS Codes Reference ───────────────────────────────
         await db.execute(`
             CREATE TABLE IF NOT EXISTS naics_codes (

@@ -6,6 +6,7 @@ const { getDb } = require('../database');
 const { requireType, signToken, setAuthCookie } = require('../middleware/auth');
 const { sendEmail } = require('../config/email');
 const { regLimiter } = require('../middleware/rateLimit');
+const stripeService = require('../services/stripe');
 const router = express.Router();
 
 // ── US States ─────────────────────────────────────────────────────────────────
@@ -73,9 +74,16 @@ function safeJson(val, fallback) {
     try { return JSON.parse(val); } catch { return fallback; }
 }
 
+// A prime only gets a paid tier's limits once Stripe confirms an active
+// subscription; a self-selected tier with no active subscription behaves
+// as basic until payment succeeds.
+function effectiveTier(prime) {
+    return prime.subscription_status === 'active' ? prime.subscription_tier : 'basic';
+}
+
 function decoratePrime(prime) {
     if (!prime) return prime;
-    prime.tier = prime.subscription_tier;
+    prime.tier = effectiveTier(prime);
     prime.status = prime.active === 1 ? 'active' : (prime.active === -1 ? 'suspended' : 'pending');
     return prime;
 }
@@ -188,7 +196,7 @@ router.post('/register', regLimiter, async (req, res) => {
         let naics_codes = [];
         try { naics_codes = JSON.parse(v.naics_codes_json || '[]'); } catch {}
         const sub_types_needed = Array.isArray(v.sub_types_needed) ? v.sub_types_needed : (v.sub_types_needed ? [v.sub_types_needed] : []);
-        const subscription_tier = ['basic','pro','enterprise'].includes(v.subscription_tier) ? v.subscription_tier : 'basic';
+        const subscription_tier = ['basic','pro','enterprise'].includes(v.tier) ? v.tier : 'basic';
 
         const [result] = await db.execute(`
             INSERT INTO primes
@@ -329,6 +337,114 @@ router.get('/dashboard', requireType('prime'), async (req, res) => {
     }
 });
 
+// ── GET /prime/billing ──────────────────────────────────────────────────────────
+router.get('/billing', requireType('prime'), async (req, res) => {
+    try {
+        const db = getDb();
+        const [pRows] = await db.execute('SELECT * FROM primes WHERE id = ?', [req.user.id]);
+        if (!pRows.length) return res.redirect('/prime/dashboard');
+
+        const prime = decoratePrime(pRows[0]);
+
+        res.render('prime/billing', {
+            title: 'Billing & Subscription | EVOConnected Prime',
+            flash: getFlash(req),
+            prime,
+            tiers: SUBSCRIPTION_TIERS,
+            stripeConfigured: stripeService.isConfigured()
+        });
+    } catch (err) {
+        console.error('EVOConnected [prime/billing GET]:', err);
+        flash(req, 'error', 'Failed to load billing.');
+        res.redirect('/prime/dashboard');
+    }
+});
+
+// ── POST /prime/billing/checkout ────────────────────────────────────────────────
+router.post('/billing/checkout', requireType('prime'), async (req, res) => {
+    try {
+        const tier = req.body.tier;
+        if (!['pro', 'enterprise'].includes(tier)) {
+            flash(req, 'error', 'Please choose a valid plan.');
+            return res.redirect('/prime/billing');
+        }
+        if (!stripeService.isConfigured()) {
+            flash(req, 'error', 'Billing is not available right now. Please try again later.');
+            return res.redirect('/prime/billing');
+        }
+
+        const db = getDb();
+        const [pRows] = await db.execute('SELECT * FROM primes WHERE id = ?', [req.user.id]);
+        if (!pRows.length) return res.redirect('/prime/dashboard');
+        const prime = decoratePrime(pRows[0]);
+
+        if (prime.active !== 1) {
+            flash(req, 'error', 'Your account must be approved before you can subscribe to a paid plan.');
+            return res.redirect('/prime/billing');
+        }
+
+        const session = await stripeService.createCheckoutSession(prime, tier);
+        return res.redirect(303, session.url);
+    } catch (err) {
+        console.error('EVOConnected [prime/billing/checkout]:', err);
+        flash(req, 'error', 'Could not start checkout. Please try again.');
+        res.redirect('/prime/billing');
+    }
+});
+
+// ── GET /prime/billing/success ──────────────────────────────────────────────────
+router.get('/billing/success', requireType('prime'), async (req, res) => {
+    try {
+        // The webhook is the source of truth for activation; this is a
+        // best-effort defensive sync in case it hasn't landed yet.
+        if (stripeService.isConfigured() && req.query.session_id) {
+            const session = await stripeService.requireStripe().checkout.sessions.retrieve(req.query.session_id);
+            if (session.payment_status === 'paid' && session.metadata?.tier) {
+                const db = getDb();
+                await db.execute(
+                    `UPDATE primes
+                     SET stripe_customer_id = ?, stripe_subscription_id = ?,
+                         subscription_tier = ?, subscription_status = 'active'
+                     WHERE id = ?`,
+                    [session.customer, session.subscription, session.metadata.tier, req.user.id]
+                );
+            }
+        }
+        flash(req, 'success', 'Subscription activated. Welcome aboard!');
+    } catch (err) {
+        console.error('EVOConnected [prime/billing/success]:', err);
+    }
+    res.redirect('/prime/billing');
+});
+
+// ── GET /prime/billing/cancel ────────────────────────────────────────────────────
+router.get('/billing/cancel', requireType('prime'), (req, res) => {
+    flash(req, 'info', 'Checkout was canceled — no changes were made to your plan.');
+    res.redirect('/prime/billing');
+});
+
+// ── POST /prime/billing/portal ──────────────────────────────────────────────────
+router.post('/billing/portal', requireType('prime'), async (req, res) => {
+    try {
+        if (!stripeService.isConfigured()) {
+            flash(req, 'error', 'Billing is not available right now. Please try again later.');
+            return res.redirect('/prime/billing');
+        }
+        const db = getDb();
+        const [pRows] = await db.execute('SELECT stripe_customer_id FROM primes WHERE id = ?', [req.user.id]);
+        if (!pRows.length || !pRows[0].stripe_customer_id) {
+            flash(req, 'error', 'No billing account found yet. Subscribe to a paid plan first.');
+            return res.redirect('/prime/billing');
+        }
+        const session = await stripeService.createPortalSession(pRows[0].stripe_customer_id);
+        return res.redirect(303, session.url);
+    } catch (err) {
+        console.error('EVOConnected [prime/billing/portal]:', err);
+        flash(req, 'error', 'Could not open billing portal. Please try again.');
+        res.redirect('/prime/billing');
+    }
+});
+
 // ── GET /prime/search/workers ──────────────────────────────────────────────────
 router.get('/search/workers', requireType('prime'), async (req, res) => {
     try {
@@ -348,8 +464,8 @@ router.get('/search/workers', requireType('prime'), async (req, res) => {
 
         await maybeResetMonthlyLimits(db, prime);
 
-        const viewLimit = VIEW_LIMITS[prime.subscription_tier] || 5;
-        if (prime.subscription_tier === 'basic' && prime.monthly_views_used >= viewLimit) {
+        const viewLimit = VIEW_LIMITS[prime.tier] || 5;
+        if (prime.tier === 'basic' && prime.monthly_views_used >= viewLimit) {
             return res.render('prime/search-workers', {
                 title: 'Search Workers | EVOConnected',
                 flash: { type: 'warning', message: `You've reached your ${viewLimit} monthly view limit. Upgrade to Pro for unlimited views.` },
@@ -397,7 +513,7 @@ router.get('/search/workers', requireType('prime'), async (req, res) => {
         }
 
         // Increment view count for basic tier
-        if (prime.subscription_tier === 'basic' && filtered.length > 0) {
+        if (prime.tier === 'basic' && filtered.length > 0) {
             await db.execute(
                 'UPDATE primes SET monthly_views_used = monthly_views_used + 1 WHERE id = ?',
                 [userId]
@@ -440,8 +556,8 @@ router.get('/search/businesses', requireType('prime'), async (req, res) => {
 
         await maybeResetMonthlyLimits(db, prime);
 
-        const viewLimit = VIEW_LIMITS[prime.subscription_tier] || 5;
-        if (prime.subscription_tier === 'basic' && prime.monthly_views_used >= viewLimit) {
+        const viewLimit = VIEW_LIMITS[prime.tier] || 5;
+        if (prime.tier === 'basic' && prime.monthly_views_used >= viewLimit) {
             return res.render('prime/search-businesses', {
                 title: 'Search Businesses | EVOConnected',
                 flash: { type: 'warning', message: `You've reached your ${viewLimit} monthly view limit. Upgrade to Pro for unlimited views.` },
@@ -489,7 +605,7 @@ router.get('/search/businesses', requireType('prime'), async (req, res) => {
             filtered = filtered.filter(b => b.naics_codes.map(String).includes(String(naics_code)));
         }
 
-        if (prime.subscription_tier === 'basic' && filtered.length > 0) {
+        if (prime.tier === 'basic' && filtered.length > 0) {
             await db.execute(
                 'UPDATE primes SET monthly_views_used = monthly_views_used + 1 WHERE id = ?',
                 [userId]

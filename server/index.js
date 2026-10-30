@@ -39,6 +39,10 @@ app.set('views', path.join(root, 'views'));
 app.use(layouts);
 app.set('layout', 'layouts/default');
 
+// ── Stripe webhook (must see the raw body, so it's registered before the
+//    global JSON parser below) ────────────────────────────────────
+app.use('/api/stripe/webhook', require('./routes/stripe-webhook'));
+
 // ── Middleware ────────────────────────────────────────────────────
 app.use(express.json({ limit: '2mb' }));
 app.use(express.urlencoded({ extended: true, limit: '2mb' }));

@@ -24,6 +24,10 @@ PDF capability statements, resume PDFs, and posting attachments support up to 10
 
 SMTP settings are unchanged. Check `/api/health` after deployment, then sign in and verify CMS access and existing uploaded documents. The application does not depend on `EVO_SERVERLESS`, `FILE_STORAGE`, or any Netlify token. A future migration can be recovered from Git history without changing the current Hostinger deployment.
 
+## Stripe billing (Prime Contractor Pro/Enterprise)
+
+Set `STRIPE_SECRET_KEY` in the Hostinger environment with your Stripe secret key (start with the test-mode key, switch to live when ready). In the Stripe dashboard, add a webhook endpoint at `<APP_URL>/api/stripe/webhook` listening for `checkout.session.completed`, `customer.subscription.updated`, and `customer.subscription.deleted`, then set `STRIPE_WEBHOOK_SECRET` to that endpoint's signing secret. Without these two variables, `/prime/billing` still renders but upgrade buttons stay disabled — the free Basic tier is unaffected either way.
+
 ## EVOConnected name and planned domain
 
 The public name is **EVOConnected**. The intended custom domain is **evoconnected.com**; this does not imply it is registered, owned, or connected. Keep the current Hostinger hostname active. The branding change does not rename the GitHub repository, MySQL databases, auth cookies, session signing namespace, application IDs, browser storage keys, demo login addresses, upload paths, or existing support mailboxes.

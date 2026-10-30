@@ -1,7 +1,7 @@
 {
   "name": "evoconnect",
   "version": "3.0.0",
-  "description": "EVOConnected \u2014 Government contract workforce ecosystem. Labor, Business, and Prime portals with NAICS matching, vendor readiness tools, and directory search.",
+  "description": "EVOConnected — Government contract workforce ecosystem. Labor, Business, and Prime portals with NAICS matching, vendor readiness tools, and directory search.",
   "main": "server/index.js",
   "scripts": {
     "start": "node server/index.js",
@@ -17,7 +17,7 @@
     "small-business",
     "evobrand"
   ],
-  "author": "EVOBRAND Concepts \u2014 Keisha Solomon",
+  "author": "EVOBRAND Concepts — Keisha Solomon",
   "license": "UNLICENSED",
   "type": "commonjs",
   "dependencies": {
@@ -38,7 +38,8 @@
     "mysql2": "^3.11.5",
     "nodemailer": "^8.0.3",
     "pdfkit": "^0.15.0",
-    "sanitize-html": "^2.18.1"
+    "sanitize-html": "^2.18.1",
+    "stripe": "^23.1.0"
   },
   "devDependencies": {
     "nodemon": "^3.1.0"

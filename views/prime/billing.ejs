@@ -1,0 +1,82 @@
+<% const title = locals.title || 'Billing & Subscription' %>
+<%
+  const currentTier = prime.tier || 'basic';
+  const pastDue = prime.subscription_status === 'past_due';
+%>
+
+<section class="profile-section">
+  <div class="container">
+    <div class="profile-header">
+      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem">
+        <div>
+          <h1>Billing &amp; Subscription</h1>
+          <p class="section-sub">Manage your EVOConnected Prime plan and payment method.</p>
+        </div>
+        <a href="/prime/dashboard" class="btn-sm btn-secondary">&larr; Dashboard</a>
+      </div>
+    </div>
+
+    <%- include('../partials/flash') %>
+
+    <% if (!stripeConfigured) { %>
+      <div class="banner banner-warning" style="margin-bottom:var(--space-lg);">
+        Billing isn't configured on this environment yet. Plan upgrades will be available once it's set up.
+      </div>
+    <% } %>
+
+    <% if (pastDue) { %>
+      <div class="banner banner-error" style="margin-bottom:var(--space-lg);">
+        <strong>Payment failed.</strong> Please update your payment method to keep your <%= currentTier.charAt(0).toUpperCase() + currentTier.slice(1) %> plan active.
+      </div>
+    <% } %>
+
+    <div class="dash-card" style="margin-bottom: var(--space-lg);">
+      <div class="dash-card-header">
+        <h2>Current Plan</h2>
+        <span class="telemetry-chip"><span class="chip-dot <%= currentTier === 'basic' ? 'chip-info' : 'chip-success' %>"></span> <%= currentTier.charAt(0).toUpperCase() + currentTier.slice(1) %></span>
+      </div>
+      <p style="margin: 0.5rem 0 1rem; color: var(--color-text-muted, #64748B);">
+        <% if (currentTier === 'basic') { %>
+          You're on the free Basic plan &mdash; up to 5 profile views and 5 connection requests per month.
+        <% } else { %>
+          Your <%= currentTier.charAt(0).toUpperCase() + currentTier.slice(1) %> plan is active<% if (prime.subscription_status === 'past_due') { %>, but your most recent payment failed<% } %>.
+        <% } %>
+      </p>
+      <% if (prime.stripe_customer_id) { %>
+        <form method="POST" action="/prime/billing/portal">
+          <button type="submit" class="btn-sm btn-secondary">Manage Payment Method &amp; Invoices</button>
+        </form>
+      <% } %>
+    </div>
+
+    <% if (prime.active !== 1) { %>
+      <div class="banner banner-warning" style="margin-bottom:var(--space-lg);">
+        Your account must be approved before you can subscribe to a paid plan. You'll be able to upgrade here as soon as you're approved.
+      </div>
+    <% } %>
+
+    <div class="summary-grid" style="margin-bottom: var(--space-xl);">
+      <% tiers.forEach(function(t) { %>
+        <div class="summary-card spotlight-card<%= t.id === currentTier ? ' success' : '' %>">
+          <div class="summary-card-top">
+            <span class="summary-label"><%= t.name %></span>
+          </div>
+          <div style="font-size:1.6rem;font-weight:800;margin:0.35rem 0;"><%= t.price %></div>
+          <ul style="margin:0 0 1rem;padding-left:1.1rem;font-size:0.85rem;color:var(--color-text-muted,#64748B);">
+            <% t.features.forEach(function(f) { %><li><%= f %></li><% }); %>
+          </ul>
+          <% if (t.id === currentTier) { %>
+            <span class="btn-sm btn-secondary" style="display:inline-block;opacity:0.6;cursor:default;">Current Plan</span>
+          <% } else if (t.id === 'basic') { %>
+            <span class="btn-sm btn-secondary" style="display:inline-block;opacity:0.6;cursor:default;">Included</span>
+          <% } else if (stripeConfigured && prime.active === 1) { %>
+            <form method="POST" action="/prime/billing/checkout">
+              <input type="hidden" name="tier" value="<%= t.id %>">
+              <button type="submit" class="btn-sm btn-primary"><%= currentTier === 'basic' ? 'Upgrade to ' + t.name : 'Switch to ' + t.name %></button>
+            </form>
+          <% } %>
+        </div>
+      <% }); %>
+    </div>
+  </div>
+</section>
