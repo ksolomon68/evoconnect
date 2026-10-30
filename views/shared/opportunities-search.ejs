@@ -52,7 +52,7 @@
             <label style="display:block;font-weight:700;margin-bottom:.4rem;font-size:.9rem;color:#0F172A !important;">6-Digit NAICS Code</label>
             <input type="text" name="naics" value="<%= filters.naics || '' %>" placeholder="e.g. 237130, 238210, 237310..." class="form-control" style="background:#FFFFFF;color:#0F172A;border:1px solid #CBD5E1;border-radius:10px;padding:0.6rem 0.85rem;font-size:0.92rem;width:100%;">
         </div>
-        <div style="display:flex;gap:.6rem;">
+        <div class="filter-actions" style="display:flex;gap:.6rem;">
             <button type="submit" class="btn btn-primary" style="flex:1;font-weight:700;padding:0.65rem 1.25rem;">Filter Solicitations</button>
             <a href="<%= locals.user ? basePath + '/search' : '/opportunities' %>" class="btn btn-secondary" style="font-weight:600;padding:0.65rem 1rem;background:#F1F5F9;color:#334155;border:1px solid #CBD5E1;text-decoration:none;display:inline-flex;align-items:center;">Reset</a>
         </div>
