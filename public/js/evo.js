@@ -82,7 +82,112 @@
       }
     }
 
-    // 2. Animated Stat Counters
+    // 2. Live NAICS Telemetry — Category Rotation
+    const telemetryCard = document.querySelector('.evo-telemetry-card');
+    if (telemetryCard) {
+      const sectorEl = telemetryCard.querySelector('[data-telemetry-sector]');
+      const rowEls = Array.from(telemetryCard.querySelectorAll('[data-telemetry-row]'));
+
+      const categories = [
+        {
+          sector: 'Energy & Infrastructure',
+          rows: [
+            { code: 'NAICS 237130', tag: 'BEAD PRIORITY', tagClass: 'tag-cyan', title: 'Power & Communication Line Construction', sub: 'Fiber Optic Splicing • Aerial & Underground Conduit', match: '99.4%' },
+            { code: 'NAICS 238210', tag: 'SAM VERIFIED', tagClass: 'tag-emerald', title: 'Electrical & Low-Voltage Systems', sub: 'Commercial Grid • Cell Tower & Substation Techs', match: '98.1%' },
+            { code: 'NAICS 238110', tag: 'HUB / DBE', tagClass: 'tag-amber', title: 'Structural Concrete & Civil Foundations', sub: 'DOT Highway Infrastructure • Municipal Public Works', match: '96.8%' }
+          ]
+        },
+        {
+          sector: 'IT & Cybersecurity',
+          rows: [
+            { code: 'NAICS 541512', tag: 'SDVOSB', tagClass: 'tag-cyan', title: 'Computer Systems Design Services', sub: 'Cloud Migration • Network Architecture & DevSecOps', match: '97.9%' },
+            { code: 'NAICS 561621', tag: 'SAM VERIFIED', tagClass: 'tag-emerald', title: 'Security Systems Services', sub: 'Access Control • CCTV & Perimeter Monitoring', match: '96.3%' },
+            { code: 'NAICS 541519', tag: '8(a)', tagClass: 'tag-amber', title: 'Other Computer Related Services', sub: 'Help Desk • Systems Integration & IT Support', match: '95.5%' }
+          ]
+        },
+        {
+          sector: 'Logistics & Transportation',
+          rows: [
+            { code: 'NAICS 484121', tag: 'SMALL BUSINESS', tagClass: 'tag-cyan', title: 'General Freight Trucking, Long-Distance', sub: 'Dry Van • Flatbed & Reefer Line-Haul', match: '98.6%' },
+            { code: 'NAICS 493110', tag: 'SAM VERIFIED', tagClass: 'tag-emerald', title: 'General Warehousing & Storage', sub: 'Cross-Dock • Inventory & Fulfillment Ops', match: '97.2%' },
+            { code: 'NAICS 488510', tag: 'WOSB', tagClass: 'tag-amber', title: 'Freight Transportation Arrangement', sub: 'Load Brokering • Carrier Compliance Management', match: '95.9%' }
+          ]
+        },
+        {
+          sector: 'Facilities & Grounds',
+          rows: [
+            { code: 'NAICS 561720', tag: 'HUB / DBE', tagClass: 'tag-cyan', title: 'Janitorial Services', sub: 'Federal Bldg Custodial • Sanitation Compliance', match: '98.9%' },
+            { code: 'NAICS 561730', tag: 'SAM VERIFIED', tagClass: 'tag-emerald', title: 'Landscaping Services', sub: 'Grounds Maintenance • Snow & Debris Removal', match: '97.4%' },
+            { code: 'NAICS 238220', tag: 'SDVOSB', tagClass: 'tag-amber', title: 'Plumbing, Heating & HVAC Contractors', sub: 'Mechanical Systems • Preventive Maintenance', match: '96.1%' }
+          ]
+        },
+        {
+          sector: 'Professional & Admin Services',
+          rows: [
+            { code: 'NAICS 541611', tag: '8(a)', tagClass: 'tag-cyan', title: 'Admin & General Management Consulting', sub: 'Process Improvement • Program Management Support', match: '97.7%' },
+            { code: 'NAICS 541330', tag: 'SAM VERIFIED', tagClass: 'tag-emerald', title: 'Engineering Services', sub: 'Civil • Structural & Environmental Design', match: '96.9%' },
+            { code: 'NAICS 561110', tag: 'WOSB', tagClass: 'tag-amber', title: 'Office Administrative Services', sub: 'Records Mgmt • Admin & Clerical Staffing', match: '95.3%' }
+          ]
+        }
+      ];
+
+      if (rowEls.length === 3 && categories.length) {
+        let activeIndex = 0;
+        let paused = false;
+        const tagClasses = ['tag-cyan', 'tag-emerald', 'tag-amber'];
+
+        const applyCategory = (category) => {
+          if (sectorEl) sectorEl.textContent = category.sector;
+          rowEls.forEach((row, i) => {
+            const data = category.rows[i];
+            if (!data) return;
+            row.querySelector('[data-field="code"]').textContent = data.code;
+            const tagEl = row.querySelector('[data-field="tag"]');
+            tagEl.textContent = data.tag;
+            tagEl.classList.remove(...tagClasses);
+            tagEl.classList.add(data.tagClass);
+            row.querySelector('[data-field="title"]').textContent = data.title;
+            row.querySelector('[data-field="sub"]').textContent = data.sub;
+            row.querySelector('[data-field="match"]').textContent = data.match;
+          });
+        };
+
+        const rotate = () => {
+          if (paused || document.hidden) return;
+          activeIndex = (activeIndex + 1) % categories.length;
+          const nextCategory = categories[activeIndex];
+          rowEls.forEach(el => el.setAttribute('data-telemetry-busy', '1'));
+          gsap.to(rowEls, {
+            opacity: 0,
+            y: -6,
+            duration: 0.25,
+            stagger: 0.05,
+            ease: 'power1.in',
+            onComplete: () => {
+              applyCategory(nextCategory);
+              gsap.fromTo(rowEls,
+                { opacity: 0, y: 6 },
+                {
+                  opacity: 1,
+                  y: 0,
+                  duration: 0.35,
+                  stagger: 0.07,
+                  ease: 'power2.out',
+                  onComplete: () => rowEls.forEach(el => el.removeAttribute('data-telemetry-busy'))
+                }
+              );
+            }
+          });
+        };
+
+        telemetryCard.addEventListener('mouseenter', () => { paused = true; });
+        telemetryCard.addEventListener('mouseleave', () => { paused = false; });
+
+        setInterval(rotate, 4500);
+      }
+    }
+
+    // 3. Animated Stat Counters
     document.querySelectorAll('[data-count-to]').forEach(el => {
       const target = parseInt(el.getAttribute('data-count-to'), 10);
       const suffix = el.getAttribute('data-count-suffix') || '';
@@ -103,7 +208,7 @@
       });
     });
 
-    // 3. ScrollTrigger Section Headers & Staggered Card Grids
+    // 4. ScrollTrigger Section Headers & Staggered Card Grids
     if (typeof window.ScrollTrigger !== 'undefined') {
       gsap.utils.toArray('[data-gsap="section-header"]').forEach(header => {
         const children = Array.from(header.children);
