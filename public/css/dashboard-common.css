@@ -1589,15 +1589,17 @@ body.dashboard-v2 h4 {
 .trend-badge.trend-success { background: #ECFDF5 !important; color: #059669 !important; }
 .trend-badge.trend-warning { background: #FFFBEB !important; color: #D97706 !important; }
 
-/* ── Section Headers ── */
-.section-header {
+/* ── Dashboard-Only Section Headers ── */
+.dashboard-v2 .section-header,
+[data-theme="dashboard"] .section-header {
     display: flex !important;
     justify-content: space-between !important;
     align-items: center !important;
     margin-bottom: 1.25rem !important;
 }
 
-.section-header h2 {
+.dashboard-v2 .section-header h2,
+[data-theme="dashboard"] .section-header h2 {
     font-family: 'Plus Jakarta Sans', sans-serif !important;
     font-size: 1.32rem !important;
     font-weight: 800 !important;
@@ -2007,7 +2009,7 @@ table.data-table tbody tr:last-child td {
     }
 
     .dash-card-header h2,
-    .section-header h2 {
+    .dashboard-v2 .section-header h2 {
         font-size: 1.15rem !important;
     }
 
