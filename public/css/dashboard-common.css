@@ -1810,6 +1810,20 @@ table.data-table tbody tr:last-child td {
     border-bottom: none !important;
 }
 
+/* A cell of action buttons/forms wraps onto new lines instead of
+   forcing nowrap (which starves other columns of width) or shrinking
+   buttons below readable size. */
+table.data-table td.data-table-actions {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    gap: 0.35rem !important;
+    align-items: center !important;
+}
+
+table.data-table td.data-table-actions > * {
+    flex: 0 0 auto !important;
+}
+
 /* ── Executive Badges & Chips ── */
 .status-badge,
 .badge {
@@ -2055,14 +2069,71 @@ table.data-table tbody tr:last-child td {
         margin-bottom: 1rem !important;
     }
 
-    table.data-table {
-        min-width: 480px !important;
+    /* Data tables collapse into stacked cards instead of scrolling
+       sideways, so a long title never gets squeezed into a few wrapped
+       lines inside a narrow column while short cells sit stranded beside
+       it. Add data-label="..." to each <td> for a labeled card field, or
+       class="data-table-title" on one <td> per row to make it the card's
+       unlabeled heading (rendered first via flex order, wherever it sits
+       in the row). */
+    table.data-table,
+    table.data-table tbody {
+        display: block !important;
+        width: 100% !important;
     }
 
-    table.data-table th,
+    table.data-table thead {
+        display: none !important;
+    }
+
+    table.data-table tbody tr {
+        display: flex !important;
+        flex-direction: column !important;
+        margin-bottom: 1rem !important;
+        border: 1px solid #E2E8F0 !important;
+        border-radius: 12px !important;
+        overflow: hidden !important;
+        background: #fff !important;
+    }
+
+    table.data-table tbody tr:last-child {
+        margin-bottom: 0 !important;
+    }
+
     table.data-table td {
-        padding: 0.75rem 0.85rem !important;
-        font-size: 0.82rem !important;
+        display: block !important;
+        width: auto !important;
+        padding: 0.6rem 1rem !important;
+        font-size: 0.85rem !important;
+        border-bottom: 1px solid #F1F5F9 !important;
+    }
+
+    table.data-table td:last-child {
+        border-bottom: none !important;
+    }
+
+    table.data-table td[data-label]::before {
+        content: attr(data-label);
+        display: block;
+        font-size: 0.66rem !important;
+        font-weight: 700 !important;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        color: #94A3B8 !important;
+        margin-bottom: 0.2rem;
+    }
+
+    table.data-table td.data-table-title {
+        order: -1;
+        font-size: 1rem !important;
+        font-weight: 800 !important;
+        background: #F8FAFC !important;
+        padding: 0.9rem 1rem !important;
+        border-bottom: 1px solid #E2E8F0 !important;
+    }
+
+    table.data-table td.data-table-title::before {
+        content: none;
     }
 
     /* Forms, Buttons & Controls */
