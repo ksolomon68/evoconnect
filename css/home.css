@@ -109,6 +109,19 @@ h1, h2, h3, h4, .section-title, .pathway-title, .auth-title {
   display: none;
 }
 
+@media (max-width: 1100px) {
+  .main-nav {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0;
+  }
+
+  .main-nav a {
+    width: 100%;
+  }
+}
+
 /* ── Architectural Grid Backdrop & Ambient Lighting ────────────────── */
 .evo-grid-backdrop {
   position: absolute;
