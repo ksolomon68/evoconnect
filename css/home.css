@@ -395,6 +395,29 @@ h1, h2, h3, h4, .section-title, .pathway-title, .auth-title {
   gap: 0.85rem;
 }
 
+.telemetry-sector-label {
+  display: flex;
+  align-items: baseline;
+  gap: 0.45rem;
+  font-family: var(--font-mono);
+  margin-bottom: -0.1rem;
+}
+.telemetry-sector-label span {
+  font-size: 0.6rem;
+  color: #64748B;
+  letter-spacing: 0.1em;
+}
+.telemetry-sector-label strong {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #22D3EE;
+  letter-spacing: 0.02em;
+}
+
+.telemetry-row[data-telemetry-busy] {
+  pointer-events: none;
+}
+
 .telemetry-row {
   display: grid;
   grid-template-columns: auto 1fr auto;
