@@ -619,7 +619,7 @@ async function initDatabase() {
                 'demo-prime@evoconnect.io',
                 demoHash,
                 '512-555-0201',
-                'APEXCG1234567',
+                'APX123456789',
                 'GSA MAS, IDIQ, BPA',
                 '["237310","238110","238210","238990"]',
                 'Austin', 'TX', '78701',
@@ -643,7 +643,7 @@ async function initDatabase() {
                 '210-555-0301',
                 'LLC',
                 '["DBE","SBE","WBE"]',
-                'GRNPTH9876543',
+                'GPT987654321',
                 'yes',
                 '["541620","562910","238910"]',
                 'Environmental consulting, site assessment, NEPA compliance, and hazardous materials management for transportation and infrastructure projects.',
@@ -688,115 +688,33 @@ async function initDatabase() {
             await db.execute(`INSERT IGNORE INTO worker_matches (worker_id, naics_code) VALUES (?, '237130')`, [demoW[0].id]);
         }
 
-        // ── Seed Sample Opportunities if empty ─────────────────────
+        // ── Seed Authentic Federal & State Solicitations & Trade Jobs ─────────────
         const [[{ oppCount }]] = await db.execute('SELECT COUNT(*) AS oppCount FROM opportunities');
         if (oppCount === 0) {
             const [demoP] = await db.execute(`SELECT id FROM primes WHERE email = 'demo-prime@evoconnect.io'`);
             const primeId = demoP.length ? demoP[0].id : 1;
+            const [demoB] = await db.execute(`SELECT id FROM businesses WHERE email = 'demo-business@evoconnect.io'`);
+            const businessId = demoB.length ? demoB[0].id : 1;
+            const { federalAndStateOpportunities } = require('../scripts/seed-federal-state');
 
-            const sampleOpps = [
-                [
-                    'OPP-2026-001',
-                    'I-35 Corridor Intelligent Traffic Signal & Highway Lighting Upgrade',
-                    'Electrical subcontracting for 18 miles of highway lighting, conduit trenching, pull boxes, and traffic signal cabinet installations along the I-35 corridor.',
-                    'TX-Austin',
-                    'Central Texas / Austin Region',
-                    'electrical',
-                    'Electrical & Lighting',
-                    'Traffic Signals',
-                    '$450,000 – $850,000',
-                    '2026-12-15',
-                    '17:00',
-                    'EVOConnected Portal',
-                    'published',
-                    primeId,
-                    'Apex Construction Group',
-                    '8 months',
-                    'Active electrical license, OSHA-30 certified crew, prevailing wage / certified payroll compliance.',
-                    'DBE, SBE, HUB, OSHA-30',
-                    '["238210","237310"]'
-                ],
-                [
-                    'OPP-2026-002',
-                    'BEAD Rural Fiber Backbone Deployment — Phase II',
-                    'Underground directional boring, fiber optic cable pulling, splicing, and testing across 42 miles of rural right-of-way.',
-                    'TX-Houston',
-                    'Gulf Coast / Houston Region',
-                    'fiber-broadband',
-                    'Fiber & Broadband',
-                    'OSP Fiber Construction',
-                    '$1,200,000 – $2,500,000',
-                    '2026-12-30',
-                    '16:00',
-                    'EVOConnected Portal',
-                    'published',
-                    primeId,
-                    'Apex Construction Group',
-                    '14 months',
-                    'SAM.gov active registration, minimum 3 years OSP fiber construction experience, COI $2M aggregate.',
-                    'HUB, SDVOSB, 8(a)',
-                    '["237130","517311"]'
-                ],
-                [
-                    'OPP-2026-003',
-                    'NEPA Environmental Assessment & Stormwater Compliance Support',
-                    'Environmental consulting, wetland delineation, SWPPP inspections, and hazardous materials screening for public works bridge replacements.',
-                    'TX-SanAntonio',
-                    'South Central / San Antonio Region',
-                    'environmental',
-                    'Environmental Services',
-                    'NEPA & Compliance',
-                    '$180,000 – $320,000',
-                    '2026-11-30',
-                    '15:00',
-                    'EVOConnected Portal',
-                    'published',
-                    primeId,
-                    'Apex Construction Group',
-                    '6 months',
-                    'Prior DOT NEPA documentation experience and certified environmental professionals on staff.',
-                    'DBE, WBE, SBE',
-                    '["541620","562910"]'
-                ],
-                [
-                    'OPP-2026-004',
-                    'Municipal Bridge Deck Concrete Rehabilitation & Structural Repair',
-                    'Structural concrete forming, rebar placement, spall repair, and bridge deck overlay for 4 municipal overpass structures.',
-                    'TX-Dallas',
-                    'North Texas / DFW Region',
-                    'concrete-cement',
-                    'Concrete & Civil Construction',
-                    'Bridge Rehabilitation',
-                    '$900,000 – $1,600,000',
-                    '2027-01-20',
-                    '14:00',
-                    'EVOConnected Portal',
-                    'published',
-                    primeId,
-                    'Apex Construction Group',
-                    '10 months',
-                    'Bonding capacity $1M+, municipal or DOT bridge deck experience.',
-                    'DBE, MBE, HUB',
-                    '["237310","238110"]'
-                ]
-            ];
-
-            for (const opp of sampleOpps) {
+            for (const opp of federalAndStateOpportunities) {
+                const actualPostedBy = opp.listing_type === 'job' ? businessId : primeId;
                 await db.execute(`
                     INSERT IGNORE INTO opportunities (
                         id, title, scope_summary, description, district, district_name,
                         category, category_name, subcategory, estimated_value,
                         due_date, due_time, submission_method, status, posted_by, posted_by_name,
-                        duration, requirements, certifications, naics_codes
-                    ) VALUES (?,?,?, ?,?,?, ?,?,?,?, ?,?,?,?,?,?, ?,?,?,?)
+                        duration, requirements, certifications, naics_codes, posted_by_type, listing_type
+                    ) VALUES (?,?,?, ?,?,?, ?,?,?,?, ?,?,?,?,?,?, ?,?,?,?, ?,?)
                 `, [
-                    opp[0], opp[1], opp[2], opp[2], opp[3], opp[4],
-                    opp[5], opp[6], opp[7], opp[8],
-                    opp[9], opp[10], opp[11], opp[12], opp[13], opp[14],
-                    opp[15], opp[16], opp[17], opp[18]
+                    opp.id, opp.title, opp.scope_summary, opp.description, opp.district, opp.district_name,
+                    opp.category, opp.category_name, opp.subcategory, opp.estimated_value,
+                    opp.due_date, opp.due_time, opp.submission_method, opp.status, actualPostedBy, opp.posted_by_name,
+                    opp.duration, opp.requirements, opp.certifications, opp.naics_codes,
+                    opp.posted_by_type, opp.listing_type
                 ]);
             }
-            console.log('EVOConnected DB: Seeded 4 sample contracting opportunities.');
+            console.log(`EVOConnected DB: Seeded ${federalAndStateOpportunities.length} authentic Federal & State contracting opportunities and labor jobs.`);
         }
 
         } // Development-only demo accounts and sample opportunities.
