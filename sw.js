@@ -10,8 +10,8 @@
  */
 
 // ── Agency config (keep in sync with agency.config.js) ───────────────────────
-const AGENCY_STORAGE_PREFIX = 'primereach';   // storagePrefix value from agency.config.js
-const AGENCY_APP_NAME       = 'PrimeReach'; // name value from agency.config.js
+const AGENCY_STORAGE_PREFIX = 'evoconnect';   // storagePrefix value from agency.config.js
+const AGENCY_APP_NAME       = 'EVOConnected'; // name value from agency.config.js
 const AGENCY_LOGO_PATH      = '/images/logo.png'; // logoPath from agency.config.js
 
 const CACHE_VERSION = 'v1.2.2';
@@ -50,6 +50,7 @@ const PRECACHE_ASSETS = [
   '/assets/favicon-32.png',
   '/assets/favicon-16.png',
   AGENCY_LOGO_PATH,
+  '/images/favicon.png',
   '/assets/icon-192.png',
   '/assets/icon-512.png',
   '/assets/icon-maskable.png',

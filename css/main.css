@@ -240,9 +240,9 @@ body {
 /* Mobile Navigation Toggle */
 .hamburger {
     display: none;
-    background: none;
-    border: none;
-    color: var(--color-text-inverse);
+    background: rgba(255, 255, 255, 0.08) !important;
+    border: 1px solid rgba(255, 255, 255, 0.2) !important;
+    color: #F8FAFC !important;
     font-size: 28px;
     cursor: pointer;
     padding: var(--space-sm);
@@ -250,11 +250,13 @@ body {
     height: 44px;
     position: relative;
     z-index: 1070;
+    border-radius: var(--border-radius-md);
     transition: all 0.3s ease;
 }
 
 .hamburger:hover {
-    background-color: rgba(255, 255, 255, 0.1);
+    background-color: rgba(255, 255, 255, 0.16) !important;
+    border-color: rgba(6, 182, 212, 0.5) !important;
     border-radius: var(--border-radius-md);
 }
 
@@ -273,7 +275,7 @@ body {
     left: 50%;
     width: 24px;
     height: 2px;
-    background-color: var(--color-text-inverse);
+    background-color: #F8FAFC !important;
     transition: all 0.3s ease;
     transform: translateX(-50%);
 }
@@ -319,14 +321,15 @@ body {
         position: fixed;
         top: 0;
         right: -100%;
-        width: 280px;
+        width: 300px;
         height: 100vh;
-        background: var(--color-bg-primary);
-        border-left: 1px solid var(--color-border);
-        backdrop-filter: blur(20px);
+        background: #0B1120 !important;
+        border-left: 1px solid rgba(255, 255, 255, 0.12) !important;
+        backdrop-filter: blur(24px) !important;
+        -webkit-backdrop-filter: blur(24px) !important;
         padding: 80px var(--space-lg) var(--space-lg);
-        transition: right 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-        box-shadow: -4px 0 20px rgba(0, 0, 0, 0.3);
+        transition: right 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+        box-shadow: -8px 0 32px rgba(0, 0, 0, 0.65) !important;
         overflow-y: auto;
         z-index: 1080;
         /* Ensure it stays above everything including overlay */
@@ -344,9 +347,12 @@ body {
 
     .main-nav a {
         display: block;
-        padding: var(--space-md);
-        font-size: var(--font-size-md);
+        padding: 0.75rem 1rem !important;
+        font-size: 0.98rem !important;
+        font-weight: 600 !important;
+        color: #F8FAFC !important;
         border-radius: var(--border-radius-md);
+        margin-bottom: 0.35rem;
     }
 
     .main-nav a::before {
@@ -355,8 +361,16 @@ body {
 
     .main-nav a:hover,
     .main-nav a:focus {
-        background-color: rgba(255, 255, 255, 0.2);
+        background-color: rgba(255, 255, 255, 0.1) !important;
+        color: #22D3EE !important;
         transform: translateX(4px);
+    }
+
+    .main-nav a.active {
+        background: rgba(6, 182, 212, 0.18) !important;
+        color: #22D3EE !important;
+        border-left: 3px solid #06B6D4 !important;
+        font-weight: 700 !important;
     }
 
     /* Mobile dropdown — always expanded in the slide-in panel */

@@ -2148,3 +2148,31 @@ table.data-table tbody tr:last-child td {
   color: #0F172A !important;
   background: #F1F5F9 !important;
 }
+
+
+/* ── Dashboard Mobile Toggle High-Contrast Rules ──────────────────── */
+@media (max-width: 1024px) {
+  .mobile-toggle-btn {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: 42px !important;
+    height: 42px !important;
+    border-radius: 10px !important;
+    color: #0284C7 !important;
+    background: #F1F5F9 !important;
+    border: 1px solid #CBD5E1 !important;
+    box-shadow: 0 1px 3px rgba(15, 23, 42, 0.08) !important;
+  }
+
+  .mobile-toggle-btn:hover {
+    background: #E2E8F0 !important;
+    color: #0369A1 !important;
+  }
+
+  .mobile-toggle-btn svg {
+    stroke: #0284C7 !important;
+    width: 24px !important;
+    height: 24px !important;
+  }
+}
