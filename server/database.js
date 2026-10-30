@@ -731,6 +731,7 @@ async function initDatabase() {
         await require('./services/flagship-schema')(db);
         await require('./services/faqs').migrate(db);
         await require('./services/branding-migration')(db);
+        await require('./services/homepage-copy-migration')(db);
         await require('./services/ecosystem-schema')(db);
         await require('./services/seed-migration')(db);
         await require('./services/opportunity-lifecycle').archiveExpired(db);
