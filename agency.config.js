@@ -85,7 +85,7 @@ window.AGENCY = {
   }
 
   function patchLogos() {
-    document.querySelectorAll('img[src*="logo"]').forEach(img => {
+    document.querySelectorAll('img[src*="logo"]:not(.pwa-logo):not(.site-logo-icon)').forEach(img => {
       img.src = cfg.logoPath;
       img.alt = cfg.logoAlt;
     });

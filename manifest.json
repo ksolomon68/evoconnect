@@ -22,22 +22,34 @@
   ],
   "icons": [
     {
-      "src": "images/favicon.png",
+      "src": "/images/favicon.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "images/favicon.png",
+      "src": "/images/favicon.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "images/favicon.png",
+      "src": "/images/favicon.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "maskable"
+    },
+    {
+      "src": "/assets/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/assets/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
     }
   ],
   "shortcuts": [
@@ -48,7 +60,7 @@
       "description": "Sign up and get matched to federal contracts",
       "icons": [
         {
-          "src": "images/favicon.png",
+          "src": "/images/favicon.png",
           "sizes": "192x192"
         }
       ]
@@ -60,7 +72,7 @@
       "description": "Access your worker dashboard",
       "icons": [
         {
-          "src": "images/favicon.png",
+          "src": "/images/favicon.png",
           "sizes": "192x192"
         }
       ]
@@ -72,7 +84,7 @@
       "description": "Learn the 4-step path to a government contract",
       "icons": [
         {
-          "src": "images/favicon.png",
+          "src": "/images/favicon.png",
           "sizes": "192x192"
         }
       ]

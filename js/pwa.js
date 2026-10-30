@@ -6,7 +6,8 @@
 (function () {
   'use strict';
 
-  const ICON = '/assets/icon-192.png';
+  const ICON = '/images/favicon.png';
+  const FALLBACK_ICON = '/assets/icon-192.png';
   const DISMISS_KEY = 'pwa-install-dismissed';
   const INSTALLED_KEY = 'pwa-installed';
   const DISMISS_TTL = 7 * 24 * 60 * 60 * 1000; // 7 days
@@ -78,7 +79,6 @@
   // ── Android fallback: if beforeinstallprompt never fires (HTTP/old Chrome)
   if (isAndroid && !isAlreadyInstalled() && !wasDismissedRecently()) {
     window.addEventListener('load', () => {
-      // Wait 5s — if beforeinstallprompt hasn't fired, show manual guide
       setTimeout(() => {
         if (!deferredPrompt && !document.getElementById('pwa-install-banner')) {
           showAndroidManualBanner();
@@ -94,10 +94,10 @@
 
     const banner = createBanner('pwa-install-banner', `
       <div class="pwa-inner">
-        <img src="${ICON}" alt="" aria-hidden="true" class="pwa-logo">
+        <img src="${ICON}" alt="EVOConnected" class="pwa-logo" width="44" height="44" onerror="if(this.src.indexOf('favicon')!==-1)this.src='${FALLBACK_ICON}';">
         <div class="pwa-text">
           <strong>Install EVOConnected</strong>
-          <span>Add to your home screen for quick access</span>
+          <span>Add to your home screen for instant portal access</span>
         </div>
         <div class="pwa-actions">
           <button id="pwa-install-btn">Install</button>
@@ -131,7 +131,7 @@
 
     const banner = createBanner('pwa-install-banner', `
       <div class="pwa-inner">
-        <img src="${ICON}" alt="" aria-hidden="true" class="pwa-logo">
+        <img src="${ICON}" alt="EVOConnected" class="pwa-logo" width="44" height="44" onerror="if(this.src.indexOf('favicon')!==-1)this.src='${FALLBACK_ICON}';">
         <div class="pwa-text">
           <strong>Install EVOConnected</strong>
           <span>Tap <b>⋮ Menu</b> → <b>Add to Home screen</b></span>
@@ -155,7 +155,7 @@
 
     const banner = createBanner('pwa-install-banner', `
       <div class="pwa-inner pwa-ios">
-        <img src="${ICON}" alt="" aria-hidden="true" class="pwa-logo">
+        <img src="${ICON}" alt="EVOConnected" class="pwa-logo" width="44" height="44" onerror="if(this.src.indexOf('favicon')!==-1)this.src='${FALLBACK_ICON}';">
         <div class="pwa-text">
           <strong>Install EVOConnected</strong>
           <span>Tap <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="vertical-align:middle;margin:0 2px"><path d="M4 12v8a2 2 0 002 2h12a2 2 0 002-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg> then <b>"Add to Home Screen"</b></span>
@@ -180,9 +180,13 @@
 
     const banner = createBanner('pwa-update-banner', `
       <div class="pwa-inner">
-        <span style="flex:1;font-size:0.88rem;color:#333;">🔄 A new version is available.</span>
+        <img src="${ICON}" alt="EVOConnected" class="pwa-logo" width="44" height="44" onerror="if(this.src.indexOf('favicon')!==-1)this.src='${FALLBACK_ICON}';">
+        <div class="pwa-text">
+          <strong>Update Ready</strong>
+          <span>A new version of EVOConnected is available</span>
+        </div>
         <div class="pwa-actions">
-          <button id="pwa-reload-btn">Reload</button>
+          <button id="pwa-reload-btn">Update</button>
           <button class="pwa-dismiss" aria-label="Dismiss">✕</button>
         </div>
       </div>
@@ -222,29 +226,37 @@
         transform: translateX(-50%);
         z-index: 99999;
         width: min(500px, calc(100vw - 1.5rem));
-        background: #fff;
-        border: 1.5px solid #005A8C;
+        background: rgba(15, 23, 42, 0.97);
+        color: #F8FAFC;
+        border: 1px solid rgba(0, 180, 216, 0.4);
         border-radius: 14px;
-        box-shadow: 0 8px 32px rgba(0,0,0,0.18);
-        animation: pwaUp 0.35s cubic-bezier(0.34,1.56,0.64,1) both;
+        box-shadow: 0 16px 40px rgba(0, 0, 0, 0.6), 0 0 24px rgba(0, 180, 216, 0.16);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        animation: pwaUp 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) both;
         font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
         overflow: hidden;
       }
       @keyframes pwaUp {
-        from { opacity:0; transform:translateX(-50%) translateY(40px); }
-        to   { opacity:1; transform:translateX(-50%) translateY(0); }
+        from { opacity: 0; transform: translateX(-50%) translateY(40px); }
+        to   { opacity: 1; transform: translateX(-50%) translateY(0); }
       }
       .pwa-inner {
         display: flex;
         align-items: center;
-        gap: 0.75rem;
-        padding: 0.9rem 1rem;
+        gap: 0.85rem;
+        padding: 0.85rem 1rem;
       }
       .pwa-logo {
-        width: 42px; height: 42px;
+        width: 44px;
+        height: 44px;
         object-fit: contain;
         border-radius: 10px;
         flex-shrink: 0;
+        background: #030712;
+        border: 1px solid rgba(0, 180, 216, 0.3);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+        display: block;
       }
       .pwa-text {
         flex: 1;
@@ -254,56 +266,104 @@
         gap: 0.2rem;
       }
       .pwa-text strong {
-        font-size: 0.88rem;
+        font-size: 0.92rem;
         font-weight: 700;
-        color: #005A8C;
+        color: #F8FAFC;
+        letter-spacing: -0.01em;
       }
       .pwa-text span {
         font-size: 0.78rem;
-        color: #555;
+        color: #94A3B8;
         line-height: 1.4;
+      }
+      .pwa-text span b {
+        color: #38BDF8;
       }
       .pwa-actions {
         display: flex;
         align-items: center;
-        gap: 0.4rem;
+        gap: 0.5rem;
         flex-shrink: 0;
       }
       #pwa-install-btn, #pwa-reload-btn {
-        background: #005A8C;
-        color: #fff;
+        background: linear-gradient(135deg, #00B4D8, #0077B6);
+        color: #030712;
         border: none;
-        border-radius: 7px;
+        border-radius: 8px;
         padding: 0.45rem 1rem;
         font-size: 0.85rem;
-        font-weight: 600;
+        font-weight: 700;
         cursor: pointer;
         white-space: nowrap;
+        transition: transform 0.15s ease, box-shadow 0.15s ease;
+        box-shadow: 0 2px 10px rgba(0, 180, 216, 0.3);
       }
-      #pwa-install-btn:hover, #pwa-reload-btn:hover { background: #004470; }
+      #pwa-install-btn:hover, #pwa-reload-btn:hover {
+        background: linear-gradient(135deg, #38BDF8, #00B4D8);
+        transform: translateY(-1px);
+        box-shadow: 0 4px 14px rgba(0, 180, 216, 0.45);
+      }
       .pwa-dismiss {
         background: transparent;
         border: none;
-        color: #999;
-        font-size: 1.1rem;
+        color: #94A3B8;
+        font-size: 1.15rem;
         cursor: pointer;
         padding: 0.25rem 0.4rem;
-        border-radius: 4px;
+        border-radius: 6px;
         line-height: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: background 0.15s ease, color 0.15s ease;
       }
-      .pwa-dismiss:hover { color: #333; background: #f0f0f0; }
-      /* iOS arrow pointing to browser share button */
+      .pwa-dismiss:hover {
+        color: #F8FAFC;
+        background: rgba(255, 255, 255, 0.1);
+      }
       .pwa-ios-arrow {
         text-align: center;
-        font-size: 1.3rem;
-        color: #005A8C;
-        padding-bottom: 0.5rem;
-        margin-top: -0.5rem;
+        font-size: 1.2rem;
+        color: #00B4D8;
+        padding-bottom: 0.4rem;
+        margin-top: -0.4rem;
       }
       @media (max-width: 480px) {
-        #pwa-install-banner, #pwa-update-banner { bottom: 68px; border-radius: 12px; }
+        #pwa-install-banner, #pwa-update-banner {
+          bottom: 72px;
+          border-radius: 12px;
+        }
+        .pwa-inner {
+          padding: 0.75rem 0.85rem;
+          gap: 0.7rem;
+        }
+        .pwa-logo {
+          width: 38px;
+          height: 38px;
+        }
       }
     `;
     document.head.appendChild(s);
   }
+
+  // ── Public API & Manual Trigger Support ──────────────────────────────────
+  window.EVOConnectedPWA = {
+    showInstallPrompt: function () {
+      if (deferredPrompt) {
+        showAndroidBanner();
+      } else if (isIOS) {
+        showIOSBanner();
+      } else {
+        showAndroidManualBanner();
+      }
+    }
+  };
+
+  document.addEventListener('click', e => {
+    const trigger = e.target.closest('[data-install-app], .btn-download-app, #btn-download-app, [href="#download-app"], [href="#install-app"]');
+    if (trigger) {
+      e.preventDefault();
+      if (window.EVOConnectedPWA) window.EVOConnectedPWA.showInstallPrompt();
+    }
+  });
 })();

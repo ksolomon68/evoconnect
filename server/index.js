@@ -152,6 +152,7 @@ app.use(express.static(publicPath, { etag: false, lastModified: false }));
 
 // Also serve the old /images, /css, /js, /uploads root directories for backwards compat
 app.use('/images',  express.static(path.join(root, 'images')));
+app.use('/assets',  express.static(path.join(root, 'assets')));
 app.use('/css',     express.static(path.join(root, 'css')));
 app.use('/js',      express.static(path.join(root, 'js')));
 app.use('/uploads', express.static(path.join(root, 'uploads')));
