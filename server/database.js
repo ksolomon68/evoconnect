@@ -263,6 +263,15 @@ async function initDatabase() {
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
         `);
 
+        // ── 7b. Site Analytics (daily aggregates) ──────────────────
+        await db.execute(`
+            CREATE TABLE IF NOT EXISTS site_analytics_daily (
+                date DATE PRIMARY KEY,
+                page_views INT NOT NULL DEFAULT 0,
+                visits INT NOT NULL DEFAULT 0
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
+        `);
+
         // ── 8. Subcontractor RFQs (Enterprise primes) ─────────────
         await db.execute(`
             CREATE TABLE IF NOT EXISTS subcontractor_requests (

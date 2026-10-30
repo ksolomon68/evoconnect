@@ -5,6 +5,7 @@ const bcrypt = require('bcryptjs');
 const { getDb } = require('../database');
 const { requireAdmin } = require('../middleware/auth');
 const { sendEmail } = require('../config/email');
+const analytics = require('../services/analytics');
 const router = express.Router();
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
@@ -123,6 +124,37 @@ router.get('/dashboard', requireAdmin, async (req, res) => {
 
     } catch (err) {
         console.error('EVOConnected [admin/dashboard]:', err);
+        res.status(500).render('errors/500', { title: 'Server Error' });
+    }
+});
+
+// ── GET /admin/analytics ────────────────────────────────────────────────────────
+router.get('/analytics', requireAdmin, async (req, res) => {
+    try {
+        const db = getDb();
+
+        const [[{ workerCount }]]   = await db.execute('SELECT COUNT(*) AS workerCount FROM workers');
+        const [[{ bizCount }]]      = await db.execute('SELECT COUNT(*) AS bizCount FROM businesses');
+        const [[{ primeCount }]]    = await db.execute('SELECT COUNT(*) AS primeCount FROM primes');
+        const [[{ oppsCount }]]     = await db.execute("SELECT COUNT(*) AS oppsCount FROM opportunities WHERE status = 'published'");
+        const [[{ appsCount }]]     = await db.execute('SELECT COUNT(*) AS appsCount FROM applications');
+        const [[{ connectionCount }]] = await db.execute('SELECT COUNT(*) AS connectionCount FROM connections');
+
+        const [totals, dailySeries] = await Promise.all([
+            analytics.getTotals(db),
+            analytics.getDailySeries(db, 30)
+        ]);
+
+        res.render('admin/analytics', {
+            title: 'Platform Analytics | EVOConnected Admin',
+            flash: getFlash(req),
+            stats: { workerCount, bizCount, primeCount, oppsCount, appsCount, connectionCount },
+            totals,
+            dailySeries
+        });
+
+    } catch (err) {
+        console.error('EVOConnected [admin/analytics]:', err);
         res.status(500).render('errors/500', { title: 'Server Error' });
     }
 });

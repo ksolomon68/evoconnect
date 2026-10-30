@@ -118,6 +118,9 @@ app.use((req, res, next) => {
 
 app.use(require('./services/cms-content').cmsMiddleware);
 
+// ── Site analytics: counts page views/visits for public, anonymous pages ──
+app.use(require('./services/analytics').trackRequest);
+
 // ── No-cache for HTML ─────────────────────────────────────────────
 app.use((req, res, next) => {
     if (req.path.endsWith('.html') || req.path === '/' || !req.path.includes('.')) {
