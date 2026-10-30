@@ -1685,8 +1685,56 @@ h1, h2, h3, h4, .section-title, .pathway-title, .auth-title {
 }
 
 /* ── Eligible Trades Matrix Alignment ──────────────────────────────── */
-/* Card count varies as trades are added/removed, so the grid reflows via
-   auto-fill (see .trades-grid above) instead of hardcoded per-card spans. */
+/* /labor's trades-grid has a variable, growing card count, so it reflows via
+   auto-fill (see .trades-grid above) instead of hardcoded per-card spans.
+   The home page's #trades section always lists exactly its 13 core trade
+   classifications, so it keeps a hand-balanced layout (3/4/3/3 rows) with
+   no lone card on the last row. */
+@media (min-width: 992px) {
+  #trades .trades-grid {
+    display: grid !important;
+    grid-template-columns: repeat(12, 1fr) !important;
+    gap: 1.15rem !important;
+    align-items: stretch !important;
+  }
+  /* Row 1: 3 Priority Demand cards (span 4 columns each = 12 columns) */
+  #trades .trades-grid > .trade-card:nth-child(1),
+  #trades .trades-grid > .trade-card:nth-child(2),
+  #trades .trades-grid > .trade-card:nth-child(3) {
+    grid-column: span 4 !important;
+  }
+  /* Row 2: 4 Core Systems cards (span 3 columns each = 12 columns) */
+  #trades .trades-grid > .trade-card:nth-child(4),
+  #trades .trades-grid > .trade-card:nth-child(5),
+  #trades .trades-grid > .trade-card:nth-child(6),
+  #trades .trades-grid > .trade-card:nth-child(7) {
+    grid-column: span 3 !important;
+  }
+  /* Row 3: 3 Civil & Structural cards (span 4 columns each = 12 columns) */
+  #trades .trades-grid > .trade-card:nth-child(8),
+  #trades .trades-grid > .trade-card:nth-child(9),
+  #trades .trades-grid > .trade-card:nth-child(10) {
+    grid-column: span 4 !important;
+  }
+  /* Row 4: 3 Finishes & Site Ops cards (span 4 columns each = 12 columns) */
+  #trades .trades-grid > .trade-card:nth-child(11),
+  #trades .trades-grid > .trade-card:nth-child(12),
+  #trades .trades-grid > .trade-card:nth-child(13) {
+    grid-column: span 4 !important;
+  }
+}
+
+@media (min-width: 640px) and (max-width: 991px) {
+  #trades .trades-grid {
+    display: grid !important;
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 1rem !important;
+  }
+  /* On 2-column view, make the 13th card span both columns as an anchor */
+  #trades .trades-grid > .trade-card:nth-child(13) {
+    grid-column: 1 / -1 !important;
+  }
+}
 
 
 /* ── Opportunities Search Card Contrast Enforcement ──────────────── */
