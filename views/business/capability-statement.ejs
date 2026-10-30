@@ -146,10 +146,10 @@
         <h1><%= business.company_name || 'Your Company Name' %></h1>
         <p><%= business.entity_type ? business.entity_type.replace(/_/g,' ').toUpperCase() : '' %><% if (business.years_in_business) { %> &bull; <%= business.years_in_business %> Years in Business<% } %></p>
       </div>
-      <div class="cap-logo" style="display:flex;align-items:center;gap:0.5rem;">
+      <a href="/" class="cap-logo" style="display:flex;align-items:center;gap:0.5rem;text-decoration:none;color:inherit;" aria-label="EVOConnected Home">
         <img src="/images/favicon.png" alt="" height="28" style="border-radius:6px;">
         <span style="font-family:var(--font-family-secondary, 'Plus Jakarta Sans', sans-serif);font-size:1.1rem;font-weight:800;letter-spacing:-0.02em;">EVO<span style="color:#06B6D4;">Connected</span></span>
-      </div>
+      </a>
     </div>
 
     <!-- Contact -->

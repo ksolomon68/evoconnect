@@ -62,10 +62,10 @@ function showLoginScreen() {
     document.getElementById('cms-app').innerHTML = `
     <div class="cms-login-screen" role="main">
       <div class="cms-login-card">
-        <div style="display:flex;align-items:center;justify-content:center;gap:0.6rem;margin-bottom:0.75rem;">
+        <a href="/" style="display:flex;align-items:center;justify-content:center;gap:0.6rem;margin-bottom:0.75rem;text-decoration:none;" aria-label="EVOConnected Home">
           <img src="/images/favicon.png" alt="EVOConnected" style="height:40px;width:auto;">
           <span style="font-size:1.6rem;font-weight:800;color:#0F172A;letter-spacing:-0.02em;">EVOConnected</span>
-        </div>
+        </a>
         <h1>CMS Admin</h1>
         <p>Sign in with your admin account to manage site content.</p>
         <div id="login-error" class="cms-alert cms-alert-error cms-hidden" role="alert"></div>
@@ -131,7 +131,7 @@ async function showShell() {
 
       <!-- Header -->
       <header class="cms-header" role="banner">
-        <a href="/admin/dashboard" class="cms-header-brand">
+        <a href="/" class="cms-header-brand" aria-label="EVOConnected Home">
           <img src="/images/favicon.png" alt="EVOConnected" style="height:28px;width:auto;background:#fff;padding:3px;border-radius:6px;">
           <span>EVOConnected CMS Admin</span>
         </a>

@@ -213,7 +213,7 @@ const Navigation = {
                     </svg>
                 </button>
                 <div class="header-logo" style="display: flex; align-items: center;">
-                    <a href="${config.dashboardHref}" style="text-decoration: none; display: flex; align-items: center; min-height: 44px;" aria-label="EVOConnected Dashboard">
+                    <a href="/" style="text-decoration: none; display: flex; align-items: center; min-height: 44px;" aria-label="EVOConnected Home">
                         <img src="/images/logo.png" alt="EVOConnected logo" style="height: 32px; width: auto; display: block;" onerror="this.src='/images/favicon.png';">
                         <span style="font-weight: 700; color: var(--color-primary); font-size: 1.1rem; letter-spacing: -0.01em; margin-left: 0.5rem; border-left: 1px solid var(--color-border); padding-left: 0.5rem;">EVOConnected</span>
                     </a>

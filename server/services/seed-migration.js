@@ -18,3 +18,4 @@ module.exports = async function migrateSeeds(db) {
         console.warn('EVOConnected: Seed migration notice:', err.message);
     }
 };
+
