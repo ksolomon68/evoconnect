@@ -1,6 +1,17 @@
 <header class="site-header" role="banner">
   <div class="container nav-container">
-    <a href="/" class="site-logo" aria-label="EVOConnected Home">
+    <%
+      const dashboardHref = {
+        worker: '/labor/dashboard',
+        business: '/business/dashboard',
+        prime: '/prime/dashboard',
+        admin: '/admin/dashboard'
+      }[locals.user && locals.user.type] || '/';
+      // "/" auto-redirects a logged-in user to their dashboard, so the logo
+      // and Home link need the escape hatch to actually land on the home page.
+      const homeHref = locals.user ? '/?public=1' : '/';
+    %>
+    <a href="<%= homeHref %>" class="site-logo" aria-label="EVOConnected Home">
       <img src="/images/favicon.png" alt="" class="site-logo-icon">
       <span class="site-logo-text">
         <span class="site-logo-name">EVOConnected</span>
@@ -10,16 +21,8 @@
     <button class="hamburger" aria-label="Toggle menu" aria-expanded="false" aria-controls="main-nav">
       <span></span><span></span><span></span>
     </button>
-    <%
-      const dashboardHref = {
-        worker: '/labor/dashboard',
-        business: '/business/dashboard',
-        prime: '/prime/dashboard',
-        admin: '/admin/dashboard'
-      }[locals.user && locals.user.type] || '/';
-    %>
     <nav id="main-nav" class="main-nav" role="navigation" aria-label="Main navigation">
-      <a href="/" class="<%= locals.activePage === 'home' ? 'active' : '' %>">Home</a>
+      <a href="<%= homeHref %>" class="<%= locals.activePage === 'home' ? 'active' : '' %>">Home</a>
       <a href="/labor" class="<%= locals.activePage === 'labor' ? 'active' : '' %>">For Labor</a>
       <a href="/business" class="<%= locals.activePage === 'business' ? 'active' : '' %>">For Business</a>
       <a href="/prime" class="<%= locals.activePage === 'prime' ? 'active' : '' %>">For Primes</a>
