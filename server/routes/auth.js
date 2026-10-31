@@ -69,8 +69,7 @@ router.get('/auth/demo/:role', authLimiter, demo.loginContext, async (req, res) 
         worker:   'demo-labor@evoconnect.io',
         labor:    'demo-labor@evoconnect.io',
         business: 'demo-business@evoconnect.io',
-        prime:    'demo-prime@evoconnect.io',
-        admin:    'demo-admin@evoconnect.io'
+        prime:    'demo-prime@evoconnect.io'
     };
     const email = roleMap[req.params.role];
     if (!email) return res.redirect('/login');
@@ -110,13 +109,12 @@ router.post('/login', authLimiter, demo.passwordContext, async (req, res) => {
     try {
         const db = getDb();
 
-        // If logging in with one of the 4 official demo emails and DemoPass1!, auto-ensure it exists
+        // If logging in with one of the 3 public demo emails and DemoPass1!, auto-ensure it exists
         let found = null;
         const isDemoEmail = [
             'demo-labor@evoconnect.io',
             'demo-business@evoconnect.io',
-            'demo-prime@evoconnect.io',
-            'demo-admin@evoconnect.io'
+            'demo-prime@evoconnect.io'
         ].includes(email);
 
         if (isDemoEmail && password !== 'DemoPass1!') {

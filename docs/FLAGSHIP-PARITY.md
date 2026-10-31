@@ -64,11 +64,11 @@ A scoped `/css/faq.css` stylesheet supplies explicit dark question/answer colors
 
 ## Demo sign-in
 
-The four login-page demo buttons work in production as well as development. Both one-click access and the existing demo email/password form issue signed tokens marked as demo sessions. The four sample emails use `DemoPass1!`; normal accounts still authenticate against their stored password hashes.
+The three public login-page demo buttons (Labor, Business, and Prime) work in production as well as development. Both one-click access and the existing demo email/password form issue signed tokens marked as demo sessions. The three public sample emails use `DemoPass1!`; normal accounts still authenticate against their stored password hashes.
 
 Demo requests use separate `demo_` tables in the configured database, created lazily with the same schema as the app tables. Only public NAICS reference data is copied. Sample members and sample opportunities are fictional fixtures; live user records, applications and messages are never copied. The database account needs CREATE and INSERT privileges, which the app's schema initialization also uses. These tables are shared read-only preview data, not a separate writable account per visitor.
 
-A visible preview banner identifies demo sessions. Changes and live CMS access are blocked for those sessions; signing out returns to normal login. The SQL adapter scopes demo queries (including transactions) without changing live queries. Production HTTP tests exercise every demo role, preview pages, both sign-in methods, denied writes, no live users in the admin preview, and a normal account sign-in.
+A visible preview banner identifies demo sessions. Changes and live CMS access are blocked for those sessions; signing out returns to normal login. The SQL adapter scopes demo queries (including transactions) without changing live queries. Production HTTP tests exercise every demo role, preview pages, both sign-in methods, denied writes, no administrator demo entry point, and a normal account sign-in.
 
 
 ## Creating a real administrator and CMS administrator
@@ -129,3 +129,5 @@ Untrusted message subjects are escaped before appearing in the notification drop
 Prime posting is presented as Request for Qualifications (RFQ), using the existing shared listing, business application, review, NAICS matching, attachment, notification, and analytics services. `/prime/post-rfq` creates an RFQ; `/prime/opportunities` manages RFQs. Existing opportunity URLs remain supported. `/prime/rfq` redirects to the unified manager, and stale legacy form submissions redirect to the new form rather than creating disconnected records.
 
 Old `subcontractor_requests` records are copied once into the shared listings using stable `legacy-rfq-<id>` identifiers. Closed records remain closed; others start as drafts for owner review and the normal publication approval process. The original records remain intact, and subsequent startups preserve edits to the migrated copies.
+
+Administrator dashboards and CMS access are private to authenticated real administrators. The retired admin demo URL and password login no longer create admin sessions. Previously issued demo admin tokens and the historical demo-admin email are rejected, including CMS bearer tokens. Existing real administrator accounts, passwords, and shared dashboard/CMS sign-in are retained. Historical demo records are not deleted.

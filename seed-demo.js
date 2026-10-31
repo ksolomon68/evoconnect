@@ -9,7 +9,6 @@
  *
  * Demo credentials (all passwords: DemoPass1!)
  * ─────────────────────────────────────────────
- *  Admin:    demo-admin@evoconnect.io
  *  Prime:    demo-prime@evoconnect.io
  *  Business: demo-business@evoconnect.io
  *  Labor:    demo-labor@evoconnect.io
@@ -35,21 +34,6 @@ async function seed() {
     });
 
     const hash = await bcrypt.hash(DEMO_PASSWORD, 12);
-
-    // ── Admin ───────────────────────────────────────────────────────────────────
-    console.log('── Seeding demo admin...');
-    try {
-        const [ex] = await db.execute('SELECT id FROM admins WHERE email = ?', ['demo-admin@evoconnect.io']);
-        if (ex.length) {
-            console.log('  ⏭  demo-admin@evoconnect.io already exists — skipping');
-        } else {
-            await db.execute(
-                'INSERT INTO admins (email, password_hash, name) VALUES (?, ?, ?)',
-                ['demo-admin@evoconnect.io', hash, 'Demo Admin']
-            );
-            console.log('  ✅  Created: demo-admin@evoconnect.io (admin)');
-        }
-    } catch (e) { console.error('  ❌  Admin error:', e.message); }
 
     // ── Prime Contractor ────────────────────────────────────────────────────────
     console.log('── Seeding demo prime contractor...');
@@ -163,7 +147,6 @@ async function seed() {
 
 All accounts use password: DemoPass1!
 
-  Admin:    demo-admin@evoconnect.io    → /admin/dashboard
   Prime:    demo-prime@evoconnect.io    → /prime/dashboard
   Business: demo-business@evoconnect.io → /business/dashboard
   Labor:    demo-labor@evoconnect.io    → /labor/dashboard

@@ -614,14 +614,9 @@ async function initDatabase() {
         }
 
         if (process.env.NODE_ENV !== 'production') {
-        // ── Auto-Seed Demo Accounts for All 4 Roles (Password: DemoPass1!) ──
+        // ── Auto-Seed Demo Accounts for the 3 Public Roles (Password: DemoPass1!) ──
         const bcryptDemo = require('bcryptjs');
         const demoHash = await bcryptDemo.hash('DemoPass1!', 10);
-
-        await db.execute(
-            `INSERT IGNORE INTO admins (email, password_hash, name) VALUES (?, ?, ?)`,
-            ['demo-admin@evoconnect.io', demoHash, 'Demo Admin']
-        );
 
         await db.execute(
             `INSERT IGNORE INTO primes

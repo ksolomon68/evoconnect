@@ -4,6 +4,7 @@ const path=require('path');
 const bcrypt=require('bcryptjs');
 
 async function matches(admin,password) {
+    if(require('./admin-access').isRetiredDemoEmail(admin?.email))return false;
     if(!admin || typeof password!=='string' || !password)return false;
     if(typeof admin.password_hash==='string' && await bcrypt.compare(password,admin.password_hash))return true;
     // Compatibility for existing CMS administrators; both entry points use this rule.

@@ -3,7 +3,7 @@ const bcrypt = require('bcryptjs');
 const context = require('./demo-context');
 const { getDb } = require('../database');
 const ensureAccount = require('./demo-accounts');
-const emails = ['demo-labor@evoconnect.io','demo-business@evoconnect.io','demo-prime@evoconnect.io','demo-admin@evoconnect.io'];
+const emails = ['demo-labor@evoconnect.io','demo-business@evoconnect.io','demo-prime@evoconnect.io'];
 let initialized;
 async function initialize() {
     if (!initialized) initialized=context.live(async()=>{
@@ -96,15 +96,21 @@ async function initialize() {
     return initialized;
 }
 async function loginContext(req,res,next) {
-    if(!['worker','labor','business','prime','admin'].includes(req.params.role))return res.redirect('/login');
+    if(!['worker','labor','business','prime'].includes(req.params.role))return res.redirect('/login');
     try{await initialize();return context.run(next);}catch(err){console.error('Demo initialization failed:',err);return res.status(503).send('Demo preview is temporarily unavailable. Please try again.');}
 }
 async function passwordContext(req,res,next) {
+    if(require('./admin-access').isRetiredDemoEmail(req.body.email)){require('../middleware/auth').clearAuthCookie(res);return res.status(403).send('Administrator demos are unavailable. Sign in with your real administrator account.');}
     const email=typeof req.body.email==='string'?req.body.email.trim().toLowerCase():'';
     if(!emails.includes(email) || req.body.password!=='DemoPass1!')return context.live(next);
     try{await initialize();return context.run(next);}catch(err){console.error('Demo initialization failed:',err);return res.status(503).send('Demo preview is temporarily unavailable. Please try again.');}
 }
 function requestContext(req,res,next) {
+    if(require('./admin-access').isDemoAdmin(req.user)){
+        require('../middleware/auth').clearAuthCookie(res);delete req.user;delete res.locals.user;
+        if(/^\/(?:login|logout|auth\/logout|auth\/demo\/[^/]+|api\/cms\/login)$/.test(req.path))return context.live(next);
+        return res.status(403).send('Administrator access is private. Sign in with your real administrator account.');
+    }
     // Login/logout must be able to switch between live and demo sessions.
     if(!req.user?.demo || /^\/(?:login|logout|auth\/logout|auth\/demo\/[^/]+)$/.test(req.path))return context.live(next);
     if(!['GET','HEAD'].includes(req.method))return res.status(403).send('This is a read-only demo. Log out and use your own account to save changes.');

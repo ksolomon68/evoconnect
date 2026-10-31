@@ -6,23 +6,12 @@ async function ensureDemoAccount(db, email) {
     const demoEmails = {
         'demo-labor@evoconnect.io':    'worker',
         'demo-business@evoconnect.io': 'business',
-        'demo-prime@evoconnect.io':    'prime',
-        'demo-admin@evoconnect.io':    'admin'
+        'demo-prime@evoconnect.io':    'prime'
     };
     const role = demoEmails[email];
     if (!role) return null;
 
     const hash = await bcrypt.hash('DemoPass1!', 10);
-
-    if (role === 'admin') {
-        await db.execute(
-            `INSERT INTO admins (email, password_hash, name) VALUES (?, ?, 'Demo Admin')
-             ON DUPLICATE KEY UPDATE password_hash = VALUES(password_hash), name = 'Demo Admin'`,
-            [email, hash]
-        );
-        const [rows] = await db.execute('SELECT * FROM admins WHERE email = ?', [email]);
-        return { row: rows[0], userType: 'admin' };
-    }
 
     if (role === 'prime') {
         await db.execute(

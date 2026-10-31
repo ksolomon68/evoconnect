@@ -70,7 +70,7 @@ router.post('/login', async (req, res) => {
     }
 
     try {
-        const [admins] = await require('../database').getDb().execute('SELECT id,password_hash FROM admins WHERE email = ?', [String(email).trim().toLowerCase()]);
+        const [admins] = await require('../database').getDb().execute('SELECT id,email,password_hash FROM admins WHERE email = ?', [String(email).trim().toLowerCase()]);
         if (!admins.length) return res.status(401).json({ error: 'Invalid credentials' });
         const passwordMatch = await require('../services/admin-authentication').matches(admins[0],password);
         if (!passwordMatch) {
@@ -137,6 +137,7 @@ async function requireAdmin(req, res, next) {
     }
     try {
         const decoded = jwt.verify(token, CMS_JWT_SECRET);
+        if(require('../services/admin-access').isDemoAdmin(decoded))return res.status(403).json({error:'Administrator demos are unavailable.'});
         if (decoded.type !== 'wfc_admin' && decoded.type !== 'admin') {
             return res.status(403).json({ error: 'Admin access required' });
         }

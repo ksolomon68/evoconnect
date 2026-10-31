@@ -212,7 +212,7 @@ test('production starts with JWT_SECRET and all demo roles use isolated read-onl
     const url=`http://127.0.0.1:${port+1}`;
     try {
         let ready=false;for(let i=0;i<100;i++){try{const r=await fetch(url+'/api/health');if((await r.json()).status==='ok'){ready=true;break;}}catch{}await new Promise(r=>setTimeout(r,100));}assert.ok(ready);
-        for(const [role,portal] of [['worker','labor'],['business','business'],['prime','prime'],['admin','admin']]) {
+        for(const [role,portal] of [['worker','labor'],['business','business'],['prime','prime']]) {
             const login=await fetch(url+`/auth/demo/${role}`,{redirect:'manual'});assert.equal(login.status,302,await login.clone().text());
             assert.equal(login.headers.get('location'),`/${portal}/dashboard`);
             const tokenCookie=login.headers.getSetCookie().find(c=>c.startsWith('evo_token='));assert.ok(tokenCookie);assert.match(tokenCookie,/Secure/);
@@ -240,7 +240,7 @@ test('production starts with JWT_SECRET and all demo roles use isolated read-onl
         const regularDashboard=await fetch(url+'/business/dashboard',{headers:{cookie:regularCookie}});
         const regularHtml=await regularDashboard.text();assert.match(regularHtml,/Live login fixture/);assert.doesNotMatch(regularHtml,/Demo preview/);
         const badPassword=await fetch(url+'/login',{method:'POST',redirect:'manual',headers:{'content-type':'application/x-www-form-urlencoded'},body:new URLSearchParams({email:'demo-admin@evoconnect.io',password:'wrong'})});
-        assert.equal(badPassword.headers.get('location'),'/login');assert.ok(!badPassword.headers.getSetCookie().some(c=>c.startsWith('evo_token=')));
+        assert.equal(badPassword.status,403);assert.ok(!badPassword.headers.getSetCookie().some(c=>c.startsWith('evo_token=') && !c.startsWith('evo_token=;')));
         assert.equal((await fetch(url+'/api/cms/login',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({email:'arbitrary-admin@example.invalid',password:'DemoPass1!'})})).status,401);
     } finally {production.kill();await new Promise(r=>production.once('exit',r));}
 });
@@ -555,4 +555,36 @@ test('malformed multipart uploads do not replace existing documents or stop the 
     const [[after]]=await db.execute("SELECT id FROM capability_documents WHERE owner_type='business' AND owner_id=?",[clients.businessId]);
     assert.equal(after?.id,before?.id);
     assert.equal((await clients.business.request('/api/health')).status,200);
+});
+
+
+test('admin access is private: public demo entry points and old demo tokens are rejected',async()=>{
+    const loginPage=await clients.worker.page('/login');assert.doesNotMatch(loginPage.text,/href="\/auth\/demo\/admin"/);
+    const disabled=await fetch(base+'/auth/demo/admin',{redirect:'manual'});assert.equal(disabled.headers.get('location'),'/login');assert.ok(!disabled.headers.getSetCookie().some(c=>c.startsWith('evo_token=')));
+    for(const password of ['DemoPass1!','wrong']){
+        const result=await fetch(base+'/login',{method:'POST',headers:{'content-type':'application/x-www-form-urlencoded'},body:new URLSearchParams({email:'demo-admin@evoconnect.io',password}),redirect:'manual'});
+        assert.equal(result.status,403);assert.ok(!result.headers.getSetCookie().some(c=>c.startsWith('evo_token=') && !c.startsWith('evo_token=;')));
+    }
+    const hash=await require('bcryptjs').hash('DemoPass1!',10);
+    await db.execute("INSERT INTO admins (email,password_hash,name) VALUES ('demo-admin@evoconnect.io',?,'Historical demo admin') ON DUPLICATE KEY UPDATE password_hash=VALUES(password_hash)",[hash]);
+    const cms=await fetch(base+'/api/cms/login',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({email:'demo-admin@evoconnect.io',password:'DemoPass1!'})});assert.equal(cms.status,401);
+    for(const claims of [
+        {id:clients.adminId,type:'admin',email:'real-admin@example.invalid',demo:true},
+        {id:clients.adminId,type:'admin',email:'demo-admin@evoconnect.io'},
+        {id:clients.adminId,type:'wfc_admin',email:'demo-admin@evoconnect.io',demo:true}
+    ]){
+        const token=signToken(claims);
+        for(const headers of [{cookie:'evo_token='+token},{authorization:'Bearer '+token}]){
+            for(const path of ['/admin/dashboard','/admin/users','/api/admin/users','/api/cms/pages','/api/cms/faqs','/admin-cms']){
+                assert.equal((await fetch(base+path,{headers,redirect:'manual'})).status,403,path);
+            }
+        }
+    }
+    const privateDashboard=await clients.admin.page('/admin/dashboard');assert.equal(privateDashboard.res.status,200);assert.doesNotMatch(privateDashboard.text,/Switch Demo Portal/);
+    assert.equal((await clients.admin.page('/api/cms/pages')).res.status,200);
+    for(const role of ['worker','business','prime']){
+        const demo=await fetch(base+'/auth/demo/'+role,{redirect:'manual'});assert.equal(demo.status,302);
+        const cookie=demo.headers.getSetCookie().find(c=>c.startsWith('evo_token=')).split(';')[0];
+        const page=await fetch(base+demo.headers.get('location'),{headers:{cookie}});assert.equal(page.status,200);assert.doesNotMatch(await page.text(),/href="\/auth\/demo\/admin"/);
+    }
 });

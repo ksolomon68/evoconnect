@@ -145,6 +145,7 @@ const navCfg = NAV_CONFIG[currentRole] || NAV_CONFIG.worker;
                 </a>
             <% }) %>
 
+            <% if (locals.user?.demo) { %>
             <!-- Quick Role / Demo Switcher -->
             <div class="demo-switch-label">
                 Switch Demo Portal
@@ -153,8 +154,8 @@ const navCfg = NAV_CONFIG[currentRole] || NAV_CONFIG.worker;
                 <a href="/auth/demo/worker" class="demo-switch-link<%= currentRole === 'worker' ? ' active' : '' %>">👷 Labor</a>
                 <a href="/auth/demo/business" class="demo-switch-link<%= currentRole === 'business' ? ' active' : '' %>">🏢 Business</a>
                 <a href="/auth/demo/prime" class="demo-switch-link<%= currentRole === 'prime' ? ' active' : '' %>">🏗️ Prime</a>
-                <a href="/auth/demo/admin" class="demo-switch-link<%= currentRole === 'admin' ? ' active' : '' %>">🛡️ Admin</a>
             </div>
+            <% } %>
         </nav>
 
         <div class="sidebar-footer">

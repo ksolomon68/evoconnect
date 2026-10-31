@@ -248,10 +248,6 @@ INSERT IGNORE INTO resources (title, description, url, category, audience, sort_
 -- PART 4: DEMO ACCOUNTS  (password: DemoPass1!)
 -- ═══════════════════════════════════════════════════════════
 
--- Admin → /admin/dashboard
-INSERT IGNORE INTO admins (email, password_hash, name)
-VALUES ('demo-admin@evoconnect.io','$2a$12$x58F8CcalrNndb9SYpQCBu1qUN6LU9BIm6H56kGlDR0LqIj6SF.Qy','Demo Admin');
-
 -- Prime Contractor (approved, pro tier) → /prime/dashboard
 INSERT IGNORE INTO primes (company_name, contact_name, email, password_hash, phone, sam_uei, contract_vehicles, naics_codes, city, state, zip, subscription_tier, active, approved_at)
 VALUES ('Apex Construction Group','Marcus Thompson','demo-prime@evoconnect.io','$2a$12$x58F8CcalrNndb9SYpQCBu1qUN6LU9BIm6H56kGlDR0LqIj6SF.Qy','512-555-0201','APX123456789','GSA MAS, IDIQ, BPA','["237310","238110","238210","238990"]','Austin','TX','78701','pro',1,NOW());
