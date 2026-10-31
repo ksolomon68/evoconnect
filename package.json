@@ -27,16 +27,16 @@
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
     "ejs": "^3.1.10",
-    "express": "^4.21.0",
+    "express": "^4.22.3",
     "express-ejs-layouts": "^2.5.1",
     "express-rate-limit": "^7.4.0",
     "express-session": "^1.18.1",
     "helmet": "^8.1.0",
     "jsonwebtoken": "^9.0.3",
     "method-override": "^3.0.0",
-    "multer": "^1.4.5-lts.1",
+    "multer": "^2.5.0",
     "mysql2": "^3.23.1",
-    "nodemailer": "^8.0.9",
+    "nodemailer": "^10.3.1",
     "pdfkit": "^0.15.0",
     "sanitize-html": "^2.18.1",
     "stripe": "^23.1.0"
@@ -46,5 +46,8 @@
   },
   "engines": {
     "node": ">=22"
+  },
+  "overrides": {
+    "minimatch": "^11.0.1"
   }
 }

@@ -543,3 +543,16 @@ test('EVOGovCon CMS branding migration retains custom content, IDs, and active H
         const robots=await (await fetch(base+'/robots.txt')).text();assert.match(robots,/hostingersite.com/);assert.doesNotMatch(robots,/evogovcon.com/);
     }finally{await db.execute('DELETE FROM cms_content WHERE content_key=?',[contentKey]);await db.execute('DELETE FROM cms_faqs WHERE id=?',[faq.insertId]);}
 });
+
+test('malformed multipart uploads do not replace existing documents or stop the server',async()=>{
+    await clients.business.page('/business/documents');
+    const [[before]]=await db.execute("SELECT id FROM capability_documents WHERE owner_type='business' AND owner_id=?",[clients.businessId]);
+    const response=await clients.business.request('/business/documents',{
+        method:'POST',headers:{'content-type':'multipart/form-data; boundary=security-test-boundary'},
+        body:'--security-test-boundary\r\nContent-Disposition: form-data; name="statement"; filename="truncated.pdf"\r\nContent-Type: application/pdf\r\n\r\n%PDF-1.4'
+    });
+    assert.equal(response.status,400);
+    const [[after]]=await db.execute("SELECT id FROM capability_documents WHERE owner_type='business' AND owner_id=?",[clients.businessId]);
+    assert.equal(after?.id,before?.id);
+    assert.equal((await clients.business.request('/api/health')).status,200);
+});
