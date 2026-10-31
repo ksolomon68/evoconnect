@@ -1,4 +1,4 @@
-/* The supplied full wordmark includes white lettering; give it a consistent dark surface. */
+/* Preserve the supplied PNG transparency on every page background. */
 .brand-logo-frame {
     display: inline-flex;
     align-items: center;
@@ -6,8 +6,8 @@
     flex: 0 1 auto;
     max-width: 100%;
     padding: 6px 10px;
-    background: #061422;
-    border-radius: 10px;
+    background: transparent;
+    border-radius: 0;
     text-decoration: none;
     box-sizing: border-box;
 }
