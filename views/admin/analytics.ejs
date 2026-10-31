@@ -2,7 +2,7 @@
 <% const stats = locals.stats || {} %>
 <% const totals = locals.totals || { pageViews: {}, visits: {}, signups: {} } %>
 <% const dailySeries = locals.dailySeries || [] %>
-<% const maxPv = Math.max(1, ...dailySeries.map(d => d.pageViews)) %>
+<% const publicPages = locals.pageViews || [] %>
 
 <%- include('../partials/flash') %>
 
@@ -13,78 +13,7 @@
     </div>
 </section>
 
-<section class="quick-stats">
-    <div class="section-header">
-        <h2>Site Traffic &amp; New Signups</h2>
-    </div>
-    <div class="summary-grid" style="grid-template-columns:repeat(auto-fit,minmax(160px,1fr));margin-bottom:var(--space-xl);">
-        <div class="summary-card primary">
-            <div class="summary-value"><%= totals.visits.today || 0 %></div>
-            <div class="summary-label">Visits Today</div>
-        </div>
-        <div class="summary-card success">
-            <div class="summary-value"><%= totals.pageViews.today || 0 %></div>
-            <div class="summary-label">Page Views Today</div>
-        </div>
-        <div class="summary-card primary">
-            <div class="summary-value"><%= totals.signups.today || 0 %></div>
-            <div class="summary-label">New Signups Today</div>
-        </div>
-        <div class="summary-card success">
-            <div class="summary-value"><%= totals.visits.days7 || 0 %></div>
-            <div class="summary-label">Visits (7 Days)</div>
-        </div>
-        <div class="summary-card primary">
-            <div class="summary-value"><%= totals.pageViews.days7 || 0 %></div>
-            <div class="summary-label">Page Views (7 Days)</div>
-        </div>
-        <div class="summary-card success">
-            <div class="summary-value"><%= totals.signups.days7 || 0 %></div>
-            <div class="summary-label">New Signups (7 Days)</div>
-        </div>
-        <div class="summary-card primary">
-            <div class="summary-value"><%= totals.visits.days30 || 0 %></div>
-            <div class="summary-label">Visits (30 Days)</div>
-        </div>
-        <div class="summary-card success">
-            <div class="summary-value"><%= totals.pageViews.days30 || 0 %></div>
-            <div class="summary-label">Page Views (30 Days)</div>
-        </div>
-        <div class="summary-card primary">
-            <div class="summary-value"><%= totals.signups.days30 || 0 %></div>
-            <div class="summary-label">New Signups (30 Days)</div>
-        </div>
-    </div>
-</section>
-
-<div class="recommendations-list" style="padding: var(--space-xl); margin-bottom: var(--space-xl);">
-    <div class="section-header">
-        <h2>Last 30 Days</h2>
-    </div>
-    <% if (dailySeries.length > 0) { %>
-        <div style="display:flex;align-items:flex-end;gap:2px;height:120px;margin-bottom:1.25rem;padding:0 0.25rem;">
-            <% dailySeries.slice().reverse().forEach(function(d) { %>
-                <div title="<%= d.date %>: <%= d.pageViews %> page views"
-                     style="flex:1;min-width:4px;height:<%= Math.max(2, Math.round((d.pageViews / maxPv) * 100)) %>%;background:linear-gradient(180deg,#0EA5E9,#0369A1);border-radius:2px 2px 0 0;"></div>
-            <% }) %>
-        </div>
-        <table class="data-table">
-            <thead><tr><th>Date</th><th>Visits</th><th>Page Views</th><th>New Signups</th></tr></thead>
-            <tbody>
-                <% dailySeries.forEach(function(d) { %>
-                <tr>
-                    <td data-label="Date"><code style="font-family:'JetBrains Mono',monospace;font-size:.85rem;"><%= d.date %></code></td>
-                    <td data-label="Visits"><strong style="color:#0284C7;font-family:'JetBrains Mono',monospace;"><%= d.visits %></strong></td>
-                    <td data-label="Page Views"><strong style="color:#10B981;font-family:'JetBrains Mono',monospace;"><%= d.pageViews %></strong></td>
-                    <td data-label="New Signups"><strong style="color:#8B5CF6;font-family:'JetBrains Mono',monospace;"><%= d.signups %></strong></td>
-                </tr>
-                <% }) %>
-            </tbody>
-        </table>
-    <% } else { %>
-        <p style="color:var(--color-text-secondary);text-align:center;padding:1.5rem;margin:0;">No traffic recorded yet.</p>
-    <% } %>
-</div>
+<%- include('public-traffic', { totals, dailySeries, pageViews: publicPages }) %>
 
 <section class="quick-stats">
     <div class="section-header">

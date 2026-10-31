@@ -219,7 +219,7 @@ async function renderMessages(req, res, roleType, basePath) {
         );
         const inbox = inboxRows.map(m => ({
             ...m,
-            sender_name: m.sender_business_name || m.sender_name || m.sender_type
+            sender_name: m.sender_type === 'admin' ? 'EVOBRAND' : (m.sender_business_name || m.sender_name || m.sender_type)
         }));
 
         const [sentRows] = await db.execute(
@@ -228,10 +228,28 @@ async function renderMessages(req, res, roleType, basePath) {
         );
         const sent = sentRows.map(m => ({
             ...m,
-            receiver_name: m.receiver_business_name || m.receiver_name || m.receiver_type
+            receiver_name: m.receiver_type === 'admin' ? 'EVOBRAND' : (m.receiver_business_name || m.receiver_name || m.receiver_type)
         }));
 
         const recipients = await roles.recipients(db,{type:roleType,id:userId});
+        const recipientKeys = new Set(recipients.map(r => `${r.type}:${r.id}`));
+        for (const message of inbox) {
+            const key = `${message.sender_type}:${message.sender_id}`;
+            // Admins can reply to any actual sender, including accounts beyond
+            // the initial recipient list. Members can always reply to support.
+            if (!recipientKeys.has(key) && (roleType === 'admin' || message.sender_type === 'admin')) {
+                const sender = await policy.account(db, message.sender_type, message.sender_id);
+                if (sender && !(sender.type === roleType && Number(sender.id) === Number(userId))) {
+                    recipients.push({ type: sender.type, id: sender.id, name: sender.name, label: sender.type === 'admin' ? 'EVOBRAND — Platform Support' : `${sender.name} (${sender.type})` });
+                    recipientKeys.add(key);
+                }
+            }
+            message.can_reply = recipientKeys.has(key);
+        }
+        const reply = inbox.find(m => String(m.id) === req.query.reply && m.can_reply);
+        const requestedRecipient = reply ? `${reply.sender_type}:${reply.sender_id}` : req.query.recipient;
+        const selectedRecipient = recipientKeys.has(requestedRecipient) ? requestedRecipient : '';
+        const supportRecipient = roleType === 'admin' ? null : recipients.find(r => r.type === 'admin');
 
         res.render('shared/messages', {
             title: 'Messages | EVOGovCon',
@@ -239,7 +257,10 @@ async function renderMessages(req, res, roleType, basePath) {
             basePath,
             inbox,
             sent,
-            recipients
+            recipients,
+            selectedRecipient,
+            supportRecipient,
+            replySubject: reply ? (/^re:/i.test(reply.subject || '') ? reply.subject : `Re: ${reply.subject || 'Your message'}`).slice(0,255) : ''
         });
     } catch (err) {
         console.error(`EVOGovCon [${basePath}/messages]:`, err);
@@ -251,14 +272,14 @@ async function sendMessage(req, res, roleType, basePath) {
     try {
         const db = getDb();
         const { recipient_key, subject, body } = req.body;
-        if (!recipient_key || !body) {
+        if (typeof recipient_key !== 'string' || typeof body !== 'string' || !body.trim()) {
             flash(req, 'error', 'Recipient and message are required.');
             return res.redirect(`${basePath}/messages`);
         }
 
         const parts = recipient_key.split(':');
         const receiverType = parts[0];
-        const receiverId = parseInt(parts[1]);
+        const receiverId = Number(parts[1]);
         const target=await policy.account(db,receiverType,receiverId);
         if(!target)return res.status(404).send('Recipient unavailable.');
         if(roleType!=='admin' && receiverType!=='admin') {
@@ -266,13 +287,13 @@ async function sendMessage(req, res, roleType, basePath) {
             const connection=await roles.relationship(db,{type:roleType,id:req.user.id},target);
             if(!connection || connection.status!=='accepted')return res.status(403).send('Accept a connection request before sending direct messages.');
         }
-        const receiverName=target.name;
+        const receiverName=receiverType === 'admin' ? 'EVOBRAND' : target.name;
         if(typeof body!=='string' || body.trim().length>10000 || typeof subject!=='string' || subject.length>255)return res.status(400).send('Enter a valid subject and a message up to 10,000 characters.');
 
         const [msgRes] = await db.execute(`
             INSERT INTO messages (sender_type, sender_id, sender_business_name, receiver_type, receiver_id, receiver_business_name, message_type, subject, body)
             VALUES (?, ?, ?, ?, ?, ?, 'reply', ?, ?)
-        `, [roleType, req.user.id, req.user.name || req.user.email, receiverType, receiverId, receiverName, (subject || '').trim() || 'New Message', body.trim()]);
+        `, [roleType, req.user.id, roleType === 'admin' ? 'EVOBRAND' : (req.user.name || req.user.email), receiverType, receiverId, receiverName, (subject || '').trim() || 'New Message', body.trim()]);
 
         await db.execute(
             'INSERT INTO notifications (user_type, user_id, message_id) VALUES (?, ?, ?)',

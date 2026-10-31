@@ -18,7 +18,15 @@ async function recipients(db,actor){
     const peers=(await list(db,actor)).filter(row=>row.status==='accepted').map(row=>({type:row.peer.type,id:row.peer.id,name:row.peer.name,label:`${row.peer.name} (${row.peer.type==='worker'?'Labor':row.peer.type})`}));
     if(actor.type==='admin'){
         for(const type of ['worker','business','prime']){const [rows]=await db.execute(`SELECT id,${type==='worker'?'full_name':'company_name'} AS name FROM ${policy.tables[type]} WHERE ${type==='prime'?'active=1':"status='active'"} ORDER BY id LIMIT 100`);for(const row of rows)peers.push({type,id:row.id,name:row.name,label:`${row.name} (${type})`});}
-    }else{const [admins]=await db.execute('SELECT id,name FROM admins ORDER BY id LIMIT 20');for(const row of admins)peers.push({type:'admin',id:row.id,name:row.name||'Support',label:`${row.name||'Support'} (Admin)`});}
+    }
+    // Support is available without an accepted business connection. Never send
+    // a real member's message to the retired public demo administrator.
+    const [admins]=await db.execute("SELECT id,name,email FROM admins WHERE LOWER(email)<>'demo-admin@evoconnect.io' ORDER BY (LOWER(email)=?) DESC,id",[(process.env.ADMIN_EMAIL || '').toLowerCase()]);
+    if(actor.type==='admin'){
+        for(const row of admins)if(Number(row.id)!==Number(actor.id))peers.push({type:'admin',id:row.id,name:row.name,label:`${row.name || 'EVOBRAND'} (Admin)`});
+    }else if(admins.length){
+        peers.unshift({type:'admin',id:admins[0].id,name:'EVOBRAND',label:'EVOBRAND — Platform Support'});
+    }
     return peers;
 }
 module.exports={pair,relationship,notify,list,recipients};

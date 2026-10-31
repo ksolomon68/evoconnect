@@ -1,45 +1,64 @@
 'use strict';
 
-const { getDb } = require('../database');
-
 const VISIT_COOKIE = 'evo_vid';
 const VISIT_WINDOW_MS = 30 * 60 * 1000; // a new "visit" after 30 min of inactivity
 
 // Common crawler/bot substrings worth excluding from public traffic counts.
 const BOT_UA_PATTERN = /bot|crawler|spider|crawl|slurp|facebookexternalhit|preview|monitor|pingdom|uptime|headlesschrome/i;
 
+// Keep query strings, reset tokens, private routes, and asset requests out of
+// public analytics. Detail pages share a route label rather than storing IDs.
+function publicPagePath(path) {
+    const page = path.replace(/\.html$/i, '').replace(/\/+$/, '') || '/';
+    if (page.length > 255) return null;
+    if (/^\/(?:admin|admin-cms|cms-tutorial|admin-tutorial|api|auth|uploads|images|assets|css|js|login|logout|forgot-password|reset-password)(?:\/|$)/i.test(page)) return null;
+    if (/^\/(?:labor|business|prime)\//.test(page) && !/^\/(?:labor|business|prime)\/register$/.test(page)) return null;
+    if (/^\/(?:opportunities|jobs)\/[^/]+$/.test(page)) return page.replace(/\/[^/]+$/, '/:id');
+    if (/^\/directory\/(?:worker|business|prime)\/[^/]+$/.test(page)) return page.replace(/\/[^/]+$/, '/:id');
+    if (/\.[a-z0-9]+$/i.test(page)) return null;
+    return page === '/index' ? '/' : page;
+}
+
 // Express middleware: counts a page view (and, once per rolling session, a
-// visit) for public, anonymous, successful HTML page requests. Never throws
+// visit) for successful public HTML pages, including signed-in visitors on
+// the public site. Never throws
 // or blocks the response — tracking failures are swallowed.
 function trackRequest(req, res, next) {
+    // Capture before mounted routers temporarily change req.path.
+    const pagePath = publicPagePath(req.path);
     const eligible =
         req.method === 'GET' &&
-        !req.user &&
+        pagePath !== null &&
+        !require('./demo-context').active() &&
         !BOT_UA_PATTERN.test(req.headers['user-agent'] || '');
 
-    let isNewSession = false;
+    const isNewSession = !req.cookies || !req.cookies[VISIT_COOKIE];
+    const isPublicHtml = statusCode => statusCode >= 200 && statusCode < 300 &&
+        res.locals.layout !== 'layouts/dashboard' && (res.get('Content-Type') || '').includes('text/html');
     if (eligible) {
-        if (!req.cookies || !req.cookies[VISIT_COOKIE]) {
-            isNewSession = true;
-        }
-        try {
-            res.cookie(VISIT_COOKIE, '1', { maxAge: VISIT_WINDOW_MS, httpOnly: true, sameSite: 'lax' });
-        } catch { /* cookies unavailable this early in some error paths */ }
+        // Refresh the visit window only when sending a successful HTML page;
+        // assets, failed requests, and redirects must not consume a new visit.
+        const writeHead = res.writeHead;
+        res.writeHead = function (statusCode, ...args) {
+            res.writeHead = writeHead;
+            if (isPublicHtml(statusCode)) {
+                res.cookie(VISIT_COOKIE, '1', { maxAge: VISIT_WINDOW_MS, httpOnly: true, sameSite: 'lax' });
+            }
+            return writeHead.call(this, statusCode, ...args);
+        };
     }
 
     res.on('finish', () => {
         if (!eligible) return;
-        if (res.statusCode >= 400) return;
-        const contentType = res.get('Content-Type') || '';
-        if (!contentType.includes('text/html')) return;
-        recordPageView(isNewSession).catch(err => console.error('EVOGovCon [analytics] track error:', err.message));
+        if (!isPublicHtml(res.statusCode)) return;
+        recordPageView(isNewSession, pagePath).catch(err => console.error('EVOGovCon [analytics] track error:', err.message));
     });
 
     next();
 }
 
-async function recordPageView(isNewSession) {
-    const db = getDb();
+async function recordPageView(isNewSession, pagePath) {
+    const db = require('../database').getDb();
     // Use MySQL's own CURDATE() rather than computing "today" in Node, so
     // writes always agree with the CURDATE()-based reads in getTotals()
     // regardless of the app server's timezone.
@@ -48,6 +67,24 @@ async function recordPageView(isNewSession) {
          ON DUPLICATE KEY UPDATE page_views = page_views + 1, visits = visits + VALUES(visits)`,
         [isNewSession ? 1 : 0]
     );
+    await db.execute(
+        `INSERT INTO site_page_analytics_daily (date, page_path, page_views) VALUES (CURDATE(), ?, 1)
+         ON DUPLICATE KEY UPDATE page_views = page_views + 1`,
+        [pagePath]
+    );
+}
+
+async function getPageViews(db) {
+    const [rows] = await db.execute(`
+        SELECT page_path AS path,
+            COALESCE(SUM(CASE WHEN date = CURDATE() THEN page_views END), 0) AS today,
+            COALESCE(SUM(CASE WHEN date >= DATE_SUB(CURDATE(), INTERVAL 6 DAY) THEN page_views END), 0) AS days7,
+            COALESCE(SUM(CASE WHEN date >= DATE_SUB(CURDATE(), INTERVAL 29 DAY) THEN page_views END), 0) AS days30,
+            SUM(page_views) AS allTime
+        FROM site_page_analytics_daily GROUP BY page_path
+        ORDER BY days30 DESC, allTime DESC, page_path ASC
+    `);
+    return rows.map(row => ({ path: row.path, today: Number(row.today), days7: Number(row.days7), days30: Number(row.days30), allTime: Number(row.allTime) }));
 }
 
 // Daily rows for the last `days` days (including days with no traffic),
@@ -146,4 +183,4 @@ async function getTotals(db) {
     };
 }
 
-module.exports = { trackRequest, getDailySeries, getTotals };
+module.exports = { trackRequest, getDailySeries, getTotals, getPageViews, publicPagePath };

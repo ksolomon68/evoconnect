@@ -208,7 +208,13 @@ router.get('/:portal(labor|business|prime|admin)/analytics', ...portalAuth, wrap
         (SELECT COUNT(*) FROM performance_events e WHERE e.entity_type='capability' AND e.entity_id=d.id AND e.event_type='view' AND e.event_day >= UTC_DATE() - INTERVAL ? DAY) AS views,
         (SELECT COUNT(*) FROM performance_events e WHERE e.entity_type='capability' AND e.entity_id=d.id AND e.event_type='download' AND e.event_day >= UTC_DATE() - INTERVAL ? DAY) AS downloads
         FROM capability_documents d ${platform ? '' : 'WHERE d.owner_type = ? AND d.owner_id = ?'}`,[days-1,days-1,...args]);
-    res.render('shared/performance',{title:platform ? 'Platform Analytics' : 'My Analytics',days,totals,daily,opps,applications,documents,platform,basePath:`/${req.params.portal}`});
+    let publicTraffic;
+    if (platform) {
+        const analytics = require('../services/analytics');
+        const [trafficTotals, dailySeries, pageViews] = await Promise.all([analytics.getTotals(db), analytics.getDailySeries(db, 30), analytics.getPageViews(db)]);
+        publicTraffic = { totals: trafficTotals, dailySeries, pageViews };
+    }
+    res.render('shared/performance',{title:platform ? 'Platform Analytics' : 'My Analytics',days,totals,daily,opps,applications,documents,platform,publicTraffic,basePath:`/${req.params.portal}`});
 }));
 
 router.post('/:portal(labor|business)/applications/:id/withdraw', ...portalAuth, csrf, wrap(async(req,res)=>{

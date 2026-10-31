@@ -57,6 +57,101 @@ before(async()=>{
 });
 after(async()=>{if(db)await db.end();if(server){server.kill();await new Promise(r=>server.once('exit',r));}});
 
+test('public page views persist by page, exclude non-page traffic, and appear only in admin analytics', async () => {
+    const fs = require('node:fs/promises');
+    const path = require('node:path');
+    const pagePath = `/analytics-fixture-${process.pid}`;
+    const filename = path.join(__dirname, '..', 'public', pagePath.slice(1) + '.html');
+    const headers = { 'user-agent': 'Mozilla/5.0 Public analytics test' };
+    await fs.writeFile(filename, '<!doctype html><title>Analytics fixture</title><h1>Public fixture</h1>');
+    try {
+        const first = await fetch(base + pagePath + '.html?email=do-not-store@example.invalid', { headers });
+        assert.equal(first.status, 200);
+        const cookie = first.headers.getSetCookie().find(value => value.startsWith('evo_vid='));
+        assert.ok(cookie, 'Successful public HTML starts a visit');
+        await first.text();
+        const returning = { ...headers, cookie: cookie.split(';')[0] };
+        await (await fetch(base + pagePath + '.html?campaign=second', { headers: returning })).text();
+        await (await clients.worker.request(pagePath + '.html', { headers })).text();
+        await fetch(base + pagePath + '.html', { method: 'HEAD', headers });
+        await (await fetch(base + pagePath + '.html', { headers: { 'user-agent': 'ExampleCrawlerBot' } })).text();
+        const missing = await fetch(base + pagePath + '-missing', { headers });
+        assert.equal(missing.status, 404);
+        assert.ok(!missing.headers.getSetCookie().some(value => value.startsWith('evo_vid=')));
+        const redirect = await fetch(base + '/how-it-works', { headers, redirect: 'manual' });
+        assert.equal(redirect.status, 302);
+        assert.ok(!redirect.headers.getSetCookie().some(value => value.startsWith('evo_vid=')));
+        // Tracking runs after the response finishes; wait for its asynchronous writes.
+        let views = 0;
+        for (let i = 0; i < 50; i++) {
+            const [[row]] = await db.execute('SELECT SUM(page_views) AS views FROM site_page_analytics_daily WHERE page_path=?', [pagePath]);
+            views = Number(row.views);
+            if (views === 3) break;
+            await new Promise(resolve => setTimeout(resolve, 20));
+        }
+        assert.equal(views, 3, 'Anonymous, returning, and signed-in public views count; HEAD/bots do not');
+        const [[beforeProfile]] = await db.execute("SELECT COALESCE(SUM(page_views),0) views FROM site_page_analytics_daily WHERE page_path='/directory/business/:id'");
+        assert.equal((await clients.business.page(`/directory/business/${clients.businessId}`)).res.status, 200);
+        await new Promise(resolve => setTimeout(resolve, 50));
+        const [[afterProfile]] = await db.execute("SELECT COALESCE(SUM(page_views),0) views FROM site_page_analytics_daily WHERE page_path='/directory/business/:id'");
+        assert.equal(Number(afterProfile.views), Number(beforeProfile.views), 'Profile detail pages inside the dashboard are not public site traffic');
+        const { res, text } = await clients.admin.page('/admin/analytics');
+        assert.equal(res.status, 200, serverLog);
+        assert.match(text, /Front-End Page Views/);
+        assert.ok(text.includes(pagePath));
+        assert.ok(!text.includes('do-not-store@example.invalid'));
+        assert.ok(!text.includes(pagePath + '-missing'));
+        assert.equal((await clients.worker.request('/admin/analytics')).status, 403);
+    } finally {
+        await fs.rm(filename, { force: true });
+        await db.execute('DELETE FROM site_page_analytics_daily WHERE page_path=?', [pagePath]);
+    }
+});
+
+test('front-end page breakdown aggregates calendar-day windows correctly', async () => {
+    const pagePath = `/analytics-window-fixture-${process.pid}`;
+    try {
+        for (const [days, views] of [[0, 5], [6, 7], [29, 11], [30, 13]]) {
+            await db.execute(`INSERT INTO site_page_analytics_daily (date,page_path,page_views) VALUES (DATE_SUB(CURDATE(), INTERVAL ? DAY),?,?)`, [days, pagePath, views]);
+        }
+        const rows = await require('../server/services/analytics').getPageViews(db);
+        assert.deepEqual(rows.find(row => row.path === pagePath), { path: pagePath, today: 5, days7: 12, days30: 23, allTime: 36 });
+    } finally {
+        await db.execute('DELETE FROM site_page_analytics_daily WHERE page_path=?', [pagePath]);
+    }
+});
+
+test('every member role can message EVOBRAND without a connection and receive a private admin reply', async () => {
+    const messageIds = [];
+    for (const [type, portal] of [['worker','labor'], ['business','business'], ['prime','prime']]) {
+        const member = clients[type];
+        const { res, text } = await member.page(`/${portal}/messages`);
+        assert.equal(res.status, 200, serverLog);
+        assert.match(text, /Message EVOBRAND/);
+        assert.match(text, /EVOBRAND — Platform Support/);
+        assert.equal((await member.post(`/${portal}/messages/send`, { recipient_key: `admin:${clients.adminId}:Forged name`, subject: `Support fixture ${type}`, body: `Private question from ${type}` })).status, 302);
+        const [[message]] = await db.execute('SELECT * FROM messages WHERE sender_type=? AND sender_id=? AND receiver_type=\'admin\' AND receiver_id=? AND subject=? ORDER BY id DESC LIMIT 1', [type, clients[type+'Id'], clients.adminId, `Support fixture ${type}`]);
+        assert.ok(message);
+        assert.equal(message.receiver_business_name, 'EVOBRAND');
+        messageIds.push(message.id);
+        const [[notification]] = await db.execute('SELECT * FROM notifications WHERE message_id=? AND user_type=\'admin\' AND user_id=?', [message.id, clients.adminId]);
+        assert.ok(notification);
+        const replyPage = await clients.admin.page(`/admin/messages?reply=${message.id}`);
+        assert.equal(replyPage.res.status, 200);
+        assert.ok(replyPage.text.includes(`value="${type}:${message.sender_id}" selected`));
+        assert.ok(replyPage.text.includes(`value="Re: Support fixture ${type}"`));
+        assert.equal((await clients.admin.post('/admin/messages/send', { recipient_key: `${type}:${message.sender_id}`, subject: `Re: Support fixture ${type}`, body: `Support answer for ${type}` })).status, 302);
+        const inbox = await member.page(`/${portal}/messages`);
+        assert.ok(inbox.text.includes(`Support answer for ${type}`));
+        assert.match(inbox.text, /From: EVOBRAND/);
+    }
+    const outsider = await clients.other.page(`/prime/messages?reply=${messageIds[0]}`);
+    assert.ok(!outsider.text.includes('Private question from worker'));
+    assert.ok(!outsider.text.includes('Support answer for worker'));
+    assert.ok(!outsider.text.includes('value="Re: Support fixture worker"'));
+    assert.equal((await clients.worker.request('/labor/messages/send', { method: 'POST', headers: { 'content-type': 'application/x-www-form-urlencoded' }, body: new URLSearchParams({ recipient_key: `admin:${clients.adminId}`, subject: 'No CSRF', body: 'Rejected' }) })).status, 403);
+});
+
 test('each role can upload a PDF; invalid files, excess size and CSRF fail',async()=>{
     for(const [role,portal] of [['admin','admin'],['prime','prime'],['business','business'],['worker','labor']]) {
         assert.equal((await clients[role].upload(portal,pdf)).status,302);
@@ -433,8 +528,8 @@ test('labor ↔ business ↔ prime connections support both directions, acceptan
     assert.equal((await prime.post(`/prime/connections/${bp.id}/accept`)).status,302);
     for(const [actor,portal,type,id] of [[business,'business','prime',p.insertId],[prime,'prime','business',b.insertId]])assert.equal((await actor.post(`/${portal}/messages/send`,{recipient_key:`${type}:${id}`,subject:'Partner coordination',body:'Ready for the subcontract'})).status,302);
     assert.equal((await worker.post('/labor/messages/send',{recipient_key:`prime:${p.insertId}`,subject:'Forbidden',body:'Cannot bypass the role boundary'})).status,403);
-    const composer=(await business.page('/business/messages')).text;assert.match(composer,new RegExp(`value="worker:${w.insertId}:`));assert.match(composer,new RegExp(`value="prime:${p.insertId}:`));
-    assert.doesNotMatch((await prime.page('/prime/messages')).text,new RegExp(`value="worker:${w.insertId}:`));
+    const composer=(await business.page('/business/messages')).text;assert.match(composer,new RegExp(`value="worker:${w.insertId}"`));assert.match(composer,new RegExp(`value="prime:${p.insertId}"`));
+    assert.doesNotMatch((await prime.page('/prime/messages')).text,new RegExp(`value="worker:${w.insertId}"`));
     for(const path of ['/business/directory/worker','/business/directory/prime'])assert.equal((await business.page(path)).res.status,200);
     assert.equal((await worker.page('/labor/directory/business')).res.status,200);assert.equal((await worker.page('/labor/directory/prime')).res.status,403);
     const toBusiness=await prime.post('/prime/connect',{target_type:'business',target_id:clients.businessId});assert.equal(toBusiness.status,200);

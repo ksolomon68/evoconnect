@@ -272,6 +272,15 @@ async function initDatabase() {
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
         `);
 
+        await db.execute(`
+            CREATE TABLE IF NOT EXISTS site_page_analytics_daily (
+                date DATE NOT NULL,
+                page_path VARCHAR(255) NOT NULL,
+                page_views INT NOT NULL DEFAULT 0,
+                PRIMARY KEY (date, page_path)
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
+        `);
+
         // ── 8. Subcontractor RFQs (Enterprise primes) ─────────────
         await db.execute(`
             CREATE TABLE IF NOT EXISTS subcontractor_requests (
@@ -612,6 +621,9 @@ async function initDatabase() {
                 password: 'EVOConnect2026!'
             });
         }
+
+        // Correct the old owner display label without altering credentials or custom names.
+        await db.execute("UPDATE admins SET name='EVOBRAND' WHERE LOWER(TRIM(name))='demo admin' AND LOWER(email)<>'demo-admin@evoconnect.io'");
 
         if (process.env.NODE_ENV !== 'production') {
         // ── Auto-Seed Demo Accounts for the 3 Public Roles (Password: DemoPass1!) ──

@@ -11,6 +11,7 @@ async function account(db,type,id){
     if(!tables[type] || !Number.isSafeInteger(Number(id)) || Number(id)<1)return null;
     const [rows]=await db.execute(`SELECT * FROM ${tables[type]} WHERE id=?`,[Number(id)]);const row=rows[0];
     if(!row || (type==='prime'?row.active!==1:row.status && row.status!=='active'))return null;
+    if(type==='admin' && require('./admin-access').isRetiredDemoEmail(row.email))return null;
     return {...row,type,name:row.company_name || row.full_name || row.name || row.email};
 }
 module.exports={tables,portals,canConnect,canApply,listingType,account};

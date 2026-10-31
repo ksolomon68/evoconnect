@@ -140,9 +140,10 @@ router.get('/analytics', requireAdmin, async (req, res) => {
         const [[{ appsCount }]]     = await db.execute('SELECT COUNT(*) AS appsCount FROM applications');
         const [[{ connectionCount }]] = await db.execute('SELECT COUNT(*) AS connectionCount FROM connections');
 
-        const [totals, dailySeries] = await Promise.all([
+        const [totals, dailySeries, pageViews] = await Promise.all([
             analytics.getTotals(db),
-            analytics.getDailySeries(db, 30)
+            analytics.getDailySeries(db, 30),
+            analytics.getPageViews(db)
         ]);
 
         res.render('admin/analytics', {
@@ -150,7 +151,8 @@ router.get('/analytics', requireAdmin, async (req, res) => {
             flash: getFlash(req),
             stats: { workerCount, bizCount, primeCount, oppsCount, appsCount, connectionCount },
             totals,
-            dailySeries
+            dailySeries,
+            pageViews
         });
 
     } catch (err) {

@@ -25,6 +25,7 @@ function normalizeUserType(type) {
 
 function signToken(payload) {
     const normalized = { ...payload, type: normalizeUserType(payload.type) };
+    normalized.name = require('../services/admin-access').displayName(normalized);
     return jwt.sign(normalized, JWT_SECRET, { expiresIn: '24h' });
 }
 
@@ -65,6 +66,7 @@ async function requireAuth(req, res, next) {
     try {
         const decoded = jwt.verify(token, JWT_SECRET);
         decoded.type = normalizeUserType(decoded.type);
+        decoded.name = require('../services/admin-access').displayName(decoded);
         if(require('../services/admin-access').isDemoAdmin(decoded)){clearAuthCookie(res);return res.status(403).send('Administrator demos are unavailable. Please sign in with your real account.');}
         const tables = { worker: 'workers', business: 'businesses', prime: 'primes', admin: 'admins' };
         if (!tables[decoded.type]) return res.status(403).send('Access denied.');
@@ -107,6 +109,7 @@ async function requireAdmin(req, res, next) {
     try {
         const decoded = jwt.verify(token, JWT_SECRET);
         decoded.type = normalizeUserType(decoded.type);
+        decoded.name = require('../services/admin-access').displayName(decoded);
         if(require('../services/admin-access').isDemoAdmin(decoded)){clearAuthCookie(res);return res.status(403).send('Administrator demos are unavailable. Please sign in with your real account.');}
         if (decoded.type !== 'admin') {
             const dest = {
@@ -134,6 +137,7 @@ function attachUser(req, res, next) {
         try {
             const decoded = jwt.verify(token, JWT_SECRET);
             decoded.type = normalizeUserType(decoded.type);
+            decoded.name = require('../services/admin-access').displayName(decoded);
             req.user = decoded;
             res.locals.user = decoded;
         } catch {

@@ -1,4 +1,25 @@
 /* Keep list content inside its card, including narrow nested dashboard panels. */
+.dashboard-v2 .communications-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 20rem), 1fr));
+    gap: var(--space-xl);
+}
+.dashboard-v2 .communications-grid > * { min-width: 0; }
+.dashboard-v2 .communications-grid :is(.message-list, .message-card) {
+    min-width: 0;
+    max-width: 100%;
+    box-sizing: border-box;
+}
+.dashboard-v2 .communications-grid .recommendations-list { overflow-wrap: anywhere; }
+.dashboard-v2 .message-heading {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .5rem;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: .35rem;
+}
+.dashboard-v2 .message-heading strong { flex: 1 1 12rem; }
 .dashboard-v2 .main-content,
 .dashboard-v2 .main-content :is(.recommendations-list, .dash-card, .dashboard-grid, .dashboard-main, .dashboard-sidebar) {
     min-width: 0;

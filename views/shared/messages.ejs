@@ -10,33 +10,37 @@
     <div class="hero-content hero-welcome">
         <h1>💬 Messages & Communications</h1>
         <p>Message accepted connections and platform support. Labor communicates with small businesses; small businesses communicate with labor and primes.</p>
+        <% if (locals.supportRecipient) { %>
+            <a class="btn btn-primary" href="<%= basePath %>/messages?recipient=<%= encodeURIComponent('admin:' + supportRecipient.id) %>#message-compose">Message EVOBRAND</a>
+            <p>Contact the admin for account help, questions, or platform support. No connection request is needed.</p>
+        <% } %>
     </div>
 </section>
 
-<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:var(--space-xl);">
+<div class="communications-grid">
 
     <!-- Compose Message -->
-    <div class="recommendations-list" style="padding: var(--space-xl);">
+    <div id="message-compose" class="recommendations-list" style="padding: var(--space-xl);">
         <div class="section-header">
             <h2>✉️ Send New Message</h2>
         </div>
         <form method="POST" action="<%= basePath %>/messages/send"><input type="hidden" name="_csrf" value="<%= csrfToken %>">
             <div class="form-group" style="margin-bottom:1rem;">
-                <label style="display:block;font-weight:600;margin-bottom:.35rem;font-size:.9rem;">Recipient *</label>
-                <select name="recipient_key" class="form-control" required>
+                <label for="message-recipient" style="display:block;font-weight:600;margin-bottom:.35rem;font-size:.9rem;">Recipient *</label>
+                <select id="message-recipient" name="recipient_key" class="form-control" required>
                     <option value="">Select recipient...</option>
                     <% recipients.forEach(function(r) { %>
-                        <option value="<%= r.type %>:<%= r.id %>:<%= r.name %>"><%= r.label %></option>
+                        <option value="<%= r.type %>:<%= r.id %>" <%= locals.selectedRecipient === r.type + ':' + r.id ? 'selected' : '' %>><%= r.label %></option>
                     <% }) %>
                 </select>
             </div>
             <div class="form-group" style="margin-bottom:1rem;">
-                <label style="display:block;font-weight:600;margin-bottom:.35rem;font-size:.9rem;">Subject *</label>
-                <input type="text" name="subject" class="form-control" required placeholder="e.g. Subcontracting Inquiry / RFQ Follow-up">
+                <label for="message-subject" style="display:block;font-weight:600;margin-bottom:.35rem;font-size:.9rem;">Subject *</label>
+                <input id="message-subject" type="text" name="subject" class="form-control" required maxlength="255" value="<%= locals.replySubject || '' %>" placeholder="e.g. Subcontracting Inquiry / RFQ Follow-up">
             </div>
             <div class="form-group" style="margin-bottom:1rem;">
-                <label style="display:block;font-weight:600;margin-bottom:.35rem;font-size:.9rem;">Message *</label>
-                <textarea name="body" rows="4" class="form-control" required placeholder="Write your message here..."></textarea>
+                <label for="message-body" style="display:block;font-weight:600;margin-bottom:.35rem;font-size:.9rem;">Message *</label>
+                <textarea id="message-body" name="body" rows="4" class="form-control" required maxlength="10000" placeholder="Write your message here..."></textarea>
             </div>
             <button type="submit" class="btn btn-primary">Send Message</button>
         </form>
@@ -48,17 +52,20 @@
             <h2>📥 Inbox (<%= inbox.length %>)</h2>
         </div>
         <% if (inbox.length > 0) { %>
-            <div style="display:grid;gap:0.75rem;margin-bottom:2rem;">
+            <div class="message-list" style="display:grid;gap:0.75rem;margin-bottom:2rem;">
                 <% inbox.forEach(function(msg) { %>
-                <div style="padding:1rem;border:1px solid var(--border-color);border-radius:var(--border-radius-md);background:<%= msg.is_read ? '#fff' : '#f0f9ff' %>;">
-                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.35rem;">
-                        <strong><%= msg.subject || '(No Subject)' %></strong>
+                <div class="message-card" style="padding:1rem;border:1px solid var(--border-color);border-radius:var(--border-radius-md);background:<%= msg.is_read ? '#fff' : '#f0f9ff' %>;">
+                    <div class="message-heading">
+                        <strong class="dashboard-list-title" title="<%= msg.subject || '(No Subject)' %>"><%= msg.subject || '(No Subject)' %></strong>
                         <span style="font-size:0.8rem;color:var(--text-muted);"><%= new Date(msg.created_at).toLocaleDateString() %></span>
                     </div>
                     <div style="font-size:0.85rem;color:var(--color-primary);margin-bottom:0.5rem;">
                         From: <%= msg.sender_name || msg.sender_type %>
                     </div>
                     <p style="margin:0;font-size:0.92rem;color:var(--color-text-secondary);white-space:pre-line;"><%= msg.body %></p>
+                    <% if (msg.can_reply) { %>
+                        <a class="btn btn-sm btn-secondary" style="margin-top:.75rem;" href="<%= basePath %>/messages?reply=<%= msg.id %>#message-compose">Reply</a>
+                    <% } %>
                 </div>
                 <% }) %>
             </div>
@@ -70,11 +77,11 @@
             <h2>📤 Sent Messages (<%= sent.length %>)</h2>
         </div>
         <% if (sent.length > 0) { %>
-            <div style="display:grid;gap:0.75rem;">
+            <div class="message-list" style="display:grid;gap:0.75rem;">
                 <% sent.forEach(function(msg) { %>
-                <div style="padding:0.85rem;border:1px solid var(--border-color);border-radius:var(--border-radius-md);">
-                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.25rem;">
-                        <strong><%= msg.subject || '(No Subject)' %></strong>
+                <div class="message-card" style="padding:0.85rem;border:1px solid var(--border-color);border-radius:var(--border-radius-md);">
+                    <div class="message-heading">
+                        <strong class="dashboard-list-title" title="<%= msg.subject || '(No Subject)' %>"><%= msg.subject || '(No Subject)' %></strong>
                         <span style="font-size:0.8rem;color:var(--text-muted);"><%= new Date(msg.created_at).toLocaleDateString() %></span>
                     </div>
                     <div style="font-size:0.82rem;color:var(--text-muted);margin-bottom:0.35rem;">
