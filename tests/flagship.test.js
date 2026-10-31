@@ -231,6 +231,9 @@ test('production starts with JWT_SECRET and all demo roles use isolated read-onl
             const passwordLogin=await fetch(url+'/login',{method:'POST',redirect:'manual',headers:{'content-type':'application/x-www-form-urlencoded'},body:new URLSearchParams({email:`demo-${role==='worker'?'labor':role}@evoconnect.io`,password:'DemoPass1!'})});
             assert.equal(passwordLogin.status,302);assert.equal(passwordLogin.headers.get('location'),`/${portal}/dashboard`);
         }
+        let demoLimit;
+        for(let i=0;i<31;i++)demoLimit=await fetch(url+'/auth/demo/unknown-role',{redirect:'manual'});
+        assert.equal(demoLimit.status,429);
         const regularPassword='Regular-sign-in-test-only';
         const regularHash=await require('bcryptjs').hash(regularPassword,10);
         await db.execute("INSERT INTO businesses (company_name,contact_name,email,password_hash,phone,status) VALUES ('Live login fixture','Real member','live-login-probe@example.invalid',?,'123','active') ON DUPLICATE KEY UPDATE password_hash=VALUES(password_hash)",[regularHash]);
@@ -617,4 +620,36 @@ test('demo sessions end on public navigation while real sign-in stays persistent
         const home=await fetch(base+'/?public=1',{headers:{cookie:token.split(';')[0]},redirect:'manual'});assert.equal(home.status,200);assert.ok(!home.headers.getSetCookie().some(c=>c.startsWith('evo_token=;')));
         const adminHome=await clients.admin.request('/?public=1');assert.equal(adminHome.status,200);assert.ok(!adminHome.headers.getSetCookie().some(c=>c.startsWith('evo_token=;')));
     }finally{await db.execute('DELETE FROM businesses WHERE id=?',[account.insertId]);}
+});
+
+
+test('real admin sign-in works after demo sessions and displays rejected credentials',async()=>{
+    const email=`private-admin-${Date.now()}@example.invalid`,password='Private-admin-login-fixture-only';
+    const account=await require('../server/services/provision-admin')(db,{email,password});
+    try{
+        const demo=await fetch(base+'/auth/demo/business',{redirect:'manual'});const demoCookie=demo.headers.getSetCookie().find(c=>c.startsWith('evo_token=')).split(';')[0];
+        const form=await fetch(base+'/admin/login',{headers:{cookie:demoCookie},redirect:'manual'});assert.equal(form.status,200);const html=await form.text();assert.match(html,/Administrator Sign In/);assert.match(html,/action="\/admin\/login"/);assert.doesNotMatch(html,/class="demo-login-grid"|class="demo-switch-grid"/);
+        const startingSessions=[demoCookie,'evo_token='+signToken({id:account.id,email,type:'admin',demo:true})];
+        for(const cookie of startingSessions){
+            const result=await fetch(base+'/admin/login',{method:'POST',headers:{cookie,'content-type':'application/x-www-form-urlencoded'},body:new URLSearchParams({email,password,userType:'worker'}),redirect:'manual'});
+            assert.equal(result.headers.get('location'),'/admin/dashboard');
+            const header=result.headers.getSetCookie().find(c=>c.startsWith('evo_token=')&&!c.startsWith('evo_token=;'));assert.ok(header);assert.match(header,/Max-Age=/);
+            const token=decodeURIComponent(header.split(';')[0].slice('evo_token='.length));const claims=require('jsonwebtoken').verify(token,require('../server/middleware/auth').JWT_SECRET);assert.equal(claims.type,'admin');assert.notEqual(claims.demo,true);
+            const dashboard=await fetch(base+'/admin/dashboard',{headers:{cookie:header.split(';')[0]},redirect:'manual'});assert.equal(dashboard.status,200);
+            const cms=await fetch(base+'/api/cms/session',{method:'POST',headers:{authorization:'Bearer '+token}});assert.equal(cms.status,200);
+        }
+        const browser=client('business',clients.businessId);
+        for(const path of ['/login','/admin/login']){
+            const failed=await browser.post(path,{email,password:'Incorrect-fixture-password'});assert.equal(failed.headers.get('location'),path);
+            const rejected=await browser.page(path);assert.match(rejected.text,/Invalid email or password/);assert.doesNotMatch(rejected.text,/Incorrect-fixture-password/);
+        }
+        const recovery=await browser.post('/forgot-password',{email:'missing-recovery-fixture@example.invalid',userType:'admin'});assert.equal(recovery.status,200);assert.match(await recovery.text(),/If that email is registered/);
+        const expiredReset=await browser.page('/reset-password/missing-reset-fixture-token');assert.equal(expiredReset.res.headers.get('location'),'/forgot-password');
+        assert.match((await browser.page('/forgot-password')).text,/This reset link is invalid or has expired/);
+        const workerHash=await require('bcryptjs').hash('Worker-signin-fixture-only',10);
+        const [worker]=await db.execute("INSERT INTO workers (full_name,email,password_hash,phone,trade_category,status) VALUES ('Private admin role check',? ,?,'0','electrical','active')",[email,workerHash]);
+        try{
+            const roleCheck=await fetch(base+'/admin/login',{method:'POST',headers:{'content-type':'application/x-www-form-urlencoded'},body:new URLSearchParams({email,password:'Worker-signin-fixture-only',userType:'worker'}),redirect:'manual'});assert.equal(roleCheck.headers.get('location'),'/admin/login');assert.ok(!roleCheck.headers.getSetCookie().some(c=>c.startsWith('evo_token=')));
+        }finally{await db.execute('DELETE FROM workers WHERE id=?',[worker.insertId]);}
+    }finally{await db.execute('DELETE FROM admins WHERE id=?',[account.id]);}
 });

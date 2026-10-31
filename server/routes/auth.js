@@ -6,7 +6,7 @@ const crypto = require('crypto');
 const { getDb } = require('../database');
 const { signToken, setAuthCookie, clearAuthCookie } = require('../middleware/auth');
 const { sendEmail } = require('../config/email');
-const { authLimiter } = require('../middleware/rateLimit');
+const { authLimiter, demoLimiter } = require('../middleware/rateLimit');
 const router = express.Router();
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
@@ -52,19 +52,19 @@ async function findUserByEmail(db, email, userType, password) {
 const ensureDemoAccount = require('../services/demo-accounts');
 const demo = require('../services/demo-sandbox');
 
-// ── GET /login ─────────────────────────────────────────────────────────────────
-router.get('/login', (req, res) => {
-    const flash = req.session.flash || null;
+// Real administrator sign-in shares the same account password and CMS session.
+router.get(['/login','/admin/login'], (req,res)=>{
+    const adminOnly=req.path==='/admin/login';
+    const message=res.locals.flash || req.session.flash || null;
     delete req.session.flash;
-    res.render('login', {
-        title: 'Log In | EVOGovCon',
-        flash,
-        redirect: req.query.redirect || ''
+    res.render('login',{
+        title:adminOnly?'Administrator Sign In | EVOGovCon':'Log In | EVOGovCon',
+        layout:'layouts/default',adminOnly,flash:message,redirect:req.query.redirect || ''
     });
 });
 
 // ── GET /auth/demo/:role (1-click Demo Login) ──────────────────────────────────
-router.get('/auth/demo/:role', authLimiter, demo.loginContext, async (req, res) => {
+router.get('/auth/demo/:role', demoLimiter, demo.loginContext, async (req, res) => {
     const roleMap = {
         worker:   'demo-labor@evoconnect.io',
         labor:    'demo-labor@evoconnect.io',
@@ -101,17 +101,19 @@ router.get('/auth/demo/:role', authLimiter, demo.loginContext, async (req, res) 
 });
 
 // ── POST /login ────────────────────────────────────────────────────────────────
-router.post('/login', authLimiter, demo.passwordContext, async (req, res) => {
+router.post(['/login','/admin/login'], authLimiter, demo.passwordContext, async (req, res) => {
+    const adminOnly=req.path==='/admin/login';
+    const loginPath=adminOnly?'/admin/login':'/login';
     const email = (req.body.email || '').trim().toLowerCase();
     const password = req.body.password || '';
-    const userType = req.body.userType || null;
+    const userType = adminOnly ? 'admin' : req.body.userType || null;
 
     try {
         const db = getDb();
 
         // If logging in with one of the 3 public demo emails and DemoPass1!, auto-ensure it exists
         let found = null;
-        const isDemoEmail = [
+        const isDemoEmail = !adminOnly && [
             'demo-labor@evoconnect.io',
             'demo-business@evoconnect.io',
             'demo-prime@evoconnect.io'
@@ -119,7 +121,7 @@ router.post('/login', authLimiter, demo.passwordContext, async (req, res) => {
 
         if (isDemoEmail && password !== 'DemoPass1!') {
             flash(req, 'error', 'Invalid demo email or password.');
-            return res.redirect('/login');
+            return res.redirect(loginPath);
         }
         if (isDemoEmail && password === 'DemoPass1!') {
             found = await ensureDemoAccount(db, email);
@@ -129,7 +131,7 @@ router.post('/login', authLimiter, demo.passwordContext, async (req, res) => {
 
         if (!found || !found.row) {
             flash(req, 'error', 'Invalid email or password.');
-            return res.redirect('/login');
+            return res.redirect(loginPath);
         }
 
         const { row, userType: foundType } = found;
@@ -139,12 +141,13 @@ router.post('/login', authLimiter, demo.passwordContext, async (req, res) => {
 
         if (!match) {
             flash(req, 'error', 'Invalid email or password.');
-            return res.redirect('/login');
+            return res.redirect(loginPath);
         }
 
         const name = row.company_name || row.full_name || row.contact_name || row.name || row.email;
-        const token = signToken({ id: row.id, email: row.email, type: foundType, name, ...(demo.context.active() ? { demo: true } : {}) });
-        setAuthCookie(res, token, { sessionOnly: demo.context.active() });
+        const demoLogin=isDemoEmail && password==='DemoPass1!' && foundType!=='admin';
+        const token = signToken({ id: row.id, email: row.email, type: foundType, name, ...(demoLogin ? { demo: true } : {}) });
+        setAuthCookie(res, token, { sessionOnly: demoLogin });
 
         const redirectMap = {
             worker:   '/labor/dashboard',
@@ -157,7 +160,7 @@ router.post('/login', authLimiter, demo.passwordContext, async (req, res) => {
     } catch (err) {
         console.error('EVOGovCon [auth/login]:', err);
         flash(req, 'error', 'A server error occurred. Please try again.');
-        res.redirect('/login');
+        res.redirect(loginPath);
     }
 });
 
@@ -188,7 +191,7 @@ router.post('/auth/logout', (req, res) => {
 
 // ── GET /forgot-password ───────────────────────────────────────────────────────
 router.get('/forgot-password', (req, res) => {
-    const flash = req.session.flash || null;
+    const flash = res.locals.flash || req.session.flash || null;
     delete req.session.flash;
     res.render('forgot-password', {
         title: 'Forgot Password | EVOGovCon',

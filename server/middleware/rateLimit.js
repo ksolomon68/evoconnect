@@ -22,7 +22,17 @@ const regLimiter = rateLimit({
     message: { error: 'Too many registration attempts from this IP. Please try again after an hour.' }
 });
 
+// Public previews have their own budget so browsing demos cannot lock out account sign-in.
+const demoLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000,
+    max: isDev ? 10000 : 30,
+    standardHeaders: true,
+    legacyHeaders: false,
+    message: { error: 'Too many demo requests. Please try again later.' }
+});
+
 module.exports = {
     authLimiter,
+    demoLimiter,
     regLimiter
 };
