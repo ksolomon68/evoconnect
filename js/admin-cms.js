@@ -62,9 +62,8 @@ function showLoginScreen() {
     document.getElementById('cms-app').innerHTML = `
     <div class="cms-login-screen" role="main">
       <div class="cms-login-card">
-        <a href="/" style="display:flex;align-items:center;justify-content:center;gap:0.6rem;margin-bottom:0.75rem;text-decoration:none;" aria-label="EVOGovCon Home">
-          <img src="/images/favicon.png" alt="EVOGovCon" style="height:40px;width:auto;">
-          <span style="font-size:1.6rem;font-weight:800;color:#0F172A;letter-spacing:-0.02em;">EVOGovCon</span>
+        <a href="/" class="brand-logo-frame" aria-label="EVOGovCon Home">
+          <img src="/images/evogovcon-logo.png" alt="EVOGovCon — Connecting workers, subs &amp; primes" class="brand-logo-image" width="2172" height="724">
         </a>
         <h1>CMS Admin</h1>
         <p>Sign in with your admin account to manage site content.</p>
@@ -131,9 +130,8 @@ async function showShell() {
 
       <!-- Header -->
       <header class="cms-header" role="banner">
-        <a href="/" class="cms-header-brand" aria-label="EVOGovCon Home">
-          <img src="/images/favicon.png" alt="EVOGovCon" style="height:28px;width:auto;background:#fff;padding:3px;border-radius:6px;">
-          <span>EVOGovCon CMS Admin</span>
+        <a href="/" class="cms-header-brand brand-logo-frame" aria-label="EVOGovCon Home">
+          <img src="/images/evogovcon-logo.png" alt="EVOGovCon — Connecting workers, subs &amp; primes" class="brand-logo-image" width="2172" height="724">
         </a>
         <div class="cms-header-actions">
           <a href="/admin/dashboard" class="cms-btn cms-btn-sm"

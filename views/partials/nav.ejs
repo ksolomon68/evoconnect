@@ -11,12 +11,8 @@
       // and Home link need the escape hatch to actually land on the home page.
       const homeHref = locals.user ? '/?public=1' : '/';
     %>
-    <a href="<%= homeHref %>" class="site-logo" aria-label="EVOGovCon Home">
-      <img src="/images/favicon.png" alt="" class="site-logo-icon">
-      <span class="site-logo-text">
-        <span class="site-logo-name">EVOGovCon</span>
-        <span class="site-logo-tagline">by EVOBRAND Concepts</span>
-      </span>
+    <a href="<%= homeHref %>" class="site-logo brand-logo-frame" aria-label="EVOGovCon Home">
+      <img src="/images/evogovcon-logo.png" alt="EVOGovCon — Connecting workers, subs &amp; primes" class="brand-logo-image" width="2172" height="724">
     </a>
     <button class="hamburger" aria-label="Toggle menu" aria-expanded="false" aria-controls="main-nav">
       <span></span><span></span><span></span>

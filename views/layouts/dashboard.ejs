@@ -119,6 +119,7 @@ const navCfg = NAV_CONFIG[currentRole] || NAV_CONFIG.worker;
   <link rel="stylesheet" href="/css/directory-cards.css?v=1">
   <meta name="csrf-token" content="<%= locals.csrfToken || '' %>">
   <link rel="stylesheet" href="/css/role-workflows.css?v=1">
+  <link rel="stylesheet" href="/css/brand-logo.css?v=1">
 </head>
 <body class="dashboard-v2">
     <% if(locals.user?.demo) { %><div role="status" style="position:fixed;bottom:0;left:0;right:0;z-index:2000;padding:.5rem;text-align:center;background:#0f172a;color:#fff">Demo preview · sample data · read only · <a href="/logout" style="color:#67e8f9">Exit demo</a></div><% } %>
@@ -127,12 +128,8 @@ const navCfg = NAV_CONFIG[currentRole] || NAV_CONFIG.worker;
     <!-- Server-Rendered Caltrans Sidebar -->
     <aside class="sidebar" id="sidebar">
         <div class="sidebar-brand">
-            <a href="/" class="sidebar-brand-link" aria-label="EVOGovCon Home">
-                <img src="/images/favicon.png" alt="">
-                <span class="sidebar-brand-text">
-                    <span class="sidebar-brand-name">EVOGovCon</span>
-                    <span class="sidebar-brand-tagline">by EVOBRAND Concepts</span>
-                </span>
+            <a href="/" class="sidebar-brand-link brand-logo-frame" aria-label="EVOGovCon Home">
+                <img src="/images/evogovcon-logo.png" alt="EVOGovCon — Connecting workers, subs &amp; primes" class="brand-logo-image" width="2172" height="724">
             </a>
             <button class="sidebar-close-btn" aria-label="Close menu" onclick="Navigation.closeSidebar()">&times;</button>
         </div>
@@ -246,7 +243,7 @@ const navCfg = NAV_CONFIG[currentRole] || NAV_CONFIG.worker;
     </script>
     <script src="/agency.config.js"></script>
     <script src="/js/config.js"></script>
-    <script src="/js/components/navigation.js?v=3.6.3"></script>
+    <script src="/js/components/navigation.js?v=3.10.0"></script>
     <script src="/js/accessibility-widget.js"></script>
     <script src="/js/pwa.js?v=3.8.4"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js" defer></script>

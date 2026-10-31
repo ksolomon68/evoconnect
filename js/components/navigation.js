@@ -149,7 +149,8 @@ const Navigation = {
         const currentPath = window.location.pathname;
 
         let html = `
-            <div class="sidebar-brand" style="display: flex; justify-content: flex-end;">
+            <div class="sidebar-brand">
+                <a href="/" class="sidebar-brand-link brand-logo-frame" aria-label="EVOGovCon Home"><img src="/images/evogovcon-logo.png" alt="EVOGovCon — Connecting workers, subs &amp; primes" class="brand-logo-image" width="2172" height="724"></a>
                 <button class="sidebar-close-btn" aria-label="Close menu">&times;</button>
             </div>
             <nav class="sidebar-nav" style="padding: 1rem 0; flex: 1; overflow-y: auto;">
@@ -213,9 +214,8 @@ const Navigation = {
                     </svg>
                 </button>
                 <div class="header-logo" style="display: flex; align-items: center;">
-                    <a href="/" style="text-decoration: none; display: flex; align-items: center; min-height: 44px;" aria-label="EVOGovCon Home">
-                        <img src="/images/logo.png" alt="EVOGovCon logo" style="height: 32px; width: auto; display: block;" onerror="this.src='/images/favicon.png';">
-                        <span style="font-weight: 700; color: var(--color-primary); font-size: 1.1rem; letter-spacing: -0.01em; margin-left: 0.5rem; border-left: 1px solid var(--color-border); padding-left: 0.5rem;">EVOGovCon</span>
+                    <a href="/" class="brand-logo-frame" aria-label="EVOGovCon Home">
+                        <img src="/images/evogovcon-logo.png" alt="EVOGovCon — Connecting workers, subs &amp; primes" class="brand-logo-image" width="2172" height="724">
                     </a>
                 </div>
                 <span class="header-portal-title" aria-hidden="true" style="font-size: 0.85rem; color: var(--color-text-secondary); margin-left: 0.5rem;">${config.title}</span>

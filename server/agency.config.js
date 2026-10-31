@@ -9,7 +9,7 @@ module.exports = {
     description:     'Government contract workforce ecosystem for skilled workers, small businesses, and prime contractors.',
     themeColor:      '#0F172A',
     backgroundColor: '#0F172A',
-    logoPath:        'images/logo-light.png',
+    logoPath:        'images/evogovcon-logo.png',
     brandFamily:     'PrimeReach',
     owner:           'EVOBRAND Concepts',
     ownerUrl:        'https://evobrand.net',

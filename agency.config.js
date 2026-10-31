@@ -14,7 +14,7 @@ window.AGENCY = {
   intendedDomain: 'evogovcon.com',
   appId:     'net.evobrand.evoconnect',
   domain:    (typeof window !== 'undefined' ? window.location.hostname : 'darkslategrey-partridge-695960.hostingersite.com'),
-  logoPath:  '/images/logo-light.png',
+  logoPath:  '/images/evogovcon-logo.png',
   logoAlt:   'EVOGovCon Logo',
 
   colors: {

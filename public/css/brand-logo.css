@@ -1,0 +1,53 @@
+/* The supplied full wordmark includes white lettering; give it a consistent dark surface. */
+.brand-logo-frame {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 1 auto;
+    max-width: 100%;
+    padding: 6px 10px;
+    background: #061422;
+    border-radius: 10px;
+    text-decoration: none;
+    box-sizing: border-box;
+}
+.brand-logo-frame:focus-visible { outline: 3px solid #0891b2; outline-offset: 4px; }
+.brand-logo-frame .brand-logo-image {
+    display: block;
+    width: 240px;
+    max-width: 100%;
+    height: auto;
+    aspect-ratio: 3 / 1;
+    object-fit: contain;
+    border-radius: 0;
+    flex-shrink: 1;
+}
+.footer-brand .brand-logo-frame { margin-bottom: .75rem; }
+.footer-brand .brand-logo-image { width: 320px; }
+.sidebar-brand { min-height: 100px; height: auto; }
+.sidebar-brand .brand-logo-frame { min-width: 0; }
+.sidebar-brand .brand-logo-image { width: 210px; height: auto; border-radius: 0; }
+.sidebar-brand .sidebar-close-btn { flex-shrink: 0; }
+.cms-header { height: auto; min-height: 96px; gap: 1rem; }
+.cms-header-brand .brand-logo-image { width: 220px; }
+.cms-login-card .brand-logo-frame { margin-bottom: .75rem; }
+.cap-logo .brand-logo-image { width: 220px; height: auto; }
+@media (max-width: 767px) {
+    .site-logo.brand-logo-frame .brand-logo-image { width: 190px; }
+    .brand-logo-frame { padding: 5px 8px; }
+    .cms-header { padding: .75rem 1rem; flex-wrap: wrap; }
+    .cms-header-brand .brand-logo-image { width: 190px; }
+    .cms-header-actions { flex-wrap: wrap; }
+}
+@media print { .brand-logo-frame { print-color-adjust: exact; -webkit-print-color-adjust: exact; } }
+/* Keep the CMS grid and sticky navigation aligned with the taller wordmark. */
+.cms-shell { --cms-header-h: 96px; grid-template-rows: auto 1fr; }
+@media (max-width: 767px) {
+    .cms-shell { display: flex; flex-direction: column; }
+    .cms-shell .cms-header { position: relative; }
+    .cms-shell .cms-sidebar { position: static; width: 100%; height: auto; max-height: none; overflow: visible; }
+    .cms-shell .cms-header-actions { width: 100%; }
+    .cms-shell .cms-page-list { display: flex; flex-wrap: wrap; gap: .25rem; }
+    .cms-shell .cms-page-list li { flex: 1 1 150px; min-width: 0; }
+    .cms-shell .cms-main { min-width: 0; width: 100%; max-height: none; padding: 1rem; overflow: visible; }
+}
