@@ -44,6 +44,8 @@ before(async()=>{
     await db.execute("DELETE FROM opportunities WHERE id LIKE 'flagship-%' OR title LIKE 'Flagship %'");
     const [[admin]]=await db.execute('SELECT id FROM admins LIMIT 1');
     const [[prime]]=await db.execute('SELECT id FROM primes WHERE active = 1 LIMIT 1');
+    // Reused test accounts must start each run with fresh monthly usage.
+    await db.execute('UPDATE primes SET monthly_views_used=0,monthly_contacts_used=0 WHERE id=?',[prime.id]);
     const [[business]]=await db.execute('SELECT id FROM businesses LIMIT 1');
     const [[worker]]=await db.execute('SELECT id FROM workers LIMIT 1');
     clients.admin=client('admin',admin.id);clients.prime=client('prime',prime.id);clients.business=client('business',business.id);clients.worker=client('worker',worker.id);
