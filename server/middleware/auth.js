@@ -28,13 +28,13 @@ function signToken(payload) {
     return jwt.sign(normalized, JWT_SECRET, { expiresIn: '24h' });
 }
 
-function setAuthCookie(res, token) {
+function setAuthCookie(res, token, { sessionOnly = false } = {}) {
     res.cookie(COOKIE_NAME, token, {
         httpOnly: true,
         secure: !!(process.env.PHUSION_PASSENGER || process.env.PASSENGER_NODE_CONTROL_REPO || process.env.NODE_ENV === 'production'),
         sameSite: 'lax',
         path: '/',
-        maxAge: 24 * 60 * 60 * 1000 // 24 hours
+        ...(sessionOnly ? {} : { maxAge: 24 * 60 * 60 * 1000 }) // Keep public demos in the browser session only.
     });
 }
 

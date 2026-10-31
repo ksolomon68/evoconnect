@@ -588,3 +588,33 @@ test('admin access is private: public demo entry points and old demo tokens are 
         const page=await fetch(base+demo.headers.get('location'),{headers:{cookie}});assert.equal(page.status,200);assert.doesNotMatch(await page.text(),/href="\/auth\/demo\/admin"/);
     }
 });
+
+test('demo sessions end on public navigation while real sign-in stays persistent',async()=>{
+    const fresh=async(role)=>{
+        const response=await fetch(base+'/auth/demo/'+role,{redirect:'manual'});
+        const header=response.headers.getSetCookie().find(c=>c.startsWith('evo_token='));
+        assert.ok(header);assert.doesNotMatch(header,/Max-Age=|Expires=/i);
+        return header.split(';')[0];
+    };
+    for(const [role,portal] of [['worker','labor'],['business','business'],['prime','prime']]){
+        for(const publicPage of ['/?public=1','/contact','/login']){
+            const cookie=await fresh(role);
+            const dashboard=await fetch(base+'/'+portal+'/dashboard',{headers:{cookie},redirect:'manual'});assert.equal(dashboard.status,200);
+            const inside=await fetch(base+'/'+portal+'/messages',{headers:{cookie},redirect:'manual'});assert.equal(inside.status,200);assert.ok(!inside.headers.getSetCookie().some(c=>c.startsWith('evo_token=;')));
+            const outside=await fetch(base+publicPage,{headers:{cookie},redirect:'manual'});assert.equal(outside.status,200);
+            assert.ok(outside.headers.getSetCookie().some(c=>c.startsWith('evo_token=;')));
+            assert.doesNotMatch(await outside.text(),/Demo preview|Switch Demo Portal/);
+        }
+        const exit=await fetch(base+'/logout?redirect=home',{headers:{cookie:await fresh(role)},redirect:'manual'});assert.equal(exit.headers.get('location'),'/?public=1');assert.ok(exit.headers.getSetCookie().some(c=>c.startsWith('evo_token=;')));
+        assert.equal((await fetch(base+'/'+portal+'/dashboard',{redirect:'manual'})).headers.get('location'),'/login');
+    }
+    const password='Real-persistent-login-fixture-only';
+    const hash=await require('bcryptjs').hash(password,10);
+    const [account]=await db.execute("INSERT INTO businesses (company_name,contact_name,email,password_hash,phone,status) VALUES ('Persistent real business','Owner','real-demo-exit-fixture@example.invalid',?,'0','active')",[hash]);
+    try{
+        const login=await fetch(base+'/login',{method:'POST',headers:{'content-type':'application/x-www-form-urlencoded'},body:new URLSearchParams({email:'real-demo-exit-fixture@example.invalid',password}),redirect:'manual'});
+        const token=login.headers.getSetCookie().find(c=>c.startsWith('evo_token='));assert.match(token,/Max-Age=/i);
+        const home=await fetch(base+'/?public=1',{headers:{cookie:token.split(';')[0]},redirect:'manual'});assert.equal(home.status,200);assert.ok(!home.headers.getSetCookie().some(c=>c.startsWith('evo_token=;')));
+        const adminHome=await clients.admin.request('/?public=1');assert.equal(adminHome.status,200);assert.ok(!adminHome.headers.getSetCookie().some(c=>c.startsWith('evo_token=;')));
+    }finally{await db.execute('DELETE FROM businesses WHERE id=?',[account.insertId]);}
+});

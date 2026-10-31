@@ -120,8 +120,9 @@ const navCfg = NAV_CONFIG[currentRole] || NAV_CONFIG.worker;
   <meta name="csrf-token" content="<%= locals.csrfToken || '' %>">
   <link rel="stylesheet" href="/css/role-workflows.css?v=1">
   <link rel="stylesheet" href="/css/brand-logo.css?v=3">
+  <link rel="stylesheet" href="/css/portal-options.css?v=1">
 </head>
-<body class="dashboard-v2">
+<body class="dashboard-v2<%= locals.user?.demo ? ' demo-mode' : '' %>">
     <% if(locals.user?.demo) { %><div role="status" style="position:fixed;bottom:0;left:0;right:0;z-index:2000;padding:.5rem;text-align:center;background:#0f172a;color:#fff">Demo preview · sample data · read only · <a href="/logout" style="color:#67e8f9">Exit demo</a></div><% } %>
     <a href="#main-content" class="skip-link">Skip to main content</a>
 
@@ -134,6 +135,19 @@ const navCfg = NAV_CONFIG[currentRole] || NAV_CONFIG.worker;
             <button class="sidebar-close-btn" aria-label="Close menu" onclick="Navigation.closeSidebar()">&times;</button>
         </div>
 
+            <% if (locals.user?.demo) { %>
+            <section class="sidebar-demo-controls" aria-label="Demo portals">
+            <div class="demo-switch-label">
+                Switch Demo Portal
+            </div>
+            <div class="demo-switch-grid">
+                <a href="/auth/demo/worker" class="demo-switch-link<%= currentRole === 'worker' ? ' active' : '' %>">👷 Labor</a>
+                <a href="/auth/demo/business" class="demo-switch-link<%= currentRole === 'business' ? ' active' : '' %>">🏢 Business</a>
+                <a href="/auth/demo/prime" class="demo-switch-link<%= currentRole === 'prime' ? ' active' : '' %>">🏗️ Prime</a>
+            </div>
+            </section>
+            <% } %>
+
         <nav class="sidebar-nav">
             <div class="sidebar-nav-section-title">
                 <%= navCfg.title %>
@@ -145,21 +159,10 @@ const navCfg = NAV_CONFIG[currentRole] || NAV_CONFIG.worker;
                 </a>
             <% }) %>
 
-            <% if (locals.user?.demo) { %>
-            <!-- Quick Role / Demo Switcher -->
-            <div class="demo-switch-label">
-                Switch Demo Portal
-            </div>
-            <div class="demo-switch-grid">
-                <a href="/auth/demo/worker" class="demo-switch-link<%= currentRole === 'worker' ? ' active' : '' %>">👷 Labor</a>
-                <a href="/auth/demo/business" class="demo-switch-link<%= currentRole === 'business' ? ' active' : '' %>">🏢 Business</a>
-                <a href="/auth/demo/prime" class="demo-switch-link<%= currentRole === 'prime' ? ' active' : '' %>">🏗️ Prime</a>
-            </div>
-            <% } %>
         </nav>
 
         <div class="sidebar-footer">
-            <a href="/?public=1" class="sidebar-footer-link">
+            <a href="<%= locals.user?.demo ? '/logout?redirect=home' : '/?public=1' %>" class="sidebar-footer-link">
                 <span class="sidebar-footer-link-icon">🌐</span> Back to Public Site
             </a>
             <a href="/logout" onclick="localStorage.removeItem('wfc_user');" class="sidebar-footer-link sidebar-signout-btn">

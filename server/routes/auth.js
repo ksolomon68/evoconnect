@@ -84,7 +84,7 @@ router.get('/auth/demo/:role', authLimiter, demo.loginContext, async (req, res) 
         const { row, userType } = found;
         const name = row.company_name || row.full_name || row.contact_name || row.name || row.email;
         const token = signToken({ id: row.id, email: row.email, type: userType, name, demo: true });
-        setAuthCookie(res, token);
+        setAuthCookie(res, token, { sessionOnly: demo.context.active() });
 
         const redirectMap = {
             worker:   '/labor/dashboard',
@@ -144,7 +144,7 @@ router.post('/login', authLimiter, demo.passwordContext, async (req, res) => {
 
         const name = row.company_name || row.full_name || row.contact_name || row.name || row.email;
         const token = signToken({ id: row.id, email: row.email, type: foundType, name, ...(demo.context.active() ? { demo: true } : {}) });
-        setAuthCookie(res, token);
+        setAuthCookie(res, token, { sessionOnly: demo.context.active() });
 
         const redirectMap = {
             worker:   '/labor/dashboard',
@@ -165,7 +165,7 @@ router.post('/login', authLimiter, demo.passwordContext, async (req, res) => {
 router.get('/logout', (req, res) => {
     clearAuthCookie(res);
     if (req.session) req.session.destroy(() => {});
-    res.redirect('/login');
+    res.redirect(req.query.redirect === 'home' ? '/?public=1' : '/login');
 });
 
 router.post('/logout', (req, res) => {

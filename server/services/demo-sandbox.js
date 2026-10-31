@@ -111,6 +111,13 @@ function requestContext(req,res,next) {
         if(/^\/(?:login|logout|auth\/logout|auth\/demo\/[^/]+|api\/cms\/login)$/.test(req.path))return context.live(next);
         return res.status(403).send('Administrator access is private. Sign in with your real administrator account.');
     }
+    // Leaving the portal for a public page ends a preview without affecting real accounts.
+    const publicPages=new Set(['/','/index','/login','/register','/labor','/business','/prime','/opportunities','/faq','/contact','/resources','/how-it-works','/checklist','/privacy','/privacy-policy','/terms','/terms-of-service','/accessibility','/accessibility-statement','/labor/register','/business/register','/prime/register','/forgot-password']);
+    const page=req.path.replace(/\.html$/,'').replace(/\/$/,'') || '/';
+    if(req.user?.demo && ['GET','HEAD'].includes(req.method) && (publicPages.has(page) || page.startsWith('/pages/') || page.startsWith('/reset-password/'))){
+        require('../middleware/auth').clearAuthCookie(res);delete req.user;delete res.locals.user;
+        return context.live(next);
+    }
     // Login/logout must be able to switch between live and demo sessions.
     if(!req.user?.demo || /^\/(?:login|logout|auth\/logout|auth\/demo\/[^/]+)$/.test(req.path))return context.live(next);
     if(!['GET','HEAD'].includes(req.method))return res.status(403).send('This is a read-only demo. Log out and use your own account to save changes.');
