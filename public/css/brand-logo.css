@@ -23,7 +23,7 @@
     flex-shrink: 1;
 }
 .footer-brand .brand-logo-frame { margin-bottom: .75rem; }
-.footer-brand .brand-logo-image { width: 320px; }
+.footer-brand .brand-logo-image { width: 220px; }
 .sidebar-brand { min-height: 100px; height: auto; }
 .sidebar-brand .brand-logo-frame { min-width: 0; }
 .sidebar-brand .brand-logo-image { width: 210px; height: auto; border-radius: 0; }
