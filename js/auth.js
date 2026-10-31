@@ -3,7 +3,7 @@
  * Handles login, registration, and session management (client-side demo)
  */
 
-console.log('EVOConnected: Auth module initialized.');
+console.log('EVOGovCon: Auth module initialized.');
 
 // Helper to check if localStorage is available
 function isStorageAvailable() {
@@ -13,7 +13,7 @@ function isStorageAvailable() {
         localStorage.removeItem(test);
         return true;
     } catch (e) {
-        console.error('EVOConnected: Local storage is not available. Persistence features will be disabled.', e);
+        console.error('EVOGovCon: Local storage is not available. Persistence features will be disabled.', e);
         return false;
     }
 }
@@ -73,10 +73,10 @@ async function safeParseJson(response) {
 
 // Login function
 async function login(email, password) {
-    console.log('EVOConnected: Attempting login for:', email);
+    console.log('EVOGovCon: Attempting login for:', email);
     const finalUrl = `${API_URL}/auth/login`;
     try {
-        console.log('EVOConnected: Fetching URL:', finalUrl);
+        console.log('EVOGovCon: Fetching URL:', finalUrl);
 
         const response = await fetch(finalUrl, {
             method: 'POST',
@@ -102,10 +102,10 @@ async function login(email, password) {
         if (data.token) {
             localStorage.setItem('caltrans_token', data.token);
         }
-        console.log('EVOConnected: User logged in:', userData.email);
+        console.log('EVOGovCon: User logged in:', userData.email);
         return userData;
     } catch (error) {
-        console.error('EVOConnected Login error detail:', error);
+        console.error('EVOGovCon Login error detail:', error);
 
         // Handle specific network errors
         if (error instanceof TypeError && (error.message.includes('fetch') || error.message.includes('NetworkError'))) {
@@ -130,7 +130,7 @@ window.handleLogout = async function() {
             credentials: 'include' // Include cookies if using session auth
         });
     } catch (error) {
-        console.warn('EVOConnected: Logout API call failed (continuing anyway):', error);
+        console.warn('EVOGovCon: Logout API call failed (continuing anyway):', error);
     }
 
     // Clear all client-side storage
@@ -140,7 +140,7 @@ window.handleLogout = async function() {
     localStorage.removeItem('userType');
     sessionStorage.clear();
 
-    console.log('EVOConnected: User session cleared');
+    console.log('EVOGovCon: User session cleared');
     // Redirect to login page
     window.location.href = 'login.html';
 }
@@ -170,7 +170,7 @@ async function registerSmallBusiness(formData) {
         const user = data.user || data;
         localStorage.setItem('wfc_user', JSON.stringify(user));
         if (data.token) localStorage.setItem('caltrans_token', data.token);
-        console.log('EVOConnected: Small Business registered:', user.businessName || user.email);
+        console.log('EVOGovCon: Small Business registered:', user.businessName || user.email);
         return user;
     } catch (error) {
         clearTimeout(timeout);
@@ -215,7 +215,7 @@ async function registerPrimeContractor(formData) {
         const user = data.user || data;
         localStorage.setItem('wfc_user', JSON.stringify(user));
         if (data.token) localStorage.setItem('caltrans_token', data.token);
-        console.log('EVOConnected: Prime Contractor registered:', user.organizationName || user.email);
+        console.log('EVOGovCon: Prime Contractor registered:', user.organizationName || user.email);
         return user;
     } catch (error) {
         clearTimeout(timeout);
@@ -432,7 +432,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // If on login page and already logged in, redirect
     if (window.location.pathname.endsWith('login.html') && isLoggedIn()) {
-        console.log('EVOConnected: Already logged in, redirecting to dashboard.');
+        console.log('EVOGovCon: Already logged in, redirecting to dashboard.');
         redirectToDashboard(getCurrentUser());
     }
 

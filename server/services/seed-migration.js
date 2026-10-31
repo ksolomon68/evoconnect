@@ -1,6 +1,6 @@
 'use strict';
 /**
- * EVOConnected — Automatic Federal & State Seed Migration
+ * EVOGovCon — Automatic Federal & State Seed Migration
  * ========================================================
  * Runs on database initialization to clean up legacy demo placeholders
  * and ensure authentic Federal and Texas State solicitations & jobs are live.
@@ -15,7 +15,7 @@ module.exports = async function migrateSeeds(db) {
         const { seed } = require('../../scripts/seed-federal-state');
         await seed();
     } catch (err) {
-        console.warn('EVOConnected: Seed migration notice:', err.message);
+        console.warn('EVOGovCon: Seed migration notice:', err.message);
     }
 };
 

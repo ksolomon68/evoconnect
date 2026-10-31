@@ -1,6 +1,6 @@
 # Hostinger deployment
 
-EVOConnected runs as an Express application on Hostinger. Deploy the GitHub repository `ksolomon68/evoconnect`, branch `main`.
+EVOGovCon runs as an Express application on Hostinger. Deploy the GitHub repository `ksolomon68/evoconnect`, branch `main`.
 
 Use these application settings:
 
@@ -28,10 +28,10 @@ SMTP settings are unchanged. Check `/api/health` after deployment, then sign in 
 
 Set `STRIPE_SECRET_KEY` in the Hostinger environment with your Stripe secret key (start with the test-mode key, switch to live when ready). In the Stripe dashboard, add a webhook endpoint at `<APP_URL>/api/stripe/webhook` listening for `checkout.session.completed`, `customer.subscription.updated`, and `customer.subscription.deleted`, then set `STRIPE_WEBHOOK_SECRET` to that endpoint's signing secret. Without these two variables, `/prime/billing` still renders but upgrade buttons stay disabled — the free Basic tier is unaffected either way.
 
-## EVOConnected name and planned domain
+## EVOGovCon name and planned domain
 
-The public name is **EVOConnected**. The intended custom domain is **evoconnected.com**; this does not imply it is registered, owned, or connected. Keep the current Hostinger hostname active. The branding change does not rename the GitHub repository, MySQL databases, auth cookies, session signing namespace, application IDs, browser storage keys, demo login addresses, upload paths, or existing support mailboxes.
+The public name is **EVOGovCon**. The intended custom domain is **evogovcon.com**; this does not imply it is registered, owned, or connected. Keep the current Hostinger hostname active. The branding change does not rename the GitHub repository, MySQL databases, auth cookies, session signing namespace, application IDs, browser storage keys, demo login addresses, upload paths, or existing support mailboxes.
 
-Once the domain is acquired, add it to the Hostinger application, configure DNS using Hostinger's supplied records, and issue/verify HTTPS. Then set `DOMAIN=evoconnected.com` and `APP_URL=https://evoconnected.com`, restart the app, and test login, password-reset emails, CMS access, and downloads on the new hostname. Configure and verify any new email addresses separately before changing `EMAIL_FROM` or `SUPPORT_EMAIL`. Existing sessions stay valid on the current hostname; browsers require a new login when visiting a different hostname. Add redirects from the old address only after the new domain works.
+Once the domain is acquired, add it to the Hostinger application, configure DNS using Hostinger's supplied records, and issue/verify HTTPS. Then set `DOMAIN=evogovcon.com` and `APP_URL=https://evogovcon.com`, restart the app, and test login, password-reset emails, CMS access, and downloads on the new hostname. Configure and verify any new email addresses separately before changing `EMAIL_FROM` or `SUPPORT_EMAIL`. Existing sessions stay valid on the current hostname; browsers require a new login when visiting a different hostname. Add redirects from the old address only after the new domain works.
 
 Branding saved in CMS pages and FAQs is updated by an additive, idempotent display-text migration. Custom content is retained; no users or credentials are renamed. Website and email links use the current configured deployment URL, rather than prematurely sending visitors to the planned domain.

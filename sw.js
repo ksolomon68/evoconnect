@@ -11,10 +11,10 @@
 
 // ── Agency config (keep in sync with agency.config.js) ───────────────────────
 const AGENCY_STORAGE_PREFIX = 'evoconnect';   // storagePrefix value from agency.config.js
-const AGENCY_APP_NAME       = 'EVOConnected'; // name value from agency.config.js
+const AGENCY_APP_NAME       = 'EVOGovCon'; // name value from agency.config.js
 const AGENCY_LOGO_PATH      = '/images/logo.png'; // logoPath from agency.config.js
 
-const CACHE_VERSION = 'v1.2.2';
+const CACHE_VERSION = 'v1.2.3';
 const STATIC_CACHE  = `${AGENCY_STORAGE_PREFIX}-static-${CACHE_VERSION}`;
 const API_CACHE     = `${AGENCY_STORAGE_PREFIX}-api-${CACHE_VERSION}`;
 const ALL_CACHES    = [STATIC_CACHE, API_CACHE];

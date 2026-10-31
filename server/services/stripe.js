@@ -11,8 +11,8 @@ const stripe = process.env.STRIPE_SECRET_KEY
 // goes through Stripe. Keep these in sync with SUBSCRIPTION_TIERS in
 // server/routes/prime.js.
 const PAID_TIERS = {
-    pro:        { name: 'EVOConnected Prime — Pro',        cents: 4900 },
-    enterprise: { name: 'EVOConnected Prime — Enterprise',  cents: 9900 }
+    pro:        { name: 'EVOGovCon Prime — Pro',        cents: 4900 },
+    enterprise: { name: 'EVOGovCon Prime — Enterprise',  cents: 9900 }
 };
 
 function isConfigured() {

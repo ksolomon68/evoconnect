@@ -110,7 +110,7 @@ const CONTACT_LIMITS = { basic: 5,  pro: 20,       enterprise: Infinity };
 // ── GET /prime ─────────────────────────────────────────────────────────────────
 router.get('/', (req, res) => {
     res.render('prime/index', {
-        title: 'Prime Contractor Portal | EVOConnected',
+        title: 'Prime Contractor Portal | EVOGovCon',
         flash: getFlash(req),
         tiers: SUBSCRIPTION_TIERS
     });
@@ -121,7 +121,7 @@ router.get('/register', (req, res) => {
     const step = parseInt(req.query.step) || 1;
     const queryTier = req.query.tier || '';
     res.render('prime/register', {
-        title: 'Register as a Prime Contractor | EVOConnected',
+        title: 'Register as a Prime Contractor | EVOGovCon',
         flash: getFlash(req),
         states: US_STATES,
         stateNames: STATE_NAMES,
@@ -164,7 +164,7 @@ router.post('/register', regLimiter, async (req, res) => {
 
     if (errors.length) {
         return res.render('prime/register', {
-            title: 'Register as a Prime Contractor | EVOConnected',
+            title: 'Register as a Prime Contractor | EVOGovCon',
             flash: null,
             states: US_STATES,
             stateNames: STATE_NAMES,
@@ -181,7 +181,7 @@ router.post('/register', regLimiter, async (req, res) => {
         const [existing] = await db.execute('SELECT id FROM primes WHERE email = ?', [email]);
         if (existing.length) {
             return res.render('prime/register', {
-                title: 'Register as a Prime Contractor | EVOConnected',
+                title: 'Register as a Prime Contractor | EVOGovCon',
                 flash: null,
                 states: US_STATES,
                 stateNames: STATE_NAMES,
@@ -216,9 +216,9 @@ router.post('/register', regLimiter, async (req, res) => {
 
         // Send "pending approval" confirmation to prime (non-blocking)
         const pendingHtml = `
-            <h2 style="color:#1a56db;">Application Received — EVOConnected Prime Contractor</h2>
+            <h2 style="color:#1a56db;">Application Received — EVOGovCon Prime Contractor</h2>
             <p>Hi ${contact_name},</p>
-            <p>Thank you for applying to join EVOConnected as a prime contractor. Your application is under review and you will receive an email notification within <strong>1–2 business days</strong>.</p>
+            <p>Thank you for applying to join EVOGovCon as a prime contractor. Your application is under review and you will receive an email notification within <strong>1–2 business days</strong>.</p>
             <h3 style="color:#374151;">What happens next:</h3>
             <ol>
                 <li>Our team verifies your SAM.gov UEI and company information</li>
@@ -229,10 +229,10 @@ router.post('/register', regLimiter, async (req, res) => {
         `;
         sendEmail({
             to: email,
-            subject: 'EVOConnected: Your prime contractor application is under review',
+            subject: 'EVOGovCon: Your prime contractor application is under review',
             html: pendingHtml,
-            text: `Hi ${contact_name},\n\nYour EVOConnected prime contractor application is under review. You'll receive a decision within 1–2 business days.\n\nQuestions? Reply to this email.`
-        }).catch(e => console.error('EVOConnected [prime/register] confirmation email error:', e));
+            text: `Hi ${contact_name},\n\nYour EVOGovCon prime contractor application is under review. You'll receive a decision within 1–2 business days.\n\nQuestions? Reply to this email.`
+        }).catch(e => console.error('EVOGovCon [prime/register] confirmation email error:', e));
 
         // Internal admin notification
         const adminEmail = process.env.ADMIN_EMAIL || 'admin@evoconnect.evobrand.net';
@@ -251,10 +251,10 @@ router.post('/register', regLimiter, async (req, res) => {
         `;
         sendEmail({
             to: adminEmail,
-            subject: `EVOConnected: New prime application — ${company_name}`,
+            subject: `EVOGovCon: New prime application — ${company_name}`,
             html: adminHtml,
             text: `New prime contractor application:\nCompany: ${company_name}\nContact: ${contact_name}\nEmail: ${email}\nSAM UEI: ${sam_uei}\nTier: ${subscription_tier}\n\nReview at: ${require('../agency.config').baseUrl}/admin/dashboard`
-        }).catch(e => console.error('EVOConnected [prime/register] admin notification email error:', e));
+        }).catch(e => console.error('EVOGovCon [prime/register] admin notification email error:', e));
 
         // Sign token and set cookie (they can access dashboard but with pending state)
         const token = signToken({ id: primeId, email, type: 'prime', name: company_name });
@@ -264,9 +264,9 @@ router.post('/register', regLimiter, async (req, res) => {
         res.redirect('/prime/dashboard');
 
     } catch (err) {
-        console.error('EVOConnected [prime/register]:', err);
+        console.error('EVOGovCon [prime/register]:', err);
         res.render('prime/register', {
-            title: 'Register as a Prime Contractor | EVOConnected',
+            title: 'Register as a Prime Contractor | EVOGovCon',
             flash: null,
             states: US_STATES,
             stateNames: STATE_NAMES,
@@ -296,7 +296,7 @@ router.get('/dashboard', requireType('prime'), async (req, res) => {
         // Pending approval — show limited view
         if (prime.active !== 1) {
             return res.render('prime/dashboard', {
-                title: 'Dashboard | EVOConnected Prime',
+                title: 'Dashboard | EVOGovCon Prime',
                 flash: getFlash(req),
                 prime,
                 pendingApproval: true,
@@ -319,7 +319,7 @@ router.get('/dashboard', requireType('prime'), async (req, res) => {
         const [[{ wCnt }]] = await db.execute("SELECT COUNT(*) AS wCnt FROM workers WHERE status='active'");
         const [[{ bCnt }]] = await db.execute("SELECT COUNT(*) AS bCnt FROM businesses WHERE status='active'");
         res.render('prime/dashboard', {
-            title: 'Dashboard | EVOConnected Prime',
+            title: 'Dashboard | EVOGovCon Prime',
             flash: getFlash(req),
             prime,
             pendingApproval: false,
@@ -331,7 +331,7 @@ router.get('/dashboard', requireType('prime'), async (req, res) => {
         });
 
     } catch (err) {
-        console.error('EVOConnected [prime/dashboard]:', err);
+        console.error('EVOGovCon [prime/dashboard]:', err);
         flash(req, 'error', 'Failed to load dashboard.');
         res.redirect('/login');
     }
@@ -347,14 +347,14 @@ router.get('/billing', requireType('prime'), async (req, res) => {
         const prime = decoratePrime(pRows[0]);
 
         res.render('prime/billing', {
-            title: 'Billing & Subscription | EVOConnected Prime',
+            title: 'Billing & Subscription | EVOGovCon Prime',
             flash: getFlash(req),
             prime,
             tiers: SUBSCRIPTION_TIERS,
             stripeConfigured: stripeService.isConfigured()
         });
     } catch (err) {
-        console.error('EVOConnected [prime/billing GET]:', err);
+        console.error('EVOGovCon [prime/billing GET]:', err);
         flash(req, 'error', 'Failed to load billing.');
         res.redirect('/prime/dashboard');
     }
@@ -386,7 +386,7 @@ router.post('/billing/checkout', requireType('prime'), async (req, res) => {
         const session = await stripeService.createCheckoutSession(prime, tier);
         return res.redirect(303, session.url);
     } catch (err) {
-        console.error('EVOConnected [prime/billing/checkout]:', err);
+        console.error('EVOGovCon [prime/billing/checkout]:', err);
         flash(req, 'error', 'Could not start checkout. Please try again.');
         res.redirect('/prime/billing');
     }
@@ -412,7 +412,7 @@ router.get('/billing/success', requireType('prime'), async (req, res) => {
         }
         flash(req, 'success', 'Subscription activated. Welcome aboard!');
     } catch (err) {
-        console.error('EVOConnected [prime/billing/success]:', err);
+        console.error('EVOGovCon [prime/billing/success]:', err);
     }
     res.redirect('/prime/billing');
 });
@@ -439,7 +439,7 @@ router.post('/billing/portal', requireType('prime'), async (req, res) => {
         const session = await stripeService.createPortalSession(pRows[0].stripe_customer_id);
         return res.redirect(303, session.url);
     } catch (err) {
-        console.error('EVOConnected [prime/billing/portal]:', err);
+        console.error('EVOGovCon [prime/billing/portal]:', err);
         flash(req, 'error', 'Could not open billing portal. Please try again.');
         res.redirect('/prime/billing');
     }
@@ -467,7 +467,7 @@ router.get('/search/workers', requireType('prime'), async (req, res) => {
         const viewLimit = VIEW_LIMITS[prime.tier] || 5;
         if (prime.tier === 'basic' && prime.monthly_views_used >= viewLimit) {
             return res.render('prime/search-workers', {
-                title: 'Search Workers | EVOConnected',
+                title: 'Search Workers | EVOGovCon',
                 flash: { type: 'warning', message: `You've reached your ${viewLimit} monthly view limit. Upgrade to Pro for unlimited views.` },
                 prime,
                 results: [],
@@ -521,7 +521,7 @@ router.get('/search/workers', requireType('prime'), async (req, res) => {
         }
 
         res.render('prime/search-workers', {
-            title: 'Search Workers | EVOConnected',
+            title: 'Search Workers | EVOGovCon',
             flash: getFlash(req),
             prime,
             results: await require('../services/directory-profiles')(db,'worker',filtered),
@@ -531,7 +531,7 @@ router.get('/search/workers', requireType('prime'), async (req, res) => {
         });
 
     } catch (err) {
-        console.error('EVOConnected [prime/search/workers]:', err);
+        console.error('EVOGovCon [prime/search/workers]:', err);
         flash(req, 'error', 'Search failed. Please try again.');
         res.redirect('/prime/dashboard');
     }
@@ -559,7 +559,7 @@ router.get('/search/businesses', requireType('prime'), async (req, res) => {
         const viewLimit = VIEW_LIMITS[prime.tier] || 5;
         if (prime.tier === 'basic' && prime.monthly_views_used >= viewLimit) {
             return res.render('prime/search-businesses', {
-                title: 'Search Businesses | EVOConnected',
+                title: 'Search Businesses | EVOGovCon',
                 flash: { type: 'warning', message: `You've reached your ${viewLimit} monthly view limit. Upgrade to Pro for unlimited views.` },
                 prime,
                 results: [],
@@ -613,7 +613,7 @@ router.get('/search/businesses', requireType('prime'), async (req, res) => {
         }
 
         res.render('prime/search-businesses', {
-            title: 'Search Businesses | EVOConnected',
+            title: 'Search Businesses | EVOGovCon',
             flash: getFlash(req),
             prime,
             results: await require('../services/directory-profiles')(db,'business',filtered),
@@ -623,7 +623,7 @@ router.get('/search/businesses', requireType('prime'), async (req, res) => {
         });
 
     } catch (err) {
-        console.error('EVOConnected [prime/search/businesses]:', err);
+        console.error('EVOGovCon [prime/search/businesses]:', err);
         flash(req, 'error', 'Search failed. Please try again.');
         res.redirect('/prime/dashboard');
     }
@@ -643,7 +643,7 @@ router.post(['/rfq','/rfq/post'], requireType('prime'), (req,res)=>{
 router.get('/faq', async (req, res, next) => {
     try {
         res.render('prime/faq', {
-            title: 'FAQ | EVOConnected Prime',
+            title: 'FAQ | EVOGovCon Prime',
             flash: getFlash(req),
             faqs: await require('../services/faqs').list(getDb(),'prime')
         });
@@ -671,7 +671,7 @@ router.get('/profile/edit', requireType('prime'), async (req, res) => {
         prime.naics_codes = safeJson(prime.naics_codes, []);
 
         res.render('prime/profile', {
-            title: 'Edit Profile | EVOConnected Prime',
+            title: 'Edit Profile | EVOGovCon Prime',
             flash: getFlash(req),
             prime,
             states: US_STATES,
@@ -680,7 +680,7 @@ router.get('/profile/edit', requireType('prime'), async (req, res) => {
         });
 
     } catch (err) {
-        console.error('EVOConnected [prime/profile/edit GET]:', err);
+        console.error('EVOGovCon [prime/profile/edit GET]:', err);
         flash(req, 'error', 'Failed to load profile.');
         res.redirect('/prime/dashboard');
     }
@@ -719,7 +719,7 @@ router.post('/profile/update', requireType('prime'), async (req, res) => {
         res.redirect('/prime/profile/edit');
 
     } catch (err) {
-        console.error('EVOConnected [prime/profile/update POST]:', err);
+        console.error('EVOGovCon [prime/profile/update POST]:', err);
         flash(req, 'error', 'Failed to update profile.');
         res.redirect('/prime/profile/edit');
     }
@@ -746,13 +746,13 @@ router.get('/opportunities', requireType('prime'), async (req, res) => {
 
         ];
         res.render('prime/opportunities', {
-            title: 'Manage RFQs | EVOConnected Prime',
+            title: 'Manage RFQs | EVOGovCon Prime',
             flash: getFlash(req),
             opportunities,
             candidates
         });
     } catch (err) {
-        console.error('EVOConnected [prime/opportunities]:', err);
+        console.error('EVOGovCon [prime/opportunities]:', err);
         res.redirect('/prime/dashboard');
     }
 });
@@ -779,12 +779,12 @@ router.get('/applications', requireType('prime'), async (req, res) => {
             ORDER BY a.applied_date DESC
         `, [req.user.id]);
         res.render('prime/applications', {
-            title: 'Review Applications | EVOConnected Prime',
+            title: 'Review Applications | EVOGovCon Prime',
             flash: getFlash(req),
             applications
         });
     } catch (err) {
-        console.error('EVOConnected [prime/applications]:', err);
+        console.error('EVOGovCon [prime/applications]:', err);
         res.redirect('/prime/dashboard');
     }
 });
@@ -805,9 +805,9 @@ router.get('/resources', requireType('prime'), async (req, res) => {
             WHERE audience IN ('all','business','prime') AND status = 'active'
             ORDER BY sort_order ASC
         `);
-        res.render('labor/resources', { title: 'Resources | EVOConnected Prime', flash: getFlash(req), resources });
+        res.render('labor/resources', { title: 'Resources | EVOGovCon Prime', flash: getFlash(req), resources });
     } catch (err) {
-        console.error('EVOConnected [prime/resources]:', err);
+        console.error('EVOGovCon [prime/resources]:', err);
         flash(req, 'error', 'Failed to load resources.');
         res.redirect('/prime/dashboard');
     }

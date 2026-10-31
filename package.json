@@ -1,7 +1,7 @@
 {
   "name": "evoconnect",
   "version": "3.0.0",
-  "description": "EVOConnected — Government contract workforce ecosystem. Labor, Business, and Prime portals with NAICS matching, vendor readiness tools, and directory search.",
+  "description": "EVOGovCon — Government contract workforce ecosystem. Labor, Business, and Prime portals with NAICS matching, vendor readiness tools, and directory search.",
   "main": "server/index.js",
   "scripts": {
     "start": "node server/index.js",

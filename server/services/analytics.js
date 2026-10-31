@@ -32,7 +32,7 @@ function trackRequest(req, res, next) {
         if (res.statusCode >= 400) return;
         const contentType = res.get('Content-Type') || '';
         if (!contentType.includes('text/html')) return;
-        recordPageView(isNewSession).catch(err => console.error('EVOConnected [analytics] track error:', err.message));
+        recordPageView(isNewSession).catch(err => console.error('EVOGovCon [analytics] track error:', err.message));
     });
 
     next();

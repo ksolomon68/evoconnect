@@ -8,7 +8,7 @@ dotenv.config({ path: path.join(root, '.env') });
 // Always load .env.production if present — dotenv silently ignores missing files
 dotenv.config({ path: path.join(root, '.env.production'), override: true });
 
-console.log('EVOConnected DB: Initializing MySQL Connection Pool...');
+console.log('EVOGovCon DB: Initializing MySQL Connection Pool...');
 
 let pool;
 
@@ -23,12 +23,12 @@ function createPool() {
     };
     const p = mysql.createPool(cfg);
     p.pool.on('error', (err) => {
-        console.error('EVOConnected DB: Pool connection error —', err.message);
+        console.error('EVOGovCon DB: Pool connection error —', err.message);
         if (err.code === 'PROTOCOL_CONNECTION_LOST' || err.code === 'ECONNRESET') {
             pool = null;
         }
     });
-    console.log(`EVOConnected DB: MySQL Pool Created → ${cfg.user}@${cfg.host}/${cfg.database}`);
+    console.log(`EVOGovCon DB: MySQL Pool Created → ${cfg.user}@${cfg.host}/${cfg.database}`);
     return p;
 }
 
@@ -42,7 +42,7 @@ function getDb() {
                 return await pool.execute(demoContext.sql(sql), values);
             } catch (err) {
                 if (err.code === 'PROTOCOL_CONNECTION_LOST' || err.code === 'ECONNRESET') {
-                    console.warn(`EVOConnected DB: Connection lost during execute, retrying... (${err.message})`);
+                    console.warn(`EVOGovCon DB: Connection lost during execute, retrying... (${err.message})`);
                     pool = createPool();
                     return await pool.execute(demoContext.sql(sql), values);
                 }
@@ -54,7 +54,7 @@ function getDb() {
                 return await pool.query(demoContext.sql(sql), values);
             } catch (err) {
                 if (err.code === 'PROTOCOL_CONNECTION_LOST' || err.code === 'ECONNRESET') {
-                    console.warn(`EVOConnected DB: Connection lost during query, retrying... (${err.message})`);
+                    console.warn(`EVOGovCon DB: Connection lost during query, retrying... (${err.message})`);
                     pool = createPool();
                     return await pool.query(demoContext.sql(sql), values);
                 }
@@ -85,7 +85,7 @@ setInterval(async () => {
 }, 60 * 1000);
 
 async function initDatabase() {
-    console.log('EVOConnected DB: Running initDatabase()...');
+    console.log('EVOGovCon DB: Running initDatabase()...');
 
     try {
         if (process.env.DB_SKIP_CREATE === 'true') throw new Error('Using a provisioned database; skipping CREATE DATABASE.');
@@ -94,17 +94,17 @@ async function initDatabase() {
         const dbName = process.env.DB_NAME || 'evoconnect';
         if (!/^[a-zA-Z0-9_-]+$/.test(dbName)) throw new Error('Invalid database name.');
         await setupConn.execute(`CREATE DATABASE IF NOT EXISTS \`${dbName}\` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci`);
-        console.log(`EVOConnected DB: Database "${dbName}" ready.`);
+        console.log(`EVOGovCon DB: Database "${dbName}" ready.`);
         await setupConn.end();
     } catch (err) {
-        console.warn('EVOConnected DB: Could not auto-create database:', err.message);
+        console.warn('EVOGovCon DB: Could not auto-create database:', err.message);
     }
 
     const db = getDb();
 
     try {
         await db.execute('SELECT 1');
-        console.log('EVOConnected DB: Connection verified.');
+        console.log('EVOGovCon DB: Connection verified.');
 
         // ── 1. Workers (Labor Portal) ─────────────────────────────
         await db.execute(`
@@ -485,7 +485,7 @@ async function initDatabase() {
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
         `);
 
-        console.log('EVOConnected DB: Core + Caltrans parity tables initialized.');
+        console.log('EVOGovCon DB: Core + Caltrans parity tables initialized.');
 
         // ── Seed & Sync Federal/State NAICS Codes ──────────────────
         const naics = [
@@ -568,7 +568,7 @@ async function initDatabase() {
                 [code, desc, trade, avg, sa]
             );
         }
-        console.log(`EVOConnected DB: Verified ${naics.length} NAICS codes.`);
+        console.log(`EVOGovCon DB: Verified ${naics.length} NAICS codes.`);
 
         // ── Seed default resources ─────────────────────────────────
         const [[{ rc }]] = await db.execute('SELECT COUNT(*) AS rc FROM resources');
@@ -589,7 +589,7 @@ async function initDatabase() {
                     [title, desc, url, cat, audience, sort]
                 );
             }
-            console.log('EVOConnected DB: Seeded default resources.');
+            console.log('EVOGovCon DB: Seeded default resources.');
         }
 
         // Backfill any existing resources that had NULL urls from earlier seeds
@@ -730,11 +730,11 @@ async function initDatabase() {
                     opp.posted_by_type, opp.listing_type
                 ]);
             }
-            console.log(`EVOConnected DB: Seeded ${federalAndStateOpportunities.length} authentic Federal & State contracting opportunities and labor jobs.`);
+            console.log(`EVOGovCon DB: Seeded ${federalAndStateOpportunities.length} authentic Federal & State contracting opportunities and labor jobs.`);
         }
 
         } // Development-only demo accounts and sample opportunities.
-        console.log('EVOConnected DB: All tables initialized successfully.');
+        console.log('EVOGovCon DB: All tables initialized successfully.');
 
         await require('./services/runtime-schema')(db);
         await require('./services/flagship-schema')(db);
@@ -755,7 +755,7 @@ async function initDatabase() {
         }, 60 * 60 * 1000);
 
     } catch (err) {
-        console.error('EVOConnected DB CRITICAL ERROR:', err);
+        console.error('EVOGovCon DB CRITICAL ERROR:', err);
         throw err;
     }
 }

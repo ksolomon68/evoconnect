@@ -35,7 +35,7 @@
         <h2><%= isWorker ? 'Professional Resume' : 'Capability Statement' %></h2>
     </div>
     <% if(document) { %>
-        <p style="margin-bottom:1rem;color:var(--color-text-secondary);">Verified PDF document uploaded to EVOConnected member profile.</p>
+        <p style="margin-bottom:1rem;color:var(--color-text-secondary);">Verified PDF document uploaded to EVOGovCon member profile.</p>
         <div style="display:flex;gap:0.75rem;flex-wrap:wrap;margin-bottom:1.5rem;">
             <a class="btn btn-primary" href="/capabilities/<%= document.id %>" target="_blank" rel="noopener noreferrer">View <%= isWorker ? 'Resume' : 'Statement' %> PDF</a>
             <a class="btn btn-secondary" href="/capabilities/<%= document.id %>?download=1">Download PDF</a>
@@ -45,6 +45,6 @@
     <% } %>
 
     <div style="margin-top:2rem;padding-top:1.25rem;border-top:1px solid #E2E8F0;font-size:0.88rem;color:#64748B;">
-        🔒 Direct contact details and messaging become available when you connect with this member on EVOConnected.
+        🔒 Direct contact details and messaging become available when you connect with this member on EVOGovCon.
     </div>
 </section>

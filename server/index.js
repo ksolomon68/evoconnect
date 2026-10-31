@@ -246,10 +246,10 @@ async function startServer() {
 
         // CMS & Admin tutorial routes (both clean URLs and legacy .html URLs)
         app.get(['/cms-tutorial', '/cms-tutorial.html'], (req, res) => {
-            res.render('admin/tutorial', { title: 'CMS Admin Guide | EVOConnected', guideType: 'cms', layout: req.user ? 'layouts/dashboard' : 'layouts/default' });
+            res.render('admin/tutorial', { title: 'CMS Admin Guide | EVOGovCon', guideType: 'cms', layout: req.user ? 'layouts/dashboard' : 'layouts/default' });
         });
         app.get(['/admin-tutorial', '/admin-tutorial.html'], (req, res) => {
-            res.render('admin/tutorial', { title: 'Platform Admin Guide | EVOConnected', guideType: 'platform', layout: req.user ? 'layouts/dashboard' : 'layouts/default' });
+            res.render('admin/tutorial', { title: 'Platform Admin Guide | EVOGovCon', guideType: 'platform', layout: req.user ? 'layouts/dashboard' : 'layouts/default' });
         });
 
         // Custom CMS Pages created in Page Builder
@@ -258,7 +258,7 @@ async function startServer() {
             const pageData = await require('./services/cms-content').getPage(req.params.slug.replace(/\.html$/, ''));
             if (!pageData) return next();
             res.render('shared/cms-page', {
-                title: pageData.meta?.title || 'EVOConnected',
+                title: pageData.meta?.title || 'EVOGovCon',
                 page: pageData,
                 layout: 'layouts/default'
             });
@@ -290,7 +290,7 @@ async function startServer() {
                 );
                 req.session.flash = { type: 'success', message: 'Thank you! Your message has been received by our team.' };
             } catch (err) {
-                console.error('EVOConnected [/contact POST]:', err);
+                console.error('EVOGovCon [/contact POST]:', err);
             }
             res.redirect('/contact');
         });
@@ -354,7 +354,7 @@ async function startServer() {
 
         // 500
         app.use((err, req, res, next) => {
-            console.error('EVOConnected Server Error:', err);
+            console.error('EVOGovCon Server Error:', err);
             res.status(500).render('errors/500', {
                 title: 'Server Error',
                 errMsg: isLive ? null : (err.message || String(err))

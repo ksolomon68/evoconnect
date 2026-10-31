@@ -19,7 +19,7 @@ function mapStripeStatus(status) {
 
 router.post('/', express.raw({ type: 'application/json' }), async (req, res) => {
     if (!isConfigured()) {
-        console.error('EVOConnected [stripe webhook]: received event but Stripe is not configured.');
+        console.error('EVOGovCon [stripe webhook]: received event but Stripe is not configured.');
         return res.sendStatus(503);
     }
 
@@ -27,7 +27,7 @@ router.post('/', express.raw({ type: 'application/json' }), async (req, res) => 
     try {
         event = constructWebhookEvent(req.body, req.headers['stripe-signature']);
     } catch (err) {
-        console.error('EVOConnected [stripe webhook] signature verification failed:', err.message);
+        console.error('EVOGovCon [stripe webhook] signature verification failed:', err.message);
         return res.sendStatus(400);
     }
 
@@ -87,7 +87,7 @@ router.post('/', express.raw({ type: 'application/json' }), async (req, res) => 
 
         res.sendStatus(200);
     } catch (err) {
-        console.error('EVOConnected [stripe webhook] handler error:', err);
+        console.error('EVOGovCon [stripe webhook] handler error:', err);
         res.sendStatus(500);
     }
 });

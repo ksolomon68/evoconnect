@@ -1,5 +1,5 @@
 /**
- * EVOConnected PWA – Service Worker Registration & Install Prompt
+ * EVOGovCon PWA – Service Worker Registration & Install Prompt
  * Handles: Android Chrome (beforeinstallprompt), iOS Safari (manual guide),
  *          Android fallback (manual guide), and app update notifications.
  */
@@ -94,9 +94,9 @@
 
     const banner = createBanner('pwa-install-banner', `
       <div class="pwa-inner">
-        <img src="${ICON}" alt="EVOConnected" class="pwa-logo" width="44" height="44" onerror="if(this.src.indexOf('favicon')!==-1)this.src='${FALLBACK_ICON}';">
+        <img src="${ICON}" alt="EVOGovCon" class="pwa-logo" width="44" height="44" onerror="if(this.src.indexOf('favicon')!==-1)this.src='${FALLBACK_ICON}';">
         <div class="pwa-text">
-          <strong>Install EVOConnected</strong>
+          <strong>Install EVOGovCon</strong>
           <span>Add to your home screen for instant portal access</span>
         </div>
         <div class="pwa-actions">
@@ -131,9 +131,9 @@
 
     const banner = createBanner('pwa-install-banner', `
       <div class="pwa-inner">
-        <img src="${ICON}" alt="EVOConnected" class="pwa-logo" width="44" height="44" onerror="if(this.src.indexOf('favicon')!==-1)this.src='${FALLBACK_ICON}';">
+        <img src="${ICON}" alt="EVOGovCon" class="pwa-logo" width="44" height="44" onerror="if(this.src.indexOf('favicon')!==-1)this.src='${FALLBACK_ICON}';">
         <div class="pwa-text">
-          <strong>Install EVOConnected</strong>
+          <strong>Install EVOGovCon</strong>
           <span>Tap <b>⋮ Menu</b> → <b>Add to Home screen</b></span>
         </div>
         <div class="pwa-actions">
@@ -155,9 +155,9 @@
 
     const banner = createBanner('pwa-install-banner', `
       <div class="pwa-inner pwa-ios">
-        <img src="${ICON}" alt="EVOConnected" class="pwa-logo" width="44" height="44" onerror="if(this.src.indexOf('favicon')!==-1)this.src='${FALLBACK_ICON}';">
+        <img src="${ICON}" alt="EVOGovCon" class="pwa-logo" width="44" height="44" onerror="if(this.src.indexOf('favicon')!==-1)this.src='${FALLBACK_ICON}';">
         <div class="pwa-text">
-          <strong>Install EVOConnected</strong>
+          <strong>Install EVOGovCon</strong>
           <span>Tap <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="vertical-align:middle;margin:0 2px"><path d="M4 12v8a2 2 0 002 2h12a2 2 0 002-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg> then <b>"Add to Home Screen"</b></span>
         </div>
         <div class="pwa-actions">
@@ -180,10 +180,10 @@
 
     const banner = createBanner('pwa-update-banner', `
       <div class="pwa-inner">
-        <img src="${ICON}" alt="EVOConnected" class="pwa-logo" width="44" height="44" onerror="if(this.src.indexOf('favicon')!==-1)this.src='${FALLBACK_ICON}';">
+        <img src="${ICON}" alt="EVOGovCon" class="pwa-logo" width="44" height="44" onerror="if(this.src.indexOf('favicon')!==-1)this.src='${FALLBACK_ICON}';">
         <div class="pwa-text">
           <strong>Update Ready</strong>
-          <span>A new version of EVOConnected is available</span>
+          <span>A new version of EVOGovCon is available</span>
         </div>
         <div class="pwa-actions">
           <button id="pwa-reload-btn">Update</button>

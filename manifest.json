@@ -1,6 +1,6 @@
 {
-  "name": "EVOConnected",
-  "short_name": "EVOConnected",
+  "name": "EVOGovCon",
+  "short_name": "EVOGovCon",
   "id": "io.workforceconnect.app",
   "description": "Turn your trade skills into a government contract. Free registration for skilled workers.",
   "start_url": "/",

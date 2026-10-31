@@ -3,13 +3,13 @@
   "isSystem": true,
   "updatedAt": "2026-10-29T01:30:00.000Z",
   "meta": {
-    "title": "Certified Small Business & Subcontractor Portal | EVOConnected",
+    "title": "Certified Small Business & Subcontractor Portal | EVOGovCon",
     "description": "Small, disadvantaged, and certified firms get discovered by prime contractors fulfilling mandated diversity participation goals. Showcase your NAICS capabilities, respond to targeted RFQs, and post jobs to hire verified field labor."
   },
   "header": {
     "backgroundImage": "",
     "logoImage": "/images/favicon.png",
-    "logoAlt": "EVOConnected Logo"
+    "logoAlt": "EVOGovCon Logo"
   },
   "sections": [
     {
@@ -100,7 +100,7 @@
           },
           {
             "label": "Respond to Primes & Hire Labor",
-            "detail": "Submit bids on prime contractor RFQs and post trade jobs to recruit verified workers directly from the EVOConnected Labor Directory."
+            "detail": "Submit bids on prime contractor RFQs and post trade jobs to recruit verified workers directly from the EVOGovCon Labor Directory."
           }
         ]
       }

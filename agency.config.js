@@ -1,6 +1,6 @@
 /**
  * ============================================================
- *  EVOConnected — CLIENT-SIDE AGENCY CONFIG
+ *  EVOGovCon — CLIENT-SIDE AGENCY CONFIG
  * ============================================================
  *  All brand values live here. Do not hard-code platform names,
  *  colors, or emails anywhere else in the codebase.
@@ -9,13 +9,13 @@
 
 window.AGENCY = {
 
-  name:      'EVOConnected',
-  shortName: 'EVOConnected',
-  intendedDomain: 'evoconnected.com',
+  name:      'EVOGovCon',
+  shortName: 'EVOGovCon',
+  intendedDomain: 'evogovcon.com',
   appId:     'net.evobrand.evoconnect',
   domain:    (typeof window !== 'undefined' ? window.location.hostname : 'darkslategrey-partridge-695960.hostingersite.com'),
   logoPath:  '/images/logo-light.png',
-  logoAlt:   'EVOConnected Logo',
+  logoAlt:   'EVOGovCon Logo',
 
   colors: {
     primary:        '#0F172A', // Background base

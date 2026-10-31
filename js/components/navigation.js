@@ -1,5 +1,5 @@
 /**
- * EVOConnected Navigation Component (Caltrans Parity)
+ * EVOGovCon Navigation Component (Caltrans Parity)
  * Dynamically renders sidebars, top headers, and notifications for all 4 portal roles:
  * worker (Labor), business (Small Business), prime (Prime Contractor), and admin (Admin Console).
  */
@@ -213,9 +213,9 @@ const Navigation = {
                     </svg>
                 </button>
                 <div class="header-logo" style="display: flex; align-items: center;">
-                    <a href="/" style="text-decoration: none; display: flex; align-items: center; min-height: 44px;" aria-label="EVOConnected Home">
-                        <img src="/images/logo.png" alt="EVOConnected logo" style="height: 32px; width: auto; display: block;" onerror="this.src='/images/favicon.png';">
-                        <span style="font-weight: 700; color: var(--color-primary); font-size: 1.1rem; letter-spacing: -0.01em; margin-left: 0.5rem; border-left: 1px solid var(--color-border); padding-left: 0.5rem;">EVOConnected</span>
+                    <a href="/" style="text-decoration: none; display: flex; align-items: center; min-height: 44px;" aria-label="EVOGovCon Home">
+                        <img src="/images/logo.png" alt="EVOGovCon logo" style="height: 32px; width: auto; display: block;" onerror="this.src='/images/favicon.png';">
+                        <span style="font-weight: 700; color: var(--color-primary); font-size: 1.1rem; letter-spacing: -0.01em; margin-left: 0.5rem; border-left: 1px solid var(--color-border); padding-left: 0.5rem;">EVOGovCon</span>
                     </a>
                 </div>
                 <span class="header-portal-title" aria-hidden="true" style="font-size: 0.85rem; color: var(--color-text-secondary); margin-left: 0.5rem;">${config.title}</span>

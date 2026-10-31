@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Capability Statement — <%= business.company_name || 'EVOConnected' %></title>
+  <title>Capability Statement — <%= business.company_name || 'EVOGovCon' %></title>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     body {
@@ -146,7 +146,7 @@
         <h1><%= business.company_name || 'Your Company Name' %></h1>
         <p><%= business.entity_type ? business.entity_type.replace(/_/g,' ').toUpperCase() : '' %><% if (business.years_in_business) { %> &bull; <%= business.years_in_business %> Years in Business<% } %></p>
       </div>
-      <a href="/" class="cap-logo" style="display:flex;align-items:center;gap:0.5rem;text-decoration:none;color:inherit;" aria-label="EVOConnected Home">
+      <a href="/" class="cap-logo" style="display:flex;align-items:center;gap:0.5rem;text-decoration:none;color:inherit;" aria-label="EVOGovCon Home">
         <img src="/images/favicon.png" alt="" height="28" style="border-radius:6px;">
         <span style="font-family:var(--font-family-secondary, 'Plus Jakarta Sans', sans-serif);font-size:1.1rem;font-weight:800;letter-spacing:-0.02em;">EVO<span style="color:#06B6D4;">Connected</span></span>
       </a>
@@ -249,8 +249,8 @@
     <!-- Footer -->
     <div class="cap-footer">
       <div>
-        <strong>EVOConnected</strong> — Connect the Contract. Build the Future.<br>
-        Profile verified on EVOConnected | <a href="<%= cfg.baseUrl %>"><%= cfg.domain %></a>
+        <strong>EVOGovCon</strong> — Connect the Contract. Build the Future.<br>
+        Profile verified on EVOGovCon | <a href="<%= cfg.baseUrl %>"><%= cfg.domain %></a>
       </div>
       <div style="text-align:right">
         Generated: <%= new Date().toLocaleDateString('en-US', {year:'numeric', month:'long', day:'numeric'}) %><br>

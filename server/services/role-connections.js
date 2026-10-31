@@ -3,7 +3,7 @@ const policy=require('./role-policy');
 function pair(a,b){return [a,b].sort((x,y)=>x.type.localeCompare(y.type)||Number(x.id)-Number(y.id));}
 async function relationship(db,a,b){const [left,right]=pair(a,b);const [rows]=await db.execute('SELECT * FROM role_connections WHERE left_type=? AND left_id=? AND right_type=? AND right_id=?',[left.type,left.id,right.type,right.id]);return rows[0] || null;}
 async function notify(db,from,to,subject,body){
-    const [message]=await db.execute("INSERT INTO messages (sender_type,sender_id,sender_business_name,receiver_type,receiver_id,receiver_business_name,message_type,subject,body) VALUES (?,?,?,?,?,?,'system',?,?)",[from.type,from.id,from.name||'EVOConnected',to.type,to.id,to.name||'Member',subject,body]);
+    const [message]=await db.execute("INSERT INTO messages (sender_type,sender_id,sender_business_name,receiver_type,receiver_id,receiver_business_name,message_type,subject,body) VALUES (?,?,?,?,?,?,'system',?,?)",[from.type,from.id,from.name||'EVOGovCon',to.type,to.id,to.name||'Member',subject,body]);
     await db.execute('INSERT INTO notifications (user_type,user_id,message_id) VALUES (?,?,?)',[to.type,to.id,message.insertId]);
 }
 async function list(db,actor){

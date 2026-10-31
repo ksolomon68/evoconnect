@@ -35,7 +35,7 @@ router.post('/submit', async (req, res) => {
         // Notify admin
         await sendEmail({
             to: ADMIN_EMAIL,
-            subject: `EVOConnected Contact Form: ${escHtml(msgSubject)}`,
+            subject: `EVOGovCon Contact Form: ${escHtml(msgSubject)}`,
             html: `
                 <div style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto;padding:24px;">
                     <h2 style="color:#003D5B;border-bottom:3px solid #FDB714;padding-bottom:12px;">New Contact Form Submission</h2>
@@ -48,7 +48,7 @@ router.post('/submit', async (req, res) => {
                         <p style="font-weight:bold;color:#003D5B;margin:0 0 8px;">Message:</p>
                         <p style="margin:0;white-space:pre-wrap;">${escHtml(message)}</p>
                     </div>
-                    <p style="margin-top:24px;font-size:12px;color:#666;">Sent via EVOConnected contact form at ${new Date().toISOString()}</p>
+                    <p style="margin-top:24px;font-size:12px;color:#666;">Sent via EVOGovCon contact form at ${new Date().toISOString()}</p>
                 </div>
             `,
             text: `New Contact Form Submission\n\nName: ${name}\nEmail: ${email}\nSubject: ${msgSubject}\n\nMessage:\n${message}\n\nSent at ${new Date().toISOString()}`
@@ -58,12 +58,12 @@ router.post('/submit', async (req, res) => {
         const { html, text } = getContactConfirmationEmail(name, message);
         await sendEmail({
             to: email,
-            subject: 'We received your message — EVOConnected',
+            subject: 'We received your message — EVOGovCon',
             html,
             text
         });
 
-        console.log(`EVOConnected: Contact form submitted by ${email}`);
+        console.log(`EVOGovCon: Contact form submitted by ${email}`);
         res.json({ success: true, message: 'Your message has been sent. We\'ll be in touch shortly.' });
     } catch (err) {
         console.error('Contact form error:', err);

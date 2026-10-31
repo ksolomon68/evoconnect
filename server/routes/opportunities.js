@@ -6,7 +6,7 @@ const router = express.Router();
 // Get all opportunities
 router.get('/', async (req, res) => {
     try {
-        console.log('EVOConnected API: Fetching all opportunities');
+        console.log('EVOGovCon API: Fetching all opportunities');
         let query = 'SELECT * FROM opportunities WHERE 1=1';
         const params = [];
         
@@ -39,7 +39,7 @@ router.get('/', async (req, res) => {
         query += ' ORDER BY posted_date DESC';
         
         const [rows] = await db.execute(query, params);
-        console.log(`EVOConnected API: Found ${rows.length} opportunities`);
+        console.log(`EVOGovCon API: Found ${rows.length} opportunities`);
         
         let userNaics = [];
         if (userId) {
@@ -67,7 +67,7 @@ router.get('/', async (req, res) => {
         
         res.json(rows);
     } catch (error) {
-        console.error('EVOConnected API Error fetching opportunities:', error);
+        console.error('EVOGovCon API Error fetching opportunities:', error);
         res.status(500).json({ error: error.message });
     }
 });
@@ -248,7 +248,7 @@ async function notifyApplicantsOfStatusChange(opportunityId, opportunityTitle, n
         };
         const label = statusLabels[newStatus] || newStatus;
         const subject = `Update: ${opportunityTitle}`;
-        const body = `This is an update regarding the opportunity you applied for.\n\nOpportunity: ${opportunityTitle}\nNew Status: ${newStatus.toUpperCase()}\n\nThis opportunity is now ${label}.\n\nPlease log in to EVOConnected to view full details.`;
+        const body = `This is an update regarding the opportunity you applied for.\n\nOpportunity: ${opportunityTitle}\nNew Status: ${newStatus.toUpperCase()}\n\nThis opportunity is now ${label}.\n\nPlease log in to EVOGovCon to view full details.`;
 
         for (const applicant of applicants) {
             const receiverName = applicant.business_name || `Applicant ${applicant.small_business_id}`;
@@ -262,9 +262,9 @@ async function notifyApplicantsOfStatusChange(opportunityId, opportunityTitle, n
                 [applicant.small_business_id, msgResult.insertId]
             );
         }
-        console.log(`EVOConnected: Notified ${applicants.length} applicants of status change to "${newStatus}" for ${opportunityId}`);
+        console.log(`EVOGovCon: Notified ${applicants.length} applicants of status change to "${newStatus}" for ${opportunityId}`);
     } catch (err) {
-        console.error('EVOConnected: Failed to notify applicants:', err.message);
+        console.error('EVOGovCon: Failed to notify applicants:', err.message);
     }
 }
 
@@ -288,9 +288,9 @@ async function notifyAdminsOfPendingOpportunity(opportunityId, opportunityTitle,
                 [admin.id, msgResult.insertId]
             );
         }
-        console.log(`EVOConnected: Notified admins of pending opportunity ${opportunityId}`);
+        console.log(`EVOGovCon: Notified admins of pending opportunity ${opportunityId}`);
     } catch (err) {
-        console.error('EVOConnected: Failed to notify admins:', err.message);
+        console.error('EVOGovCon: Failed to notify admins:', err.message);
     }
 }
 

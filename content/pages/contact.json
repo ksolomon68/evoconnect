@@ -3,13 +3,13 @@
   "isSystem": true,
   "updatedAt": "2026-10-29T01:30:00.000Z",
   "meta": {
-    "title": "Contact Executive Support & Compliance Desk | EVOConnected",
-    "description": "Questions regarding vendor onboarding, NAICS classification, or prime contractor licensing? Contact the EVOConnected Executive Support & Compliance Desk."
+    "title": "Contact Executive Support & Compliance Desk | EVOGovCon",
+    "description": "Questions regarding vendor onboarding, NAICS classification, or prime contractor licensing? Contact the EVOGovCon Executive Support & Compliance Desk."
   },
   "header": {
     "backgroundImage": "",
     "logoImage": "/images/favicon.png",
-    "logoAlt": "EVOConnected Logo"
+    "logoAlt": "EVOGovCon Logo"
   },
   "sections": [
     {
@@ -17,7 +17,7 @@
       "type": "text-block",
       "fields": {
         "eyebrow": "EXECUTIVE SUPPORT & COMPLIANCE DESK",
-        "heading": "Contact EVOConnected",
+        "heading": "Contact EVOGovCon",
         "body": "Questions regarding vendor onboarding, NAICS classification, or prime contractor licensing? Our support desk is ready to assist."
       }
     },

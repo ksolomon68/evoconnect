@@ -1,5 +1,5 @@
 /**
- * CMS Renderer — EVOConnected
+ * CMS Renderer — EVOGovCon
  *
  * Fetches page content and global settings from /api/cms and hydrates
  * data-cms-field and data-cms-global attributes in the DOM.

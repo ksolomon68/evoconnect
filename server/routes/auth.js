@@ -57,7 +57,7 @@ router.get('/login', (req, res) => {
     const flash = req.session.flash || null;
     delete req.session.flash;
     res.render('login', {
-        title: 'Log In | EVOConnected',
+        title: 'Log In | EVOGovCon',
         flash,
         redirect: req.query.redirect || ''
     });
@@ -95,7 +95,7 @@ router.get('/auth/demo/:role', authLimiter, demo.loginContext, async (req, res) 
         };
         return res.redirect(redirectMap[userType] || '/');
     } catch (err) {
-        console.error('EVOConnected [auth/demo]:', err);
+        console.error('EVOGovCon [auth/demo]:', err);
         flash(req, 'error', 'Demo login failed. Please try again.');
         return res.redirect('/login');
     }
@@ -157,7 +157,7 @@ router.post('/login', authLimiter, demo.passwordContext, async (req, res) => {
         res.redirect(redirectMap[foundType] || '/labor/dashboard');
 
     } catch (err) {
-        console.error('EVOConnected [auth/login]:', err);
+        console.error('EVOGovCon [auth/login]:', err);
         flash(req, 'error', 'A server error occurred. Please try again.');
         res.redirect('/login');
     }
@@ -193,7 +193,7 @@ router.get('/forgot-password', (req, res) => {
     const flash = req.session.flash || null;
     delete req.session.flash;
     res.render('forgot-password', {
-        title: 'Forgot Password | EVOConnected',
+        title: 'Forgot Password | EVOGovCon',
         flash
     });
 });
@@ -226,7 +226,7 @@ router.post('/forgot-password', authLimiter, async (req, res) => {
             const html = `
                 <h2 style="color:#003D5B;">Reset Your Password</h2>
                 <p>Hi ${name},</p>
-                <p>We received a request to reset your EVOConnected password. Click the button below to choose a new password. This link expires in <strong>1 hour</strong>.</p>
+                <p>We received a request to reset your EVOGovCon password. Click the button below to choose a new password. This link expires in <strong>1 hour</strong>.</p>
                 <p><a href="${resetLink}" style="display:inline-block;background:#1a56db;color:#fff;padding:12px 28px;border-radius:6px;text-decoration:none;font-weight:700;">Reset My Password</a></p>
                 <p style="font-size:12px;color:#888;">If you did not request a password reset, you can safely ignore this email.</p>
                 <p style="font-size:12px;color:#888;">Or copy this link: ${resetLink}</p>
@@ -234,18 +234,18 @@ router.post('/forgot-password', authLimiter, async (req, res) => {
 
             sendEmail({
                 to: email,
-                subject: 'Reset Your EVOConnected Password',
+                subject: 'Reset Your EVOGovCon Password',
                 html,
-                text: `Reset your EVOConnected password: ${resetLink}\n\nThis link expires in 1 hour. If you did not request this, ignore this email.`
-            }).catch(e => console.error('EVOConnected [auth/forgot-password] email error:', e));
+                text: `Reset your EVOGovCon password: ${resetLink}\n\nThis link expires in 1 hour. If you did not request this, ignore this email.`
+            }).catch(e => console.error('EVOGovCon [auth/forgot-password] email error:', e));
         }
 
     } catch (err) {
-        console.error('EVOConnected [auth/forgot-password]:', err);
+        console.error('EVOGovCon [auth/forgot-password]:', err);
     }
 
     res.render('forgot-password', {
-        title: 'Forgot Password | EVOConnected',
+        title: 'Forgot Password | EVOGovCon',
         flash: { type: 'success', message: successMsg }
     });
 });
@@ -267,13 +267,13 @@ router.get('/reset-password/:token', async (req, res) => {
         }
 
         res.render('reset-password', {
-            title: 'Reset Password | EVOConnected',
+            title: 'Reset Password | EVOGovCon',
             token,
             flash: null
         });
 
     } catch (err) {
-        console.error('EVOConnected [auth/reset-password GET]:', err);
+        console.error('EVOGovCon [auth/reset-password GET]:', err);
         flash(req, 'error', 'A server error occurred. Please try again.');
         res.redirect('/forgot-password');
     }
@@ -286,7 +286,7 @@ router.post('/reset-password/:token', authLimiter, async (req, res) => {
 
     if (!password || password.length < 8) {
         return res.render('reset-password', {
-            title: 'Reset Password | EVOConnected',
+            title: 'Reset Password | EVOGovCon',
             token,
             flash: { type: 'error', message: 'Password must be at least 8 characters.' }
         });
@@ -294,7 +294,7 @@ router.post('/reset-password/:token', authLimiter, async (req, res) => {
 
     if (password !== confirm_password) {
         return res.render('reset-password', {
-            title: 'Reset Password | EVOConnected',
+            title: 'Reset Password | EVOGovCon',
             token,
             flash: { type: 'error', message: 'Passwords do not match.' }
         });
@@ -323,9 +323,9 @@ router.post('/reset-password/:token', authLimiter, async (req, res) => {
         res.redirect('/login');
 
     } catch (err) {
-        console.error('EVOConnected [auth/reset-password POST]:', err);
+        console.error('EVOGovCon [auth/reset-password POST]:', err);
         res.render('reset-password', {
-            title: 'Reset Password | EVOConnected',
+            title: 'Reset Password | EVOGovCon',
             token,
             flash: { type: 'error', message: 'A server error occurred. Please try again.' }
         });
@@ -335,7 +335,7 @@ router.post('/reset-password/:token', authLimiter, async (req, res) => {
 // ── GET /register ──────────────────────────────────────────────────────────────
 router.get('/register', (req, res) => {
     res.render('register', {
-        title: 'Choose Your Account Type | EVOConnected'
+        title: 'Choose Your Account Type | EVOGovCon'
     });
 });
 

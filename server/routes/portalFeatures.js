@@ -61,7 +61,7 @@ async function renderOpportunitiesSearch(req, res, roleType, basePath) {
         }
 
         res.render('shared/opportunities-search', {
-            title: roleType==='worker'?'Find Jobs | EVOConnected':'Search Opportunities | EVOConnected',
+            title: roleType==='worker'?'Find Jobs | EVOGovCon':'Search Opportunities | EVOGovCon',
             flash: getFlash(req),
             basePath,
             opportunities,
@@ -70,7 +70,7 @@ async function renderOpportunitiesSearch(req, res, roleType, basePath) {
             filters: { q, category, naics }
         });
     } catch (err) {
-        console.error(`EVOConnected [${basePath}/search]:`, err);
+        console.error(`EVOGovCon [${basePath}/search]:`, err);
         flash(req, 'error', 'Failed to load opportunities.');
         res.redirect(`${basePath}/dashboard`);
     }
@@ -105,7 +105,7 @@ async function toggleSavedOpportunity(req, res, roleType, basePath) {
 
         res.redirect(redirectTo);
     } catch (err) {
-        console.error(`EVOConnected [${basePath}/saved/toggle]:`, err);
+        console.error(`EVOGovCon [${basePath}/saved/toggle]:`, err);
         res.redirect(`${basePath}/search`);
     }
 }
@@ -129,14 +129,14 @@ async function renderSavedOpportunities(req, res, roleType, basePath) {
         const appliedIds = aRows.map(r => String(r.opportunity_id));
 
         res.render('shared/opportunities-saved', {
-            title: 'Saved Opportunities | EVOConnected',
+            title: 'Saved Opportunities | EVOGovCon',
             flash: getFlash(req),
             basePath,
             opportunities,
             appliedIds
         });
     } catch (err) {
-        console.error(`EVOConnected [${basePath}/saved]:`, err);
+        console.error(`EVOGovCon [${basePath}/saved]:`, err);
         res.redirect(`${basePath}/dashboard`);
     }
 }
@@ -186,13 +186,13 @@ async function renderApplicationsList(req, res, roleType, basePath) {
         `, [roleType, req.user.id]);
 
         res.render('shared/applications-list', {
-            title: 'My Applications | EVOConnected',
+            title: 'My Applications | EVOGovCon',
             flash: getFlash(req),
             basePath,
             applications
         });
     } catch (err) {
-        console.error(`EVOConnected [${basePath}/applications]:`, err);
+        console.error(`EVOGovCon [${basePath}/applications]:`, err);
         res.redirect(`${basePath}/dashboard`);
     }
 }
@@ -234,7 +234,7 @@ async function renderMessages(req, res, roleType, basePath) {
         const recipients = await roles.recipients(db,{type:roleType,id:userId});
 
         res.render('shared/messages', {
-            title: 'Messages | EVOConnected',
+            title: 'Messages | EVOGovCon',
             flash: getFlash(req),
             basePath,
             inbox,
@@ -242,7 +242,7 @@ async function renderMessages(req, res, roleType, basePath) {
             recipients
         });
     } catch (err) {
-        console.error(`EVOConnected [${basePath}/messages]:`, err);
+        console.error(`EVOGovCon [${basePath}/messages]:`, err);
         res.redirect(`${basePath}/dashboard`);
     }
 }
@@ -282,7 +282,7 @@ async function sendMessage(req, res, roleType, basePath) {
         flash(req, 'success', `Message sent to ${receiverName}.`);
         res.redirect(`${basePath}/messages`);
     } catch (err) {
-        console.error(`EVOConnected [${basePath}/messages/send]:`, err);
+        console.error(`EVOGovCon [${basePath}/messages/send]:`, err);
         flash(req, 'error', 'Failed to send message.');
         res.redirect(`${basePath}/messages`);
     }
@@ -291,7 +291,7 @@ async function sendMessage(req, res, roleType, basePath) {
 // ── Account Settings & Password Update ───────────────────────────────────────
 function renderSettings(req, res, basePath) {
     res.render('shared/settings', {
-        title: 'Account Settings | EVOConnected',
+        title: 'Account Settings | EVOGovCon',
         flash: getFlash(req),
         basePath
     });
@@ -326,7 +326,7 @@ async function updatePassword(req, res, tableName, basePath) {
         flash(req, 'success', 'Password updated successfully.');
         res.redirect(`${basePath}/settings`);
     } catch (err) {
-        console.error(`EVOConnected [${basePath}/settings/password]:`, err);
+        console.error(`EVOGovCon [${basePath}/settings/password]:`, err);
         flash(req, 'error', 'Failed to update password.');
         res.redirect(`${basePath}/settings`);
     }

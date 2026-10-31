@@ -1,4 +1,4 @@
-# EVOConnected Hardening — Deferred Items (TODO)
+# EVOGovCon Hardening — Deferred Items (TODO)
 
 These items require live DB access, business content decisions, or are lower priority and can be completed before Hostinger deployment.
 
@@ -40,7 +40,7 @@ Before Hostinger deployment:
 - [ ] Set `SESSION_SECRET` to a strong random value
 - [ ] Set `JWT_SECRET` to a strong random value  
 - [ ] Configure SMTP credentials (`EMAIL_HOST`, `EMAIL_PORT`, `EMAIL_USER`, `EMAIL_PASS`)
-- [ ] Keep `APP_URL` on the active Hostinger URL until evoconnected.com is owned, connected, and verified
+- [ ] Keep `APP_URL` on the active Hostinger URL until evogovcon.com is owned, connected, and verified
 - [ ] Set `DB_HOST`, `DB_USER`, `DB_PASS`, `DB_NAME` to Hostinger MySQL values
 - [ ] Upload `uploads/resumes/` directory (or configure cloud storage)
 - [ ] Run `node server/database.js` once to initialize schema on production DB

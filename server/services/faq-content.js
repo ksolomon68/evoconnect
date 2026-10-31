@@ -2,20 +2,20 @@
 
 const LABOR_FAQS = [
     {
-        q: 'Is EVOConnected free to join?',
-        a: 'Yes. Registering your skills profile and using the vendor readiness checklist is completely free. EVOConnected is funded through prime contractor subscriptions, not worker fees.'
+        q: 'Is EVOGovCon free to join?',
+        a: 'Yes. Registering your skills profile and using the vendor readiness checklist is completely free. EVOGovCon is funded through prime contractor subscriptions, not worker fees.'
     },
     {
         q: 'What is SAM.gov and do I need it?',
         a: 'SAM.gov (System for Award Management) is the federal government\'s official vendor database. Any individual or company seeking to work on federal contracts — either directly or as a subcontractor — must be registered. Registration is free and takes about 10–15 minutes. Our checklist walks you through every step. If you already have a DUNS/UEI number, have it ready. Registration must be renewed annually.'
     },
     {
-        q: 'What kinds of workers does EVOConnected serve?',
-        a: 'EVOConnected serves skilled tradespeople, technical specialists, and service professionals across a wide range of fields — including fiber/broadband installation, CDL trucking, electrical, concrete and civil construction, IT and cloud infrastructure, welding, HVAC/plumbing, landscaping, and administrative roles. If your skill is relevant to government infrastructure or services, you belong here.'
+        q: 'What kinds of workers does EVOGovCon serve?',
+        a: 'EVOGovCon serves skilled tradespeople, technical specialists, and service professionals across a wide range of fields — including fiber/broadband installation, CDL trucking, electrical, concrete and civil construction, IT and cloud infrastructure, welding, HVAC/plumbing, landscaping, and administrative roles. If your skill is relevant to government infrastructure or services, you belong here.'
     },
     {
         q: 'How do prime contractors find me?',
-        a: 'Once you complete your profile, prime contractors subscribed to EVOConnected can search for workers by trade, certifications, location, and availability. When a prime is interested, they send a connection request through the platform. You can review the request, see the prime\'s company information, and accept or decline. Your contact information is only shared after you accept.'
+        a: 'Once you complete your profile, prime contractors subscribed to EVOGovCon can search for workers by trade, certifications, location, and availability. When a prime is interested, they send a connection request through the platform. You can review the request, see the prime\'s company information, and accept or decline. Your contact information is only shared after you accept.'
     },
     {
         q: 'Do I need to form a business to use this platform?',
@@ -45,12 +45,12 @@ const LABOR_FAQS = [
 
 const BUSINESS_FAQS = [
     {
-        q: 'How is a business different from a worker on EVOConnected?',
+        q: 'How is a business different from a worker on EVOGovCon?',
         a: 'Workers are individual tradespeople; businesses are companies (LLCs, S-corps, sole proprietors operating under a DBA, etc.) that hold contracts and hire labor. The business portal is designed for entities that want to compete for subcontracts as a company, generate a capability statement, and maintain a full company profile with NAICS codes and certifications.'
     },
     {
         q: 'What is a capability statement and why do I need one?',
-        a: 'A capability statement is a one-page business summary required by most federal and state prime contractors before they will engage you as a subcontractor. It includes your company overview, core competencies, differentiators, past performance highlights, NAICS codes, and contact information. EVOConnected generates a formatted capability statement automatically from your profile data, which you can download and customize.'
+        a: 'A capability statement is a one-page business summary required by most federal and state prime contractors before they will engage you as a subcontractor. It includes your company overview, core competencies, differentiators, past performance highlights, NAICS codes, and contact information. EVOGovCon generates a formatted capability statement automatically from your profile data, which you can download and customize.'
     },
     {
         q: 'What certifications matter most for small businesses seeking government subcontracts?',
@@ -62,22 +62,22 @@ const BUSINESS_FAQS = [
     },
     {
         q: 'How does the NAICS code system work?',
-        a: 'NAICS (North American Industry Classification System) codes identify what industry your business operates in. Every government contract is tagged with one or more NAICS codes, and prime contractors look for subcontractors with matching codes. EVOConnected automatically suggests NAICS codes based on your registered services, and prime contractors can search for businesses by specific NAICS code. Having the right codes significantly improves your match rate.'
+        a: 'NAICS (North American Industry Classification System) codes identify what industry your business operates in. Every government contract is tagged with one or more NAICS codes, and prime contractors look for subcontractors with matching codes. EVOGovCon automatically suggests NAICS codes based on your registered services, and prime contractors can search for businesses by specific NAICS code. Having the right codes significantly improves your match rate.'
     },
     {
         q: 'How do prime contractors contact my business?',
-        a: 'Prime contractors on EVOConnected can search businesses by certifications, NAICS codes, state, and service radius. When they find your business, they send a connection request through the platform. You\'ll receive an email notification and can review the prime\'s information before accepting. Your contact details are only shared after you accept the connection.'
+        a: 'Prime contractors on EVOGovCon can search businesses by certifications, NAICS codes, state, and service radius. When they find your business, they send a connection request through the platform. You\'ll receive an email notification and can review the prime\'s information before accepting. Your contact details are only shared after you accept the connection.'
     }
 ];
 
 const PRIME_FAQS = [
     {
         q: 'How does the prime contractor approval process work?',
-        a: 'After registering, your account is reviewed by an EVOConnected administrator within 1–2 business days. We verify your SAM.gov UEI, confirm your company is an active prime contractor, and review your stated subcontracting needs. Once approved, you gain full search access. This process ensures all prime contractors on the platform are verified and legitimate, which protects the workers and businesses you\'ll be contacting.'
+        a: 'After registering, your account is reviewed by an EVOGovCon administrator within 1–2 business days. We verify your SAM.gov UEI, confirm your company is an active prime contractor, and review your stated subcontracting needs. Once approved, you gain full search access. This process ensures all prime contractors on the platform are verified and legitimate, which protects the workers and businesses you\'ll be contacting.'
     },
     {
         q: 'What are the subscription tiers and what do they include?',
-        a: 'EVOConnected offers three tiers. Basic (Free): 5 profile views and 5 connection requests per month, standard search filters. Pro ($49/month): Unlimited profile views, 20 connection requests per month, advanced filters for certifications and travel willingness, and the ability to download contact cards. Enterprise ($99/month): Everything in Pro, unlimited connection requests, the RFQ system to post subcontracting requests directly to qualified candidates, dedicated account manager, and bulk export. All limits reset on the 1st of each calendar month.'
+        a: 'EVOGovCon offers three tiers. Basic (Free): 5 profile views and 5 connection requests per month, standard search filters. Pro ($49/month): Unlimited profile views, 20 connection requests per month, advanced filters for certifications and travel willingness, and the ability to download contact cards. Enterprise ($99/month): Everything in Pro, unlimited connection requests, the RFQ system to post subcontracting requests directly to qualified candidates, dedicated account manager, and bulk export. All limits reset on the 1st of each calendar month.'
     },
     {
         q: 'How does the RFQ (Request for Quote) system work?',

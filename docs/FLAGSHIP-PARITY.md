@@ -1,10 +1,10 @@
-# EVOConnected feature coverage and validation
+# EVOGovCon feature coverage and validation
 
-This compares the current New-Caltrans repository with EVOConnected's server-rendered portals. Caltrans business accounts map to EVOConnected businesses; contractor/agency posting tasks map to prime contractors and administrators. EVOConnected also supports individual workers. This is a feature-workflow comparison, not a claim that the two applications share identical APIs or page filenames.
+This compares the current New-Caltrans repository with EVOGovCon's server-rendered portals. Caltrans business accounts map to EVOGovCon businesses; contractor/agency posting tasks map to prime contractors and administrators. EVOGovCon also supports individual workers. This is a feature-workflow comparison, not a claim that the two applications share identical APIs or page filenames.
 
 ## Feature coverage
 
-| Workflow in New-Caltrans | EVOConnected implementation | Validation |
+| Workflow in New-Caltrans | EVOGovCon implementation | Validation |
 | --- | --- | --- |
 | Registration, login, password reset, account settings | Existing role-aware authentication and settings; corrected password-reset template includes | Public/account pages render; production demo and regular logins tested. Live email delivery is unverified. |
 | Business profiles, qualifications, certifications, NAICS | Existing profile editors plus safe directory profiles for workers, businesses and primes | All role profile pages render; real profile-view tracking verified |
@@ -21,7 +21,7 @@ This compares the current New-Caltrans repository with EVOConnected's server-ren
 | CMS, FAQs, media, announcements and resources | Existing CMS and admin tools retained; portal admin session accepted by CMS APIs | Core CMS reads/stats, role restrictions, resource and admin pages checked. Every media/content mutation is not exhaustively tested. |
 | Profile, opportunity and capability performance | All four roles have analytics; admins see platform metrics, others see owned records | Real event recording, visitor/day deduplication, self-view exclusion, role scoping, 7/30/90-day reports and current-document reporting tested |
 | Contact, policies, accessibility information | Existing public pages and contact handlers retained | Page coverage only; actual outbound mail and full accessibility/browser audits remain outside this test run |
-| EVOConnected readiness checklists, connections and RFQs | Existing EVOConnected features retained | Role pages render; every existing mutation is not exhaustively tested |
+| EVOGovCon readiness checklists, connections and RFQs | Existing EVOGovCon features retained | Role pages render; every existing mutation is not exhaustively tested |
 
 ## Analytics definitions
 
@@ -31,7 +31,7 @@ Visitor identifiers are keyed hashes, not stored email addresses or raw IP addre
 
 ## Running locally
 
-Use Node.js 22 or newer and a running MySQL database. Run `npm ci`, configure `.env` using `.env.example`, and run `npm start` from the EVOConnected checkout. Startup applies additive schema migrations. New tables are `capability_documents`, `opportunity_attachments` and `performance_events`; `opportunities.posted_by_type` separates prime and admin owners with overlapping numeric IDs. Existing postings default to prime ownership.
+Use Node.js 22 or newer and a running MySQL database. Run `npm ci`, configure `.env` using `.env.example`, and run `npm start` from the EVOGovCon checkout. Startup applies additive schema migrations. New tables are `capability_documents`, `opportunity_attachments` and `performance_events`; `opportunities.posted_by_type` separates prime and admin owners with overlapping numeric IDs. Existing postings default to prime ownership.
 
 The startup sweep archives already expired published postings and notifies their applicants. Back up the database before a production rollout. Archive operations retain applications, saved records and analytics history.
 

@@ -1,4 +1,4 @@
-/* EVOConnected — Client-side JS & GSAP Executive Motion Engine */
+/* EVOGovCon — Client-side JS & GSAP Executive Motion Engine */
 
 (function() {
   'use strict';

@@ -3,13 +3,13 @@
   "isSystem": true,
   "updatedAt": "2026-10-29T01:30:00.000Z",
   "meta": {
-    "title": "Government Contract Workforce Ecosystem | EVOConnected",
-    "description": "EVOConnected bridges the gap between federal appropriations and field execution—algorithmically mapping skilled trade labor to six-digit NAICS codes, certifying small business readiness, and delivering audit-ready diversity pipelines for prime contractors."
+    "title": "Government Contract Workforce Ecosystem | EVOGovCon",
+    "description": "EVOGovCon bridges the gap between federal appropriations and field execution—algorithmically mapping skilled trade labor to six-digit NAICS codes, certifying small business readiness, and delivering audit-ready diversity pipelines for prime contractors."
   },
   "header": {
     "backgroundImage": "",
     "logoImage": "/images/favicon.png",
-    "logoAlt": "EVOConnected Logo"
+    "logoAlt": "EVOGovCon Logo"
   },
   "sections": [
     {
@@ -18,7 +18,7 @@
       "fields": {
         "eyebrow": "FEDERAL & STATE CONTRACTING INFRASTRUCTURE • FREE FOR LABOR & BUSINESSES",
         "title": "Institutional Workforce & Subcontractor Intelligence.",
-        "subtitle": "EVOConnected bridges the gap between federal appropriations and field execution—algorithmically mapping skilled trade labor to six-digit NAICS codes, certifying small business readiness, and delivering audit-ready diversity pipelines for prime contractors.",
+        "subtitle": "EVOGovCon bridges the gap between federal appropriations and field execution—algorithmically mapping skilled trade labor to six-digit NAICS codes, certifying small business readiness, and delivering audit-ready diversity pipelines for prime contractors.",
         "primaryButton": {
           "label": "Initialize Free Profile",
           "href": "/register"
@@ -131,7 +131,7 @@
           {
             "id": "benefit-naics",
             "title": "Algorithmic NAICS Code Matching",
-            "body": "Select your trade specialization and equipment inventory—EVOConnected automatically maps your profile to the exact 6-digit North American Industry Classification System (NAICS) codes used by federal and state procurement officers."
+            "body": "Select your trade specialization and equipment inventory—EVOGovCon automatically maps your profile to the exact 6-digit North American Industry Classification System (NAICS) codes used by federal and state procurement officers."
           },
           {
             "id": "benefit-dispatch",
@@ -187,7 +187,7 @@
         "text": "Join skilled trade operators, certified small businesses, and prime contractors building the next generation of public infrastructure.",
         "columns": [
           {
-            "heading": "New to EVOConnected?",
+            "heading": "New to EVOGovCon?",
             "text": "Create your free Worker, Business, or Prime profile in minutes.",
             "buttonLabel": "Initialize Free Account",
             "buttonHref": "/register"

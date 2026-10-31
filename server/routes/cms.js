@@ -191,7 +191,7 @@ router.post('/pages',requireAdmin,wrap(async(req,res)=>{
     if(!slug || !isValidSlug(slug))return res.status(400).json({error:'A valid slug is required'});
     const file=path.join(PAGES_DIR,slug+'.json');
     if(await content.read(file))return res.status(409).json({error:'Page already exists'});
-    const data={slug,isSystem:false,meta:{title:meta?.title||slug,description:meta?.description||''},header:{backgroundImage:'',logoImage:'/images/favicon.png',logoAlt:'EVOConnected'},sections:sections||[],createdAt:new Date().toISOString(),updatedAt:new Date().toISOString()};
+    const data={slug,isSystem:false,meta:{title:meta?.title||slug,description:meta?.description||''},header:{backgroundImage:'',logoImage:'/images/favicon.png',logoAlt:'EVOGovCon'},sections:sections||[],createdAt:new Date().toISOString(),updatedAt:new Date().toISOString()};
     await content.write(file,data);res.status(201).json({success:true,data});
 }));
 router.delete('/pages/:slug',requireAdmin,wrap(async(req,res)=>{

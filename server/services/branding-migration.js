@@ -4,7 +4,7 @@ module.exports=async db=>{
     const connection=await db.getConnection();
     try{
         await connection.beginTransaction();
-        const [marker]=await connection.execute("INSERT IGNORE INTO app_migrations (name) VALUES ('evoconnected-display-brand-v1')");
+        const [marker]=await connection.execute("INSERT IGNORE INTO app_migrations (name) VALUES ('evogovcon-display-brand-v1')");
         if(marker.affectedRows){
             const [pages]=await connection.execute('SELECT content_key,data FROM cms_content WHERE deleted=FALSE FOR UPDATE');
             for(const page of pages){

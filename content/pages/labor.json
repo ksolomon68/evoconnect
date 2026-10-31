@@ -3,13 +3,13 @@
   "isSystem": true,
   "updatedAt": "2026-10-29T01:30:00.000Z",
   "meta": {
-    "title": "Skilled Labor Portal & Federal NAICS Taxonomy | EVOConnected",
-    "description": "Register your skilled trade on EVOConnected, automatically map your field capabilities to 58 federal 6-digit NAICS codes, and get recruited directly for prevailing-wage government contracts."
+    "title": "Skilled Labor Portal & Federal NAICS Taxonomy | EVOGovCon",
+    "description": "Register your skilled trade on EVOGovCon, automatically map your field capabilities to 58 federal 6-digit NAICS codes, and get recruited directly for prevailing-wage government contracts."
   },
   "header": {
     "backgroundImage": "",
     "logoImage": "/images/favicon.png",
-    "logoAlt": "EVOConnected Logo"
+    "logoAlt": "EVOGovCon Logo"
   },
   "sections": [
     {
@@ -18,7 +18,7 @@
       "fields": {
         "eyebrow": "DIVISION 01 // SKILLED LABOR & FIELD OPERATIONS",
         "title": "Your Trade Credentials Belong on Government Contracts.",
-        "subtitle": "Federal, state, and municipal infrastructure programs require thousands of verified tradesmen, heavy equipment operators, broadband technicians, and CDL drivers. EVOConnected maps your skills directly to 6-digit federal NAICS codes and connects you with subcontractors and prime contractors—at zero cost.",
+        "subtitle": "Federal, state, and municipal infrastructure programs require thousands of verified tradesmen, heavy equipment operators, broadband technicians, and CDL drivers. EVOGovCon maps your skills directly to 6-digit federal NAICS codes and connects you with subcontractors and prime contractors—at zero cost.",
         "primaryButton": {
           "label": "Register as a Worker — Free",
           "href": "/labor/register"
@@ -33,7 +33,7 @@
       "id": "how-it-works",
       "type": "steps",
       "fields": {
-        "heading": "How EVOConnected Mobilizes Skilled Labor",
+        "heading": "How EVOGovCon Mobilizes Skilled Labor",
         "intro": "Four steps from trade registration to prevailing-wage government contract placement.",
         "steps": [
           {
@@ -133,14 +133,14 @@
       "type": "text-block",
       "fields": {
         "heading": "Complete Skilled Labor NAICS Directory",
-        "body": "Filter by sector or search by code, trade keyword, or federal program (BEAD, IIJA, DOT, DoD, VA). Every code below is seeded in the EVOConnected matching engine."
+        "body": "Filter by sector or search by code, trade keyword, or federal program (BEAD, IIJA, DOT, DoD, VA). Every code below is seeded in the EVOGovCon matching engine."
       }
     },
     {
       "id": "benefits",
       "type": "card-grid",
       "fields": {
-        "heading": "Why Skilled Tradesmen Register on EVOConnected",
+        "heading": "Why Skilled Tradesmen Register on EVOGovCon",
         "cards": [
           {
             "id": "worker-free",

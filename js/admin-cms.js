@@ -1,5 +1,5 @@
 /**
- * Admin CMS JavaScript — EVOConnected
+ * Admin CMS JavaScript — EVOGovCon
  *
  * Provides the full single-page admin interface for:
  *  • Editing page content (sections, fields, images)
@@ -62,9 +62,9 @@ function showLoginScreen() {
     document.getElementById('cms-app').innerHTML = `
     <div class="cms-login-screen" role="main">
       <div class="cms-login-card">
-        <a href="/" style="display:flex;align-items:center;justify-content:center;gap:0.6rem;margin-bottom:0.75rem;text-decoration:none;" aria-label="EVOConnected Home">
-          <img src="/images/favicon.png" alt="EVOConnected" style="height:40px;width:auto;">
-          <span style="font-size:1.6rem;font-weight:800;color:#0F172A;letter-spacing:-0.02em;">EVOConnected</span>
+        <a href="/" style="display:flex;align-items:center;justify-content:center;gap:0.6rem;margin-bottom:0.75rem;text-decoration:none;" aria-label="EVOGovCon Home">
+          <img src="/images/favicon.png" alt="EVOGovCon" style="height:40px;width:auto;">
+          <span style="font-size:1.6rem;font-weight:800;color:#0F172A;letter-spacing:-0.02em;">EVOGovCon</span>
         </a>
         <h1>CMS Admin</h1>
         <p>Sign in with your admin account to manage site content.</p>
@@ -131,9 +131,9 @@ async function showShell() {
 
       <!-- Header -->
       <header class="cms-header" role="banner">
-        <a href="/" class="cms-header-brand" aria-label="EVOConnected Home">
-          <img src="/images/favicon.png" alt="EVOConnected" style="height:28px;width:auto;background:#fff;padding:3px;border-radius:6px;">
-          <span>EVOConnected CMS Admin</span>
+        <a href="/" class="cms-header-brand" aria-label="EVOGovCon Home">
+          <img src="/images/favicon.png" alt="EVOGovCon" style="height:28px;width:auto;background:#fff;padding:3px;border-radius:6px;">
+          <span>EVOGovCon CMS Admin</span>
         </a>
         <div class="cms-header-actions">
           <a href="/admin/dashboard" class="cms-btn cms-btn-sm"
@@ -396,7 +396,7 @@ function renderTutorialsTab(container) {
     </div>
     <div class="cms-panel">
       <div class="cms-panel-body">
-        <p class="cms-text-muted mb-md">Watch these tutorial videos to learn how to manage content, pages, and administration in the EVOConnected CMS.</p>
+        <p class="cms-text-muted mb-md">Watch these tutorial videos to learn how to manage content, pages, and administration in the EVOGovCon CMS.</p>
         
         <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(320px, 1fr));gap:2rem;">
           
@@ -423,7 +423,7 @@ function renderTutorialsTab(container) {
               <iframe src="https://www.youtube.com/embed/eXEldHlPpZQ" title="Tutorial Video 3" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen style="position:absolute;top:0;left:0;width:100%;height:100%;"></iframe>
             </div>
             <div style="padding:1rem;">
-              <h3 style="font-size:1.05rem;margin:0;color:var(--color-primary)">Scaling EVOConnected</h3>
+              <h3 style="font-size:1.05rem;margin:0;color:var(--color-primary)">Scaling EVOGovCon</h3>
             </div>
           </div>
 
@@ -2234,7 +2234,7 @@ async function renderAdminsTab(container) {
             <div class="cms-tab-header">
                 <div>
                     <h1 class="cms-page-title">👥 Admin Accounts</h1>
-                    <p class="cms-page-subtitle">Manage administrators with access to the EVOConnected CMS and admin dashboards.</p>
+                    <p class="cms-page-subtitle">Manage administrators with access to the EVOGovCon CMS and admin dashboards.</p>
                 </div>
                 <button class="cms-btn cms-btn-primary" onclick="showAdminModal()">+ Add New Admin</button>
             </div>

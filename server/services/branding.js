@@ -2,8 +2,8 @@
 const identifiers=/^(?:id|slug|appId|storagePrefix|storage_name|filename|password|secret|token|email|contactEmail|supportEmail)$/i;
 // Keep URLs, file paths, addresses, and HTML link attributes intact while renaming prose.
 function text(value){
-    return value.replace(/(?:https?:\/\/|mailto:|\/)[^\s"'<>]*|[\w.+-]+@[\w.-]+|\b(?:EVOConnect|EvoConnect|Evoconnect|WorkForce Connect|WORKFORCE CONNECT)\b/g,match=>
-        /^(?:EVOConnect|EvoConnect|Evoconnect|WorkForce Connect|WORKFORCE CONNECT)$/.test(match)?'EVOConnected':match);
+    return value.replace(/(?:https?:\/\/|mailto:|\/)[^\s"'<>]*|[\w.+-]+@[\w.-]+|\b(?:EVOConnected|EVOConnect|EvoConnect|Evoconnect|WorkForce Connect|WORKFORCE CONNECT)\b/g,match=>
+        /^(?:EVOConnected|EVOConnect|EvoConnect|Evoconnect|WorkForce Connect|WORKFORCE CONNECT)$/.test(match)?'EVOGovCon':match);
 }
 function display(value){
     if(typeof value==='string')return text(value);
