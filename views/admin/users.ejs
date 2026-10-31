@@ -38,7 +38,7 @@
     <div class="card">
       <% if (locals.users && users.length > 0) { %>
         <div style="overflow-x:auto">
-          <table class="data-table">
+          <table class="data-table dashboard-record-list">
             <thead>
               <tr>
                 <th>Name / Company</th>
@@ -52,19 +52,19 @@
             <tbody>
               <% users.forEach(function(u) { %>
               <tr>
-                <td><strong><%= u.name || '—' %></strong><p><a href="/admin/users/<%= u.type %>/<%= u.id %>/edit">Edit account / status</a> · <a href="/directory/<%= u.type %>/<%= u.id %>">Profile &amp; statement</a></p></td>
-                <td><a href="mailto:<%= u.email %>" style="color:#06B6D4"><%= u.email %></a></td>
-                <td>
+                <td title="<%= u.name || '—' %>" class="data-table-title" data-label="Name / Company"><strong><%= u.name || '—' %></strong><p><a href="/admin/users/<%= u.type %>/<%= u.id %>/edit">Edit account / status</a> · <a href="/directory/<%= u.type %>/<%= u.id %>">Profile &amp; statement</a></p></td>
+                <td data-label="Email"><a href="mailto:<%= u.email %>" style="color:#06B6D4"><%= u.email %></a></td>
+                <td data-label="Type">
                   <% const typeColor = u.type === 'worker' ? '#E0F2FE;color:#0369A1' : (u.type === 'prime' ? '#FEF3C7;color:#92400E' : '#F0FDF4;color:#166534') %>
                   <span style="background:<%= typeColor %>;padding:.2rem .6rem;border-radius:4px;font-size:.8rem;font-weight:600;text-transform:capitalize"><%= u.type %></span>
                 </td>
-                <td style="color:#64748B;font-size:.9rem"><%= [u.city, u.state].filter(Boolean).join(', ') || '—' %></td>
-                <td>
+                <td data-label="Location" style="color:#64748B;font-size:.9rem"><%= [u.city, u.state].filter(Boolean).join(', ') || '—' %></td>
+                <td data-label="Status">
                   <% const s = String(u.status); const sLabel = s === '1' ? 'approved' : s === '0' ? 'pending' : s === '-1' ? 'denied' : s %>
                   <% const sColor = sLabel === 'active' || sLabel === 'approved' ? '#F0FDF4;color:#166534' : sLabel === 'pending' ? '#FEF3C7;color:#92400E' : '#FEF2F2;color:#991B1B' %>
                   <span style="background:<%= sColor %>;padding:.2rem .6rem;border-radius:4px;font-size:.8rem;text-transform:capitalize"><%= sLabel %></span>
                 </td>
-                <td style="font-size:.85rem;color:#64748B"><%= new Date(u.created_at).toLocaleDateString() %></td>
+                <td data-label="Registered" style="font-size:.85rem;color:#64748B"><%= new Date(u.created_at).toLocaleDateString() %></td>
               </tr>
               <% }) %>
             </tbody>

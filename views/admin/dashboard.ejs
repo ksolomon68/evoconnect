@@ -199,7 +199,7 @@
         </div>
         <% if (locals.pendingList && pendingList.length > 0) { %>
             <div style="overflow-x:auto">
-                <table class="data-table">
+                <table class="data-table dashboard-record-list">
                     <thead>
                         <tr>
                             <th>Company</th>
@@ -214,13 +214,13 @@
                     <tbody>
                         <% pendingList.forEach(function(prime) { %>
                         <tr>
-                            <td><strong><%= prime.company_name || '—' %></strong></td>
-                            <td><%= prime.contact_name || '—' %></td>
-                            <td><a href="mailto:<%= prime.email %>" style="color:var(--color-primary);font-weight:600;"><%= prime.email %></a></td>
-                            <td><code style="font-family:'JetBrains Mono',monospace;font-size:.85rem;background:#F1F5F9;padding:.2rem .4rem;border-radius:4px;"><%= prime.sam_uei || '—' %></code></td>
-                            <td><span class="status-badge badge-cyan" style="text-transform:capitalize;margin:0;"><%= prime.subscription_tier || 'basic' %></span></td>
-                            <td><%= new Date(prime.created_at).toLocaleDateString() %></td>
-                            <td style="white-space:nowrap">
+                            <td title="<%= prime.company_name || '—' %>" class="data-table-title" data-label="Company"><strong><%= prime.company_name || '—' %></strong></td>
+                            <td data-label="Contact"><%= prime.contact_name || '—' %></td>
+                            <td data-label="Email"><a href="mailto:<%= prime.email %>" style="color:var(--color-primary);font-weight:600;"><%= prime.email %></a></td>
+                            <td data-label="SAM UEI"><code style="font-family:'JetBrains Mono',monospace;font-size:.85rem;background:#F1F5F9;padding:.2rem .4rem;border-radius:4px;"><%= prime.sam_uei || '—' %></code></td>
+                            <td data-label="Plan"><span class="status-badge badge-cyan" style="text-transform:capitalize;margin:0;"><%= prime.subscription_tier || 'basic' %></span></td>
+                            <td data-label="Registered"><%= new Date(prime.created_at).toLocaleDateString() %></td>
+                            <td class="data-table-actions" data-label="Actions" style="white-space:nowrap">
                                 <form method="POST" action="/admin/primes/<%= prime.id %>/approve" style="display:inline">
                                     <button type="submit" class="btn btn-sm btn-primary" style="margin-right:0.35rem;padding:0.35rem 0.85rem;font-size:0.8rem;">Approve</button>
                                 </form>
@@ -255,9 +255,9 @@
                     <tbody>
                         <% checklistStats.forEach(function(row) { %>
                         <tr>
-                            <td style="text-transform:capitalize;font-weight:600;"><%= row.user_type %></td>
-                            <td style="text-transform:capitalize"><span class="badge badge-cyan"><%= row.track %></span></td>
-                            <td><strong style="font-family:'JetBrains Mono',monospace;font-size:0.95rem;"><%= row.total_completions %></strong></td>
+                            <td data-label="User Role" style="text-transform:capitalize;font-weight:600;"><%= row.user_type %></td>
+                            <td data-label="Track" style="text-transform:capitalize"><span class="badge badge-cyan"><%= row.track %></span></td>
+                            <td data-label="Total Completions"><strong style="font-family:'JetBrains Mono',monospace;font-size:0.95rem;"><%= row.total_completions %></strong></td>
                         </tr>
                         <% }) %>
                     </tbody>
@@ -277,9 +277,9 @@
                     <tbody>
                         <% weeklyRegistrations.forEach(function(row, i) { %>
                         <tr>
-                            <td><code style="font-family:'JetBrains Mono',monospace;font-size:.85rem;">Week <%= row.week %></code></td>
-                            <td><strong style="color:#0284C7;font-family:'JetBrains Mono',monospace;"><%= row.count %></strong></td>
-                            <td><strong style="color:#10B981;font-family:'JetBrains Mono',monospace;"><%= locals.weeklyConnections?.[i]?.count || 0 %></strong></td>
+                            <td data-label="Period"><code style="font-family:'JetBrains Mono',monospace;font-size:.85rem;">Week <%= row.week %></code></td>
+                            <td data-label="Registrations"><strong style="color:#0284C7;font-family:'JetBrains Mono',monospace;"><%= row.count %></strong></td>
+                            <td data-label="Connections"><strong style="color:#10B981;font-family:'JetBrains Mono',monospace;"><%= locals.weeklyConnections?.[i]?.count || 0 %></strong></td>
                         </tr>
                         <% }) %>
                     </tbody>

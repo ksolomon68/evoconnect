@@ -227,7 +227,7 @@ const checklistPct = Math.round((totalDone / totalItems) * 100) || 0;
             <% pendingConns.forEach(function(conn) { %>
             <li class="recommendation-item">
                 <div class="rec-info">
-                <h4><%= conn.prime_company_name || conn.prime_company || 'Small Business' %></h4>
+                <h4 title="<%= conn.prime_company_name || conn.prime_company || 'Small Business' %>"><%= conn.prime_company_name || conn.prime_company || 'Small Business' %></h4>
                 <% if (conn.message) { %><p class="rec-meta"><%= conn.message %></p><% } %>
                 <span class="rec-meta" style="font-size: 0.8rem;"><%= new Date(conn.created_at).toLocaleDateString() %></span>
                 </div>
@@ -262,7 +262,7 @@ const checklistPct = Math.round((totalDone / totalItems) * 100) || 0;
             <% naicsMatches.forEach(function(match) { %>
             <div class="recommendation-item">
                 <div class="rec-info">
-                    <h4><span style="color: var(--color-primary); margin-right: 0.5rem;">[<%= match.naics_code %>]</span> <%= match.description %></h4>
+                    <h4 title="[<%= match.naics_code %>] <%= match.description %>"><span style="color: var(--color-primary); margin-right: 0.5rem;">[<%= match.naics_code %>]</span> <%= match.description %></h4>
                     <% if (match.avg_contract_size) { %>
                         <span class="rec-meta">Avg. contract: <%= match.avg_contract_size %></span>
                     <% } %>

@@ -226,7 +226,7 @@ const acceptedConns = connList.filter(c => c.status === 'accepted').length;
             <a href="/prime/opportunities" class="btn-sm btn-primary">Manage RFQs</a>
         </div>
         <% if (rfqList.length > 0) { %>
-            <table class="data-table">
+            <table class="data-table dashboard-record-list">
                 <thead>
                     <tr>
                         <th>Project</th>
@@ -239,11 +239,11 @@ const acceptedConns = connList.filter(c => c.status === 'accepted').length;
                 <tbody>
                     <% rfqList.forEach(function(rfq) { %>
                     <tr>
-                        <td><strong><%= rfq.title %></strong></td>
-                        <td><%= rfq.trade_service || '—' %></td>
-                        <td><%= rfq.location || '—' %></td>
-                        <td><%= rfq.timeline || '—' %></td>
-                        <td><span class="badge badge-success"><%= rfq.status %></span></td>
+                        <td title="<%= rfq.title %>" class="data-table-title" data-label="Project"><strong><%= rfq.title %></strong></td>
+                        <td data-label="Trade / Service"><%= rfq.trade_service || '—' %></td>
+                        <td data-label="Location"><%= rfq.location || '—' %></td>
+                        <td data-label="Timeline"><%= rfq.timeline || '—' %></td>
+                        <td data-label="Status"><span class="badge badge-success"><%= rfq.status %></span></td>
                     </tr>
                     <% }) %>
                 </tbody>
@@ -274,10 +274,10 @@ const acceptedConns = connList.filter(c => c.status === 'accepted').length;
                 <tbody>
                     <% connList.slice(0, 8).forEach(function(conn) { %>
                     <tr>
-                        <td><%= conn.target_name || conn.name || conn.company_name || '—' %></td>
-                        <td><span class="badge badge-<%= conn.target_type === 'worker' ? 'cyan' : 'amber' %>"><%= conn.target_type %></span></td>
-                        <td><span class="badge badge-<%= conn.status === 'accepted' ? 'success' : (conn.status === 'pending' ? 'warning' : 'muted') %>"><%= conn.status %></span></td>
-                        <td><%= new Date(conn.created_at).toLocaleDateString() %></td>
+                        <td title="<%= conn.target_name || conn.name || conn.company_name || '—' %>" class="data-table-title" data-label="Name / Company"><%= conn.target_name || conn.name || conn.company_name || '—' %></td>
+                        <td data-label="Type"><span class="badge badge-<%= conn.target_type === 'worker' ? 'cyan' : 'amber' %>"><%= conn.target_type %></span></td>
+                        <td data-label="Status"><span class="badge badge-<%= conn.status === 'accepted' ? 'success' : (conn.status === 'pending' ? 'warning' : 'muted') %>"><%= conn.status %></span></td>
+                        <td data-label="Date"><%= new Date(conn.created_at).toLocaleDateString() %></td>
                     </tr>
                     <% }) %>
                 </tbody>

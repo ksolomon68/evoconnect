@@ -38,7 +38,7 @@
       </div>
       <% if ((locals.pendingList || []).length > 0) { %>
         <div style="overflow-x:auto">
-          <table class="data-table">
+          <table class="data-table dashboard-record-list">
             <thead>
               <tr>
                 <th>Company</th>
@@ -54,14 +54,14 @@
             <tbody>
               <% pendingList.forEach(function(prime) { %>
               <tr>
-                <td><strong><%= prime.company_name || '—' %></strong></td>
-                <td><%= prime.contact_name || '—' %></td>
-                <td><a href="mailto:<%= prime.email %>" style="color:#06B6D4"><%= prime.email %></a></td>
-                <td><%= [prime.city, prime.state].filter(Boolean).join(', ') || '—' %></td>
-                <td style="font-family:monospace;font-size:.85rem"><%= prime.sam_uei || '—' %></td>
-                <td><span style="background:#E0F2FE;color:#0369A1;padding:.2rem .6rem;border-radius:4px;font-size:.8rem;text-transform:capitalize"><%= prime.subscription_tier || 'basic' %></span></td>
-                <td><%= new Date(prime.created_at).toLocaleDateString() %></td>
-                <td style="white-space:nowrap">
+                <td title="<%= prime.company_name || '—' %>" class="data-table-title" data-label="Company"><strong><%= prime.company_name || '—' %></strong></td>
+                <td data-label="Contact"><%= prime.contact_name || '—' %></td>
+                <td data-label="Email"><a href="mailto:<%= prime.email %>" style="color:#06B6D4"><%= prime.email %></a></td>
+                <td data-label="Location"><%= [prime.city, prime.state].filter(Boolean).join(', ') || '—' %></td>
+                <td data-label="SAM UEI" style="font-family:monospace;font-size:.85rem"><%= prime.sam_uei || '—' %></td>
+                <td data-label="Plan"><span style="background:#E0F2FE;color:#0369A1;padding:.2rem .6rem;border-radius:4px;font-size:.8rem;text-transform:capitalize"><%= prime.subscription_tier || 'basic' %></span></td>
+                <td data-label="Applied"><%= new Date(prime.created_at).toLocaleDateString() %></td>
+                <td class="data-table-actions" data-label="Actions" style="white-space:nowrap">
                   <form method="POST" action="/admin/approve/<%= prime.id %>" style="display:inline">
                     <button type="submit" class="btn btn-primary" style="padding:.3rem .8rem;font-size:.8rem">Approve</button>
                   </form>
@@ -88,7 +88,7 @@
         <h2 style="margin:0;font-size:1.1rem;color:#0F172A">Recently Denied (last 20)</h2>
       </div>
       <div style="overflow-x:auto">
-        <table class="data-table">
+        <table class="data-table dashboard-record-list">
           <thead>
             <tr>
               <th>Company</th>
@@ -103,13 +103,13 @@
           <tbody>
             <% deniedList.forEach(function(prime) { %>
             <tr style="opacity:.75">
-              <td><strong><%= prime.company_name || '—' %></strong></td>
-              <td><%= prime.contact_name || '—' %></td>
-              <td><a href="mailto:<%= prime.email %>" style="color:#06B6D4"><%= prime.email %></a></td>
-              <td style="font-family:monospace;font-size:.85rem"><%= prime.sam_uei || '—' %></td>
-              <td style="text-transform:capitalize"><%= prime.subscription_tier || 'basic' %></td>
-              <td><%= new Date(prime.created_at).toLocaleDateString() %></td>
-              <td>
+              <td title="<%= prime.company_name || '—' %>" class="data-table-title" data-label="Company"><strong><%= prime.company_name || '—' %></strong></td>
+              <td data-label="Contact"><%= prime.contact_name || '—' %></td>
+              <td data-label="Email"><a href="mailto:<%= prime.email %>" style="color:#06B6D4"><%= prime.email %></a></td>
+              <td data-label="SAM UEI" style="font-family:monospace;font-size:.85rem"><%= prime.sam_uei || '—' %></td>
+              <td data-label="Plan" style="text-transform:capitalize"><%= prime.subscription_tier || 'basic' %></td>
+              <td data-label="Date"><%= new Date(prime.created_at).toLocaleDateString() %></td>
+              <td class="data-table-actions" data-label="Actions">
                 <form method="POST" action="/admin/approve/<%= prime.id %>" style="display:inline">
                   <button type="submit" class="btn btn-secondary" style="padding:.3rem .8rem;font-size:.8rem">Re-approve</button>
                 </form>

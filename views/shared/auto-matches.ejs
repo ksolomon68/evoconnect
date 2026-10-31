@@ -63,8 +63,8 @@
         <% for(const match of result.matches) { %>
             <article class="dash-card spotlight-card" style="padding:1.5rem;margin:0;border:1px solid #E2E8F0;border-radius:14px;">
                 <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:1rem;margin-bottom:0.75rem;">
-                    <div>
-                        <h2 style="font-size:1.25rem;font-weight:800;margin:0 0 0.35rem 0;">
+                    <div class="dashboard-list-heading">
+                        <h2 class="dashboard-list-title" title="<%= match.title %>" style="font-size:1.25rem;font-weight:800;margin:0 0 0.35rem 0;">
                             <a href="/opportunities/<%= encodeURIComponent(match.id) %>" style="color:#0F172A;text-decoration:none;"><%= match.title %></a>
                         </h2>
                         <div style="display:flex;gap:0.5rem;flex-wrap:wrap;align-items:center;font-size:0.82rem;color:#64748B;">

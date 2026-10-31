@@ -121,6 +121,7 @@ const navCfg = NAV_CONFIG[currentRole] || NAV_CONFIG.worker;
   <link rel="stylesheet" href="/css/role-workflows.css?v=1">
   <link rel="stylesheet" href="/css/brand-logo.css?v=3">
   <link rel="stylesheet" href="/css/portal-options.css?v=1">
+  <link rel="stylesheet" href="/css/dashboard-lists.css?v=1">
 </head>
 <body class="dashboard-v2<%= locals.user?.demo ? ' demo-mode' : '' %>">
     <% if(locals.user?.demo) { %><div role="status" style="position:fixed;bottom:0;left:0;right:0;z-index:2000;padding:.5rem;text-align:center;background:#0f172a;color:#fff">Demo preview · sample data · read only · <a href="/logout" style="color:#67e8f9">Exit demo</a></div><% } %>

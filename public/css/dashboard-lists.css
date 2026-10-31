@@ -1,0 +1,162 @@
+/* Keep list content inside its card, including narrow nested dashboard panels. */
+.dashboard-v2 .main-content,
+.dashboard-v2 .main-content :is(.recommendations-list, .dash-card, .dashboard-grid, .dashboard-main, .dashboard-sidebar) {
+    min-width: 0;
+    max-width: 100%;
+    box-sizing: border-box;
+}
+.dashboard-v2 .main-content .section-header {
+    flex-wrap: wrap;
+    gap: .75rem;
+}
+.dashboard-v2 .main-content .section-header h2 {
+    min-width: 0;
+    overflow-wrap: anywhere;
+}
+.dashboard-v2 .main-content div:has(> table.data-table) {
+    min-width: 0 !important;
+    max-width: 100% !important;
+    overflow: visible !important;
+}
+.dashboard-v2 .main-content table.data-table {
+    min-width: 0 !important;
+    max-width: 100% !important;
+    table-layout: fixed;
+}
+.dashboard-v2 .main-content table.data-table :is(th, td) {
+    min-width: 0 !important;
+    max-width: none !important;
+    overflow-wrap: anywhere;
+    white-space: normal !important;
+}
+/* Wide lists use full-width record headings rather than eight cramped columns.
+   Labels are rendered by the server, so this layout also works without JS. */
+.dashboard-v2 .main-content table.dashboard-record-list,
+.dashboard-v2 .main-content table.dashboard-record-list tbody {
+    display: block !important;
+    width: 100% !important;
+    overflow: visible !important;
+}
+.dashboard-v2 .main-content table.dashboard-record-list thead {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    clip-path: inset(50%);
+    overflow: hidden;
+}
+.dashboard-v2 .main-content table.dashboard-record-list tbody tr {
+    display: grid !important;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 12rem), 1fr));
+    gap: 0 !important;
+    margin: 0 0 1rem !important;
+    border: 1px solid #E2E8F0 !important;
+    border-radius: 12px;
+    background: #fff;
+    overflow: visible !important;
+}
+.dashboard-v2 .main-content table.dashboard-record-list tbody td {
+    display: block !important;
+    width: auto !important;
+    padding: .75rem 1rem !important;
+    border-bottom: 0 !important;
+}
+.dashboard-v2 .main-content table.dashboard-record-list td[data-label]::before {
+    content: attr(data-label);
+    display: block;
+    margin-bottom: .3rem;
+    color: #64748B !important;
+    font-size: .7rem;
+    font-weight: 700;
+    letter-spacing: .04em;
+    text-transform: uppercase;
+}
+.dashboard-v2 .main-content table.dashboard-record-list td.data-table-title {
+    grid-column: 1 / -1;
+    order: -1;
+    background: #F8FAFC !important;
+    border-radius: 12px 12px 0 0;
+    border-bottom: 1px solid #E2E8F0 !important;
+    font-size: 1rem !important;
+}
+.dashboard-v2 .main-content table.dashboard-record-list td:is([data-label="Message"], [data-label="Description"], [data-label="Notes"], [data-label="Notes / Summary"], [colspan]) {
+    grid-column: 1 / -1;
+}
+.dashboard-v2 .main-content table.data-table td.data-table-title::before {
+    content: none;
+}
+.dashboard-v2 .main-content table.data-table td.data-table-title > :is(a, strong),
+.dashboard-v2 .main-content .dashboard-list-title {
+    display: block;
+    min-width: 0;
+    max-width: 100%;
+    overflow: hidden;
+    white-space: nowrap !important;
+    text-overflow: ellipsis;
+}
+.dashboard-v2 .main-content table.dashboard-record-list td.data-table-actions {
+    grid-column: 1 / -1;
+    display: flex !important;
+    flex-wrap: wrap !important;
+    gap: .5rem !important;
+    border-top: 1px solid #E2E8F0 !important;
+    align-items: center;
+}
+.dashboard-v2 .main-content table.dashboard-record-list td.data-table-actions::before {
+    flex-basis: 100%;
+}
+.dashboard-v2 .main-content table.data-table td.data-table-actions > * {
+    min-width: 0;
+    max-width: 100%;
+    flex: 0 1 auto !important;
+}
+.dashboard-v2 .main-content :is(.recommendations-list, .dash-card) > div {
+    min-width: 0 !important;
+    max-width: 100%;
+}
+.dashboard-v2 .main-content :is(.recommendations-list, .dash-card) :is(.btn, select, form) {
+    min-width: 0;
+    max-width: 100%;
+    box-sizing: border-box;
+}
+.dashboard-v2 .main-content :is(.recommendations-list, .dash-card) .btn {
+    white-space: normal;
+    overflow-wrap: anywhere;
+}
+.dashboard-v2 .main-content .dashboard-list-heading {
+    flex: 1 1 100%;
+    min-width: 0 !important;
+    max-width: 100%;
+}
+.dashboard-v2 .main-content .recommendation-item {
+    min-width: 0;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: .75rem;
+}
+.dashboard-v2 .main-content .rec-info {
+    flex: 1 1 14rem;
+    min-width: 0;
+    max-width: 100%;
+    overflow-wrap: anywhere;
+}
+.dashboard-v2 .main-content .rec-info h4 {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+.dashboard-v2 .main-content .rec-value {
+    min-width: 0;
+    max-width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    gap: .5rem;
+    align-items: center;
+}
+@media (max-width: 600px) {
+    .dashboard-v2 .main-content :is(.recommendations-list, .dash-card):has(table.data-table) {
+        padding: 1rem !important;
+    }
+    .dashboard-v2 .main-content table.data-table :is(th, td) {
+        padding: .6rem .75rem !important;
+    }
+}

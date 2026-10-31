@@ -65,7 +65,7 @@
     <div class="card">
       <% if (locals.resources && resources.length > 0) { %>
         <div style="overflow-x:auto">
-          <table class="data-table">
+          <table class="data-table dashboard-record-list">
             <thead>
               <tr>
                 <th>#</th>
@@ -92,22 +92,22 @@
                 const targetUrl = (r.url && r.url !== '#') ? r.url : (ADMIN_FALLBACK_URLS[r.title] || 'https://www.sba.gov/federal-contracting/contracting-guide');
               %>
               <tr>
-                <td style="color:#64748B;font-size:.85rem"><%= r.sort_order %></td>
-                <td>
+                <td data-label="#" style="color:#64748B;font-size:.85rem"><%= r.sort_order %></td>
+                <td title="<%= r.title %>" class="data-table-title" data-label="Title">
                   <a href="<%= targetUrl %>" target="_blank" rel="noopener noreferrer" style="color:#0284C7;font-weight:700;text-decoration:none;"><%= r.title %> ↗</a>
                   <br><a href="<%= targetUrl %>" target="_blank" rel="noopener noreferrer" style="color:#0284C7;font-size:.8rem;word-break:break-all"><%= targetUrl.length > 55 ? targetUrl.slice(0,55) + '…' : targetUrl %></a>
                   <% if (r.description) { %><br><span style="color:#475569;font-size:.82rem"><%= r.description %></span><% } %>
                 </td>
-                <td style="text-transform:capitalize;color:#64748B"><%= r.category || '—' %></td>
-                <td style="text-transform:capitalize"><%= r.audience || 'all' %></td>
-                <td>
+                <td data-label="Category" style="text-transform:capitalize;color:#64748B"><%= r.category || '—' %></td>
+                <td data-label="Audience" style="text-transform:capitalize"><%= r.audience || 'all' %></td>
+                <td data-label="Status">
                   <% if (r.status === 'active') { %>
                     <span style="background:#F0FDF4;color:#166534;padding:.2rem .6rem;border-radius:4px;font-size:.8rem">Active</span>
                   <% } else { %>
                     <span style="background:#F8FAFC;color:#94A3B8;padding:.2rem .6rem;border-radius:4px;font-size:.8rem">Inactive</span>
                   <% } %>
                 </td>
-                <td>
+                <td class="data-table-actions" data-label="Actions">
                   <form method="POST" action="/admin/resources/<%= r.id %>?_method=DELETE" style="display:inline" onsubmit="return confirm('Delete this resource?')">
                     <button type="submit" class="btn btn-danger" style="padding:.25rem .6rem;font-size:.8rem">Delete</button>
                   </form>

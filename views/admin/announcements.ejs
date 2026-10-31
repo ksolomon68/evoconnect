@@ -57,7 +57,7 @@
       </div>
       <% if (locals.announcements && announcements.length > 0) { %>
         <div style="overflow-x:auto">
-          <table class="data-table">
+          <table class="data-table dashboard-record-list">
             <thead>
               <tr>
                 <th>Message</th>
@@ -70,20 +70,20 @@
             <tbody>
               <% announcements.forEach(function(a) { %>
               <tr>
-                <td style="max-width:400px"><%= a.message %></td>
-                <td>
+                <td data-label="Message" style="max-width:400px"><%= a.message %></td>
+                <td data-label="Type">
                   <% const typeMap = { info:'#EFF6FF;color:#1D4ED8', success:'#F0FDF4;color:#166534', warning:'#FEF3C7;color:#92400E' } %>
                   <span style="background:<%= typeMap[a.type] || typeMap.info %>;padding:.2rem .6rem;border-radius:4px;font-size:.8rem;text-transform:capitalize"><%= a.type || 'info' %></span>
                 </td>
-                <td>
+                <td data-label="Status">
                   <% if (a.active) { %>
                     <span style="background:#F0FDF4;color:#166534;padding:.2rem .6rem;border-radius:4px;font-size:.8rem">Active</span>
                   <% } else { %>
                     <span style="background:#F8FAFC;color:#94A3B8;padding:.2rem .6rem;border-radius:4px;font-size:.8rem">Inactive</span>
                   <% } %>
                 </td>
-                <td style="font-size:.85rem;color:#64748B"><%= a.expires_at ? new Date(a.expires_at).toLocaleDateString() : 'Never' %></td>
-                <td style="font-size:.85rem;color:#64748B"><%= new Date(a.created_at).toLocaleDateString() %></td>
+                <td data-label="Expires" style="font-size:.85rem;color:#64748B"><%= a.expires_at ? new Date(a.expires_at).toLocaleDateString() : 'Never' %></td>
+                <td data-label="Posted" style="font-size:.85rem;color:#64748B"><%= new Date(a.created_at).toLocaleDateString() %></td>
               </tr>
               <% }) %>
             </tbody>

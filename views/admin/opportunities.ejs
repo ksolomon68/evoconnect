@@ -17,7 +17,7 @@
 
     <% if (oppList.length > 0) { %>
         <div style="overflow-x:auto;">
-            <table class="data-table" style="width:100%;">
+            <table class="data-table dashboard-record-list" style="width:100%;">
                 <thead>
                     <tr>
                         <th>Ref</th>
@@ -34,7 +34,7 @@
                     <% oppList.forEach(function(opp) { %>
                     <tr>
                         <td data-label="Ref"><code><%= opp.project_ref || ('OPP-' + opp.id) %></code></td>
-                        <td class="data-table-title"><a href="/opportunities/<%= encodeURIComponent(opp.id) %>"><strong><%= opp.title %></strong></a></td>
+                        <td title="<%= opp.title %>" data-label="Title" class="data-table-title"><a href="/opportunities/<%= encodeURIComponent(opp.id) %>"><strong><%= opp.title %></strong></a></td>
                         <td data-label="Prime / Agency"><%= opp.posted_by_name || 'Prime Contractor' %></td>
                         <td data-label="Category"><%= opp.category || 'General' %></td>
                         <td data-label="Value"><%= opp.estimated_value || 'TBD' %></td>

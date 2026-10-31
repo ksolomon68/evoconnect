@@ -80,9 +80,9 @@ const count = (entity, event) => totals.filter(r => r.entity_type === entity && 
                 <tbody>
                     <% for(const doc of documents) { %>
                         <tr>
-                            <td><a href="/capabilities/<%= doc.id %>" style="color:#0284C7;font-weight:600;"><%= doc.original_name %></a></td>
-                            <td><strong><%= doc.views %></strong></td>
-                            <td><strong><%= doc.downloads %></strong></td>
+                            <td title="<%= doc.original_name %>" class="data-table-title" data-label="Document"><a href="/capabilities/<%= doc.id %>" style="color:#0284C7;font-weight:600;"><%= doc.original_name %></a></td>
+                            <td data-label="Views"><strong><%= doc.views %></strong></td>
+                            <td data-label="Downloads"><strong><%= doc.downloads %></strong></td>
                         </tr>
                     <% } %>
                 </tbody>
@@ -100,7 +100,7 @@ const count = (entity, event) => totals.filter(r => r.entity_type === entity && 
         </div>
     <% } else { %>
         <div style="overflow-x:auto;-webkit-overflow-scrolling:touch;margin-bottom:2rem;">
-            <table class="data-table">
+            <table class="data-table dashboard-record-list">
                 <thead>
                     <tr>
                         <th>Opportunity</th>
@@ -114,12 +114,12 @@ const count = (entity, event) => totals.filter(r => r.entity_type === entity && 
                 <tbody>
                     <% for(const opp of opps) { %>
                         <tr>
-                            <td><a href="/opportunities/<%= encodeURIComponent(opp.id) %>" style="color:#0284C7;font-weight:600;"><%= opp.title %></a></td>
-                            <td><span class="status-badge <%= opp.status === 'published' ? 'badge-success' : 'badge-amber' %>"><%= opp.status %></span></td>
-                            <td><%= opp.views %></td>
-                            <td><%= opp.saves %></td>
-                            <td><strong><%= opp.applications %></strong></td>
-                            <td><%= Number(opp.views) > 0 ? (100 * Number(opp.applications) / Number(opp.views)).toFixed(1) + '%' : '—' %></td>
+                            <td title="<%= opp.title %>" class="data-table-title" data-label="Opportunity"><a href="/opportunities/<%= encodeURIComponent(opp.id) %>" style="color:#0284C7;font-weight:600;"><%= opp.title %></a></td>
+                            <td data-label="Status"><span class="status-badge <%= opp.status === 'published' ? 'badge-success' : 'badge-amber' %>"><%= opp.status %></span></td>
+                            <td data-label="Views"><%= opp.views %></td>
+                            <td data-label="Saves"><%= opp.saves %></td>
+                            <td data-label="Applications"><strong><%= opp.applications %></strong></td>
+                            <td data-label="Conversion Rate"><%= Number(opp.views) > 0 ? (100 * Number(opp.applications) / Number(opp.views)).toFixed(1) + '%' : '—' %></td>
                         </tr>
                     <% } %>
                 </tbody>
@@ -149,10 +149,10 @@ const count = (entity, event) => totals.filter(r => r.entity_type === entity && 
                 <tbody>
                     <% for(const row of daily) { %>
                         <tr>
-                            <td><%= row.day %></td>
-                            <td><code><%= row.entity_type %></code></td>
-                            <td><span class="status-badge badge-cyan"><%= row.event_type %></span></td>
-                            <td><strong><%= row.total %></strong></td>
+                            <td data-label="Date (UTC)"><%= row.day %></td>
+                            <td data-label="Target"><code><%= row.entity_type %></code></td>
+                            <td data-label="Interaction"><span class="status-badge badge-cyan"><%= row.event_type %></span></td>
+                            <td data-label="Count"><strong><%= row.total %></strong></td>
                         </tr>
                     <% } %>
                 </tbody>

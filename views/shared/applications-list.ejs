@@ -19,7 +19,7 @@
 
     <% if (appList.length > 0) { %>
         <div style="overflow-x:auto;">
-            <table class="data-table" style="width:100%;">
+            <table class="data-table dashboard-record-list" style="width:100%;">
                 <thead>
                     <tr>
                         <th>Opportunity</th>
@@ -33,19 +33,19 @@
                 <tbody>
                     <% appList.forEach(function(app) { %>
                     <tr>
-                        <td>
+                        <td title="<%= app.opportunity_title || 'Contract Opportunity' %>" class="data-table-title" data-label="Opportunity">
                             <strong><%= app.opportunity_title || 'Contract Opportunity' %></strong>
                             <% if (app.project_ref) { %><div style="font-size:0.8rem;color:var(--text-muted);">Ref: <%= app.project_ref %></div><% } %>
                         </td>
-                        <td><%= app.posted_by_name || 'Prime Contractor' %></td>
-                        <td><%= app.proposed_amount || 'Standard Rate' %></td>
-                        <td><%= new Date(app.applied_date).toLocaleDateString() %></td>
-                        <td>
+                        <td data-label="Posted by"><%= app.posted_by_name || 'Prime Contractor' %></td>
+                        <td data-label="Proposed Bid"><%= app.proposed_amount || 'Standard Rate' %></td>
+                        <td data-label="Submitted"><%= new Date(app.applied_date).toLocaleDateString() %></td>
+                        <td data-label="Status">
                             <span class="status-badge <%= app.status === 'awarded' ? 'badge-consulting' : (app.status === 'declined' ? 'badge-construction' : 'badge-consulting') %>" style="text-transform:capitalize;margin:0;">
                                 <%= (app.status || 'submitted').replace('_', ' ') %>
                             </span>
                         </td>
-                        <td style="max-width:260px;font-size:0.85rem;color:var(--text-muted);"><%= app.notes || '—' %>
+                        <td data-label="Notes" style="max-width:260px;font-size:0.85rem;color:var(--text-muted);"><%= app.notes || '—' %>
 <% if(['pending','submitted','under_review'].includes(app.status)) { %><form method="post" action="<%= basePath %>/applications/<%= app.id %>/withdraw"><input type="hidden" name="_csrf" value="<%= csrfToken %>"><button class="btn btn-sm btn-secondary">Withdraw application</button></form><% } %></td>
                     </tr>
                     <% }) %>

@@ -18,7 +18,7 @@
 
     <% if (appList.length > 0) { %>
         <div style="overflow-x:auto;">
-            <table class="data-table role-workflow-table" style="width:100%;">
+            <table class="data-table dashboard-record-list role-workflow-table" style="width:100%;">
                 <thead>
                     <tr>
                         <th>Applicant</th>
@@ -33,20 +33,20 @@
                 <tbody>
                     <% appList.forEach(function(app) { %>
                     <tr>
-                        <td>
+                        <td title="<%= app.applicant_name || 'Vendor' %>" class="data-table-title" data-label="Applicant">
                             <strong><%= app.applicant_name || 'Vendor' %></strong>
                             <% if (app.applicant_email) { %><div><a href="mailto:<%= app.applicant_email %>" style="font-size:0.8rem;color:var(--color-primary);"><%= app.applicant_email %></a></div><% } %>
                         <p><a href="/directory/<%= app.applicant_type %>/<%= app.applicant_id %>">Profile &amp; capability statement</a></p></td>
-                        <td style="text-transform:capitalize;"><%= app.applicant_type %></td>
-                        <td><strong><%= app.opportunity_title %></strong></td>
-                        <td><%= app.proposed_amount || (app.notes || '').match(/^\[Proposed: ([^\]]+)\]/)?.[1] || 'Not provided' %></td>
-                        <td style="max-width:260px;font-size:0.85rem;"><%= app.notes || '—' %></td>
-                        <td>
+                        <td data-label="Type" style="text-transform:capitalize;"><%= app.applicant_type %></td>
+                        <td data-label="<%= user.type==='business'?'Job':'Opportunity' %>"><strong><%= app.opportunity_title %></strong></td>
+                        <td data-label="<%= user.type==='business'?'Proposed rate':'Proposed bid' %>"><%= app.proposed_amount || (app.notes || '').match(/^\[Proposed: ([^\]]+)\]/)?.[1] || 'Not provided' %></td>
+                        <td data-label="Notes / Summary" style="max-width:260px;font-size:0.85rem;"><%= app.notes || '—' %></td>
+                        <td data-label="Status">
                             <span class="status-badge <%= app.status === 'awarded' ? 'badge-consulting' : (app.status === 'declined' ? 'badge-construction' : 'badge-consulting') %>" style="text-transform:capitalize;margin:0;">
                                 <%= (app.status || 'submitted').replace('_', ' ') %>
                             </span>
                         </td>
-                        <td style="white-space:nowrap;">
+                        <td class="data-table-actions" data-label="Action" style="white-space:nowrap;">
                             <form method="POST" action="<%= locals.basePath || "/prime" %>/applications/<%= app.id %>/status" class="application-review-actions">
                                 <select name="status" class="form-control" style="padding:0.25rem 0.5rem;font-size:0.8rem;width:auto;">
                                     <option value="approved" <%= app.status === 'approved' ? 'selected' : '' %>>Approved</option>

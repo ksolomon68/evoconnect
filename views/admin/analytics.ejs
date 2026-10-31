@@ -73,10 +73,10 @@
             <tbody>
                 <% dailySeries.forEach(function(d) { %>
                 <tr>
-                    <td><code style="font-family:'JetBrains Mono',monospace;font-size:.85rem;"><%= d.date %></code></td>
-                    <td><strong style="color:#0284C7;font-family:'JetBrains Mono',monospace;"><%= d.visits %></strong></td>
-                    <td><strong style="color:#10B981;font-family:'JetBrains Mono',monospace;"><%= d.pageViews %></strong></td>
-                    <td><strong style="color:#8B5CF6;font-family:'JetBrains Mono',monospace;"><%= d.signups %></strong></td>
+                    <td data-label="Date"><code style="font-family:'JetBrains Mono',monospace;font-size:.85rem;"><%= d.date %></code></td>
+                    <td data-label="Visits"><strong style="color:#0284C7;font-family:'JetBrains Mono',monospace;"><%= d.visits %></strong></td>
+                    <td data-label="Page Views"><strong style="color:#10B981;font-family:'JetBrains Mono',monospace;"><%= d.pageViews %></strong></td>
+                    <td data-label="New Signups"><strong style="color:#8B5CF6;font-family:'JetBrains Mono',monospace;"><%= d.signups %></strong></td>
                 </tr>
                 <% }) %>
             </tbody>
